@@ -20,3 +20,10 @@ Brewfile.bak
 # Misc cache
 *.tmp
 *.bak
+# macOS Finder files
+.DS_Store
+texmf/.DS_Store
+texmf/bibtex/.DS_Store
+texmf/bibtex/bib/.DS_Store
+texmf/tex/.DS_Store
+texmf/tex/FredTexDefinitions/.DS_Store
