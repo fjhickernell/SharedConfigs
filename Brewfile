@@ -22,6 +22,8 @@ brew "ghostscript"
 brew "git"
 # Git extension for versioning large files
 brew "git-lfs"
+# Library for command-line editing
+brew "readline"
 # Portable Foreign Function Interface library
 brew "libffi"
 # YAML Parser
@@ -32,8 +34,6 @@ brew "make"
 brew "open-mpi"
 # C language header files for the OpenCL API
 brew "opencl-headers"
-# PDF rendering library (based on the xpdf-3.0 code base)
-brew "poppler"
 # PDF converter to SVG
 brew "pdf2svg"
 # Search PDFs for strings matching a regular expression
