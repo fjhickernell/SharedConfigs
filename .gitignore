@@ -1,0 +1,22 @@
+# macOS system files
+.DS_Store
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Brew backups
+Brewfile.bak
+
+# Misc cache
+*.tmp
+*.bak
