@@ -1,6 +1,7 @@
 #!/bin/zsh
-set -euo pipefail
+export HOMEBREW_NO_ENV_FILTERING=1
 export HOMEBREW_NO_PAGER=1
+set -euo pipefail
 
 # --- Configuration -----------------------------------------------------------
 REPO_DIR="${REPO_DIR:-$HOME/Documents/SharedConfigs}"
@@ -15,28 +16,19 @@ fail()  { print -P "%F{red}✗%f  $*"; exit 1; }
 have()  { command -v "$1" >/dev/null 2>&1; }
 
 # --- iCloud (light) ----------------------------------------------------------
-# We had a heavy mdls-based check before; on large SharedConfigs trees it could exit 1.
-# This version is fast and never hard-fails. You can skip it with SKIP_ICLOUD_CHECK=1.
 icloud_light_check() {
   if [[ "${SKIP_ICLOUD_CHECK:-0}" == "1" ]]; then
     warn "Skipping iCloud check (SKIP_ICLOUD_CHECK=1)."
     return 0
   fi
-
   note "Light iCloud check for $REPO_DIR…"
-  if [[ -d "$REPO_DIR" ]]; then
-    good "iCloud folder found. Proceeding."
-    return 0
-  fi
-
+  [[ -d "$REPO_DIR" ]] && { good "iCloud folder found. Proceeding."; return 0; }
   warn "iCloud folder not present yet, waiting briefly…"
   for i in {1..10}; do
     sleep 1
     [[ -d "$REPO_DIR" ]] && { good "iCloud folder appeared. Proceeding."; return 0; }
   done
-
   warn "iCloud folder still not present; continuing anyway."
-  return 0
 }
 
 # --- Git utilities -----------------------------------------------------------
@@ -86,9 +78,13 @@ else
   : > "$PREV_BREWFILE"
 fi
 
-# --- Dump current system to Brewfile ----------------------------------------
-note "Updating Brewfile from current system (brew bundle dump)…"
-brew bundle dump --force --describe --file="$BREWFILE"
+# --- Conditionally dump ------------------------------------------------------
+if [[ "${DO_BREW_DUMP:-0}" == "1" ]]; then
+  note "DO_BREW_DUMP=1 → dumping current system to Brewfile…"
+  brew bundle dump --force --describe --file="$BREWFILE"
+else
+  note "Not dumping Brewfile on this run (set DO_BREW_DUMP=1 to force)."
+fi
 
 # --- Show Git diff or file diff ---------------------------------------------
 if git_ready; then

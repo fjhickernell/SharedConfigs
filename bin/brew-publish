@@ -1,0 +1,2 @@
+#!/bin/zsh
+DO_BREW_DUMP=1 "$HOME/Documents/SharedConfigs/bin/sync-brew.sh"
