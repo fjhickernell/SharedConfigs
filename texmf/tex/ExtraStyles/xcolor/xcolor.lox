@@ -1,0 +1,44 @@
+%%
+%% This is file `xcolor.lox',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% xcolor.dtx  (with options: `extract')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from xcolor.lox.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file xcolor.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%% ---------------------------------------------------------
+%% Copyright (C) 2003-2004 by Dr. Uwe Kern <xcolor@ukern.de>
+%% ---------------------------------------------------------
+%%
+%% Please send error reports and suggestions for
+%% improvements to the above email address.
+%%
+%%
+\def\XCfilesource{xcolor.dtx}%
+\def\XCfileversion{v2.00}%
+\def\XCfiledate{2004/07/04}%
+\generate{
+\file{xcolor.sty}{\from{\XCfilesource}{package}}
+\file{svgnam.def}{\from{\XCfilesource}{svgnames}}
+\file{xcolor1.tex}{\from{\XCfilesource}{test1}}
+\file{xcolor2.tex}{\from{\XCfilesource}{test2}}
+\file{xcolor3.tex}{\from{\XCfilesource}{test3}}
+}
+\endinput
+%%
+%% End of file `xcolor.lox'.

@@ -1,0 +1,83 @@
+% Copyright 2007 by Till Tantau
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the file doc/licenses/LICENSE for more details.
+
+\ProvidesPackageRCS $Header: /cvsroot/latex-beamer/latex-beamer/themes/outer/beamerouterthemeinfolines.sty,v 1.9 2007/01/28 20:48:30 tantau Exp $
+
+\mode<presentation>
+
+\setbeamercolor*{author in head/foot}{parent=palette tertiary}
+\setbeamercolor*{title in head/foot}{parent=palette secondary}
+\setbeamercolor*{date in head/foot}{parent=palette primary}
+
+\setbeamercolor*{section in head/foot}{parent=palette tertiary}
+\setbeamercolor*{subsection in head/foot}{parent=palette primary}
+
+                                % Head
+\defbeamertemplate*{headline}{infolines theme}
+{
+  \leavevmode%
+\hbox{
+  \begin{beamercolorbox}[wd=\paperwidth]{title in head/foot}
+    \begin{columns}[c]
+      \begin{column}{.21\paperwidth}
+        \begin{center}
+        %\includegraphics[scale=0.5]{MengerSponge_186_cg9_white.pdf}
+        \includegraphics[scale=0.8]{MengerIITRedGray.pdf}
+        \end{center}
+      \end{column}
+      \begin{column}{.58\paperwidth}
+        \hskip2ex
+        \vskip4ex
+        \centering
+        \usebeamercolor{title in headline}{\color{fg}\textbf{\LARGE{\inserttitle}}\\[2ex]}
+        \usebeamercolor{author in headline}{\color{black}\Large{\insertauthor}\\[.75ex]}
+        \usebeamercolor{institute in headline}{\color{black}\Large{\insertinstitute}\\[.75ex]}
+      \end{column}
+    \begin{column}{.22\paperwidth}
+        %\raggedleft
+        \center
+        %\includegraphics[width=8.5in,height=2.75in]{IIT_sig1url_2crdgry.pdf}
+        %\includegraphics[height=4in]{New_DOE_Logo_Emblem_Only.pdf}
+        %\includegraphics[height=4in]{DepartmentofEnergySealOnly.pdf}        
+    \end{column}
+
+    \end{columns}
+  \end{beamercolorbox}
+}
+}
+
+\defbeamertemplate*{footline}{infolines theme}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.3333333333333\paperwidth,ht=4.5ex,dp=1.5ex,center]{section in head/foot}%
+    \usebeamerfont{section in head/foot}
+    %\raggedright
+    \center
+    {\large \email}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.3333333333333\paperwidth,ht=4.5ex,dp=1.5ex,center]{subsection in head/foot}%
+    \usebeamerfont{subsection in head/foot}
+    \center
+    {\large \meeting}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.3333333333333\paperwidth,ht=4.5ex,dp=1.5ex,center]{section in head/foot}%
+    \usebeamerfont{date in head/foot}
+    %\raggedright
+    \center
+    {\large \insertdate}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\setbeamersize{text margin left=1em,text margin right=1em}
+\setbeamertemplate{navigation symbols}{}
+
+\mode
+<all>

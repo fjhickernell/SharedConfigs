@@ -1,0 +1,6 @@
+\def\latin_shapes{
+   \latin_shape{} {} {} {n} {\_textcomp_true }
+   \latin_shape{c}{c}{} {sc}{\_textcomp_false}
+   \latin_shape{o}{o}{} {sl}{\_textcomp_true }
+}
+

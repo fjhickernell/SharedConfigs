@@ -1,0 +1,126 @@
+%%%========================================================================
+%%% @TeX-font-metrics-file{
+%%%    author              = "Alan Jeffrey",
+%%%    version             = "1.310",
+%%%    date                = "22 January 1994",
+%%%    time                = "17:36:29 BST",
+%%%    filename            = "unsethum.mtx",
+%%%    address             = "School of Cognitive and Computing Sciences
+%%%                           University of Sussex
+%%%                           Brighton BN1 9QH
+%%%                           UK",
+%%%    telephone           = "+44 273 606755 x 3238",
+%%%    FAX                 = "+44 273 678188",
+%%%    checksum            = "???",
+%%%    email               = "alanje@cogs.sussex.ac.uk",
+%%%    codetable           = "ISO/ASCII",
+%%%    keywords            = "encoding, TeX, PostScript",
+%%%    supported           = "yes",
+%%%    abstract            = "This TeX font metrics file unsets all of 
+%%%                           the humanist math glyphs.",
+%%%    docstring           = "The checksum field above contains a CRC-16
+%%%                           checksum as the first value, followed by the
+%%%                           equivalent of the standard UNIX wc (word
+%%%                           count) utility output of lines, words, and
+%%%                           characters.  This is produced by Robert
+%%%                           Solovay's checksum utility.",
+%%%    package             = "fontinst",
+%%%    dependencies        = "none",
+%%% }
+%%%========================================================================
+
+\relax
+
+\metrics
+
+\unsetglyph{Alpha}
+\unsetglyph{Beta}
+\unsetglyph{Chi}
+\unsetglyph{Delta}
+\unsetglyph{Epsilon}
+\unsetglyph{Phi}
+\unsetglyph{Gamma}
+\unsetglyph{Eta}
+\unsetglyph{Iota}
+\unsetglyph{theta1}
+\unsetglyph{Kappa}
+\unsetglyph{Lambda}
+\unsetglyph{Mu}
+\unsetglyph{Nu}
+\unsetglyph{Omicron}
+\unsetglyph{Pi}
+\unsetglyph{Theta}
+\unsetglyph{Rho}
+\unsetglyph{Sigma}
+\unsetglyph{Tau}
+\unsetglyph{Upsilon}
+\unsetglyph{sigma1}
+\unsetglyph{Omega}
+\unsetglyph{Xi}
+\unsetglyph{Psi}
+\unsetglyph{Zeta}
+\unsetglyph{Upsilon1}
+
+\unsetglyph{alpha}
+\unsetglyph{beta}
+\unsetglyph{chi}
+\unsetglyph{delta}
+\unsetglyph{epsilon}
+\unsetglyph{epsilon1}
+\unsetglyph{phi}
+\unsetglyph{gamma}
+\unsetglyph{eta}
+\unsetglyph{iota}
+\unsetglyph{phi1}
+\unsetglyph{kappa}
+\unsetglyph{lambda}
+\unsetglyph{mu}
+\unsetglyph{nu}
+\unsetglyph{omicron}
+\unsetglyph{pi}
+\unsetglyph{pi1}
+\unsetglyph{theta}
+\unsetglyph{rho}
+\unsetglyph{rho1}
+\unsetglyph{sigma}
+\unsetglyph{tau}
+\unsetglyph{upsilon}
+\unsetglyph{omega1}
+\unsetglyph{omega}
+\unsetglyph{xi}
+\unsetglyph{psi}
+\unsetglyph{zeta}
+
+\unsetglyph{aleph}
+
+\unsetglyph{Ifraktur}
+\unsetglyph{Rfraktur}
+
+\unsetglyph{partialdiff}
+
+\unsetglyph{weierstrass}
+
+\unsetglyph{infinity}
+\unsetglyph{proportional}
+
+\unsetglyph{summation}
+\unsetglyph{product}
+\unsetglyph{coproduct}
+\unsetglyph{gradient}
+
+\unsetglyph{summationtext}
+\unsetglyph{producttext}
+\unsetglyph{coproducttext}
+
+\unsetglyph{summationdisplay}
+\unsetglyph{productdisplay}
+\unsetglyph{coproductdisplay}
+
+\unsetglyph{emptysetstress}
+
+\unsetglyph{dagger}
+\unsetglyph{daggerdbl}
+\unsetglyph{section}
+\unsetglyph{paragraph}
+
+\endmetrics

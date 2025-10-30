@@ -1,0 +1,141 @@
+\documentclass[10pt]{ijnam}
+\hsize=5.5 true in
+\textheight=8.4 true in
+\topmargin 1in
+
+%% information for the editor
+\def\currentvolume{1}
+\def\currentissue{1}
+\def\currentyear{2004}
+\def\month{March}
+\pagespan{1}{18}
+\copyrightinfo{2004}{} % copyright year
+
+%% please put your definitions into mydef.sty. Examples can be found in this
+%% file.
+\usepackage{mydef}
+
+%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%
+
+\title[Sample for how to use ijnam.cls]
+{Enter the title of your paper here\\
+  If it is too long, you can use \\
+  to break it into several lines}
+
+% author and address
+\author[Short Name]{Full Name}
+\address{
+  Department of Mathematics,
+  University of Newland,
+  Newland, NL 88888, USA
+}
+\email{hyang@louisiana.edu}
+\urladdr{http://www.ucs.lousiana.edu/$\sim$hxy6615/}
+
+% two authors have the same address
+\author[S. Name 1\and S. Name 2]{Full Name 1 \and Full Name 2}
+\address{
+  Department of Mathematics,
+  University of Newland,
+  Newland, NL 88888, USA
+}
+\email{yang@louisiana.edu \and hong@louisiana.edu}
+\urladdr{http://www.ucs.lousiana.edu/$\sim$hxy6615/ \and
+  http://www.ucs.lousiana.edu/$\sim$hxy6615/}
+
+% dedication
+\dedicatory{This paper is dedicated to our authors}
+
+% communicated
+\commby{Hilbert}
+
+% Received by the editors ?
+\date{January 1, 2004 and, in revised form, March 22, 2004.}
+
+% it is suggested to put it in Acknowledgments
+\thanks{This research was supported by ???}
+
+\subjclass[2000]{35R35, 49J40, 60G40}
+
+\abstract{This paper is a sample prepared to illustrate the use of
+ijnam.cls. You can use all commands of amsart.cls.}
+
+\keywords{point, line, plane, and space.}
+
+\maketitle
+
+\section{First section}
+This is the first section.
+
+\section{Second section}
+
+This is the second section.
+
+\subsection{This section has two subsections}
+
+This is the first subsection of the second section.
+
+\subsection{The second subsection}
+
+This is the first subsection of the second section.
+\be
+c=a+b.
+\ee
+This equation can rewritten as:
+\be\label{eq2}
+a=c-b.
+\ee
+
+\subsubsection{The second subsection has two subsubsections}
+
+This is the first subsubsection of the second subsection.
+
+\subsubsection{The second subsubsection}
+
+This is the second subsubsection of the second subsection.
+
+For $b=1$, $c=4$, we get from (\ref{eq2})
+\be
+a=3.
+\ee
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\section{Forth section}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+This is the forth section.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\section{Third section}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+This is the last section.
+
+% put your thanks here
+\section*{Acknowledgments}
+The author thanks the anonymous authors whose work largely
+constitutes this sample file. This research was supported by ???.
+
+\begin{thebibliography}{99}
+
+\bibitem{frie} A. Friedman,
+Partial Differential Equations of Parabolic Type , Robert E. Krieger
+Publishing Company, Malabar, Florida, 1983.
+
+\bibitem {glow} R. Glowinski, J. L. Lions and R. Tr\'{e}moli\`{e}res,
+Numerical Analysis of Variational Inequalities, Norh-Holland Publishing
+Company, 1981.
+
+\bibitem{lsu} O. A. Ladyzenskaya, V. A. Solonnikov and N. N. Uralceva,
+Linear and Quasi-linear Equations of Parabolic Type, AMS, 1988.
+
+\bibitem{lions} J. L. Lions and E. Magenes,
+Non-Homogeneous Boundary Value Problems and Applications I-II,
+Springer-Verlag, New York, 1972.
+
+\end{thebibliography}
+
+\end{document}
+ÿÿ

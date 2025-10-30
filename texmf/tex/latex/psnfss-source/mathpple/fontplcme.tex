@@ -1,0 +1,103 @@
+% format: plain
+
+% fontplcme.tex 1999-09-07 v2.0a for PSNFSS v8.1 (WaS)
+
+% Copyright (c) 1999,2000 Walter Schmidt
+%
+% This file is part of the PSNFSS v8.1 sources
+%
+% It may be distributed and/or modified under the conditions
+% of the LaTeX Project Public License, either version 1.1
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.1 or later is part of all distributions of LaTeX
+% version 1999/06/01 or later.
+
+% This fontinst script creates virtual math fonts to go with Palatino;
+% they require the Euler fonts to be available in Type1 format!
+
+\input fontinst.sty
+
+% I like math to be less tight:
+%
+\setint{letterspacing}{25}
+
+\needsfontinstversion{1.801}
+
+\installfonts
+
+   \transformfont{pplr8r} {\reencodefont{8r}{\fromafm{pplr8a}}}
+   \transformfont{pplb8r} {\reencodefont{8r}{\fromafm{pplb8a}}}
+   \transformfont{pplri8r}{\reencodefont{8r}{\fromafm{pplri8a}}}
+   \transformfont{pplbi8r}{\reencodefont{8r}{\fromafm{pplbi8a}}}
+   \transformfont{eurmo10}  {\slantfont{167}{\frompl{eurm10}}}
+   \transformfont{eurbo10}  {\slantfont{167}{\frompl{eurb10}}}
+   \fromafm{psyr}
+   \frompl{euex10}
+   
+   \installfamily{OT1}{zpple}{}
+   \installfamily{OML}{zpple}{\skewchar\font=127}
+   \installfamily{OMS}{zpple}{\skewchar\font=48}
+   \installfamily{OMX}{zpple}{}
+
+% The `operators' font:
+%  latin from Palatino Roman
+%  greek from Euler Roman
+%  + = () [] from CM Roman, scaled 1042
+%
+   \installfont{zppler7t}
+      {pplr8r,gceurm10,latin,unsetppl,kernoff,cmr10 scaled 1042}
+      {OT1}{OT1}{zpple}{m}{n}{}
+
+% The `letters' font:
+%  latin from Palatino Italic
+%  greek from Euler Roman, slanted
+%  \partial from Adobe Symbol,
+%  comma and period from Palatino Roman,
+%  everything else from CM Math Italic, scaled 1042
+%
+   \installfont{zppler7m}
+      {geurmo10,mpsyr,kernoff,cmmi10 scaled 1042,kernon,
+      unsetal2,pplri8r,unsetpun,pplr8r,plcemix}
+      {OML}{OML}{zpple}{m}{it}{}
+
+% The `symbols' font:
+%  \Re, \Im from Euler Script,
+%  \infty from euex10
+%  everything else from CM Symbol, scaled 1042
+%
+   \installfont{zppler7y}
+      {cmsy10 scaled 1042, kernoff, unsetsy, eusm10, euex10}
+      {OMS}{OMS}{zpple}{m}{n}{}
+
+% The `large symbols':
+%  delimiters and roots from cmex10
+%  \sum, \prod, from Adobe Symbol, \coprod is missing
+%  integrals and large operators from cmex10, scaled 900
+%
+   \installfont{zppler7v}
+      {cmex10,psyr,zrvhax,cmex10 scaled 900}
+      {OMX}{OMX}{zpple}{m}{n}{}
+
+% ditto, bold:
+
+   \installfont{zppleb7t}
+      {pplb8r,gceurb10,latin,unsetppl,kernoff,cmbx10 scaled 1042}
+      {OT1}{OT1}{zpple}{b}{n}{}
+      
+   \installfont{zppleb7m}  
+      {geurbo10,mpsyr,kernoff,cmmib10 scaled 1042,kernon,
+       unsetal2,pplbi8r,unsetpun,pplb8r,plcembx} 
+      {OML}{OML}{zpple}{b}{it}{}
+
+   \installfont{zppleb7y}  
+      {cmbsy10 scaled 1042, kernoff, unsetsy, eusb10, euex10}
+      {OMS}{OMS}{zpple}{b}{n}{}
+      
+%  bold `large symbols' are missing
+   
+\endinstallfonts
+
+
+\bye

@@ -1,0 +1,95 @@
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}
+\contentsline {subsection}{\numberline {1.1}Purpose of this package}{4}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Color tints, shades, tones, and complements}{4}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Color models}{5}{subsection.1.3}
+\contentsline {section}{\numberline {2}The User Interface}{5}{section.2}
+\contentsline {subsection}{\numberline {2.1}Preparation}{5}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Package installation}{5}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Package options}{5}{subsubsection.2.1.2}
+\contentsline {subsubsection}{\numberline {2.1.3}Executing additional initialisation commands}{6}{subsubsection.2.1.3}
+\contentsline {subsection}{\numberline {2.2}Color models}{6}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}Supported color models}{6}{subsubsection.2.2.1}
+\contentsline {subsubsection}{\numberline {2.2.2}Changing the target color model within a document}{8}{subsubsection.2.2.2}
+\contentsline {subsection}{\numberline {2.3}Arguments and terminology}{9}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Additional remarks and restrictions on arguments}{9}{subsubsection.2.3.1}
+\contentsline {paragraph}{Basic strings and numbers}{9}{section*.5}
+\contentsline {paragraph}{Color names}{9}{section*.6}
+\contentsline {paragraph}{Color models}{9}{section*.7}
+\contentsline {paragraph}{Color specifications}{11}{section*.8}
+\contentsline {paragraph}{The type argument}{11}{section*.9}
+\contentsline {paragraph}{Standard color expressions}{11}{section*.10}
+\contentsline {paragraph}{Extended color expressions}{11}{section*.11}
+\contentsline {paragraph}{Colors}{11}{section*.12}
+\contentsline {subsubsection}{\numberline {2.3.2}Meaning of standard color expressions}{12}{subsubsection.2.3.2}
+\contentsline {subsubsection}{\numberline {2.3.3}Meaning of extended color expressions}{12}{subsubsection.2.3.3}
+\contentsline {subsection}{\numberline {2.4}Predefined colors}{13}{subsection.2.4}
+\contentsline {subsubsection}{\numberline {2.4.1}Colors that are always available}{13}{subsubsection.2.4.1}
+\contentsline {subsubsection}{\numberline {2.4.2}Additional sets of colors}{14}{subsubsection.2.4.2}
+\contentsline {subsection}{\numberline {2.5}Color definition}{14}{subsection.2.5}
+\contentsline {subsubsection}{\numberline {2.5.1}Ordinary and named colors}{14}{subsubsection.2.5.1}
+\contentsline {subsubsection}{\numberline {2.5.2}Color definition in \textsf {xcolor}}{16}{subsubsection.2.5.2}
+\contentsline {subsubsection}{\numberline {2.5.3}Defining sets of colors}{16}{subsubsection.2.5.3}
+\contentsline {subsubsection}{\numberline {2.5.4}Global color definitions}{17}{subsubsection.2.5.4}
+\contentsline {subsection}{\numberline {2.6}Color application}{17}{subsection.2.6}
+\contentsline {subsubsection}{\numberline {2.6.1}Using the current color}{18}{subsubsection.2.6.1}
+\contentsline {subsection}{\numberline {2.7}Color blending}{18}{subsection.2.7}
+\contentsline {subsection}{\numberline {2.8}Color masks and separation}{21}{subsection.2.8}
+\contentsline {subsection}{\numberline {2.9}Color series}{22}{subsection.2.9}
+\contentsline {subsubsection}{\numberline {2.9.1}Definition of a color series}{23}{subsubsection.2.9.1}
+\contentsline {subsubsection}{\numberline {2.9.2}Initialisation of a color series}{24}{subsubsection.2.9.2}
+\contentsline {subsubsection}{\numberline {2.9.3}Application of a color series}{24}{subsubsection.2.9.3}
+\contentsline {subsubsection}{\numberline {2.9.4}Differences between colors and color series}{24}{subsubsection.2.9.4}
+\contentsline {subsection}{\numberline {2.10}Border colors for hyperlinks}{24}{subsection.2.10}
+\contentsline {subsection}{\numberline {2.11}Color in tables}{26}{subsection.2.11}
+\contentsline {subsection}{\numberline {2.12}Color information}{27}{subsection.2.12}
+\contentsline {subsection}{\numberline {2.13}Color conversion}{28}{subsection.2.13}
+\contentsline {section}{\numberline {3}Technical Supplement}{28}{section.3}
+\contentsline {subsection}{\numberline {3.1}Color models supported by drivers}{28}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Behind the scenes: internal color representation}{28}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}A remark on accuracy}{30}{subsection.3.3}
+\contentsline {section}{\numberline {4}The Formulas}{30}{section.4}
+\contentsline {subsection}{\numberline {4.1}Color mixing}{30}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Conversion between integer and real models}{31}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Real to integer conversion}{31}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.2}Integer to real conversion}{31}{subsubsection.4.2.2}
+\contentsline {subsection}{\numberline {4.3}Color conversion and complements}{33}{subsection.4.3}
+\contentsline {subsubsection}{\numberline {4.3.1}The \textsf {\bfseries rgb} model}{33}{subsubsection.4.3.1}
+\contentsline {paragraph}{Conversion \textsf {\bfseries rgb} to \textsf {\bfseries cmy}}{33}{section*.13}
+\contentsline {paragraph}{Conversion \textsf {\bfseries rgb} to \textsf {\bfseries hsb} (1)}{34}{section*.14}
+\contentsline {paragraph}{Conversion \textsf {\bfseries rgb} to \textsf {\bfseries hsb} (2)}{35}{section*.15}
+\contentsline {paragraph}{Conversion \textsf {\bfseries rgb} to \textsf {\bfseries gray}}{35}{section*.16}
+\contentsline {paragraph}{Conversion \textsf {\bfseries rgb} to \textsf {\bfseries RGB}}{35}{section*.17}
+\contentsline {paragraph}{Conversion \textsf {\bfseries rgb} to \textsf {\bfseries HTML}}{36}{section*.18}
+\contentsline {paragraph}{Complement of \textsf {\bfseries rgb} color}{36}{section*.19}
+\contentsline {subsubsection}{\numberline {4.3.2}The \textsf {\bfseries cmy} model}{36}{subsubsection.4.3.2}
+\contentsline {paragraph}{Conversion \textsf {\bfseries cmy} to \textsf {\bfseries rgb}}{36}{section*.20}
+\contentsline {paragraph}{Conversion \textsf {\bfseries cmy} to \textsf {\bfseries cmyk}}{36}{section*.21}
+\contentsline {paragraph}{Conversion \textsf {\bfseries cmy} to \textsf {\bfseries gray}}{36}{section*.26}
+\contentsline {paragraph}{Complement of \textsf {\bfseries cmy} color}{37}{section*.27}
+\contentsline {subsubsection}{\numberline {4.3.3}The \textsf {\bfseries cmyk} model}{37}{subsubsection.4.3.3}
+\contentsline {paragraph}{Conversion \textsf {\bfseries cmyk} to \textsf {\bfseries cmy}}{37}{section*.28}
+\contentsline {paragraph}{Conversion \textsf {\bfseries cmyk} to \textsf {\bfseries gray}}{37}{section*.29}
+\contentsline {paragraph}{Complement of \textsf {\bfseries cmyk} color}{37}{section*.30}
+\contentsline {subsubsection}{\numberline {4.3.4}The \textsf {\bfseries hsb} model}{37}{subsubsection.4.3.4}
+\contentsline {paragraph}{Conversion \textsf {\bfseries hsb} to \textsf {\bfseries rgb}}{37}{section*.31}
+\contentsline {paragraph}{Conversion \textsf {\bfseries hsb} to \textsf {\bfseries HSB}}{38}{section*.32}
+\contentsline {paragraph}{Complement of \textsf {\bfseries hsb} color}{38}{section*.33}
+\contentsline {subsubsection}{\numberline {4.3.5}The \textsf {\bfseries gray} model}{39}{subsubsection.4.3.5}
+\contentsline {paragraph}{Conversion \textsf {\bfseries gray} to \textsf {\bfseries rgb}}{39}{section*.34}
+\contentsline {paragraph}{Conversion \textsf {\bfseries gray} to \textsf {\bfseries cmy}}{39}{section*.35}
+\contentsline {paragraph}{Conversion \textsf {\bfseries gray} to \textsf {\bfseries cmyk}}{39}{section*.36}
+\contentsline {paragraph}{Conversion \textsf {\bfseries gray} to \textsf {\bfseries hsb}}{39}{section*.37}
+\contentsline {paragraph}{Conversion \textsf {\bfseries gray} to \textsf {\bfseries Gray}}{39}{section*.38}
+\contentsline {paragraph}{Complement of \textsf {\bfseries gray} color}{40}{section*.39}
+\contentsline {subsubsection}{\numberline {4.3.6}The \textsf {\bfseries RGB} model}{40}{subsubsection.4.3.6}
+\contentsline {paragraph}{Conversion \textsf {\bfseries RGB} to \textsf {\bfseries rgb}}{40}{section*.40}
+\contentsline {subsubsection}{\numberline {4.3.7}The \textsf {\bfseries HTML} model}{40}{subsubsection.4.3.7}
+\contentsline {paragraph}{Conversion \textsf {\bfseries HTML} to \textsf {\bfseries rgb}}{40}{section*.41}
+\contentsline {subsubsection}{\numberline {4.3.8}The \textsf {\bfseries HSB} model}{40}{subsubsection.4.3.8}
+\contentsline {paragraph}{Conversion \textsf {\bfseries HSB} to \textsf {\bfseries hsb}}{40}{section*.42}
+\contentsline {subsubsection}{\numberline {4.3.9}The \textsf {\bfseries Gray} model}{40}{subsubsection.4.3.9}
+\contentsline {paragraph}{Conversion \textsf {\bfseries Gray} to \textsf {\bfseries gray}}{40}{section*.43}
+\contentsline {section}{References}{40}{section*.44}
+\contentsline {section}{Acknowledgement}{41}{section*.45}
+\contentsline {section}{Known Issues}{41}{section*.46}
+\contentsline {section}{History}{41}{section*.47}

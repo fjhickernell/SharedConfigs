@@ -1,0 +1,131 @@
+% format plain
+\input fontinst.sty
+
+% input AFMs:
+
+\transformfont{pplr8r}{\reencodefont{8r}{\fromafm{pplr8a}}}
+\transformfont{pplb8r}{\reencodefont{8r}{\fromafm{pplb8a}}}
+\transformfont{pplri8r}{\reencodefont{8r}{\fromafm{pplri8a}}}
+\transformfont{pplbi8r}{\reencodefont{8r}{\fromafm{pplbi8a}}}
+
+\transformfont{pplrc8r}{\reencodefont{8r}{\fromafm{pplrc8a}}}
+\transformfont{pplrij8r}{\reencodefont{8r}{\fromafm{pplrij8a}}}
+\transformfont{pplbj8r}{\reencodefont{8r}{\fromafm{pplbj8a}}}
+\transformfont{pplbij8r}{\reencodefont{8r}{\fromafm{pplbij8a}}}
+
+
+% fake MTX for expert font with both SC and OsF:
+\reglyphfonts
+  \input csc2x
+  \reglyphfont{pplr8x}{pplrc8r}
+\endreglyphfonts
+% fake MTXs for expert fonts with OsF only:
+\reglyphfonts
+  \input osf2x
+  \reglyphfont{pplri8x}{pplrij8r}
+  \reglyphfont{pplb8x}{pplbj8r}
+  \reglyphfont{pplbi8x}{pplbij8r}
+\endreglyphfonts
+
+% make VFs
+\installfonts
+
+\installfamily{T1}{pplj}{}
+\installfamily{TS1}{pplj}{}
+\installfamily{OT1}{pplj}{}
+\installfamily{T1}{pplx}{}
+\installfamily{TS1}{pplx}{}
+\installfamily{OT1}{pplx}{}
+
+% osf
+
+\resetint{interword}{291}
+
+\installfont{pplr9d}{pplr8r,kernoff,pplr8x,fplmr,kernon,patch-pplr,latin}{t1j}
+  {T1}{pplj}{m}{n}{}
+\installfont{pplr9c}{pplr8r,kernoff,pplr8x,fplmr,kernon,patch-pplr,textcomp}{ts1}
+  {TS1}{pplj}{m}{n}{}
+\installfont{pplr9o}{pplr8r,kernoff,pplr8x,fplmr,kernon,patch-pplr,latin}{ot1j}
+  {OT1}{pplj}{m}{n}{}
+
+\installrawfont{pplrc8r}{pplrc8r,8r}{8r}{8r}{pplj}{m}{sc}{}
+\installfont{pplrc9d}{pplr8r,pplr8x,patch-pplrc,latinsc,unsetlsc}{t1cj}
+  {T1}{pplj}{m}{sc}{}
+\installfont{pplrc9o}{pplr8r,pplr8x,kernoff,fplmr,kernon,patch-pplrc,latinsc,unsetlsc}{ot1cj}
+  {OT1}{pplj}{m}{sc}{}
+
+% lf
+
+\installfont{pplr9e}{pplr8r,kernoff,fplmr,kernon,patch-pplr,latin}{t1}
+  {T1}{pplx}{m}{n}{}
+\installfont{pplr9t}{pplr8r,kernoff,fplmr,kernon,patch-pplr,latin}{ot1}
+  {OT1}{pplx}{m}{n}{}
+\installfontas{pplr9c}
+  {TS1}{pplx}{m}{n}{}
+
+\installfont{pplrc9e}{pplr8r,pplr8x,patch-pplrc,latinsc,unsetlsc}{t1c}
+  {T1}{pplx}{m}{sc}{}
+\installfont{pplrc9t}{pplr8r,pplr8x,kernoff,fplmr,kernon,patch-pplrc,latinsc,unsetlsc}{ot1c}
+  {OT1}{pplx}{m}{sc}{}
+
+% osf
+
+\resetint{interword}{278}
+
+\installrawfont{pplrij8r}{pplrij8r,8r}{8r}{8r}{pplj}{m}{it}{}
+\installfont{pplri9d}{pplri8r,kernoff,pplri8x,fplmri,kernon,patch-pplri,latin}{t1j}
+  {T1}{pplj}{m}{it}{}
+\installfont{pplri9c}{pplri8r,kernoff,pplri8x,fplmri,kernon,patch-pplri,textcomp}{ts1}
+  {TS1}{pplj}{m}{it}{}
+\installfont{pplri9o}{pplri8r,kernoff,pplri8x,fplmri,kernon,patch-pplri,latin}{ot1ij}
+  {OT1}{pplj}{m}{it}{}
+
+% lf
+
+\installfont{pplri9e}{pplri8r,kernoff,fplmri,kernon,patch-pplri,latin}{t1}
+  {T1}{pplx}{m}{it}{}
+\installfont{pplri9t}{pplri8r,kernoff,fplmri,kernon,patch-pplri,latin}{ot1i}
+  {OT1}{pplx}{m}{it}{}
+\installfontas{pplri9c}
+  {TS1}{pplx}{m}{it}{}
+
+% osf
+
+\resetint{interword}{291}
+
+\installrawfont{pplbj8r}{pplbj8r,8r}{8r}{8r}{pplj}{b}{n}{}
+\installfont{pplb9d}{pplb8r,kernoff,pplb8x,fplmb,kernon,patch-pplb,latin}{t1j}
+  {T1}{pplj}{b}{n}{}
+\installfont{pplb9c}{pplb8r,kernoff,pplb8x,fplmb,kernon,patch-pplb,textcomp}{ts1}
+  {TS1}{pplj}{b}{n}{}
+\installfont{pplb9o}{pplb8r,kernoff,pplb8x,fplmb,kernon,patch-pplb,latin}{ot1j}
+  {OT1}{pplj}{b}{n}{}
+
+\installrawfont{pplbij8r}{pplbij8r,8r}{8r}{8r}{pplj}{b}{it}{}
+\installfont{pplbi9d}{pplbi8r,kernoff,pplbi8x,fplmbi,kernon,patch-pplbi,latin}{t1j}
+  {T1}{pplj}{b}{it}{}
+\installfont{pplbi9c}{pplbi8r,kernoff,pplbi8x,fplmbi,kernon,patch-pplbi,textcomp}{ts1}
+  {TS1}{pplj}{b}{it}{}
+\installfont{pplbi9o}{pplbi8r,kernoff,pplbi8x,fplmbi,kernon,patch-pplbi,latin}{ot1ij}
+  {OT1}{pplj}{b}{it}{}
+
+% lf
+
+\installfont{pplb9e}{pplb8r,kernoff,fplmb,kernon,patch-pplb,latin}{t1}
+  {T1}{pplx}{b}{n}{}
+\installfont{pplb9t}{pplb8r,kernoff,fplmb,unsetgru,kernon,patch-pplb,latin}{ot1}
+  {OT1}{pplx}{b}{n}{}
+\installfontas{pplb9c}  
+  {TS1}{pplx}{b}{n}{}
+
+\installfont{pplbi9e}{pplbi8r,kernoff,fplmbi,kernon,patch-pplbi,latin}{t1}
+  {T1}{pplx}{b}{it}{}
+\installfont{pplbi9t}{pplbi8r,kernoff,fplmbi,unsetgru,kernon,patch-pplbi,latin}{ot1i}
+  {OT1}{pplx}{b}{it}{}
+\installfontas{pplbi9c}
+  {TS1}{pplx}{b}{it}{}
+
+
+
+\endinstallfonts
+\bye

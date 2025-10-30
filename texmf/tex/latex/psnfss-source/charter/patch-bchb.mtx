@@ -1,0 +1,31 @@
+\relax
+\metrics
+\needsfontinstversion{1.926}
+
+\unsetkerns{L}{quoteright,quotedblright}
+\resetkern{V}{a}{-83}
+\resetkern{V}{e}{-83}
+\resetkern{V}{o}{-83}
+\resetkern{Y}{g}{-116}
+\resetkern{Y}{s}{-88}
+\resetkern{e}{v}{-83}
+\resetkern{g}{j}{40}
+
+\resetkern{D}{period}{-19} % 0
+\resetkern{D}{comma}{-19}  % 0
+\resetkern{F}{period}{-50} % -190
+\resetkern{F}{comma}{-48}  %-190
+\resetkern{P}{period}{-77} % -259
+\resetkern{P}{comma}{-75}  % -259
+\resetkern{T}{period}{-62} % -148
+\resetkern{T}{comma}{-60}  % -148
+\resetkern{U}{period}{-18} % 0
+\resetkern{U}{comma}{-16}  % 0
+\resetkern{V}{period}{-68} % -222
+\resetkern{V}{comma}{-66}  % -222
+\resetkern{W}{period}{-52} % -176
+\resetkern{W}{comma}{-50}  % -176
+\resetkern{Y}{period}{-62} % -130
+\resetkern{Y}{comma}{-60}  % -130
+
+\endmetrics

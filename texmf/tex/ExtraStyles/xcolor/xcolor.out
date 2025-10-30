@@ -1,0 +1,61 @@
+\BOOKMARK [1][-]{toc.1}{Contents}{}
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [2][-]{subsection.1.1}{Purpose of this package}{section.1}
+\BOOKMARK [2][-]{subsection.1.2}{Color tints, shades, tones, and complements}{section.1}
+\BOOKMARK [2][-]{subsection.1.3}{Color models}{section.1}
+\BOOKMARK [1][-]{section.2}{The User Interface}{}
+\BOOKMARK [2][-]{subsection.2.1}{Preparation}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Package installation}{subsection.2.1}
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Package options}{subsection.2.1}
+\BOOKMARK [3][-]{subsubsection.2.1.3}{Executing additional initialisation commands}{subsection.2.1}
+\BOOKMARK [2][-]{subsection.2.2}{Color models}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Supported color models}{subsection.2.2}
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Changing the target color model within a document}{subsection.2.2}
+\BOOKMARK [2][-]{subsection.2.3}{Arguments and terminology}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Additional remarks and restrictions on arguments}{subsection.2.3}
+\BOOKMARK [3][-]{subsubsection.2.3.2}{Meaning of standard color expressions}{subsection.2.3}
+\BOOKMARK [3][-]{subsubsection.2.3.3}{Meaning of extended color expressions}{subsection.2.3}
+\BOOKMARK [2][-]{subsection.2.4}{Predefined colors}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.4.1}{Colors that are always available}{subsection.2.4}
+\BOOKMARK [3][-]{subsubsection.2.4.2}{Additional sets of colors}{subsection.2.4}
+\BOOKMARK [2][-]{subsection.2.5}{Color definition}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.5.1}{Ordinary and named colors}{subsection.2.5}
+\BOOKMARK [3][-]{subsubsection.2.5.2}{Color definition in xcolor}{subsection.2.5}
+\BOOKMARK [3][-]{subsubsection.2.5.3}{Defining sets of colors}{subsection.2.5}
+\BOOKMARK [3][-]{subsubsection.2.5.4}{Global color definitions}{subsection.2.5}
+\BOOKMARK [2][-]{subsection.2.6}{Color application}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.6.1}{Using the current color}{subsection.2.6}
+\BOOKMARK [2][-]{subsection.2.7}{Color blending}{section.2}
+\BOOKMARK [2][-]{subsection.2.8}{Color masks and separation}{section.2}
+\BOOKMARK [2][-]{subsection.2.9}{Color series}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.9.1}{Definition of a color series}{subsection.2.9}
+\BOOKMARK [3][-]{subsubsection.2.9.2}{Initialisation of a color series}{subsection.2.9}
+\BOOKMARK [3][-]{subsubsection.2.9.3}{Application of a color series}{subsection.2.9}
+\BOOKMARK [3][-]{subsubsection.2.9.4}{Differences between colors and color series}{subsection.2.9}
+\BOOKMARK [2][-]{subsection.2.10}{Border colors for hyperlinks}{section.2}
+\BOOKMARK [2][-]{subsection.2.11}{Color in tables}{section.2}
+\BOOKMARK [2][-]{subsection.2.12}{Color information}{section.2}
+\BOOKMARK [2][-]{subsection.2.13}{Color conversion}{section.2}
+\BOOKMARK [1][-]{section.3}{Technical Supplement}{}
+\BOOKMARK [2][-]{subsection.3.1}{Color models supported by drivers}{section.3}
+\BOOKMARK [2][-]{subsection.3.2}{Behind the scenes: internal color representation}{section.3}
+\BOOKMARK [2][-]{subsection.3.3}{A remark on accuracy}{section.3}
+\BOOKMARK [1][-]{section.4}{The Formulas}{}
+\BOOKMARK [2][-]{subsection.4.1}{Color mixing}{section.4}
+\BOOKMARK [2][-]{subsection.4.2}{Conversion between integer and real models}{section.4}
+\BOOKMARK [3][-]{subsubsection.4.2.1}{Real to integer conversion}{subsection.4.2}
+\BOOKMARK [3][-]{subsubsection.4.2.2}{Integer to real conversion}{subsection.4.2}
+\BOOKMARK [2][-]{subsection.4.3}{Color conversion and complements}{section.4}
+\BOOKMARK [3][-]{subsubsection.4.3.1}{The rgb model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.2}{The cmy model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.3}{The cmyk model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.4}{The hsb model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.5}{The gray model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.6}{The RGB model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.7}{The HTML model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.8}{The HSB model}{subsection.4.3}
+\BOOKMARK [3][-]{subsubsection.4.3.9}{The Gray model}{subsection.4.3}
+\BOOKMARK [1][-]{section*.44}{References}{}
+\BOOKMARK [1][-]{section*.45}{Acknowledgement}{}
+\BOOKMARK [1][-]{section*.46}{Known Issues}{}
+\BOOKMARK [1][-]{section*.47}{History}{}

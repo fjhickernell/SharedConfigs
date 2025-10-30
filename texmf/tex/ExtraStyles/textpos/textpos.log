@@ -1,0 +1,82 @@
+This is pdfeTeX, Version 3.141592-1.30.4-2.2 (Web2C 7.5.5) (format=latex 2006.2.12)  17 OCT 2007 15:25
+entering extended mode
+**textpos.ins
+(./textpos.ins
+LaTeX2e <2003/12/01>
+Babel <v3.8d> and hyphenation patterns for american, french, german, ngerman, d
+utch, italian, norsk, portuges, spanish, swedish, nohyphenation, loaded.
+(/usr/local/teTeX/share/texmf.tetex/tex/latex/base/docstrip.tex
+\blockLevel=\count79
+\emptyLines=\count80
+\processedLines=\count81
+\commentsRemoved=\count82
+\commentsPassed=\count83
+\codeLinesPassed=\count84
+\TotalprocessedLines=\count85
+\TotalcommentsRemoved=\count86
+\TotalcommentsPassed=\count87
+\TotalcodeLinesPassed=\count88
+\NumberOfFiles=\count89
+\inFile=\read1
+\inputcheck=\read2
+\off@0=\count90
+\off@1=\count91
+\off@2=\count92
+\off@3=\count93
+\off@4=\count94
+\off@5=\count95
+\off@6=\count96
+\off@7=\count97
+\off@8=\count98
+\off@9=\count99
+\off@10=\count100
+\off@11=\count101
+\off@12=\count102
+\off@13=\count103
+\off@14=\count104
+\off@15=\count105
+\@maxfiles=\count106
+\@maxoutfiles=\count107
+
+Utility: `docstrip' 2.5c <2003/09/18>
+English documentation    <1999/03/31>
+
+**********************************************************
+* This program converts documented macro-files into fast *
+* loadable files by stripping off (nearly) all comments! *
+**********************************************************
+
+********************************************************
+* No Configuration file found, using default settings. *
+********************************************************
+
+)
+
+Generating file(s) ./textpos.drv ./textpos.sty ./textpos-example.tex 
+\openout0 = `./textpos.drv'.
+
+\openout1 = `./textpos.sty'.
+
+\openout2 = `./textpos-example.tex'.
+
+
+Processing file textpos.dtx (driver) -> textpos.drv
+                            (package) -> textpos.sty
+                            (example) -> textpos-example.tex
+File textpos.dtx ended by \endinput.
+Lines  processed: 1329
+Comments removed: 895
+Comments  passed: 26
+Codelines passed: 396
+
+ ) 
+Here is how much of TeX's memory you used:
+ 330 strings out of 95138
+ 3409 string characters out of 1183036
+ 2051731 words of memory out of 4506566
+ 3569 multiletter control sequences out of 10000+50000
+ 3640 words of font info for 14 fonts, out of 2000000 for 2000
+ 58 hyphenation exceptions out of 5000
+ 13i,0n,15p,146b,140s stack positions out of 5000i,500n,6000p,200000b,40000s
+
+No pages of output.

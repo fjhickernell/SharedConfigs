@@ -1,0 +1,32 @@
+%Filename: gceurb10.mtx
+%Created using: \pltomtx{eurb10}{eurb10}
+
+% greek capital letters from Euler Bold;
+% unused symbols deleted manually
+
+\relax
+\metrics
+
+\needsfontinstversion{1.801}
+
+%\setdim{designsize}{10.0pt}
+%\setint{italicslant}{0000}
+%\setint{interword}{0333}
+%\setint{stretchword}{0000}
+%\setint{shrinkword}{0000}
+%\setint{xheight}{0486}
+%\setint{quad}{1000}
+%\setint{extraspace}{0000}
+\setrawglyph{Gamma}{eurb10}{10.0pt}{0}{536}{702}{0}{61}
+\setrawglyph{Delta}{eurb10}{10.0pt}{1}{782}{702}{0}{0}
+\setrawglyph{Theta}{eurb10}{10.0pt}{2}{968}{702}{0}{0}
+\setrawglyph{Lambda}{eurb10}{10.0pt}{3}{847}{702}{0}{0}
+\setrawglyph{Xi}{eurb10}{10.0pt}{4}{652}{702}{0}{0}
+\setrawglyph{Pi}{eurb10}{10.0pt}{5}{845}{702}{0}{0}
+\setrawglyph{Sigma}{eurb10}{10.0pt}{6}{712}{702}{0}{0}
+\setrawglyph{Upsilon}{eurb10}{10.0pt}{7}{794}{702}{0}{0}
+\setrawglyph{Phi}{eurb10}{10.0pt}{8}{973}{702}{0}{0}
+\setrawglyph{Psi}{eurb10}{10.0pt}{9}{781}{702}{0}{0}
+\setrawglyph{Omega}{eurb10}{10.0pt}{10}{959}{702}{0}{0}
+
+\endmetrics

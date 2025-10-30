@@ -1,0 +1,256 @@
+body {
+  color: #000;
+  background: white;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+/* Link colours should be specified, since text colour was in <body> */
+a:link { color: rgb(43,43,175); }
+a:visited { color: rgb(43,43,175); }
+a[href]:hover { background: rgb(175,175,43); }
+/*
+a:link    { color: #009; }
+a:active  { color: #00C; }
+a:visited { color: #600; }
+a[href]:hover { background: #FF9; }	/* CSS2 */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Optima, "Gill Sans", gill, sans-serif;
+}
+h1 {
+  background: rgb(175,43,43);
+  /* background: #C33; */
+  padding: 1em;
+  border-style: none;
+  margin-left: -10%;
+  margin-right: -10%;
+  color: #FFF;
+  text-align: right;
+  font: 24pt/30pt;
+}
+h1 a:link { color: #99F; }
+h1 a:visited { color: #99F; }
+h1 a[href]:hover { background: #F43; }
+
+h2 {
+  color: #C33;
+  margin-left: -5%;
+  /* clear: both; -- don't do this, or else initial toc no longer
+                     looks floated */
+}
+
+p.figure {
+  text-align: center;
+}
+
+p.copyright {
+  font-size: x-small;
+}
+
+dt {
+  margin-left: +5%;
+  font-style: italic;
+  margin-top: 0.5ex;
+}
+dd {
+  margin-bottom: 0.5ex;
+}
+
+li {
+  margin-top: 0.5ex;
+  margin-bottom: 0.5ex;
+}
+li.current {
+  font-weight: bold;
+}
+
+img.smallimage {
+  float: right;
+  margin: 24pt;
+}
+
+img.smallimageleft {
+  float: left;
+  margin: 24pt;
+}
+
+pre {
+  margin: +5%;
+  background: #FF9;
+  clear: both;
+}
+
+pre.doc-history {
+  margin-left: 30%;
+  font-family: Optima, Arial, sans-serif;
+  font-size: x-small;
+  background: #EEE;
+}
+
+table {
+  /* background-color: #CCF; */
+  background-color: white;
+}
+td {
+  /* Hmmm, I still get the background showing through... */
+  border-style: none;
+  padding: 4px;
+  margin: 2px;
+}
+/* header can be indiated two ways, either with <th>,
+   or with <tr class='header'>  */
+tr.header {
+  background-color: #C33;
+  color: white;
+}
+th {
+  background-color: #C33;
+  color: white;
+}
+/* Odd and even table rows */
+tr.r0 {
+  background-color: #FBA;
+}
+tr.r1 {
+  background-color: #D99;
+}
+
+q:before { content: "`"; }
+q:after { content: "\'"; }
+/*
+q:before { content: open-quote; }
+q:after { content: close-quote; }
+*/
+
+div.abstract {
+  margin-left: 30%;
+  margin-right: 0%;
+  font-style: oblique;
+  text-align: left;
+}
+div.abstract em { font-style: normal; }
+div.abstract code {
+  font-style: normal;
+  font-size: 80%;
+}
+
+/* TOC element.  Note -5%+35% = 30%, which is the left-margin of the
+   abstract, above. */
+div#toc {
+  float: left;
+  width: 35%;
+  margin: 1em 0pt 0pt -5%;
+  padding: 0;
+  font-size: smaller;
+  text-align: left;
+}
+
+div#toc > ul {
+  padding: 0.5em 0.5em 0.5em 0pt;
+  margin: 0pt;
+  list-style: decimal inside;
+}
+div#toc li {
+  padding: 0pt;
+  padding-left: 1em;
+}
+div#toc li ul {
+  padding-left: 1em;
+  margin-left: 0;
+  font-style: italic;
+}
+div#toc li ul:before {
+    content: "[ ";
+}
+div#toc li ul:after {
+   content: " ]";
+}
+div#toc li li {
+  display: inline;
+  padding-left: 0pt;
+}
+div#toc li li:after {
+  content: "; ";
+}
+/* Avoid displaying the <p> which contains the "Contents" */
+/*
+div#toc>p {
+  display: none;
+}
+   */
+
+div.subtoc {
+  float: right;
+  width: 35%;
+  margin: 0 0 0 0.3em;
+  padding: 0.5em;
+  /* background: rgb(235,200,200); */
+  padding: 0px 0px 0px 0.3em;
+  border-left: solid thin red;
+  font-size: smaller;
+  text-align: left;
+}
+div.subtoc ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+div.subsubtoc {
+  display: none;
+}
+/*
+div.subsubtoc {
+  float: right;
+  width: 35%;
+  margin: 0 0 0 0.3em;
+  padding: 0.5em;
+  background: rgb(255,255,127);
+  font-size: smaller;
+  text-align: left;
+}
+div.subsubtoc p {
+  margin: 0;
+}
+div.subsubtoc ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+div.subsubtoc p {
+  font-weight: bold;
+}
+div.subsubtoc p:after {
+  content: "...";
+}
+div.subsubtoc li:before {
+  content: "...";
+}
+*/
+
+div.signature {
+  font-style: oblique;
+  text-align: right;
+  margin-left: -10%;
+  margin-right: -10%;
+  /* background: #006; */
+  background: #C33;
+  color: #FFF;
+  clear: both;
+
+  padding: 1em;
+  border: none;
+  /*
+  border-width: thin;
+  border-top: ridge;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-color: black;
+  */
+}
+
+div.signature a:link { color: #99F; }
+div.signature a:visited { color: #99F; }
+div.signature a[href]:hover { background: #F43; }

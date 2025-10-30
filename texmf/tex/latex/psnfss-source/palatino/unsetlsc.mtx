@@ -1,0 +1,14 @@
+%% file unsetsclg.mtx
+\relax
+\metrics
+
+\needsfontinstversion{1.801}
+
+\unsetglyph{FFsmall}
+\unsetglyph{FIsmall}
+\unsetglyph{FLsmall}
+\unsetglyph{FFIsmall}
+\unsetglyph{FFLsmall}
+
+\endmetrics
+

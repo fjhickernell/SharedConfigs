@@ -1,0 +1,15 @@
+%Filename: mpsyr.mtx
+
+% This file contains the information about the glyphs for
+% zppler7m and zppleb7m to be taken from Adobe Symbol.
+
+% This file is part of the `mathpple' collection
+
+\relax
+\metrics
+
+\needsfontinstversion{1.801}
+
+\setrawglyph{partialdiff}{psyr}{10pt}{182}{494}{746}{20}{0}
+
+\endmetrics

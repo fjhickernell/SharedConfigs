@@ -1,0 +1,33 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2022.1.3)  21 FEB 2022 06:52
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**FJHDef.tex
+(./FJHDef.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2021-11-22>
+\symGreekLetters=\mathgroup4
+\symUpSfGreekLetters=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \varrho on input line 3.
+\overwdth=\skip47
+
+./FJHDef.tex:55: Undefined control sequence.
+l.55 \DeclareMathOperator
+                         {\success}{succ}
+? 
+./FJHDef.tex:55: Emergency stop.
+l.55 \DeclareMathOperator
+                         {\success}{succ}
+End of file on the terminal!
+
+ 
+Here is how much of TeX's memory you used:
+ 75 strings out of 478353
+ 806 string characters out of 5848087
+ 295989 words of memory out of 5000000
+ 18303 multiletter control sequences out of 15000+600000
+ 403430 words of font info for 27 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 13i,0n,18p,116b,24s stack positions out of 5000i,500n,10000p,200000b,80000s
+./FJHDef.tex:55:  ==> Fatal error occurred, no output PDF file produced!

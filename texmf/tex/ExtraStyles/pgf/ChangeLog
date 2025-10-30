@@ -1,0 +1,103 @@
+2004-07-06 Till Tantau <tantau@users.sourceforge.net>
+
+	Version 0.62:
+	- Fixed problem in xxcolor with option "gray" and xcolor.
+	- Switched to xcolor version 2.00.
+	- Added eofill and eofillstroke commands.
+	- Added option to shadings, so that they are automatically
+	  recalculated upon color changes.
+	- Changed names of example images to start with pgf.
+
+2004-04-07 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.61:
+	- Added \pgfex and \pgfem dimensions.
+	- Fixed bug that causes pgfshade to fail to work if xcolor 
+	  is called with option "gray".
+	- Fixed PostScript code for radial shadings.
+	- xxcolor now works with xcolor 1.10 (and only 1.10).
+
+2004-02-18 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.60:
+	- Replaced some commands for the postscript code by shorter
+	  versions for smaller file size.
+	- Fixed bug in pgfbox command that caused incorrect kerning in
+	  postscript output.
+	- Fixed bug in pgfsys@defineimage that made page inclusion
+	  impossible. 
+	- Fixed bug in pgfshading that did not reset dash patterns in
+	  shadings in the PostScript version. 
+	- Spaces are now allowed inside the pgfpicture environment.
+	- Added \pgfgrid command.
+	
+2004-01-13 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.50:
+	- Switched to version 1.06 of xcolor.
+	- Core pgf no longer relies on xxcolor.
+	- The syntax of the mechanism for choosing alternate images and
+	  shadings is more flexible now. The syntax has been changed
+	  (mainly, you now have to have a dot between the original name and
+	  the alternate extension).
+	- Some xxcolor commands have been removed.
+	
+2003-12-02 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.43:
+	- Fixed \normalcolor, so that it works also in preamble.
+
+2003-11-20 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.42:
+	- Documented masks.
+	- Fixed bug in pgf.sty for nested pictures.
+
+2003-11-18 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.41:
+	- Added masks (not yet documented).
+
+2003-11-12 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.40:
+	- Changed syntax of \pgfdeclareimage. Uses key=value scheme
+	  now. All parameters may now be omitted. 
+	- Added \pgfimage command.
+	- Option for selecting a specific page from an image file.
+	- Fixed bug in xxcolor.sty having to do with \@ifempty command.
+	- Reworked the formatting of the user's guide.
+
+2003-10-29 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.34:
+	- Shadings now work together with color mix-ins.
+	- Shadings can now take color names as parameters.
+	
+2003-10-24 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.33:
+	- Fixed problem with missing \leavevmode in \pgfuseimage.
+	- Reworked code for image inclusion. 
+	- "Draft" option is now supported. Supresses reading of images. 
+	- Added xxcolor package.
+	- pgfpictures will now inherit the color from their surroundings.
+
+2003-10-20 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.32:
+	- Updated installation procedure information.
+
+2003-09-18 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.31:
+	- One parameter for \pgfdeclareimage may now be omitted. It will
+	  be computed automatically.
+	
+2003-08-21 Till Tantau <tantau@cs.tu-berlin.de>
+
+	Version 0.30:
+	- Created ChangeLog
+	- Added pgfshade.sty
+	
+

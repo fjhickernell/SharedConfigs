@@ -1,0 +1,83 @@
+------------------------------------------------------------
+              The virtual mathpple fonts v2.0a
+                       for PSNFSS 8.1
+------------------------------------------------------------
+                                                  2000-05-02
+                                              Walter Schmidt
+                               <walter.schmidt@arcormail.de>
+
+This directory contains the fontinst sources of the virtual
+mathpple fonts for typesetting math with Adobe Palatino.
+
+The `Makefile' must be edited to reflect the directory
+structure of your TeX system and the command to invoke TeX.
+Currently it suits OS/2 with emTeX/TDS.  Targets are:
+
+make tex    
+  runs the master source file fontplcme.tex through TeX and
+  creates the .vpl and .fd files
+
+make metrics
+  creates the .vf and .tfm files
+
+make installfonts     
+  copies all the .vf, .tfm and .fd files to the right
+  directories
+  
+make all 
+  makes all above targets
+  
+make clean, make realclean 
+  cleans up
+  
+------------------------------------------------------------
+                          Changes
+------------------------------------------------------------
+
+Version 2.0a as of 2000-05-02
+
+* This is part of PSNFSS 8.1 now.
+* The distribition includes patched afm's, 
+  with the 1-1 kerns removed.
+* \Re, \Im taken from Euler instead of CM Symbols.  
+* \infty taken from euex10 instead of CM; 
+  as a result, boldface \infty is missing now.
+* Metrics for eurm10 and eurb10 are now taken from the 
+  tfm's, as oposed to afm's, so as to avoid rounding errors.
+
+Version 1.1 (1999-04-20)
+
+* (changes affected the style file only)
+
+Version 1.0 (1999-04-05)
+
+* Comma and period for math are now taken from Palatino, as 
+  opposed to CM Math Italic.
+* Small adjustments to the spacing of a few characters.
+
+Version 0.97 (1999-01-07)
+
+* the first public release
+
+------------------------------------------------------------
+                          Credits
+------------------------------------------------------------
+
+The mathpple fonts are based on fontinst scripts written by
+Aloysius Helminck, which were distributed in conjunction
+with fontinst v1.335, but are no longer available from the
+CTAN.  The main changes with regard to Helminck's model are:
+
+* italic Greek letters from the Euler fonts;
+* \mathcal from CM instead of Zapf Chancery;
+* positioning of math accents substantially improved;
+* improved spacing;
+* cmex9 isn't used any more, because there is no Type1
+  version of this typeface in the AMS distribution.
+
+Special thanks also to Daniel Schlieper, who proposed the
+project, wrote the very first version of the style file
+mathpple.sty, contributed many good ideas and helped me with
+testing.
+
+-- finis

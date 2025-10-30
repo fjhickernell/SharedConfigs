@@ -1,0 +1,11 @@
+%%% This is file `unsetpun.mtx', version <1.0a> 
+%%% 
+
+\relax
+
+\metrics
+
+\unsetglyph{comma}
+\unsetglyph{period}
+
+\endmetrics

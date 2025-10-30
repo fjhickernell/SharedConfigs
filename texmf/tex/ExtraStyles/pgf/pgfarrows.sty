@@ -1,0 +1,470 @@
+\ProvidesPackage{pgfarrows}[2003/07/18 ver 0.3]
+
+% Copyright 2003 by Till Tantau <tantau@cs.tu-berlin.de>.
+%
+% This program can be redistributed and/or modified under the terms
+% of the LaTeX Project Public License Distributed from CTAN
+% archives in directory macros/latex/base/lppl.txt.
+
+\RequirePackage{pgf}
+
+\ProcessOptions
+
+
+% Draw an arrow at the end of the line going from point #1 to point #2
+% with the correct rotation.
+%
+% #1 = a start point an (invisible) line
+% #2 = an end point an (invisible) line
+% #3 = an arrow
+%
+% Example:
+%
+% \pgfputarrow{\pgfxy(0,0)}{\pgfxy(0,1)}{\pgfarrowsingle}
+
+\def\pgfputarrow#1#2#3{% #1 = start, #2 = end, #3 = arrow
+  \pgfsys@openscope%
+  \pgfsys@setdash{}{0}%
+  \pgf@process{#2}%
+  \pgfsys@translate{\pgfget x}{\pgfget y}%
+  \pgf@xa=\pgf@x%
+  \pgf@ya=\pgf@y%
+  \pgf@process{#1}
+  \advance\pgf@xa by-\pgf@x%
+  \advance\pgf@ya by-\pgf@y%
+  \pgf@x=\pgf@xa%
+  \pgf@y=\pgf@ya%
+  \pgfnormalise{}%
+  \pgf@ya=-\pgf@y%
+  \pgfsys@transform{\pgfget{x}}{\pgfget{y}}{\pgfget{ya}}{\pgfget{x}}%
+  {0}{0}%
+  #3%
+  \pgfsys@closescope\ignorespaces}
+
+
+% Setup hooks
+
+\def\pgfstrokehook{\pgfstartarrow\pgfendarrow\ignorespaces}
+
+
+
+% Set arrows to be drawn at start of strokes
+%
+% #1 = An arrow
+%
+% Example:
+%
+% \pgfsetstartarrow{\pgfarrowsingle}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(0,1)}
+
+\def\pgfsetstartarrow#1{%
+  \def\pgfstartarrow{%
+    \pgfsys@openscope%
+    \pgfsys@setdash{}{0}%
+    \pgfsys@translate{\pgfget{aax}}{\pgfget{aay}}%
+    \pgf@x=\pgf@aax%
+    \pgf@y=\pgf@aay%
+    \advance\pgf@x by-\pgf@abx%
+    \advance\pgf@y by-\pgf@aby%
+    \pgfnormalise{}%
+    \pgf@ya=-\pgf@y%
+    \pgfsys@transform{\pgfget{x}}{\pgfget{y}}{\pgfget{ya}}{\pgfget{x}}%
+    {0}{0}%
+    #1%
+    \pgfsys@closescope\ignorespaces}\ignorespaces}
+
+
+% Clear start arrows
+%
+% Example:
+%
+% \pgfsetstartarrow{\pgfarrowsingle}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(0,1)}
+%
+% \pgfclearstartarrow
+% \pgfline{\pgfxy(0,0)}{\pgfxy(0,1)}
+
+\def\pgfclearstartarrow{\def\pgfstartarrow{\ignorespaces}\ignorespaces}
+\pgfclearstartarrow
+
+
+% Set arrows to be drawn at end of strokes
+%
+% #1 = An arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowsingle}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(0,1)}
+
+\def\pgfsetendarrow#1{%
+  \def\pgfendarrow{%
+    \pgfsys@openscope%
+    \pgfsys@setdash{}{0}%
+    \pgfsys@translate{\pgfget{bbx}}{\pgfget{bby}}%
+    \pgf@x=\pgf@bbx%
+    \pgf@y=\pgf@bby%
+    \advance\pgf@x by-\pgf@bax%
+    \advance\pgf@y by-\pgf@bay%
+    \pgfnormalise{}%
+    \pgf@ya=-\pgf@y%
+    \pgfsys@transform{\pgfget{x}}{\pgfget{y}}{\pgfget{ya}}{\pgfget{x}}%
+    {0}{0}%
+    #1%
+    \pgfsys@closescope\ignorespaces}\ignorespaces}
+
+
+% Clear end arrows
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowsingle}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(0,1)}
+%
+% \pgfclearendarrow
+% \pgfline{\pgfxy(0,0)}{\pgfxy(0,1)}
+
+\def\pgfclearendarrow{\def\pgfendarrow{\ignorespaces}\ignorespaces}
+\pgfclearendarrow
+
+
+
+
+% Define an arrow for future use. 
+%
+% #1 = Name of the arrow
+% #2 = lower left corner of bounding box
+% #3 = upper right corner of bounding box
+% #4 = arrow pgf code
+%
+% Note:
+%
+% The arrow will be scaled by the current line width upon use.
+%
+% Example:
+%
+% \pgfdefarrow{myXarrow}{\pgfpoint{-5pt}{-5pt}}{\pgfpoint{5pt}{5pt}}{%
+%  \pgfarrowlinewidthscale{2}
+%  \pgfsetroundcap
+%  \pgfqmoveto{-4}{-4}
+%  \pgfqlineto{4}{4}
+%  \pgfstroke
+%  \pgfqmoveto{4}{-4}
+%  \pgfqlineto{-4}{4}
+%  \pgfstroke}
+
+\def\pgfdefarrow#1#2#3#4{%
+  \pgfdefobject{pgf@#1}{#2}{#3}{\pgfsys@setlinewidth{1}#4}%
+  \expandafter\gdef\csname#1\endcsname{%
+    \pgf@x=\pgf@linewidth%
+    \pgf@y=\pgf@linewidth%
+    \pgfuseobjectmagnify{pgf@#1}\ignorespaces}}
+
+
+% Define an arrow for future use.  No scaling.
+%
+% #1 = Name of the arrow
+% #2 = lower left corner of bounding box
+% #3 = upper right corner of bounding box
+% #4 = arrow pgf code
+%
+% Example:
+%
+% \pgfdefarrowabs{myXarrow}{\pgfpoint{-5pt}{-5pt}}{\pgfpoint{5pt}{5pt}}{%
+%  \pgfarrowlinewidthscale{2}
+%  \pgfsetroundcap
+%  \pgfqmoveto{-4}{-4}
+%  \pgfqlineto{4}{4}
+%  \pgfstroke
+%  \pgfqmoveto{4}{-4}
+%  \pgfqlineto{-4}{4}
+%  \pgfstroke}
+
+\def\pgfdefarrowabs#1#2#3#4{%
+  \pgfdefobject{pgf@#1}{#2}{#3}{\pgfarrowlinewidthscale{1}#4}%
+  \expandafter\gdef\csname#1\endcsname{%
+    \pgfuseobject{pgf@#1}\ignorespaces}
+  }
+
+
+
+% Scale the line width inside an arrow definition. 
+%
+% #1 = Scale, where 1 means 100%
+%
+% Example:
+%
+% \pgfdefarrow{myXarrow}{\pgfpoint{-5pt}{-5pt}}{\pgfpoint{5pt}{5pt}}{%
+%  \pgfarrowlinewidthscale{2}
+%  \pgfsetroundcap
+%  \pgfqmoveto{-4}{-4}
+%  \pgfqlineto{4}{4}
+%  \pgfstroke
+%  \pgfqmoveto{4}{-4}
+%  \pgfqlineto{-4}{4}
+%  \pgfstroke}
+
+\def\pgfarrowlinewidthscale#1{\pgfsys@setlinewidth{#1}\ignorespaces}
+
+
+
+% An arrow similar to the $\to$ arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowto}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowto}{\pgfpoint{-4pt}{-5pt}}{\pgfpoint{2pt}{5pt}}{%
+  \pgfarrowlinewidthscale{0.8}
+  \pgfsetroundcap
+  \pgfqmoveto{-3}{4}
+  \pgfqbezier{-2.75}{2.5}{0}{0.25}{0.75}{0}
+  \pgfstroke
+  \pgfqmoveto{0.75}{0}
+  \pgfqbezier{0}{-0.25}{-2.75}{-2.5}{-3}{-4}
+  \pgfstroke}
+
+
+% A single filled pointed arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowsingle}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowsingle}{\pgfpoint{-8pt}{-5pt}}{\pgfpoint{2pt}{5pt}}{%
+  \pgfqmoveto{1}{0}
+  \pgfqlineto{-7}{4}
+  \pgfqlineto{-4}{0}
+  \pgfqlineto{-7}{-4}
+  \pgffill}
+
+
+% A bar shaped arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowbar}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowbar}{\pgfpoint{-1pt}{-6pt}}{\pgfpoint{1pt}{6pt}}{%
+  \pgfsetbuttcap
+  \pgfqmoveto{0}{-5}
+  \pgfqlineto{0}{5}
+  \pgfqstroke}
+
+
+% A square bracket shaped arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowsquare}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowsquare}{\pgfpoint{-4pt}{-6pt}}{\pgfpoint{1pt}{6pt}}{%
+  \pgfsetbuttcap
+  \pgfsetmiterjoin
+  \pgfqmoveto{-3}{-5}
+  \pgfqlineto{0}{-5}
+  \pgfqlineto{0}{5}
+  \pgfqlineto{-3}{5}
+  \pgfqstroke}
+
+
+% A round bracket shaped arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowround}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowround}{\pgfpoint{-3pt}{-6pt}}{\pgfpoint{2pt}{6pt}}{%
+  \pgfsetbuttcap
+  \pgfqmoveto{-2}{-5}
+  \pgfqbezier{1}{-3}{1}{3}{-2}{5}
+  \pgfqstroke}
+
+
+% A pointed bracket shaped arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowpointed}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowpointed}{\pgfpoint{-6pt}{-6pt}}{\pgfpoint{1pt}{6pt}}{%
+  \pgfqmoveto{-5}{-5}
+  \pgfqlineto{0}{0}
+  \pgfqlineto{-5}{5}
+  \pgfqstroke}
+
+
+
+% A pointed dot shaped arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowdot}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowdot}{\pgfpoint{-7pt}{-4pt}}{\pgfpoint{2pt}{4pt}}{%
+  \pgfsys@translate{-2.5}{0}%
+  \pgfzerocircle{3pt}
+  \pgffillstroke}
+
+
+% A diamond shaped arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowdiamond}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\pgfdefarrow{pgfarrowdiamond}{\pgfpoint{-12pt}{-4pt}}{\pgfpoint{2pt}{4pt}}{%
+  \pgfqmoveto{1}{0}
+  \pgfqlineto{-5}{3}
+  \pgfqlineto{-11}{0}
+  \pgfqlineto{-5}{-3}
+  \pgfclosepath
+  \pgffillstroke}
+
+
+% A circle shaped arrow
+%
+% #1 = radius
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowcircle{2pt}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowcircle#1{%
+  \pgf@xa=#1%
+  \pgf@xb=\pgf@xa%
+  \advance\pgf@xa by-0.5\pgf@linewidth
+  \begin{pgftranslate}{\pgfpoint{-\pgf@xa}{0pt}}%
+    \pgfzerocircle{\pgf@xb}
+    \pgffillstroke
+  \end{pgftranslate}}
+
+
+% A triangle shaped arrow
+%
+% #1 = depth of triangle
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowtriangle{4pt}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowtriangle#1{%
+  \begin{pgfscope}%
+    \pgf@xa=#1%
+    \pgf@ya=0.577\pgf@xa%
+    \advance\pgf@xb by-\pgf@linewidth%
+    \pgfmoveto{\pgfpoint{-\pgf@xa}{-\pgf@ya}}%
+    \pgflineto{\pgfpoint{\pgf@linewidth}{0pt}}%
+    \pgflineto{\pgfpoint{-\pgf@xa}{\pgf@ya}}%
+    \pgfclosepath%
+    \pgffillstroke%
+  \end{pgfscope}}
+
+
+% A pointed bracket shaped arrow of variable size
+%
+% #1 = depth of arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowpointed{3pt}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowlargepointed#1{%
+  \begin{pgfscope}%
+    \pgf@xa=#1%
+    \pgfmoveto{\pgfpoint{-\pgf@xa}{-\pgf@xa}}
+    \pgflineto{\pgforigin}
+    \pgflineto{\pgfpoint{-\pgf@xa}{\pgf@xa}}    
+    \pgfqstroke
+  \end{pgfscope}}
+
+
+
+
+% Arrow manipulators and composers
+
+
+% Swap the direction of the argument
+%
+% #1 = an arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowswap{\pgfarrowsingle}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowswap#1{%
+  \begin{pgfmagnify}{-1}{1}#1\end{pgfmagnify}\ignorespaces}
+
+
+% Combine two arrows
+%
+% #1 = outer arrow type
+% #2 = inner arrow type
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowcombine{\pgfarrowround}{\pgfarrowround}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowcombine#1#2{%
+  \pgfputat{\pgforigin}{#1}%
+  \pgfputat{\pgfpoint{-7\pgf@linewidth}{0pt}}{#2}}
+
+
+% Combine two arrows in a loose way (useful for large arrows)
+%
+% #1 = outer arrow type
+% #2 = inner arrow type
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowcombineloose{\pgfarrowcircle{2pt}}{\pgfarrowcircle{2pt}}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowcombineloose#1#2{%
+  \pgfputat{\pgforigin}{#1}%
+  \pgfputat{\pgfpoint{-14\pgf@linewidth}{0pt}}{#2}}
+
+
+% Double an arrow
+%
+% #1 = an arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowdouble{\pgfarrowsingle}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowdouble#1{\pgfarrowcombine{#1}{#1}}
+
+
+% Triple an arrow
+%
+% #1 = an arrow
+%
+% Example:
+%
+% \pgfsetendarrow{\pgfarrowtriple{\pgfarrowsingle}}
+% \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+
+\def\pgfarrowtriple#1{%
+  \pgfputat{\pgforigin}{#1}%
+  \pgfputat{\pgfpoint{-7\pgf@linewidth}{0pt}}{#1}%
+  \pgfputat{\pgfpoint{-14\pgf@linewidth}{0pt}}{#1}}
+
+
+
+
+\endinput

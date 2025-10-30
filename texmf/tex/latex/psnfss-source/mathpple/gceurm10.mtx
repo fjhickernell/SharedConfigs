@@ -1,0 +1,33 @@
+%Filename: gceurm10.mtx
+%Created using: \pltomtx{eurm10}{eurm10}
+
+% greek capital letters from Euler Roman;
+% unused symbols deleted manually
+
+
+\relax
+\metrics
+
+\needsfontinstversion{1.801}
+
+%\setdim{designsize}{10.0pt}
+%\setint{italicslant}{0000}
+%\setint{interword}{0333}
+%\setint{stretchword}{0000}
+%\setint{shrinkword}{0000}
+%\setint{xheight}{0459}
+%\setint{quad}{1000}
+%\setint{extraspace}{0000}
+\setrawglyph{Gamma}{eurm10}{10.0pt}{0}{428}{691}{0}{111}
+\setrawglyph{Delta}{eurm10}{10.0pt}{1}{713}{691}{0}{0}
+\setrawglyph{Theta}{eurm10}{10.0pt}{2}{757}{691}{0}{0}
+\setrawglyph{Lambda}{eurm10}{10.0pt}{3}{770}{691}{0}{0}
+\setrawglyph{Xi}{eurm10}{10.0pt}{4}{596}{691}{0}{0}
+\setrawglyph{Pi}{eurm10}{10.0pt}{5}{722}{691}{0}{0}
+\setrawglyph{Sigma}{eurm10}{10.0pt}{6}{646}{691}{0}{0}
+\setrawglyph{Upsilon}{eurm10}{10.0pt}{7}{716}{691}{0}{0}
+\setrawglyph{Phi}{eurm10}{10.0pt}{8}{833}{691}{0}{0}
+\setrawglyph{Psi}{eurm10}{10.0pt}{9}{703}{691}{0}{0}
+\setrawglyph{Omega}{eurm10}{10.0pt}{10}{875}{691}{0}{0}
+
+\endmetrics

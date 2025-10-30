@@ -1,0 +1,11 @@
+Installing pgf:
+---------------
+
+For the impatient: 
+- Put *.sty somewhere where TeX can find them.
+- Install the xcolor package version 2.00.
+
+Long version:
+In the user's guide, which you find in the file
+pgfuserguide.pdf, you will find a detailed explanation on how
+to install pgf.

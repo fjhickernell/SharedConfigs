@@ -1,0 +1,4 @@
+\def\latin_shapes{
+   \latin_shape{i}{i}{i}{it}{\_textcomp_true }
+}
+

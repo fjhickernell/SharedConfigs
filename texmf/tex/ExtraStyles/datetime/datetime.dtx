@@ -1,0 +1,4121 @@
+%\iffalse
+% datetime.dtx generated using makedtx version 0.94b (c) Nicola Talbot
+% Command line args:
+%   -src "(.+)\.(sty)=>\1.\2"
+%   -src "(.+)\.(def)=>\1.\2"
+%   -doc "manual.tex"
+%   -author "Nicola Talbot"
+%   -dir "source"
+%   datetime
+% Created on 2007/8/20 15:37
+%\fi
+%\iffalse
+%<*package>
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%</package>
+%\fi
+% \iffalse
+% Doc-Source file to use with LaTeX2e
+% Copyright (C) 2007 Nicola Talbot, all rights reserved.
+% \fi
+% \iffalse
+%<*driver>
+\documentclass{ltxdoc}
+
+\usepackage[colorlinks,
+            bookmarks,
+            bookmarksopen,
+            pdfauthor={N.L.C. Talbot},
+            pdftitle={datetime.sty: A Date and Time Package},
+            pdfkeywords={date,time,LaTeX}]{hyperref}
+
+\CheckSum{4044}
+
+\newcommand{\sty}[1]{\textsf{#1}}
+\begin{document}
+\DocInput{datetime.dtx}
+\end{document}
+%</driver>
+%\fi
+%\RecordChanges
+%\OnlyDescription
+%
+%\title{datetime.sty v2.55: Formatting Current Date and 
+%Time}
+% \author{Nicola L. C. Talbot\\[10pt]
+% School of Computing Sciences\\
+% University of East Anglia\\
+% Norwich.  NR4 7TJ.\\
+% United Kingdom.\\
+% \url{http://theoval.cmp.uea.ac.uk/~nlct/}}
+% \date{20 Aug 2007}
+% \maketitle
+% \tableofcontents
+% \section{Introduction}
+%\changes{1.0}{2000/08/08}{First release}
+%\changes{1.01}{2000/09/18}{Documentation added}
+%The \sty{datetime} package is a \LaTeXe\ package that 
+%provides various different formats for \cs{today},
+%and provides commands for displaying the current time.  
+%If you only want the 
+%time commands but not the date changing commands, you can pass 
+%the option \texttt{nodate} to the package.
+%\changes{2.3}{2004/05/01}{nodate package option added}
+%
+%\changes{2.41}{2004/10/22}{split package into two files: 
+%datetime.sty and fmtcount.sty}
+%Since version 2.4, the \sty{datetime} package has been 
+%separated into two packages: \sty{datetime} and 
+%\sty{fmtcount}.  When I originally created this package, 
+%I defined the commands, \cs{ordinal} etc which could be used 
+%in the definition of \cs{today}.  Since then, I have extended 
+%the number of commands available that can be used to display the 
+%value of a \LaTeX\ counter, however it seems more appropriate to 
+%define all these counter-related commands in a separate package. 
+%The \sty{fmtcount} package is now distributed separately 
+%from the \sty{datetime} package, and will also need to 
+%be installed.
+%
+%\changes{2.42}{2004/11/01}{made package compatible with babel}
+%As from version 2.42, the \sty{datetime} package is now 
+%compatible with \sty{babel}, however you must load the 
+%\sty{datetime} package \emph{after} the \sty{babel} package.  
+%For example:
+%\begin{verbatim}
+%\usepackage[francais]{babel}
+%\usepackage{datetime}
+%\end{verbatim}
+%
+% \section{Date Declarations}
+% There are various declarations that change the effect of 
+%\cs{today}.  The change can be localised by placing the 
+%declaration within a group.
+%
+% \vspace{10pt}\noindent  \meta{Day} \meta{Month} \meta{Year} formats:\\
+% \noindent\DescribeMacro{\longdate}
+% The declaration \verb"\longdate" will redefine 
+%\verb"\today" to produce the current date displayed in the form 
+%Wednesday 8\textsuperscript{th} March, 2000
+% if the package option \texttt{dayofweek} is used, or 
+%8\textsuperscript{th} March, 2000 if the package option
+% \texttt{nodayofweek} is used.\\
+% \DescribeMacro{\shortdate}
+% The declaration \verb"\shortdate" will redefine 
+%\verb"\today" to produce the current date displayed in the form 
+%Wed 8\textsuperscript{th} Mar, 2000 if the package option 
+%\texttt{dayofweek} is used, or 8\textsuperscript{th} Mar, 2000 
+%if the package option \texttt{nodayofweek} is used.\\
+% \DescribeMacro{\ddmmyyyydate}
+% The declaration \verb"\ddmmyyyydate" will redefine 
+%\verb"\today" to produce
+% the current date displayed in the form 08/03/2000\\
+% \DescribeMacro{\dmyyyydate}
+% The declaration \verb"\dmyyyydate" will redefine 
+%\verb"\today" to produce
+% the current date displayed in the form 8/3/2000\\
+% \DescribeMacro{\ddmmyydate}
+% The declaration \verb"\ddmmyydate" will redefine 
+%\verb"\today" to produce
+% the current date displayed in the form 08/03/00\\
+% \DescribeMacro{\dmyydate}
+% The declaration \verb"\dmyydate" will redefine 
+%\verb"\today" to produce
+% the current date displayed in the form 8/3/00\\
+% \DescribeMacro{\textdate}
+% The declaration \verb"\textdate" will redefine 
+%\verb"\today" to produce the current date displayed in the form: 
+%Wednesday the Eighth of March, Two Thousand if the package option 
+%\texttt{dayofweek} is used, or Eighth of March, Two Thousand if 
+%the package option \texttt{nodayofweek} is used. Note that 
+%\verb"\textdate" is defined for use with English, it won't
+%look right if it is used when another language has been
+%selected\footnote{in fact, you may get an error from the
+%\sty{fmtcount} package if you are using a language that it
+%doesn't support.}.  If you want to define a similar command for
+%another language, you will first need to check that the
+%\sty{fmtcount} package supports that language.
+%
+% \vspace{10pt}\noindent  \meta{Month} \meta{Day} \meta{Year} formats:\\
+% \DescribeMacro{\usdate}
+% The declaration \verb"\usdate" will redefine 
+%\verb"\today" to produce the current date displayed in the form 
+%March 8, 2000. (As \TeX\ and \LaTeX\ do by default.)\\
+% \DescribeMacro{\mmddyyyydate}
+% The declaration \verb"\mmddyyyydate" will redefine 
+%\verb"\today" to produce the current date displayed in the form 
+%03/08/2000\\
+% \DescribeMacro{\mdyyyydate}
+% The declaration \verb"\mdyyyydate" will redefine 
+%\verb"\today" to produce the current date displayed in the form 
+%3/8/2000\\
+% \DescribeMacro{\mmddyydate}
+% The declaration \verb"\mmddyydate" will redefine 
+%\verb"\today" to produce the current date displayed in the form 
+%03/08/00\\
+% \DescribeMacro{\mdyydate}
+% The declaration \verb"\mdyydate" will redefine 
+%\verb"\today" to produce the current date displayed in the form 
+%3/8/00
+%
+%\vspace{10pt}\noindent In addition, the declarations \verb"\date"\meta{lang} are 
+%available for all languages defined either by
+%calling \sty{babel} prior to \sty{datetime} or by 
+%passing the language name as an option to \sty{datetime}.
+%See~\autoref{sec:newdate} if you want to define your own customised date format.
+%
+%As from version 2.43, the numerical date formats (such as 
+%\verb"\ddmmyyyydate") use the command
+%\verb"\dateseparator" to separate the numbers.  So, for example, 
+%if you want to hyphens instead of slashes, you can do:
+%\begin{verbatim}
+%\renewcommand{\dateseparator}{-}
+%\end{verbatim}
+%
+% \section{Time Commands}
+%\DescribeMacro{\currenttime}
+% The current time is displayed using the command 
+%\verb"\currenttime".
+%\DescribeMacro{\settimeformat}
+% The format can be changed using the declaration
+%\cs{settimeformat}\marg{style}, where \meta{style} is the name of the
+%format\footnote{Note that the commands \cs{xxivtime}, \cs{ampmtime}
+%and \cs{oclock} are still available, \cs{settimeformat} redefines
+%\cs{currenttime} to the command given by placing a backslash in front
+%of \meta{style}.  So \cs{settimeformat\{xxivtime\}} sets
+%\cs{currenttime} to \cs{xxivtime} and so on.}.  Available formats
+%are:
+%\begin{description}
+%\item[xxivtime] Twenty-four hour time in the form 22:28 (Default)
+%\item[ampmtime] Twelve hour time in the form 10:28pm
+%\item[oclock] Displays the current time as a string, e.g.\ 
+%Twenty-Eight minutes past Ten in the afternoon.
+%\end{description}
+%
+% \DescribeMacro{\newtimeformat}
+% New time formats can be defined using the command:\\[5pt]
+%\cs{newtimeformat}\marg{name}\marg{format}\\[5pt]
+% where \meta{name} is the name of the new format (used in 
+%\cs{settimeformat}), and \meta{format} is how to format the 
+%time.  Within \meta{format} you can use the counters 
+%\texttt{HOUR} (number of hours after midnight), \texttt{MINUTE} 
+%(number of minutes past the hour), \texttt{HOURXII} (number of 
+%hours after midnight/midday), \texttt{TOHOUR} (the next hour) and
+%\texttt{TOMINUTE} (number of minutes to the next hour), and the
+%corresponding commands: \cs{THEHOUR}, \cs{THEMINUTE},
+%\cs{THEHOURXII}, \cs{THETOHOUR} and \cs{THETOMINUTE}.
+%
+%For example, to define a new time format that uses a dot instead of a
+%colon:
+%\begin{verbatim}
+%\newtimeformat{dottime}{\twodigit{\THEHOUR}.\twodigit{\THEMINUTE}}
+%\end{verbatim}
+%You then need to switch to this new format before you can use it:
+%\begin{verbatim}
+%\settimeformat{dottime}
+%\currenttime
+%\end{verbatim}
+%
+%As from version 2.43, if you only want to change the separator, 
+%you can simply redefine \cs{timeseparator}
+%instead of defining a new time format.  For example:
+%\begin{verbatim}
+%\renewcommand{\timeseparator}{.}
+%\end{verbatim}
+%The \texttt{xxivtime} format will now work like the \texttt{dottime} 
+%format defined above.
+%
+% \section{Formating Dates}
+% \DescribeMacro{\pdfdate}
+% The command \verb"\pdfdate"\footnote{thanks to Ulrich Dirr for 
+%asking about this} prints the date in the format required for
+% PDF files, e.g.\ if the date is 1 May 2004 and time is
+% 22:02, \verb"\pdfdate" will print 20040501220200.  The reason 
+%this date format is separate from all the others is because the 
+%other form doesn't get properly expanded by PDF\TeX. (This 
+%command is defined regardless of whether the package option 
+%\texttt{nodate} is called.)
+%Example:
+%\begin{verbatim}
+%\pdfinfo{
+%   /Author (Me)
+%   /Title (A Sample Document)
+%   /CreationDate (D:20040501215500)
+%   /ModDate (D:\pdfdate)
+%}
+%\end{verbatim}
+% 
+% There are two commands that print the name of the current
+% month:
+% \DescribeMacro{\monthname}
+% \verb"\monthname" prints the current month name in full, 
+%e.g.\ August, and 
+% \DescribeMacro{\shortmonthname}
+% \verb"\shortmonthname" prints the abbreviated month name, 
+%e.g.\ Aug.  Both \verb"\monthname" and 
+%\verb"\shortmonthname" take an optional argument (a number from 
+%1 to 12) if the name of a specific month is required.  For 
+%example, \verb"\monthname[6]" will produced the output: June.
+%
+% The day of the week is computed using the algorithm documented at
+% \url{http://userpages.wittenburg.edu/bshelburne/Comp150/DayOfWeek.htm}.
+% This algorithm works for any date between 1\textsuperscript{st} 
+%Jan, 1901 and 31\textsuperscript{st} Dec, 2099.
+% The following macros display the day of week for a given date:
+%
+% \noindent\DescribeMacro{\dayofweekname}
+%\cs{dayofweekname}\marg{day}\marg{month}\marg{year} prints the
+% day of week for the specified date.  For example, 
+%\verb"\dayofweekname{31}{10}{2002}"
+% will produce the output: Thursday.\\
+% \DescribeMacro{\shortdayofweekname}
+%\cs{shortdayofweekname}\meta{day}\marg{month}\marg{year} prints the 
+%abbreviated name for the
+% day of week for the specified date.  For example\\
+% \verb"\shortdayofweekname{31}{10}{2002}"\\
+% will produce the output: Thu.
+%
+% \noindent\DescribeMacro{\ifshowdow}
+% The \TeX\ conditional \verb"\ifshowdow" can be used to determine
+% whether or not the option \texttt{dayofweek} has been passed to 
+%the package.
+% For example:
+%\begin{verbatim}
+%\ifshowdow\dayofweekname{31}{10}{2002} \fi
+%\end{verbatim}
+% will only display the day of week if the \texttt{dayofweek} 
+%option was passed to \sty{datetime}.
+% Alternatively, you can use David~Carlisle's \sty{ifthen} 
+%package:
+%\begin{verbatim}
+%\ifthenelse{\boolean{showdow}}{\dayofweekname{31}{10}{2002} }{}
+%\end{verbatim}
+%
+%\noindent\DescribeMacro{\ordinaldate}
+%The command \cs{ordinaldate}\marg{number}
+%displays \meta{number} as a date-type ordinal.  If the
+%current language is English, this will simply pass
+%the argument to \cs{ordinalnum} (defined in the 
+%\sty{fmtcount} package), 
+%if the current language is Breton, Welsh or French, a superscript 
+%will only be added if \meta{number} is 1, otherwise only 
+%\meta{number} will be displayed.
+%
+% \DescribeMacro{\formatdate}
+%The macro
+%\cs{formatdate}\marg{day}\marg{month}\marg{year}\footnote{Note the
+%name change since version 1.1.  The command name was changed from
+%\cs{thedate} to \cs{formatdate} to avoid a name clash when using the
+%\sty{seminar} class file.} formats the specified date according to
+%the current format of \cs{today}\footnote{To be more precise,
+%\cs{today} is defined to be
+%\cs{formatdate\{\cs{day}\}\{\cs{month}\}\{\cs{year}\}} where
+%\cs{longdate} etc change the definition of \cs{formatdate}}.
+%(Arguments must all be integers.) For example, in combination with
+%\verb"\longdate", the command
+%\begin{verbatim}
+%\formatdate{27}{9}{2004}
+%\end{verbatim}
+%will produce the output: Monday 27\textsuperscript{th} September,
+%2004.
+%
+% \DescribeMacro{\twodigit}
+% You can ensure that a number is displayed with at least two 
+%digits by using the command 
+%\cs{twodigit}\marg{num}.
+% This is of use if you want to define your own date or time 
+%formats.
+%
+% \section{Defining New Date Formats}\label{sec:newdate}
+%
+% \DescribeMacro{\newdateformat}
+% New date formats can be defined using the command:\\[5pt]
+% \cs{newdateformat}\marg{name}\marg{format}\\[5pt]
+% where \meta{name} is the name of the new format, and
+% \meta{format} is how to format the date.  Within the
+% argument \meta{format} you can use the commands \cs{THEDAY}, 
+%\cs{THEMONTH}
+% and \cs{THEYEAR} to represent the relevant day, month and 
+%year, or you can use the counters 
+% \texttt{DAY}, \texttt{MONTH} and \texttt{YEAR} if you want to 
+%use \cs{ordinal} etc. Once you have defined the
+% new date format, you can then switch to it using the declaration 
+%\verb'\'\meta{name}
+% (i.e.\ the name you specified preceded by a backslash), and 
+% subsequent calls to \cs{today} and \cs{formatdate} will 
+%use your new format.
+%
+% For example, suppose you want to define a new date format called,
+% say, \texttt{mydate}, that will typeset the date in the form: 
+%8-3-2002,
+% then you can do:
+%\begin{verbatim}
+%\newdateformat{mydate}{\THEDAY-\THEMONTH-\THEYEAR}
+%\end{verbatim}
+%\cs{newdateformat} will then define the declaration 
+%\cs{mydate} which can be used to
+% switch to your new format. In the following example, 
+% two new date formats are defined, and they are then
+% selected to produce two different formats for the current date:
+%\begin{verbatim}
+%\newdateformat{dashdate}{%
+%\twodigit{\THEDAY}-\twodigit{\THEMONTH}-\THEYEAR}
+%
+%\newdateformat{usvardate}{%
+%\monthname[\THEMONTH] \ordinal{DAY}, \THEYEAR}
+%
+%Dash: \dashdate\today.
+%US: \usvardate\today.
+%\end{verbatim}
+%If the current date is, say, 8th March, 2002, the above code will 
+% produce the following:
+%Dash: 08-03-2002.
+%US: March 8\textsuperscript{th}, 2002.
+%
+%Note that \cs{THEDAY} etc and \texttt{DAY} etc have no real 
+%meaning outside \cs{newdateformat} (this is why they 
+%are in uppercase). Incidentally, the \texttt{dashdate} format
+%is not really necessary, as you can achieve this format
+%using:
+%\begin{verbatim}
+%\renewcommand{\dateseparator}{-}
+%\ddmmyyyydate
+%\end{verbatim}
+%
+%Another note: in the above code, \cs{ordinal} was
+%used to illustrate the use of the \texttt{DAY} counter.  It
+%is better to use \cs{ordinaldate} instead:
+%\begin{verbatim}
+%\newdateformat{usvardate}{%
+%\monthname[\THEMONTH] \ordinaldate{\THEDAY}, \THEYEAR}
+%\end{verbatim}
+%
+%\section{Saving Dates}
+%
+%It is possible to save a date for later use using the command:
+%\footnote{Thanks to Denis Bitouz\'e for asking about this}\par
+%\DescribeMacro{\newdate}
+%\cs{newdate}\marg{name}\marg{day}\marg{month}\marg{year}
+%
+%This date can later be displayed using the same format as that
+%used by \cs{formatdate} using the command:\par
+%\DescribeMacro{\displaydate}
+%\cs{displaydate}\marg{name}
+%
+%Individual elements of the date can be extracted using the
+%commands:\par
+%\DescribeMacro{\getdateday}
+%\cs{getdateday}\marg{name}\par
+%\DescribeMacro{\getdatemonth}
+%\cs{getdatemonth}\marg{name}\par
+%\DescribeMacro{\getdateyear}
+%\cs{getdateyear}\marg{name}
+%
+%\section{Predefined Names}
+%
+%The following commands are defined by the \sty{datetime} 
+%package:
+%
+%\begin{tabular}{ll}
+%\bfseries Command Name & \bfseries Default Value\\
+%\cs{dateseparator} & \verb'/'\\
+%\cs{timeseparator} & \verb':'\\
+%\cs{amname} & \texttt{am}\\
+%\cs{pmname} & \texttt{pm}\\
+%\cs{amorpmname} & \cs{amname} if morning, otherwise \cs{pmname}\\
+%\cs{amstring} & \texttt{in the morning}\\
+%\cs{pmstring} & \texttt{in the afternoon}\\
+%\cs{amorpmstring} & \cs{amstring} if morning, otherwise 
+%\cs{pmstring}\\
+%\cs{halfpast} & \texttt{Half past}\\
+%\cs{quarterpast} & \texttt{Quarter past}\\
+%\cs{quarterto} & \texttt{Quarter to}\\
+%\cs{noon} & \texttt{Noon}\\
+%\cs{midnight} & \texttt{Midnight}\\
+%\cs{oclockstring} & \texttt{O'Clock}
+%\end{tabular}
+%
+% \section{Package Options}
+%
+% The following options may be passed to this package:\\[10pt]
+% \begin{tabular}{@{\ttfamily}ll}
+% long     & make \cs{today} produce long date\\
+% short    & make \cs{today} produce short date\\
+% ddmmyyyy & make \cs{today} produce DD/MM/YYYY date\\
+% dmyyyy   & make \cs{today} produce D/M/YYYY date\\
+% ddmmyy   & make \cs{today} produce DD/MM/YY date\\
+% dmyy     & make \cs{today} produce D/M/YY date\\
+% text     & make \cs{today} produce text date\\
+% us       & make \cs{today} produce US style date\\
+% mmddyyyy & make \cs{today} produce MM/DD/YYYY date\\
+% mdyyyy   & make \cs{today} produce M/D/YYYY date\\
+% mmddyy   & make \cs{today} produce MM/DD/YY date\\
+% mdyy     & make \cs{today} produce M/D/YY date\\
+% raise    & make ordinal st,nd,rd,th appear as superscript\\
+% level    & make ordinal st,nd,rd,th appear level with rest of 
+%text\\
+% dayofweek & make the day of week appear for \cs{longdate}, 
+%\cs{shortdate} \\
+%           & or \cs{textdate}\\
+% nodayofweek & don't display the day of week.\\
+% 24hr     & make \cs{currenttime} produce \texttt{xxivtime} 
+%format\\
+% 12hr     & make \cs{currenttime} produce \texttt{ampmtime} 
+%format\\
+% oclock   & make \cs{currenttime} produce \texttt{oclock} 
+%format\\
+% nodate   & Don't redefine \cs{today} or define the month or 
+%day of week commands\\
+%          & (useful if you only want the time commands or 
+%\verb"\pdfdate")
+% \end{tabular}
+%
+%The default options are: \texttt{long}, \texttt{raise}, 
+%\texttt{dayofweek} and \texttt{24hr}.
+%
+%\section{Multilingual Support}
+%
+%If you want to use the \sty{babel} package, you must load
+%it \emph{before} you load the \sty{datetime} package. This
+%is because the \sty{babel} \cs{date}\meta{lang} commands
+%redefine \cs{today}, whereas the \sty{datetime} package
+%redefines \cs{today} to use \cs{formatdate}, and the
+%date formatting commands (such as \cs{longdate}) redefine
+%\cs{formatdate} rather than \cs{today}. This ensures 
+%consistent formatting of the dates whether you use \cs{today} or
+%\cs{formatdate}.  Therefore, the \sty{datetime} package
+%has to redefine all the \cs{date}\meta{lang} commands accordingly.
+%Thus the multilingual date support is mostly limited to that provided
+%by \sty{babel}. Additional support, such as the day of
+%week names and abbreviations, are only supplied for those
+%languages that I know, or that other people have been able to supply
+%for me.
+%
+%
+%The commands \cs{monthname} and \cs{shortmonthname},
+%will produce the month name in the current language.
+%If you want the month name in a specific language, you
+%can use the command \cs{monthname}\meta{lang}.
+%For example, \verb"\monthnamefrench[6]" will produce the output: 
+%juin. Note that \cs{textdate} is formatted for English dates,
+%and won't look right if used with another language setting. If you
+%want a textual date, the \sty{fmtcount} package (which is 
+%loaded by \sty{datetime}) defines some commands which display
+%a number or ordinal as a word, but it only has very limited 
+%multilingual support. See the \sty{fmtcount} documentation 
+%for further details.
+%
+%There is currently only \emph{limited} multilingual support for 
+%\cs{dayofweekname} and \cs{shortdayofweekname} (just
+%English, French, Portuguese, Spanish and German\footnote{thanks
+%to Uwe Bieling for supplying the German names}). You can add support 
+%for other languages by defining the commands
+%\cs{dayofweeknameid}\meta{lang} and 
+%\cs{shortdayofweeknameid}\meta{lang}. Note that these
+%commands only take \emph{one} argument which should be
+%a number from 1 to 7 indicating the day of the week.
+%
+%You can use the following as templates.  Replace
+%\texttt{english} with the name of your language (as given
+%by \cs{languagename}) and replace \texttt{Sunday}
+%etc as appropriate:
+%\begin{verbatim}
+%\providecommand*{\dayofweeknameidenglish}[1]{%
+%\ifcase#1\relax
+%\or Sunday%
+%\or Monday%
+%\or Tuesday%
+%\or Wednesday%
+%\or Thursday%
+%\or Friday%
+%\or Saturday%
+%\fi}
+%                                                          
+%\providecommand*{\shortdayofweeknameidenglish}[1]{%
+%\ifcase#1\relax
+%\or Sun%
+%\or Mon%
+%\or Tue%
+%\or Wed%
+%\or Thu%
+%\or Fri%
+%\or Sat%
+%\fi}
+%\end{verbatim}
+%If you want them added to future versions of 
+%\sty{datetime}, please email me the code.
+%
+%\section{Configuration File}
+%
+%As from Version 2.4, the \sty{datetime} package will read in settings
+%from the configuration file \texttt{datetime.cfg}, if it exists,
+%which will override the default package options.  For example,
+%suppose you prefer a short date without the day of week by default,
+%you will need to create a file called \texttt{datetime.cfg} that
+%contains the line:
+%\begin{verbatim}
+%\shortdate\showdowfalse
+%\end{verbatim}
+%The file \texttt{datetime.cfg} should then go somewhere on the 
+%\TeX\ path.  Now all you need to do is:
+%\begin{verbatim}
+%\usepackage{datetime}
+%\end{verbatim}
+%without having to specify the \texttt{short} and 
+%\texttt{nodayofweek} options.
+%
+%You can also use this file to define and set your own date 
+%styles.  For example, you could create
+%a configuration file that has the following lines:
+%\begin{verbatim}
+%\newdateformat{dashdate}{\twodigit{\THEDAY}-\twodigit{\THEMONTH}-\THEYEAR}
+%\dashdate
+%\end{verbatim}
+%Whenever you use the \sty{datetime} package, it will now 
+%use this format by default.
+%
+%\section{LaTeX2HTML styles}
+%
+%\changes{2.43}{2005/02/25}{Added LaTeX2HTML support}%
+%\changes{2.44}{2005/03/03}{Fixed minor bugs in Perl scripts}
+%Version 2.43 and above of the \sty{datetime} bundle 
+%supplies the LaTeX2HTML style file \texttt{datetime.perl}.  
+%This file should be placed in a 
+%directory searched by LaTeX2HTML.  The following limitations 
+%apply to the LaTeX2HTML styles:
+%
+%\begin{itemize}
+%\item The configuration file \texttt{datetime.cfg}
+%is currently ignored. (This is because
+%I can't work out the correct code to do this.  If you
+%know how to do this, please let me know.)  You can however
+%do:
+%\begin{verbatim}
+%\usepackage{datetime}
+%\html{\input{datetime.cfg}}
+%\end{verbatim}
+%This, I agree, is an unpleasant cludge.
+%
+%\item The commands \cs{monthname}\meta{language} are not 
+%implemented.
+%
+%\item Some of the languages are not implemented.
+%
+%\item The package option \texttt{nodate} is not implemented.
+%
+%\end{itemize}
+%
+%\section{Troubleshooting}
+%
+%There is a \sty{datetime} FAQ available at:
+%\url{http://theoval.cmp.uea.ac.uk/~nlct/latex/packages/faq/}
+%
+%
+%
+%\StopEventually{}
+%\section{The Code}
+%\iffalse
+%    \begin{macrocode}
+%<*datetime.sty>
+%    \end{macrocode}
+%\fi
+%\subsection{datetime.sty}
+% This section documents the code for \texttt{datetime.sty}
+%    \begin{macrocode}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{datetime}[2007/08/20 v2.55 Date Time Package]
+%    \end{macrocode}
+%\texttt{fmtcount.sty} needs to be loaded here as it defines the 
+% command \cs{fmtord} which may be redefined later:
+%    \begin{macrocode}
+\RequirePackage{fmtcount}
+%    \end{macrocode}
+%\begin{macro}{\if@dtl@nodate}
+% Define a new conditional \cs{if@dt@nodate}.  If it is true, 
+% \cs{today} will not be redefined, nor will
+% \cs{monthname}, \cs{shortmonthname}, \cs{dayofweek} and 
+% \cs{shortdayofweek} be defined.
+% Set it to false.
+%    \begin{macrocode}
+\newif\if@dt@nodate
+\@dt@nodatefalse
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\dateseparator}
+% Define the character used to separate the numbers in the formats 
+% defined by \cs{ddmmyyyy} etc
+%\changes{2.43}{2005/02/25}{new}
+%    \begin{macrocode}
+\newcommand{\dateseparator}{/}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\if@dt@multilingual}
+% Define switch to determine whether to enable multilingual support.
+% This check to see if babel package is
+% loaded instead of testing 'languagename (following suggestions on
+% comp.text.tex)
+%\changes{v2.49}{5 Dec 2006}{checks if babel package has been loaded}
+% Note that babel must be loaded \emph{before} datetime, otherwise
+% it will change the definitions of \cs{date}\meta{lang}.
+%\changes{2.55}{2007/08/20}{fixed bug preventing multilingual support}
+%    \begin{macrocode}
+\newif\if@dt@multilingual
+\@ifpackageloaded{babel}{%
+\@dt@multilingualtrue}{%
+\@ifpackageloaded{ngerman}{%
+\@dt@multilingualtrue}{\@dt@multilingualfalse}}
+%    \end{macrocode}
+%\end{macro}
+% Define the \cs{ordinaldate}\meta{language} macros. These are 
+% needed because some
+% languages only use an ordinal for the first day of
+% the month (such as french). This isn't really needed
+% here, but the LaTeX2HTML style file needs \cs{ordinaldate}.
+%\begin{macro}{\ordinaldateenglish}
+% English version:
+%    \begin{macrocode}
+\newcommand*{\ordinaldateenglish}[1]{\ordinalnum{#1}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ordinaldatewelsh}
+% Welsh version:
+%    \begin{macrocode}
+\newcommand*{\ordinaldatewelsh}[1]{%
+#1\ifnum#1=1\/\textsuperscript{a\~n}\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ordinaldatebreton}
+% Breton version:
+%    \begin{macrocode}
+\newcommand*{\ordinaldatebreton}[1]{%
+#1\ifnum#1=1\/\textsuperscript{a\~n}\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ordinaldatefrench}
+% French:
+%    \begin{macrocode}
+\newcommand*{\ordinaldatefrench}[1]{%
+#1\ifnum#1=1\ier\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ordinaldate}
+% If |\ordinaldate|\meta{language} is not defined, then just display
+% the number.
+%\changes{2.45}{2005/05/23}{new}
+%    \begin{macrocode}
+\newcommand*{\ordinaldate}[1]{%
+\if@dt@multilingual
+\@ifundefined{ordinaldate\languagename}{#1}{%
+\csname ordinaldate\languagename\endcsname{#1}}%
+\else
+\ordinalnum{#1}%
+\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ier}
+% In case \verb|\ier| hasn't been defined:%
+%\changes{v2.47}{27 Oct 2005}{defined if it doesn't 
+% already exist}
+%    \begin{macrocode}
+\providecommand*{\ier}{\textsuperscript{er}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ifshowdow}
+% Now define the declarations that redefine |\formatdate| as they
+% are used by the package options. Need a conditional to determine
+% whether or not to show the day of week name.
+%    \begin{macrocode}
+\newif\ifshowdow
+%    \end{macrocode}
+%\end{macro}
+%\changes{1.1}{2002/04/20}{\cs{thedate} added}
+%\begin{macro}{\formatdate}
+% Initially |\formatdate| does nothing. It will be redefined later.
+%\changes{2.0}{2002/10/30}{changes \cs{thedate} to \cs{formatdate}
+% to avoid name conflict with other packages/class files.}
+%    \begin{macrocode}
+\providecommand*{\formatdate}[3]{}
+%    \end{macrocode}
+%\end{macro}
+% Provide counters to store the specified date:
+%    \begin{macrocode}
+\newcount\@day
+\newcount\@month
+\newcount\@year
+%    \end{macrocode}
+%\begin{macro}{\longdate}
+% Long date format. (This is the default in the absense of package
+% options, babel and datetime.cfg settings.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\longdate}{%
+\renewcommand*{\formatdate}[3]{%
+\ifshowdow\dayofweekname{##1}{##2}{##3} \fi
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\ordinaldate{\the\@day}\ \monthname[\@month], \the\@year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\shortdate}
+% Abbreviated version of above
+%    \begin{macrocode}
+\DeclareRobustCommand*{\shortdate}{%
+\renewcommand*{\formatdate}[3]{%
+\ifshowdow\shortdayofweekname{##1}{##2}{##3} \fi
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\ordinaldate{\the\@day}\ \shortmonthname[\@month], \the\@year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\twodigit}
+% Define |\twodigit| to display a number as two digits. \LaTeX\
+% already defines the internal command |\two@digits|, but need
+% a command that can be used in |\newdateformat| in the document.
+%\changes{2.2}{2004/04/27}{new}
+%    \begin{macrocode}
+\let\twodigit\two@digits
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ddmmyyyydate}
+% Day/month/year format. (Day and month displayed as two digits,
+% year displayed as is.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\ddmmyyyydate}{%
+\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\twodigit\@day\dateseparator \twodigit\@month\dateseparator 
+\the\@year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\dmyyyydate}
+% Day/month/year format. (Numbers all displayed as is.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\dmyyyydate}{%
+\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\the\@day\dateseparator \the\@month\dateseparator \the\@year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ddmmyydate}
+% Day/month/year format. (All numbers displayed as two digits.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\ddmmyydate}{\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\twodigit\@day\dateseparator \twodigit\@month\dateseparator 
+\twodigit\@dtctr}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\dmyydate}
+% Day/month/year format. (Day and month displayed as is, year 
+% abbreviated to two digits.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\dmyydate}{\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\the\@day\dateseparator \the\@month\dateseparator \twodigit\@dtctr}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\textdate}
+% Full textual date (English).
+%    \begin{macrocode}
+\DeclareRobustCommand*{\textdate}{%
+\renewcommand*{\formatdate}[3]{%
+\ifshowdow\dayofweekname{##1}{##2}{##3} the \fi
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\Ordinalstringnum{\@day}\ of \monthname[\@month], 
+\Numberstringnum{\@year}%
+}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\usdate}
+% US format (as per original definition of |\today|)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\usdate}{%
+\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\monthname[\@month]\ \the\@day, \the\@year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\mmddyyyydate}
+% Month/day/year format. (Month and day displayed as two digits,
+% year displayed as is.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\mmddyyyydate}{%
+\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\twodigit\@month\dateseparator \twodigit\@day\dateseparator 
+\the\@year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\mdyyyydate}
+% Month/day/year format. (All numbers displayed as is.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\mdyyyydate}{%
+\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\the\@month\dateseparator \the\@day\dateseparator \the\@year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\mmddyydate}
+% Month/day/year format. (All numbers displayed with two digits.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\mmddyydate}{\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\twodigit\@month\dateseparator \twodigit\@day\dateseparator 
+\twodigit\@dtctr}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\mdyydate}
+% Month/day/year format. (Month and day displayed as is, year 
+% abbreviated to two digits.)
+%    \begin{macrocode}
+\DeclareRobustCommand*{\mdyydate}{\renewcommand*{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\the\@month\dateseparator \the\@day\dateseparator \twodigit\@dtctr}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\newdate}
+% Define commands to save dates
+% and later format them. Store a given date:
+%\changes{2.45}{2005/05/01}{new}
+%    \begin{macrocode}
+\newcommand*{\newdate}[4]{%
+\@ifundefined{date@#1@y}{%
+\@namedef{date@#1@d}{#2}%
+\@namedef{date@#1@m}{#3}%
+\@namedef{date@#1@y}{#4}}{%
+\PackageError{datetime}{Date `#1' already defined}{}}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\getdateyear}
+% Display year from previously stored date
+%    \begin{macrocode}
+\newcommand*{\getdateyear}[1]{%
+\@ifundefined{date@#1@y}{%
+\PackageError{datetime}{Date `#1' not defined}{}}{%
+\csname date@#1@y\endcsname}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\getdatemonth}
+% Display month from previously stored date
+%    \begin{macrocode}
+\newcommand*{\getdatemonth}[1]{%
+\@ifundefined{date@#1@m}{%
+\PackageError{datetime}{Date `#1' not defined}{}}{%
+\csname date@#1@m\endcsname}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\getdateday}
+% Display day from previously stored date
+%    \begin{macrocode}
+\newcommand{\getdateday}[1]{%
+\@ifundefined{date@#1@d}{%
+\PackageError{datetime}{Date `#1' not defined}{}}{%
+\csname date@#1@d\endcsname}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\displaydate}
+% Display a previously stored date using current date format
+%    \begin{macrocode}
+\newcommand*{\displaydate}[1]{%
+\@ifundefined{date@#1@y}{%
+\PackageError{datetime}{Date `#1' not defined}{}}{%
+\formatdate{\csname date@#1@d\endcsname}{%
+\csname date@#1@m\endcsname}{%
+\csname date@#1@y\endcsname}}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\currenttime}
+% (New to v2.3) Define |\currenttime| which will print the
+% time according to the current format. Set it to 24hr time by default
+%    \begin{macrocode}
+\DeclareRobustCommand*{\currenttime}{\xxivtime}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\timeseparator}
+%\changes{2.43}{2005/02/25}{new}
+% Define separator for numerical times:
+%    \begin{macrocode}
+\newcommand*{\timeseparator}{:}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\settimeformat}
+% Switch to specified time format:
+%\changes{2.3}{2004/05/01}{new}
+%    \begin{macrocode}
+\providecommand*{\settimeformat}[1]{%
+\DeclareRobustCommand*\currenttime{\csname#1\endcsname}}
+%    \end{macrocode}
+%\end{macro}
+% Set defaults:
+%    \begin{macrocode}
+\longdate
+\showdowtrue
+%    \end{macrocode}
+% Load in specifications from configuration file:
+%\changes{2.4}{2004/09/25}{added provision for configuration file
+%datetime.cfg}
+%    \begin{macrocode}
+\InputIfFileExists{datetime.cfg}{\PackageInfo{datetime}{%
+Loading local datetime configurations}}{%
+\PackageInfo{datetime}{No datetime.cfg file found, using default
+settings}}
+%    \end{macrocode}
+% Specify the package options, specify default options and process
+%    \begin{macrocode}
+\RequirePackage{fmtcount}
+\DeclareOption{long}{\longdate}
+\DeclareOption{short}{\shortdate}
+\DeclareOption{ddmmyyyy}{\ddmmyyyydate}
+\DeclareOption{dmyyyy}{\dmyyyydate}
+\DeclareOption{ddmmyy}{\ddmmyydate}
+\DeclareOption{dmyy}{\dmyydate}
+\DeclareOption{text}{\textdate}
+\DeclareOption{us}{\usdate}
+\DeclareOption{mmddyyyy}{\mmddyyyydate}
+\DeclareOption{mdyyyy}{\mdyyyydate}
+\DeclareOption{mmddyy}{\mmddyydate}
+\DeclareOption{mdyy}{\mdyydate}
+\DeclareOption{level}{\fmtcountsetoptions{fmtord=level}}
+\DeclareOption{raise}{\fmtcountsetoptions{fmtord=raise}}
+\DeclareOption{dayofweek}{\showdowtrue}
+\DeclareOption{nodayofweek}{\showdowfalse}
+\DeclareOption{nodate}{\@dt@nodatetrue}
+\DeclareOption{24hr}{\settimeformat{xxivtime}}
+\DeclareOption{12hr}{\settimeformat{ampmtime}}
+\DeclareOption{oclock}{\settimeformat{oclock}}
+%    \end{macrocode}
+% Multilingual support. These package options shouldn't really be
+% needed if babel has already been loaded.
+%    \begin{macrocode}
+\DeclareOption{austrian}{\input{dt-austrian.def}}
+\DeclareOption{bahasa}{\input{dt-bahasa.def}}
+\DeclareOption{basque}{\input{dt-basque.def}}
+\DeclareOption{breton}{\input{dt-breton.def}}
+\DeclareOption{bulgarian}{\input{dt-bulgarian.def}}
+\DeclareOption{catalan}{\input{dt-catalan.def}}
+\DeclareOption{croatian}{\input{dt-croatian.def}}
+\DeclareOption{czech}{\input{dt-czech.def}}
+\DeclareOption{danish}{\input{dt-danish.def}}
+\DeclareOption{dutch}{\input{dt-dutch.def}}
+\DeclareOption{esperanto}{\input{dt-esperanto.def}}
+\DeclareOption{estonian}{\input{dt-estonian.def}}
+\DeclareOption{finnish}{\input{dt-finnish.def}}
+\DeclareOption{french}{\input{dt-french.def}}
+\DeclareOption{galician}{\input{dt-galician.def}}
+\DeclareOption{german}{\input{dt-german.def}}
+\DeclareOption{greek}{\input{dt-greek.def}}
+\DeclareOption{hebrew}{\input{dt-hebrew.def}}
+\DeclareOption{icelandic}{\input{dt-icelandic.def}}
+\DeclareOption{irish}{\input{dt-irish.def}}
+\DeclareOption{italian}{\input{dt-italian.def}}
+\DeclareOption{latin}{\input{dt-latin.def}}
+\DeclareOption{lsorbian}{\input{dt-lsorbian.def}}
+\DeclareOption{magyar}{\input{dt-magyar.def}}
+\DeclareOption{naustrian}{\input{dt-naustrian.def}}
+\DeclareOption{ngerman}{\input{dt-ngerman.def}}
+\DeclareOption{norsk}{\input{dt-norsk.def}}
+\DeclareOption{polish}{\input{dt-polish.def}}
+\DeclareOption{portuges}{\input{dt-portuges.def}}
+\DeclareOption{romanian}{\input{dt-romanian.def}}
+\DeclareOption{russian}{\input{dt-russian.def}}
+\DeclareOption{samin}{\input{dt-samin.def}}
+\DeclareOption{scottish}{\input{dt-scottish.def}}
+\DeclareOption{serbian}{\input{dt-serbian.def}}
+\DeclareOption{slovak}{\input{dt-slovak.def}}
+\DeclareOption{slovene}{\input{dt-slovene.def}}
+\DeclareOption{spanish}{\input{dt-spanish.def}}
+\DeclareOption{swedish}{\input{dt-swedish.def}}
+\DeclareOption{turkish}{\input{dt-turkish.def}}
+\DeclareOption{ukraineb}{\input{dt-ukraineb.def}}
+\DeclareOption{usorbian}{\input{dt-usorbian.def}}
+\DeclareOption{welsh}{\input{dt-welsh.def}}
+%    \end{macrocode}
+% Process package options
+%    \begin{macrocode}
+\ProcessOptions
+%    \end{macrocode}
+% Need ifthen package for conditional stuff.
+%    \begin{macrocode}
+\RequirePackage{ifthen}
+%    \end{macrocode}
+% \subsubsection{Date Macros}
+% Define the macro that prints the month name.
+% (Only define this command if @dt@nodate is false)
+%    \begin{macrocode}
+\if@dt@nodate
+%    \end{macrocode}
+% The |nodate| option was used, so just print informative message,
+% and do nothing else.
+%    \begin{macrocode}
+\PackageInfo{datetime}{option "nodate" used, so not defining 
+\string\monthname}
+\else
+%    \end{macrocode}
+%\begin{macro}{\monthnameenglish}
+%    \begin{macrocode}
+\providecommand*{\monthnameenglish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month 
+numbers should go from 1 (January) to 12 (December)}%
+\or January%
+\or February%
+\or March%
+\or April%
+\or May%
+\or June%
+\or July%
+\or August%
+\or September%
+\or October%
+\or November%
+\or December%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (January) to 12 (December)}%
+\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\monthname}
+%Define \verb|\monthname| to be language dependent. If there
+%is no \verb|\monthname|\meta{language}, defaults to English.
+%    \begin{macrocode}
+\newcommand*{\monthname}[1][\month]{%
+\if@dt@multilingual
+\@ifundefined{monthname\languagename}{%
+\PackageWarning{datetime}{No month names provided for language
+'\languagename'}%
+\monthnameenglish[#1]}{\csname monthname\languagename\endcsname[#1]}%
+\else
+\monthnameenglish[#1]%
+\fi}
+%    \end{macrocode}
+%\end{macro}
+% End of |\if@dt@nodate| else part:
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+% Define the macro that prints the abbreviated month name
+% (Again, only do this if @dt@nodate is false)
+%    \begin{macrocode}
+\if@dt@nodate
+%    \end{macrocode}
+% The |nodate| option was used, so just print informative message,
+% and do nothing else.
+%    \begin{macrocode}
+\PackageInfo{datetime}{option "nodate" used, so not defining 
+\protect\shortmonthname}
+\else
+%    \end{macrocode}
+%\begin{macro}{\shortmonthnameenglish}
+%\changes{2.1}{2003/12/17}{fixed bug producing an error message
+% in December}
+%    \begin{macrocode}
+\providecommand*{\shortmonthnameenglish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month 
+numbers should go from 1 (jan) to 12 (dec)}%
+\or Jan%
+\or Feb%
+\or Mar%
+\or Apr%
+\or May%
+\or Jun%
+\or Jul%
+\or Aug%
+\or Sept%
+\or Oct%
+\or Nov%
+\or Dec%
+\else%
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month 
+numbers should go from 1 (jan) to 12 (dec)}%
+\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\shortmonthname}
+%Define \verb|\shortmonthname| to be language dependent. If there
+%is no \verb|\shortmonthname|\meta{language}, defaults to English.
+%    \begin{macrocode}
+\newcommand*{\shortmonthname}[1][\month]{%
+\if@dt@multilingual
+\@ifundefined{shortmonthname\languagename}{%
+\PackageWarning{datetime}{No abbreviated month name defined for
+language '\languagename', using full version instead}%
+\monthname[#1]}{%
+\csname shortmonthname\languagename\endcsname[#1]}%
+\else
+\shortmonthnameenglish[#1]%
+\fi}
+%    \end{macrocode}
+%\end{macro}
+% End of |\if@dt@nodate| else part:
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+% Define macros needed to compute the weekday
+% (Again, only do this if @dt@nodate is false)
+%\begin{macro}{\ifleapyear}
+% Need to define |\ifleapyear| regardless of @dt@nodate otherwise \LaTeX\ won't
+% match |\ifleapyear| with |\fi|
+%    \begin{macrocode}
+\newif\ifleapyear
+%    \end{macrocode}
+%\end{macro}
+% Define temporary counter for arithmetic.
+%    \begin{macrocode}
+\newcount\@dtctr
+%    \end{macrocode}
+% If nodate, add a reminder in the log file that \verb|\dayofweek|
+% is not defined.
+%    \begin{macrocode}
+\if@dt@nodate
+\PackageInfo{datetime}{option "nodate" used, so not defining 
+\string\dayofweek \space or \string\shortdayofweek}
+\else
+%    \end{macrocode}
+% Using the algorithm documented at
+% http://userpages.wittenberg.edu/bshelburne/Comp150/DayofWeek.htm
+% Syntax: \verb|testifleapyear{|\meta{year}\verb|}| sets 
+% conditional \verb|\ifleapyear|.
+%    \begin{macrocode}
+\providecommand*{\testifleapyear}[1]{%
+\leapyearfalse
+\@year=#1\relax
+\@dtctr=\@year
+\@modulo{\@dtctr}{400}%
+\ifnum\@dtctr=0\relax
+\leapyeartrue %         year mod 400 = 0 => leap year
+\else
+\@dtctr=\@year
+\@modulo{\@dtctr}{100}%
+\ifnum\@dtctr=0\relax
+\leapyearfalse %        year mod 100 = 0 && year mod 400 != 0 => not a leap year
+\else
+\@dtctr=\@year
+\@modulo{\@dtctr}{4}%
+\ifnum\@dtctr=0\relax
+\leapyeartrue %         year mod 4 = 0 && year mod 100 != 0 => leap year
+\fi
+\fi
+\fi
+}
+%    \end{macrocode}
+%\begin{macro}{\dayofyear}
+% Count register in which to store the day of the year.
+%    \begin{macrocode}
+\newcount\dayofyear
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\computedayofyear}
+% \cs{computedayofyear}\marg{day}\marg{month}\marg{year}\par
+% Computes the day of year. Result will be stored in \verb|\dayofyear|
+%    \begin{macrocode}
+\providecommand*{\computedayofyear}[3]{%
+\testifleapyear{#3}%
+\dayofyear=0\relax
+\@day=#1\relax \@month=#2\relax \@year=#3\relax
+\ifcase\@month
+\or
+\or \advance\dayofyear by 31\relax
+\or \advance\dayofyear by 59\relax
+\or \advance\dayofyear by 90\relax
+\or \advance\dayofyear by 120\relax
+\or \advance\dayofyear by 151\relax
+\or \advance\dayofyear by 181\relax
+\or \advance\dayofyear by 212\relax
+\or \advance\dayofyear by 243\relax
+\or \advance\dayofyear by 273\relax
+\or \advance\dayofyear by 304\relax
+\or \advance\dayofyear by 334\relax
+\else
+\PackageError{datetime}{Invalid month number}{The second argument to 
+\string\computedayofyear \space should lie in the range 1-12}%
+\fi
+\ifnum\@month>2\relax
+\ifleapyear\advance\dayofyear by 1\relax\fi
+\fi
+\advance\dayofyear by \@day\relax
+}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\dayofweek}
+% Count register in which to store the day of the week.
+%    \begin{macrocode}
+\newcount\dayofweek
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\computedayofweek}
+% \cs{computedayofweek}\marg{day}\marg{month}\marg{year}\par
+% Computes the day of week index. The result is stored in 
+% |\dayofweek|.
+%    \begin{macrocode}
+\providecommand*{\computedayofweek}[3]{%
+\computedayofyear{#1}{#2}{#3}%
+\@dtctr=#3\relax
+\advance\@dtctr by -1901\relax
+\@modulo{\@dtctr}{28}%
+\dayofweek=\@dtctr
+\divide\dayofweek by 4\relax
+\advance\dayofweek by \@dtctr
+\advance\dayofweek by 2\relax
+\@modulo{\dayofweek}{7}%
+\advance\dayofweek by \dayofyear
+\advance\dayofweek by -1\relax
+\@modulo{\dayofweek}{7}%
+\advance\dayofweek by 1\relax}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\dayofweeknameidenglish}
+% Given the day of week index, print associated the English name.
+%    \begin{macrocode}
+\providecommand*{\dayofweeknameidenglish}[1]{%
+\ifcase#1\relax
+\or Sunday%
+\or Monday%
+\or Tuesday%
+\or Wednesday%
+\or Thursday%
+\or Friday%
+\or Saturday%
+\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\dayofweeknameid}
+% Given the day of week index, print the associated name in the
+% current language. If there is none defined for that language
+% default to English.
+%    \begin{macrocode}
+\providecommand*{\dayofweeknameid}[1]{%
+\if@dt@multilingual
+\@ifundefined{dayofweeknameid\languagename}{%
+\ifthenelse{\equal{\languagename}{nohyphenation}}{}{%
+\PackageWarning{datetime}{No week day names defined for language 
+'\languagename', defaulting to English}}%
+\dayofweeknameidenglish{#1}}{%
+\csname dayofweeknameid\languagename\endcsname{#1}}%
+\else
+\dayofweeknameidenglish{#1}%
+\fi
+}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\dayofweekname}
+% Print the day of week name for the specified date.
+%    \begin{macrocode}
+\providecommand*{\dayofweekname}[3]{%
+\computedayofweek{#1}{#2}{#3}%
+\dayofweeknameid{\dayofweek}%
+}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\thisdayofweekname}
+% Print today's day of week name.
+%    \begin{macrocode}
+\providecommand*{\thisdayofweekname}{%
+\dayofweekname{\day}{\month}{\year}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\shortdayofweeknameidenglish}
+% As before, but for abbreviated day of week name. English version:
+%    \begin{macrocode}
+\providecommand*{\shortdayofweeknameidenglish}[1]{%
+\ifcase#1\relax
+\or Sun%
+\or Mon%
+\or Tue%
+\or Wed%
+\or Thu%
+\or Fri%
+\or Sat%
+\fi}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\shortdayofweekname}
+% Language dependant version:
+%    \begin{macrocode}
+\providecommand*{\shortdayofweekname}[3]{%
+\computedayofweek{#1}{#2}{#3}%
+\if@dt@multilingual
+\@ifundefined{shortdayofweeknameid\languagename}{%
+\ifthenelse{\equal{\languagename}{nohyphenation}}{}{%
+\PackageWarning{datetime}{No abbreviated week day names defined for 
+language '\languagename', defaulting to long version}}%
+\dayofweeknameid{\dayofweek}}{%
+\csname shortdayofweeknameid\languagename\endcsname\dayofweek}%
+\else
+\shortdayofweeknameidenglish{\dayofweek}%
+\fi
+}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\thisshortdayofweekname}
+% Today's week day name, abbreviated:
+%    \begin{macrocode}
+\providecommand*{\thisshortdayofweekname}{%
+\dayofweekname{\day}{\month}{\year}}
+%    \end{macrocode}
+%\end{macro}
+% End of |\if@dt@nodate| else part.
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%\begin{macro}{\today}
+% Redefine |\today| so that it uses |\formatdate|.
+% (Only do this if @dt@nodate is false)
+%\changes{2.46}{2005/09/30}{defined using \cs{DeclareRobustCommand}}
+%\changes{2.41}{2004/10/22}{defined using \cs{providecommand}}
+%    \begin{macrocode}
+\if@dt@nodate
+\else
+\DeclareRobustCommand*{\today}{\formatdate{\day}{\month}{\year}}
+\fi
+%    \end{macrocode}
+%\end{macro}
+%Check to see if babel package has redefined |\today|.
+%\changes{2.53}{11 June 2007}{added check for \cs{dateUKenglish} and 
+%\cs{dateUSenglish}}
+%\changes{2.54}{15 June 2007}{added check for \cs{datebritish}}
+%    \begin{macrocode}
+\if@dt@nodate
+\else
+\@ifundefined{dateenglish}{}{\let\dateenglish\longdate}
+\@ifundefined{dateUKenglish}{}{\input{dt-UKenglish.def}}
+\@ifundefined{dateUSenglish}{}{\input{dt-USenglish.def}}
+\@ifundefined{datebritish}{}{\input{dt-british.def}}
+\@ifundefined{dateaustrian}{}{\input{dt-austrian.def}}
+\@ifundefined{datebahasa}{}{\input{dt-bahasa.def}}
+\@ifundefined{datebasque}{}{\input{dt-basque.def}}
+\@ifundefined{datebreton}{}{\input{dt-breton.def}}
+\@ifundefined{datebulgarian}{}{\input{dt-bulgarian.def}}
+\@ifundefined{datecatalan}{}{\input{dt-catalan.def}}
+\@ifundefined{datecroatian}{}{\input{dt-croatian.def}}
+\@ifundefined{dateczech}{}{\input{dt-czech.def}}
+\@ifundefined{datedanish}{}{\input{dt-danish.def}}
+\@ifundefined{datedutch}{}{\input{dt-dutch.def}}
+\@ifundefined{dateesperanto}{}{\input{dt-esperanto.def}}
+\@ifundefined{dateestonian}{}{\input{dt-estonian.def}}
+\@ifundefined{datefinnish}{}{\input{dt-finnish.def}}
+\@ifundefined{datefrench}{}{\input{dt-french.def}}
+\@ifundefined{dategalician}{}{\input{dt-galician.def}}
+\@ifundefined{dategerman}{}{\input{dt-german.def}}
+\@ifundefined{dategreek}{}{\input{dt-greek.def}}
+\@ifundefined{datehebrew}{}{\input{dt-hebrew.def}}
+\@ifundefined{dateicelandic}{}{\input{dt-icelandic.def}}
+\@ifundefined{dateirish}{}{\input{dt-irish.def}}
+\@ifundefined{dateitalian}{}{\input{dt-italian.def}}
+\@ifundefined{datelatin}{}{\input{dt-latin.def}}
+\@ifundefined{datelsorbian}{}{\input{dt-lsorbian.def}}
+\@ifundefined{datemagyar}{}{\input{dt-magyar.def}}
+\@ifundefined{datenaustrian}{}{\input{dt-naustrian.def}}
+\@ifundefined{datengerman}{}{\input{dt-ngerman.def}}
+\@ifundefined{datenorsk}{}{\input{dt-norsk.def}}
+\@ifundefined{datepolish}{}{\input{dt-polish.def}}
+\@ifundefined{dateportuges}{}{\input{dt-portuges.def}}
+\@ifundefined{dateromanian}{}{\input{dt-romanian.def}}
+\@ifundefined{daterussian}{}{\input{dt-russian.def}}
+\@ifundefined{datesamin}{}{\input{dt-samin.def}}
+\@ifundefined{datescottish}{}{\input{dt-scottish.def}}
+\@ifundefined{dateserbian}{}{\input{dt-serbian.def}}
+\@ifundefined{dateslovak}{}{\input{dt-slovak.def}}
+\@ifundefined{dateslovene}{}{\input{dt-slovene.def}}
+\@ifundefined{datespanish}{}{\input{dt-spanish.def}}
+\@ifundefined{dateswedish}{}{\input{dt-swedish.def}}
+\@ifundefined{dateturkish}{}{\input{dt-turkish.def}}
+\@ifundefined{dateukraineb}{}{\input{dt-ukraineb.def}}
+\@ifundefined{dateusorbian}{}{\input{dt-usorbian.def}}
+\@ifundefined{datewelsh}{}{\input{dt-welsh.def}}
+\fi
+%    \end{macrocode}
+%
+% Define |\newdateformat| which defines a declaration that redefines |\formatdate| so that
+% it uses |\dateformat|.  |\dateformat| takes four arguments, the first defines the format
+% the last three arguments are the three arguments that effectively get passed to |\formatdate|.
+% |\dateformat| sets |\@day|, |\@month| and |\@year|.  |\c@DAY|, |\c@MONTH| and |\c@YEAR| 
+% are set as synonims for |\@day|, |\@month| and |\@year|, to that the uses can use the counters
+% |DAY|, |MONTH| and |YEAR| as part of the format.
+%    \begin{macrocode}
+\if@dt@nodate
+\PackageInfo{datetime}{option "nodate" used, so not 
+defining \string\newdateformat}
+\else
+%    \end{macrocode}
+% The commands |\THEDAY|, |\THEMONTH| and |\THEYEAR| should only be
+% used in the argument to |\newdateformat|. This is done partly to
+% assist the \LaTeX2HTML version.
+%    \begin{macrocode}
+\providecommand*\THEDAY{\the\@day}
+\providecommand*\THEMONTH{\the\@month}
+\providecommand*\THEYEAR{\the\@year}
+%    \end{macrocode}
+% Simulate a \LaTeX\ counter.
+%    \begin{macrocode}
+\let\c@DAY=\@day
+\let\c@MONTH=\@month
+\let\c@YEAR=\@year
+%    \end{macrocode}
+%\begin{macro}{\dateformat}
+% Format the given date in the given format.
+%    \begin{macrocode}
+\providecommand*{\dateformat}[4]{%
+\@day=#2\relax\@month=#3\relax\@year=#4\relax#1}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\newdateformat}
+% Provide a means to define a new date format.
+%\changes{2.2}{2004/04/27}{new}
+%    \begin{macrocode}
+\providecommand{\newdateformat}[2]{%
+\@ifundefined{#1}{%
+\expandafter\DeclareRobustCommand\csname#1\endcsname{%
+\renewcommand{\formatdate}{\dateformat{#2}}}}{%
+\PackageError{datetime}{Can't create new date format, command 
+\textbackslash#1 already defined}{You will need to 
+give your new date format a different name}}}
+%    \end{macrocode}
+%\end{macro}
+% End of |\if@no@date| else part:
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
+% \subsubsection{Time Macros}
+% Define a command to create a new time format, similar to the new 
+% date format. Again this is done in a way that makes it easier to
+% code the \LaTeX2HTML version.
+%    \begin{macrocode}
+\newcount\c@HOUR
+\newcount\c@HOURXII
+\newcount\c@MINUTE
+\newcount\c@TOHOUR
+\newcount\c@TOMINUTE
+%    \end{macrocode}
+% These commands should only be used in |\newtimeformat|.
+%    \begin{macrocode}
+\def\THEHOUR{\the\c@HOUR}
+\def\THEHOURXII{\the\c@HOURXII}
+\def\THEMINUTE{\the\c@MINUTE}
+\def\THETOHOUR{\the\c@TOHOUR}
+\def\THETOMINUTE{\the\c@TOMINUTE}
+%    \end{macrocode}
+%\begin{macro}{\newtimeformat}
+% Provide a means to define a new time format.
+%\changes{2.3}{2004/05/01}{new}
+%    \begin{macrocode}
+\providecommand*{\newtimeformat}[2]{%
+\@ifundefined{#1}{%
+\expandafter\def\csname#1\endcsname{%
+\c@HOUR=\time%
+\divide\c@HOUR by 60\relax
+\c@HOURXII=\c@HOUR
+\ifnum\c@HOURXII>12
+\advance\c@HOURXII by -12\relax
+\fi
+\c@MINUTE=\time%
+\@modulo{\c@MINUTE}{60}%
+\c@TOHOUR=\c@HOURXII
+\advance\c@TOHOUR by 1\relax
+\@modulo{\c@TOHOUR}{12}%
+\c@TOMINUTE=\c@MINUTE
+\advance\c@TOMINUTE by -60\relax
+\multiply\c@TOMINUTE by -1\relax
+#2\relax
+}}{%
+\PackageError{datetime}{Command \textbackslash#1  already defined}{%
+You can't create a new time format called "#1" as the command 
+\textbackslash#1 already exists}}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\xxivtime}
+% Define commands to print the current time. Twenty-four hour time:
+%    \begin{macrocode}
+\newtimeformat{xxivtime}{%
+\twodigit\THEHOUR\timeseparator\twodigit\THEMINUTE}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\ampmtime}
+% 12-hour time:
+%\changes{2.3}{2004/05/01}{fixed minor bug}
+%\changes{2.51}{2007/01/30}{fixed bug between midnight and 1am}
+%    \begin{macrocode}
+\newtimeformat{ampmtime}{%
+\ifthenelse{\value{HOUR}=0}{12}{\THEHOURXII}\timeseparator
+\twodigit\THEMINUTE
+\ifthenelse{\value{HOUR}<12}{\amname}{%
+\ifthenelse{\time=720}{ \noon}{\pmname}}}
+%    \end{macrocode}
+%\end{macro}
+% Textual time:
+%\begin{macro}{\hourstring}
+% \cs{hourstring}\marg{count} will print |\midnight| if 
+% \meta{count} is 0, otherwise will do \cs{Numberstring}\marg{count}.
+%    \begin{macrocode}
+\newcommand*{\hourstring}[1]{%
+\ifthenelse{\value{#1}=0}{\midnight}{\Numberstring{#1}}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\oclock}
+%\changes{2.43}{2005/02/23}{fixed bug causing an infinite loop on the hour}
+%    \begin{macrocode}
+\newtimeformat{oclock}{\ifthenelse{\time=0 \or \time=720}{%
+%    \end{macrocode}
+% Midnight or Midday:
+%    \begin{macrocode}
+\ifthenelse{\time=0}{\midnight}{\noon}}{%
+%    \end{macrocode}
+% Neither Midnight nor Midday.
+% Do minutes first
+%    \begin{macrocode}
+\ifthenelse{\value{MINUTE}=0}{%
+%    \end{macrocode}
+% On the hour: don't print any minutes, just do the hour and 
+% |\oclockstring|
+%    \begin{macrocode}
+\Numberstring{HOUR} \oclockstring}{%
+\ifthenelse{\value{MINUTE}=15}{%
+\quarterpast\ \hourstring{HOUR}}{%
+\ifthenelse{\value{MINUTE}=30}{%
+\halfpast\ \hourstring{HOUR}}{%
+\ifthenelse{\value{MINUTE}=45}{%
+\quarterto\ \hourstring{TOHOUR}}{%
+\ifthenelse{\value{MINUTE}<30}{%
+\Numberstring{MINUTE}\ \ifthenelse{\value{MINUTE}=1}{minute}{minutes} 
+past \hourstring{HOURXII}}{%
+\Numberstring{TOMINUTE}\ \ifthenelse{%
+\value{TOMINUTE}=1}{minute}{minutes} to \hourstring{TOHOUR}}}}}}% 
+%    \end{macrocode}
+% Now say whether it is morning or afternoon
+%    \begin{macrocode}
+\ifthenelse{\value{HOUR}<12}{%
+%    \end{macrocode}
+% Morning
+%    \begin{macrocode}
+\ifthenelse{\value{HOUR}=0}{}{\ \amstring}}{%
+%    \end{macrocode}
+% Afternoon
+%    \begin{macrocode}
+\ifthenelse{\value{TOHOUR}=0}{}{\ \pmstring}}}}
+%    \end{macrocode}
+%\end{macro}
+% Define textual strings used in the above.
+%\begin{macro}{\amname}
+%    \begin{macrocode}
+\providecommand*{\amname}{am}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\pmname}
+%    \begin{macrocode}
+\providecommand*{\pmname}{pm}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\amorpmname}
+%    \begin{macrocode}
+\providecommand*{\amorpmname}{%
+\ifthenelse{\value{HOUR}>12}{\pmname}{\amname}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\amstring}
+%    \begin{macrocode}
+\providecommand*{\amstring}{in the morning}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\pmstring}
+%    \begin{macrocode}
+\providecommand*{\pmstring}{in the afternoon}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\amorpmstring}
+%    \begin{macrocode}
+\providecommand*{\amorpmstring}{%
+\ifthenelse{\value{HOUR}>12}{\pmstring}{\amstring}}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\halfpast}
+%    \begin{macrocode}
+\providecommand*{\halfpast}{Half past}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\quarterpast}
+%    \begin{macrocode}
+\providecommand*{\quarterpast}{Quarter past}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\quarterto}
+%    \begin{macrocode}
+\providecommand*{\quarterto}{Quarter to}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\noon}
+%    \begin{macrocode}
+\providecommand*{\noon}{Noon}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\midnight}
+%    \begin{macrocode}
+\providecommand*{\midnight}{Midnight}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\oclockstring}
+%    \begin{macrocode}
+\providecommand*{\oclockstring}{O'Clock}
+%    \end{macrocode}
+%\end{macro}
+%\begin{macro}{\pdfdate}
+% Finally create command that will typeset the date in PDF format
+% e.g. 20040501215500. This is defined regardless of |\if@no@date|
+% as it's provided for use in |\pdfinfo|. Initially |\pdfdate| is set 
+% to the year.
+%\changes{2.31}{2004/05/01}{new}
+%\changes{2.32}{2004/05/04}{fixed bug}
+%    \begin{macrocode}
+\newtoks\dt@a \newtoks\dt@b
+\edef\pdfdate{\the\year}
+%    \end{macrocode}
+% Append the month
+%    \begin{macrocode}
+\dt@b=\expandafter{\pdfdate}
+\dt@a=\expandafter{\the\month}
+\ifnum\month<10\relax
+\edef\pdfdate{\the\dt@b0\the\dt@a}
+\else
+\edef\pdfdate{\the\dt@b\the\dt@a}
+\fi
+%    \end{macrocode}
+% Append the day
+%    \begin{macrocode}
+\dt@b=\expandafter{\pdfdate}
+\dt@a=\expandafter{\the\day}
+\ifnum\day<10\relax
+\edef\pdfdate{\the\dt@b0\the\dt@a}
+\else
+\edef\pdfdate{\the\dt@b\the\dt@a}
+\fi
+%    \end{macrocode}
+% Append the hour
+%    \begin{macrocode}
+\@dtctr=\time%
+\divide\@dtctr by 60\relax
+\dt@b=\expandafter{\pdfdate}
+\dt@a=\expandafter{\the\@dtctr}
+\ifnum\@dtctr<10
+\edef\pdfdate{\the\dt@b0\the\dt@a}
+\else
+\edef\pdfdate{\the\dt@b\the\dt@a}
+\fi
+%    \end{macrocode}
+% Append the minute.
+%    \begin{macrocode}
+\@dtctr=\time%
+\@modulo{\@dtctr}{60}%
+\dt@b=\expandafter{\pdfdate}
+\dt@a=\expandafter{\the\@dtctr}
+\ifnum\@dtctr<10\relax
+\edef\pdfdate{\the\dt@b0\the\dt@a}
+\else
+\edef\pdfdate{\the\dt@b\the\dt@a}
+\fi
+%    \end{macrocode}
+% Append the seconds. \TeX\ doesn't store the seconds, so
+% set to zero.
+%    \begin{macrocode}
+\dt@a={00}
+\dt@b=\expandafter{\pdfdate}
+\edef\pdfdate{\the\dt@b\the\dt@a}
+%    \end{macrocode}
+%\end{macro}
+%\iffalse
+%    \begin{macrocode}
+%</datetime.sty>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-austrian.def>
+%    \end{macrocode}
+%\fi
+%\subsection{Compatibility with Babel (Language definition files)}
+%\subsubsection{Austrian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-austrian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameaustrian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or J\"anner%
+\or Februar%
+\or M\"arz%
+\or April%
+\or Mai%
+\or Juni%
+\or Juli%
+\or August%
+\or September%
+\or Oktober%
+\or November%
+\or Dezember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (janvier) to 12 (decembre)}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateaustrian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameaustrian[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-austrian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-bahasa.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Bahasa}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-bahasa.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamebahasa}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Januari) to 12 (Desember)}%
+\or Januari%
+\or Pebruari%
+\or Maret%
+\or April%
+\or Mei%
+\or Juni%
+\or Juli%
+\or Agustus%
+\or September%
+\or Oktober%
+\or Nopember%
+\or Desember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Januari) to 12 (Desember)}%
+\fi}
+%    \end{macrocode}
+% Define abbreviated month names. This currently does the full 
+% name, because I don't know the abbreviated versions.
+%    \begin{macrocode}
+\providecommand{\shortmonthnamebahasa}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Januari) to 12 (Desember)}%
+\or Januari%
+\or Pebruari%
+\or Maret%
+\or April%
+\or Mei%
+\or Juni%
+\or Juli%
+\or Agustus%
+\or September%
+\or Oktober%
+\or Nopember%
+\or Desember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Januari) to 12 (Desember)}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datebahasa{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day}~\monthnamebahasa[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-bahasa.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-basque.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Basque}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-basque.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamebasque}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (urtarrilaren) to 12 (abenduaren)}%
+\or urtarrilaren%
+\or otsailaren%
+\or martxoaren%
+\or apirilaren%
+\or maiatzaren%
+\or ekainaren%
+\or uztailaren%
+\or abuztuaren%
+\or irailaren%
+\or urriaren%
+\or azaroaren%
+\or abenduaren%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (urtarrilaren) to 12 (abenduaren)}%
+\fi}
+%    \end{macrocode}
+% Define abbreviated month names. This currently does the full 
+% name, because I don't know the abbreviated versions.
+%    \begin{macrocode}
+\providecommand{\shortmonthnamebasque}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (urtarrilaren) to 12 (abenduaren)}%
+\or urtarrilaren%
+\or otsailaren%
+\or martxoaren%
+\or apirilaren%
+\or maiatzaren%
+\or ekainaren%
+\or uztailaren%
+\or abuztuaren%
+\or irailaren%
+\or urriaren%
+\or azaroaren%
+\or abenduaren%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (urtarrilaren) to 12 (abenduaren)}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datebasque{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@year.eko\space\monthnamebasque[\@month]~\number\@day}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-basque.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-breton.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Breton}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-breton.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamebreton}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Genver) to 12 (Kerzu)}%
+\or Genver%
+\or C'hwevrer%
+\or Meurzh%
+\or Ebrel%
+\or Mae%
+\or Mezheven%
+\or Gouere%
+\or Eost%
+\or Gwengolo%
+\or Here%
+\or Du%
+\or Kerzu%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Genver) to 12 (Kerzu)}%
+\fi}
+%    \end{macrocode}
+% Define abbreviated month names. This currently does the full 
+% name, because I don't know the abbreviated versions.
+%    \begin{macrocode}
+\providecommand{\shortmonthnamebreton}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Genver) to 12 (Kerzu)}%
+\or Genver%
+\or C'hwevrer%
+\or Meurzh%
+\or Ebrel%
+\or Mae%
+\or Mezheven%
+\or Gouere%
+\or Eost%
+\or Gwengolo%
+\or Here%
+\or Du%
+\or Kerzu%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (Genver) to 12 (Kerzu)}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datebreton{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\ifnum\@day=1\relax 1\/\textsuperscript{a\~n}\else\number\@day\fi
+\space a\space viz\space\monthnamebreton[\@month]\space
+\number\@year
+}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-breton.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-british.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{british}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-british.def}[2007/06/15]
+%    \end{macrocode}
+\let\datebritish\longdate
+
+\let\monthnamebritish\monthnameenglish
+\let\shortmonthnamebritish\shortmonthnameenglish
+
+\let\dayofweeknameidbritish\dayofweeknameidenglish
+\let\shortdayofweeknameidbritish\shortdayofweeknameidenglish
+%\iffalse
+%    \begin{macrocode}
+%</dt-british.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-bulgarian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Bulgarian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-bulgarian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamebulgarian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+    \or\cyrya\cyrn\cyru\cyra\cyrr\cyri\or
+    \cyrf\cyre\cyrv\cyrr\cyru\cyra\cyrr\cyri\or
+    \cyrm\cyra\cyrr\cyrt\or
+    \cyra\cyrp\cyrr\cyri\cyrl\or
+    \cyrm\cyra\cyrishrt\or
+    \cyryu\cyrn\cyri\or
+    \cyryu\cyrl\cyri\or
+    \cyra\cyrv\cyrg\cyru\cyrs\cyrt\or
+    \cyrs\cyre\cyrp\cyrt\cyre\cyrm\cyrv\cyrr\cyri\or
+    \cyro\cyrk\cyrt\cyro\cyrm\cyrv\cyrr\cyri\or
+    \cyrn\cyro\cyre\cyrm\cyrv\cyrr\cyri\or
+    \cyrd\cyre\cyrk\cyre\cyrm\cyrv\cyrr\cyri
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% Define abbreviated month names. This currently does the full 
+% name, because I don't know the abbreviated versions.
+%    \begin{macrocode}
+\providecommand{\shortmonthnamebulgarian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+    \or\cyrya\cyrn\cyru\cyra\cyrr\cyri\or
+    \cyrf\cyre\cyrv\cyrr\cyru\cyra\cyrr\cyri\or
+    \cyrm\cyra\cyrr\cyrt\or
+    \cyra\cyrp\cyrr\cyri\cyrl\or
+    \cyrm\cyra\cyrishrt\or
+    \cyryu\cyrn\cyri\or
+    \cyryu\cyrl\cyri\or
+    \cyra\cyrv\cyrg\cyru\cyrs\cyrt\or
+    \cyrs\cyre\cyrp\cyrt\cyre\cyrm\cyrv\cyrr\cyri\or
+    \cyro\cyrk\cyrt\cyro\cyrm\cyrv\cyrr\cyri\or
+    \cyrn\cyro\cyre\cyrm\cyrv\cyrr\cyri\or
+    \cyrd\cyre\cyrk\cyre\cyrm\cyrv\cyrr\cyri
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datebulgarian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnamebulgarian[\@month]\ \number\@year~\cyrg.}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-bulgarian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-catalan.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Catalan}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-catalan.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamecatalan}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (de gener) to 12 (de desembre)}%
+\or de gener%
+\or de febrer%
+\or de mar\c{c}%
+\or d'abril%
+\or de maig%
+\or de juny%
+\or de juliol%
+\or d'agost%
+\or de setembre%
+\or d'octubre%
+\or de novembre%
+\or de desembre%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (de gener) to 12 (de desembre)}%
+\fi}
+%    \end{macrocode}
+% Define abbreviated month names. This currently does the full 
+% name, because I don't know the abbreviated versions.
+%    \begin{macrocode}
+\providecommand{\shortmonthnamecatalan}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (de gener) to 12 (de desembre)}%
+\or de gener%
+\or de febrer%
+\or de mar\c{c}%
+\or d'abril%
+\or de maig%
+\or de juny%
+\or de juliol%
+\or d'agost%
+\or de setembre%
+\or d'octubre%
+\or de novembre%
+\or de desembre%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (de gener) to 12 (de desembre)}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datecatalan{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnamecatalan[\@month]\ de~\number\@year
+}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-catalan.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-croatian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Croatian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-croatian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamecroatian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (sijecnja) to 12 (prosinca)}%
+\or sije\v{c}nja%
+\or velja\v{c}e%
+\or o\v{z}ujka%
+\or travnja%
+\or svibnja%
+\or lipnja%
+\or srpnja%
+\or kolovoza%
+\or rujna%
+\or listopada%
+\or studenog%
+\or prosinca%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (sijecnja) to 12 (prosinca)}%
+\fi}
+%    \end{macrocode}
+% Define abbreviated month names. This currently does the full 
+% name, because I don't know the abbreviated versions.
+%    \begin{macrocode}
+\providecommand{\shortmonthnamecroatian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (sijecnja) to 12 (prosinca)}%
+\or sije\v{c}nja%
+\or velja\v{c}e%
+\or o\v{z}ujka%
+\or travnja%
+\or svibnja%
+\or lipnja%
+\or srpnja%
+\or kolovoza%
+\or rujna%
+\or listopada%
+\or studenog%
+\or prosinca%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (sijecnja) to 12 (prosinca)}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datecroatian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamecroatian[\@month]\space \number\@year.}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-croatian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-czech.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Czech}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-czech.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameczech}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or ledna%
+\or \'unora%
+\or b\v{r}ezna%
+\or dubna%
+\or kv\v{e}tna%
+\or \v{c}ervna%
+\or \v{c}ervence%
+\or srpna%
+\or z\'a\v{r}\'{\i}%
+\or \v{r}\'{\i}jna%
+\or listopadu%
+\or prosince%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% Define abbreviated month names. This currently does the full 
+% name, because I don't know the abbreviated versions.
+%    \begin{macrocode}
+\providecommand{\shortmonthnameczech}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or ledna%
+\or \'unora%
+\or b\v{r}ezna%
+\or dubna%
+\or kv\v{e}tna%
+\or \v{c}ervna%
+\or \v{c}ervence%
+\or srpna%
+\or z\'a\v{r}\'{\i}%
+\or \v{r}\'{\i}jna%
+\or listopadu%
+\or prosince%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateczech{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameczech[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-czech.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-danish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Danish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-danish.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamedanish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januar%
+\or februar%
+\or marts%
+\or april%
+\or maj%
+\or juni%
+\or juli%
+\or august%
+\or september%
+\or oktober%
+\or november%
+\or december%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datedanish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamedanish[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-danish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-dutch.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Dutch}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-dutch.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamedutch}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januari%
+\or februari%
+\or maart%
+\or april%
+\or mei%
+\or juni%
+\or juli%
+\or augustus%
+\or september%
+\or oktober%
+\or november%
+\or december%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datedutch{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnamedutch[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-dutch.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-esperanto.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Esperanto}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-esperanto.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameesperanto}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januaro%
+\or februaro%
+\or marto%
+\or aprilo%
+\or majo%
+\or junio%
+\or julio%
+\or a\u{u}gusto%
+\or septembro%
+\or oktobro%
+\or novembro%
+\or decembro%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateesperanto{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day{--a}~de~\monthnameesperanto[\@month],\space 
+\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-esperanto.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-estonian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Estonian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-estonian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameestonian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or jaanuar%
+\or veebruar%
+\or m"arts%
+\or aprill%
+\or mai%
+\or juuni%
+\or juuli%
+\or august%
+\or september%
+\or oktoober%
+\or november%
+\or detsember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateestonian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.\space\monthnameestonian[\@month]\space 
+\number\@year.\space a.}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-estonian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-finnish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Finnish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-finnish.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamefinnish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or tammikuuta%
+\or helmikuuta%
+\or maaliskuuta%
+\or huhtikuuta%
+\or toukokuuta%
+\or kes\"akuuta%
+\or hein\"akuuta%
+\or elokuuta%
+\or syyskuuta%
+\or lokakuuta%
+\or marraskuuta%
+\or joulukuuta%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datefinnish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamefinnish[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-finnish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-french.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{French}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-french.def}[2004/10/31]
+%    \end{macrocode}
+% Define week day names.
+%    \begin{macrocode}
+\providecommand{\dayofweeknameidfrench}[1]{%
+\ifcase#1\relax
+\or dimanche%
+\or lundi%
+\or mardi%
+\or mercredi%
+\or jeudi%
+\or vendredi%
+\or samedi%
+\fi}
+%    \end{macrocode}
+% Define abbreviated week day names (are these correct?)
+%    \begin{macrocode}
+\providecommand{\shortdayofweeknameidfrench}[1]{%
+\ifcase#1\relax
+\or dim%
+\or lun%
+\or mar%
+\or mer%
+\or jeu%
+\or ven%
+\or sam%
+\fi}
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamefrench}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (janvier) to 12 (decembre)}%
+\or janvier%
+\or f\'evrier%
+\or mars%
+\or avril%
+\or mai%
+\or juin%
+\or juillet%
+\or ao\^ut%
+\or septembre%
+\or octobre%
+\or novembre%
+\or d\'ecembre%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (janvier) to 12 (decembre)}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datefrench{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day\ifnum\@day=1{\ier}\fi\space
+\monthnamefrench[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-french.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-galician.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Galician}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-galician.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamegalician}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or xaneiro%
+\or febreiro%
+\or marzo%
+\or abril%
+\or maio%
+\or xu\~no%
+\or xullo%
+\or agosto%
+\or setembro%
+\or outubro%
+\or novembro%
+\or decembro%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dategalician{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~de\space\monthnamegalician[\@month]\space
+de~\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-galician.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-german.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{German}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-german.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamegerman}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or Januar%
+\or Februar%
+\or M\"arz%
+\or April%
+\or Mai%
+\or Juni%
+\or Juli%
+\or August%
+\or September%
+\or Oktober%
+\or November%
+\or Dezember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 (janvier) to 12 (decembre)}%
+\fi}
+%    \end{macrocode}
+% The following week day names were supplied by Uwe Bieling:
+%    \begin{macrocode}
+\providecommand{\dayofweeknameidgerman}[1]{%
+\ifcase#1\relax
+\or Sonntag%
+\or Montag%
+\or Dienstag%
+\or Mittwoch%
+\or Donnerstag%
+\or Freitag%
+\or Samstag%
+\fi}
+
+\providecommand{\shortdayofweeknameidgerman}[1]{%
+\ifcase#1\relax
+\or So%
+\or Mo%
+\or Di%
+\or Mi%
+\or Do%
+\or Fr%
+\or Sa%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dategerman{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamegerman[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-german.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-greek.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Greek}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-greek.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamegreek}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or Ianouar'iou%
+\or Febrouar'iou%
+\or Mart'iou%
+\or April'iou%
+\or Ma'"iou%
+\or Ioun'iou%
+\or Ioul'iou%
+\or Augo'ustou%
+\or Septembr'iou%
+\or Oktwbr'iou%
+\or Noembr'iou%
+\or Dekembr'iou%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dategreek{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day\space\monthnamegreek[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-greek.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-hebrew.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Hebrew}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-hebrew.def}[2004/10/31]
+%    \end{macrocode}
+% Babel already provides Hebrew month names, so just provide a
+% synonym.
+%    \begin{macrocode}
+\let\monthnamehebrew=\hebmonth
+%    \end{macrocode}
+% Redefine declaration to switch to this format. (This uses
+% |\hebdate| which is defined by babel.)
+%    \begin{macrocode}
+\DeclareRobustCommand*\datehebrew{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\hebdate\@day\@month\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-hebrew.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-icelandic.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Icelandic}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-icelandic.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameicelandic}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or janúar%
+\or febrúar%
+\or mars%
+\or apríl%
+\or maí%
+\or júní%
+\or júlí%
+\or ágúst%
+\or september%
+\or október%
+\or nóvember%
+\or desembe%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateicelandic{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameicelandic[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-icelandic.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-irish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Irish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-irish.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameirish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or  Ean\'air%
+\or Feabhra%
+\or M\'arta%
+\or Aibre\'an%
+\or Bealtaine%
+\or Meitheamh%
+\or I\'uil%
+\or L\'unasa%
+\or Me\'an F\'omhair%
+\or Deireadh F\'omhair%
+\or M\'{\i} na Samhna%
+\or M\'{\i} na Nollag%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateirish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day\space\monthnameirish[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-irish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-italian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Italian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-italian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameitalian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or gennaio%
+\or febbraio%
+\or marzo%
+\or aprile%
+\or maggio%
+\or giugno%
+\or luglio%
+\or agosto%
+\or settembre%
+\or ottobre%
+\or novembre%
+\or dicembre%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateitalian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day\space\monthnameitalian[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-italian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-latin.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Latin}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-latin.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamelatin}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or Ianuarii%
+\or Februarii%
+\or Martii%
+\or Aprilis%
+\or Maii%
+\or Iunii%
+\or Iulii%
+\or Augusti%
+\or Septembris%
+\or Octobris%
+\or Novembris%
+\or Decembris%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datelatin{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\check@mathfonts\fontsize\sf@size\z@\math@fontsfalse\selectfont
+\uppercase\expandafter{\romannumeral\@day}%
+~\monthnamelatin[\@month]\space
+{\uppercase\expandafter{\romannumeral\@year}}}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-latin.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-lsorbian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{LSorbian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-lsorbian.def}[2004/10/31]
+%    \end{macrocode}
+% Define new month names.
+%    \begin{macrocode}
+\providecommand{\monthnamenewlsorbian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januara%
+\or februara%
+\or m\v erca%
+\or apryla%
+\or maja%
+\or junija%
+\or julija%
+\or awgusta%
+\or septembra%
+\or oktobra%
+\or nowembra%
+\or decembra%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% Define old month names.
+%    \begin{macrocode}
+\providecommand{\monthnameoldlsorbian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or wjelikego ro\v zka%
+\or ma\l ego ro\v zka%
+\or nal\v etnika%
+\or jat\v sownika%
+\or ro\v zownika%
+\or sma\v znika%
+\or pra\v znika%
+\or \v znje\'nca%
+\or po\v znje\'nca%
+\or winowca%
+\or nazymnika%
+\or godownika%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% Set the default month names.
+%    \begin{macrocode}
+\let\monthnamelsorbian=\monthnamenewlsorbian
+%    \end{macrocode}
+% (Re)Define declaration to switch to new format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\newdatelsorbian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamenewlsorbian[\@month]\space\number\@year}}
+%    \end{macrocode}
+% (Re)Define declaration to switch to old format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\olddatelsorbian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameoldlsorbian[\@month]\space\number\@year}}
+%    \end{macrocode}
+% Set the default date format.
+%    \begin{macrocode}
+\let\datelsorbian\newdatelsorbian
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-lsorbian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-magyar.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Magyar}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-magyar.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamemagyar}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or janu\'ar%
+\or febru\'ar%
+\or m\'arcius%
+\or \'aprilis%
+\or m\'ajus%
+\or j\'unius%
+\or j\'ulius%
+\or augusztus%
+\or szeptember%
+\or okt\'ober%
+\or november%
+\or december%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datemagyar{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@year.~\monthnamemagyar[\@month]\space\number\@day.}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-magyar.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-naustrian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{NAustrian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-naustrian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamenaustrian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or J\"anner%
+\or Februar%
+\or M\"arz%
+\or April%
+\or Mai%
+\or Juni%
+\or Juli%
+\or August%
+\or September%
+\or Oktober%
+\or November%
+\or Dezember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datenaustrian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamenaustrian[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-naustrian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-ngerman.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{NGerman}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-ngerman.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamengerman}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or Januar%
+\or Februar%
+\or M\"arz%
+\or April%
+\or Mai%
+\or Juni%
+\or Juli%
+\or August%
+\or September%
+\or Oktober%
+\or November%
+\or Dezember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% The following week day names were supplied by Uwe Bieling:
+%    \begin{macrocode}
+\providecommand{\dayofweeknameidngerman}[1]{%
+\ifcase#1\relax
+\or Sonntag%
+\or Montag%
+\or Dienstag%
+\or Mittwoch%
+\or Donnerstag%
+\or Freitag%
+\or Samstag%
+\fi}
+
+\providecommand{\shortdayofweeknameidngerman}[1]{%
+\ifcase#1\relax
+\or So%
+\or Mo%
+\or Di%
+\or Mi%
+\or Do%
+\or Fr%
+\or Sa%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datengerman{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamengerman[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-ngerman.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-norsk.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Norsk}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-norsk.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamenorsk}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januar%
+\or februar%
+\or mars%
+\or april%
+\or mai%
+\or juni%
+\or juli%
+\or august%
+\or september%
+\or oktober%
+\or november%
+\or desember%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datenorsk{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamenorsk[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-norsk.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-polish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Polish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-polish.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamepolish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or stycznia%
+\or lutego%
+\or marca%
+\or kwietnia%
+\or maja%
+\or czerwca%
+\or lipca%
+\or sierpnia%
+\or wrze\'snia%
+\or pa\'zdziernika%
+\or listopada%
+\or grudnia%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datepolish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnamepolish[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-polish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-portuges.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Portuges}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-portuges.def}[2004/10/31]
+%    \end{macrocode}
+% Define week day names.
+%    \begin{macrocode}
+\providecommand{\dayofweeknameidportuges}[1]{%
+\ifcase#1\relax
+\or domingo%
+\or segunda-feira%
+\or ter\c{c}a-feira%
+\or quarta-feira%
+\or quinta-feira%
+\or sexta-feira%
+\or sabado%
+\fi}
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameportuges}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or Janeiro%
+\or Fevereiro%
+\or Mar\c{c}o%
+\or Abril%
+\or Maio%
+\or Junho%
+\or Julho%
+\or Agosto%
+\or Setembro%
+\or Outubro%
+\or Novembro%
+\or Dezembro%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateportuges{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day\space de\space\monthnameportuges[\@month]\space
+de\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-portuges.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-romanian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Romanian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-romanian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameromanian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or ianuarie%
+\or februarie%
+\or martie%
+\or aprilie%
+\or mai%
+\or iunie%
+\or iulie%
+\or august%
+\or septembrie%
+\or octombrie%
+\or noiembrie%
+\or decembrie%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateromanian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnameromanian[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-romanian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-russian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Russian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-russian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamerussian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or \cyrya\cyrn\cyrv\cyra\cyrr\cyrya\or
+    \cyrf\cyre\cyrv\cyrr\cyra\cyrl\cyrya\or
+    \cyrm\cyra\cyrr\cyrt\cyra\or
+    \cyra\cyrp\cyrr\cyre\cyrl\cyrya\or
+    \cyrm\cyra\cyrya\or
+    \cyri\cyryu\cyrn\cyrya\or
+    \cyri\cyryu\cyrl\cyrya\or
+    \cyra\cyrv\cyrg\cyru\cyrs\cyrt\cyra\or
+    \cyrs\cyre\cyrn\cyrt\cyrya\cyrb\cyrr\cyrya\or
+    \cyro\cyrk\cyrt\cyrya\cyrb\cyrr\cyrya\or
+    \cyrn\cyro\cyrya\cyrb\cyrr\cyrya\or
+    \cyrd\cyre\cyrk\cyra\cyrb\cyrr\cyrya%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\daterussian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnamerussian[\@month]\ \number\@year~\cyrg.}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-russian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-samin.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Samin}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-samin.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamesamin}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or o\dj{}\dj{}ajagem\'anu\or
+    guovvam\'anu\or
+    njuk\v cam\'anu\or
+    cuo\ng{}om\'anu\or
+    miessem\'anu\or
+    geassem\'anu\or
+    suoidnem\'anu\or
+    borgem\'anu\or
+    \v cak\v cam\'anu\or
+    golggotm\'anu\or
+    sk\'abmam\'anu\or
+    juovlam\'anu%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datesamin{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\monthnamesamin[\@month]\space\number\@day.~b.\space
+\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-samin.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-scottish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Scottish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-scottish.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamescottish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or am Faoilteach%
+\or an Gearran%
+\or am M\`art%
+\or an Giblean%
+\or an C\`eitean%
+\or an t-\`Og mhios%
+\or an t-Iuchar%
+\or L\`unasdal%
+\or an Sultuine%
+\or an D\`amhar%
+\or an t-Samhainn%
+\or an Dubhlachd%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datescottish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day\space\monthnamescottish[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-scottish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-serbian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Serbian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-serbian.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameserbian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januar%
+\or februar%
+\or mart%
+\or april%
+\or maj%
+\or juni%
+\or juli%
+\or avgust%
+\or septembar%
+\or oktobar%
+\or novembar%
+\or decembar%
+\else
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateserbian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameserbian[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-serbian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-slovak.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Slovak}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-slovak.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameslovak}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month 
+numbers should go from 1 to 12}%
+\or janu\'ara%
+\or febru\'ara%
+\or marca%
+\or apr\'{\i}la%
+\or m\'aja%
+\or j\'una%
+\or j\'ula%
+\or augusta%
+\or septembra%
+\or okt\'obra%
+\or novembra%
+\or decembra%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateslovak{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameslovak[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-slovak.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-slovene.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Slovene}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-slovene.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameslovene}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januar%
+\or februar%
+\or marec%
+\or april%
+\or maj%
+\or junij%
+\or julij%
+\or avgust%
+\or september%
+\or oktober%
+\or november%
+\or december%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateslovene{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameslovene[\@month]\space \number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-slovene.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-spanish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Spanish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-spanish.def}[2004/10/31]
+%    \end{macrocode}
+% Define week day names.
+%    \begin{macrocode}
+\providecommand{\dayofweeknameidspanish}[1]{%
+\ifcase#1\relax
+\or domingo%
+\or lunes%
+\or martes%
+\or mi\'ercoles%
+\or jueves%
+\or viernes%
+\or s\'abado%
+\fi}
+%    \end{macrocode}
+% Define abbreviated week day names (is this correct?)
+%    \begin{macrocode}
+\providecommand{\shortdayofweeknameidspanish}[1]{%
+\ifcase#1\relax
+\or dom%
+\or lun%
+\or mar%
+\or mi\'e%
+\or jue%
+\or vie%
+\or s\'ab%
+\fi}
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamespanish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or enero%
+\or febrero%
+\or marzo%
+\or abril%
+\or mayo%
+\or junio%
+\or julio%
+\or agosto%
+\or septiembre%
+\or octubre%
+\or noviembre%
+\or diciembre%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datespanish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~de \monthnamespanish[\@month]\ de~\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-spanish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-swedish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Swedish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-swedish.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameswedish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januari%
+\or februari%
+\or mars%
+\or april%
+\or maj%
+\or juni%
+\or juli%
+\or augusti%
+\or september%
+\or oktober%
+\or november%
+\or december%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format 
+% (day monthname year).
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateswedish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnameswedish[\@month]\space\number\@year}}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format
+% (two-digit numerical).
+%    \begin{macrocode}
+\DeclareRobustCommand*\datesymd{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@year-\two@digits\@month-\two@digits\@day}
+}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format
+% (numerical).
+%    \begin{macrocode}
+\DeclareRobustCommand*\datesdmy{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day/\number\@month\space\number\@year}
+}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-swedish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-turkish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Turkish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-turkish.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameturkish}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or  Ocak%
+\or \c Subat%
+\or Mart%
+\or Nisan%
+\or May\i{}s%
+\or Haziran%
+\or Temmuz%
+\or A\u gustos%
+\or Eyl\"ul%
+\or Ekim%
+\or Kas\i{}m%
+\or Aral\i{}k%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateturkish{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnameturkish[\@month]\space\number\@year}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-turkish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-UKenglish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{UKenglish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-UKenglish.def}[2007/06/11]
+%    \end{macrocode}
+\let\dateUKenglish\longdate
+
+\let\monthnameUKenglish\monthnameenglish
+\let\shortmonthnameUKenglish\shortmonthnameenglish
+
+\let\dayofweeknameidUKenglish\dayofweeknameidenglish
+\let\shortdayofweeknameidUKenglish\shortdayofweeknameidenglish
+%\iffalse
+%    \begin{macrocode}
+%</dt-UKenglish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-ukraineb.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Ukraine}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-ukraineb.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnameukraineb}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or \cyrs\cyrii\cyrch\cyrn\cyrya\or
+    \cyrl\cyryu\cyrt\cyro\cyrg\cyro\or
+    \cyrb\cyre\cyrr\cyre\cyrz\cyrn\cyrya\or
+    \cyrk\cyrv\cyrii\cyrt\cyrn\cyrya\or
+    \cyrt\cyrr\cyra\cyrv\cyrn\cyrya\or
+    \cyrch\cyre\cyrr\cyrv\cyrn\cyrya\or
+    \cyrl\cyri\cyrp\cyrn\cyrya\or
+    \cyrs\cyre\cyrr\cyrp\cyrn\cyrya\or
+    \cyrv\cyre\cyrr\cyre\cyrs\cyrn\cyrya\or
+    \cyrzh\cyro\cyrv\cyrt\cyrn\cyrya\or
+    \cyrl\cyri\cyrs\cyrt\cyro\cyrp\cyra\cyrd\cyra\or
+    \cyrg\cyrr\cyru\cyrd\cyrn\cyrya%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateukraineb{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day~\monthnameukraineb[\@month]\space\number\@year~\cyrr.}}
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-ukraineb.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-USenglish.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{USenglish}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-USenglish.def}[2007/06/11]
+%    \end{macrocode}
+\let\dateUSenglish\usdate
+
+\let\monthnameUSenglish\monthnameenglish
+\let\shortmonthnameUSenglish\shortmonthnameenglish
+
+\let\dayofweeknameidUSenglish\dayofweeknameidenglish
+\let\shortdayofweeknameidUSenglish\shortdayofweeknameidenglish
+%\iffalse
+%    \begin{macrocode}
+%</dt-USenglish.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-usorbian.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{USorbian}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-usorbian.def}[2004/10/31]
+%    \end{macrocode}
+% Define (new) month names.
+%    \begin{macrocode}
+\providecommand{\monthnamenewusorbian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or januara%
+\or februara%
+\or m\v erca%
+\or apryla%
+\or meje%
+\or junija%
+\or julija%
+\or awgusta%
+\or septembra%
+\or oktobra%
+\or nowembra%
+\or decembra%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% Define (old) month names.
+%    \begin{macrocode}
+\providecommand{\monthnameoldusorbian}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or wulkeho r\'o\v zka%
+\or ma\l eho r\'o\v zka%
+\or nal\v etnika%
+\or jutrownika%
+\or r\'o\v zownika%
+\or  sma\v znika%
+\or pra\v znika%
+\or \v znjenca%
+\or po\v znjenca%
+\or winowca%
+\or nazymnika%
+\or hodownika%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% Set up default
+%    \begin{macrocode}
+\let\monthnameusorbian=\monthnamenewusorbian
+%    \end{macrocode}
+% (Re)Define declaration to switch to (new) format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\newdateusorbian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnamenewusorbian[\@month]\space\number\@year}}
+%    \end{macrocode}
+% (Re)Define declaration to switch to (old) format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\olddateusorbian{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\number\@day.~\monthnameoldusorbian[\@month]\space\number\@year}}
+%    \end{macrocode}
+% Set up default
+%    \begin{macrocode}
+\let\dateusorbian\newdateusorbian
+%    \end{macrocode}
+%\iffalse
+%    \begin{macrocode}
+%</dt-usorbian.def>
+%    \end{macrocode}
+%\fi
+%\iffalse
+%    \begin{macrocode}
+%<*dt-welsh.def>
+%    \end{macrocode}
+%\fi
+%\subsubsection{Welsh}
+% Identify file
+%    \begin{macrocode}
+\ProvidesFile{dt-welsh.def}[2004/10/31]
+%    \end{macrocode}
+% Define month names.
+%    \begin{macrocode}
+\providecommand{\monthnamewelsh}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\or Ionawr%
+\or Chwefror%
+\or Mawrth%
+\or Ebrill%
+\or Mai%
+\or Mehefin%
+\or Gorffennaf%
+\or Awst%
+\or Medi%
+\or Hydref%
+\or Tachwedd%
+\or Rhagfyr%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{%
+Month numbers should go from 1 to 12}%
+\fi}
+%    \end{macrocode}
+% (Re)Define declaration to switch to this format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\datewelsh{%
+\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\ifnum\@day=1\relax 1\/$^{\mathrm{a\tilde{n}}}$\else
+\number\@day\fi \space a\space viz\space
+\monthnamewelsh[\@month]\space\number\@year}}
+%    \end{macrocode}
+% \subsection{LaTeX2HTML Perl Script}
+%\iffalse
+%    \begin{macrocode}
+%</dt-welsh.def>
+%    \end{macrocode}
+%\fi
+%\Finale
+\endinput

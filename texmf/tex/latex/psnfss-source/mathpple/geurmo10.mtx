@@ -1,0 +1,60 @@
+%Filename: geurmo10.mtx
+%Created using: \mtxtomtx{eurm10}{eurmo10}
+
+%This file is used by the fontinst package.
+
+% greek letters from Euler Roman oblique;
+% unused symbols deleted manually
+
+\relax
+\metrics
+
+\needsfontinstversion{1.801}
+
+%\setint{italicslant}{167}
+%\setint{maxheight}{722}
+%\setint{maxdepth_neg}{-206}
+%\setint{xheight}{459}
+%\setint{capheight}{691}
+%\setint{ascender}{691}
+%\setint{descender_neg}{-189}
+\setrawglyph{Gamma}{eurmo10}{10pt}{0}{429}{691}{0}{115}
+\setrawglyph{Delta}{eurmo10}{10pt}{1}{713}{691}{0}{115}
+\setrawglyph{Theta}{eurmo10}{10pt}{2}{758}{691}{0}{115}
+\setrawglyph{Lambda}{eurmo10}{10pt}{3}{771}{691}{0}{115}
+\setrawglyph{Xi}{eurmo10}{10pt}{4}{596}{691}{0}{115}
+\setrawglyph{Pi}{eurmo10}{10pt}{5}{723}{691}{0}{115}
+\setrawglyph{Sigma}{eurmo10}{10pt}{6}{647}{691}{0}{115}
+\setrawglyph{Upsilon}{eurmo10}{10pt}{7}{716}{691}{0}{115}
+\setrawglyph{Phi}{eurmo10}{10pt}{8}{833}{691}{0}{115}
+\setrawglyph{Psi}{eurmo10}{10pt}{9}{703}{691}{0}{115}
+\setrawglyph{Omega}{eurmo10}{10pt}{10}{876}{691}{0}{115}
+\setrawglyph{alpha}{eurmo10}{10pt}{11}{658}{459}{0}{76}
+\setrawglyph{beta}{eurmo10}{10pt}{12}{663}{691}{189}{115}
+\setrawglyph{gamma}{eurmo10}{10pt}{13}{608}{459}{189}{76}
+\setrawglyph{delta}{eurmo10}{10pt}{14}{501}{691}{0}{115}
+\setrawglyph{epsilon1}{eurmo10}{10pt}{15}{550}{459}{0}{76}
+\setrawglyph{zeta}{eurmo10}{10pt}{16}{512}{691}{126}{115}
+\setrawglyph{eta}{eurmo10}{10pt}{17}{560}{459}{189}{76}
+\setrawglyph{theta}{eurmo10}{10pt}{18}{554}{691}{0}{115}
+\setrawglyph{iota}{eurmo10}{10pt}{19}{335}{459}{0}{76}
+\setrawglyph{kappa}{eurmo10}{10pt}{20}{555}{459}{0}{76}
+\setrawglyph{lambda}{eurmo10}{10pt}{21}{542}{691}{0}{115}
+\setrawglyph{mu}{eurmo10}{10pt}{22}{618}{459}{189}{76}
+\setrawglyph{nu}{eurmo10}{10pt}{23}{599}{459}{0}{76}
+\setrawglyph{xi}{eurmo10}{10pt}{24}{553}{691}{126}{115}
+\setrawglyph{pi}{eurmo10}{10pt}{25}{609}{459}{0}{76}
+\setrawglyph{rho}{eurmo10}{10pt}{26}{548}{459}{189}{76}
+\setrawglyph{sigma}{eurmo10}{10pt}{27}{605}{459}{0}{76}
+\setrawglyph{tau}{eurmo10}{10pt}{28}{514}{459}{0}{76}
+\setrawglyph{upsilon}{eurmo10}{10pt}{29}{587}{459}{0}{76}
+\setrawglyph{phi}{eurmo10}{10pt}{30}{728}{691}{189}{115}
+\setrawglyph{chi}{eurmo10}{10pt}{31}{577}{459}{189}{76}
+\setrawglyph{psi}{eurmo10}{10pt}{32}{754}{691}{189}{115}
+\setrawglyph{omega}{eurmo10}{10pt}{33}{851}{459}{0}{76}
+\setrawglyph{epsilon}{eurmo10}{10pt}{34}{486}{459}{0}{76}
+\setrawglyph{theta1}{eurmo10}{10pt}{35}{552}{691}{0}{115}
+\setrawglyph{pi1}{eurmo10}{10pt}{36}{876}{629}{0}{105}
+\setrawglyph{phi1}{eurmo10}{10pt}{39}{763}{459}{0}{76}
+
+\endmetrics

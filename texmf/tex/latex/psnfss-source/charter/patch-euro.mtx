@@ -1,0 +1,31 @@
+\relax
+\metrics
+\needsfontinstversion{1.917}
+
+\resetglyph{euro}
+   \movert{50}
+   \push
+      \moveup{\half{\sub{\height{C}}{\depth{C}}}}
+      \movert{\scale
+         {\half{\sub{\height{C}}{\depth{C}}}}
+         {\int{italicslant}}
+      }
+      \push
+         \moveup{\scale{\int{bardistance}}{500}}
+         \glyphrule{\scale{\width{C}}{750}}{\int{barthickness}}
+      \pop
+      \moveup{\scale{\int{bardistance}}{-500}}
+      \glyphrule{\scale{\width{C}}{700}}{\int{barthickness}}
+      \comment{That this bar is slightly shorter than the previous
+        is deliberate. That the two bars are not quite centered
+        around the vertical midpoint is also deliberate.}
+   \pop
+   \movert{\int{baroffset}}
+   \comment{This movement should be much larger for some fonts,
+     e.g. New Century Schoolbook Italic, but experiments indicate
+     that it is independent of the italic slant.}
+   \glyph{C}{1000}
+   \resetitalic{\italic{C}}
+\endsetglyph
+
+\endmetrics

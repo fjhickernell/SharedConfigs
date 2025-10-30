@@ -1,0 +1,346 @@
+%%% This is file `palatcmi.mtx', version <1.0a> 
+%%% 
+%%% Copyright (C) 1994 Aloysius G. Helminck. All rights reserved. 
+%%% Permission is granted to to customize the declarations in this 
+%%% file to serve the needs of your installation. However, no permission
+%%% is granted to distribute a modified version of this file under 
+%%% its original name. 
+%%% 
+%%% This is file `plcemix.mtx', version 0.98
+%%%
+%%% Modified by Walter Schmidt, Feb. 1999:  spacing and kerning optimized
+
+\relax
+
+\metrics
+
+% Uses the fontinst package.
+
+\needsfontinstversion{1.315}
+
+%%% If you want the math to be less tight, then set the letterspacing. 
+%%% The standard is 0. For the symbol font `letters' I prefer some 
+%%% additional space. 
+\setint{letterspacing}{20}
+
+% \shiftglyph takes four parameters:
+%
+% #1 the name of the glyph
+% #2 the amount of extra space at the left
+% #3 the amount of extra space at the right
+% #4 the amount of extra space for subscripts
+
+\setcommand\shiftglyph#1#2#3#4{
+   \resetglyph{#1}
+      \movert{#2}
+      \glyph{#1}{1000}
+      \movert{#4}
+      \resetitalic{\add{\italic{#1}}{\sub{#3}{#4}}}
+   \endresetglyph
+}
+
+% \skewkern sets a skewchar kern, assuming that tie is the skewchar.
+
+\setcommand\skewkern#1#2{\setkern{#1}{tie}{#2}}
+
+% \unfakable is a glyph which can't be faked.
+
+\setcommand\unfakable#1{
+   \setglyph{#1}
+      \glyphrule{500}{500}
+      \glyphwarning{missing glyph `#1'}
+   \endsetglyph
+}
+
+\shiftglyph{A}{50}{0}{0}
+\shiftglyph{B}{20}{0}{-25} % 40/0
+\shiftglyph{C}{-4}{10}{-25} % -4/0
+\shiftglyph{D}{20}{10}{-15} % 40/0
+\shiftglyph{E}{15}{0}{0}   % 35/0
+\shiftglyph{F}{25}{10}{-100} % 35/0
+\shiftglyph{G}{10}{10}{-25} % 10/0
+\shiftglyph{H}{38}{5}{-25} % 38/0
+\shiftglyph{I}{50}{20}{-25}
+\shiftglyph{J}{60}{10}{-25}
+\shiftglyph{K}{1}{0}{-25} % 31/0
+\shiftglyph{L}{30}{0}{0}
+\shiftglyph{M}{45}{5}{-25} % 45/0
+\shiftglyph{N}{35}{5}{-25} % 35/0
+\shiftglyph{O}{5}{0}{-25} % 30/0
+\shiftglyph{P}{20}{0}{-100} % 40/0
+\shiftglyph{Q}{10}{0}{0} % 35/0
+\shiftglyph{R}{20}{0}{0} % 40/0
+\shiftglyph{S}{31}{0}{0}
+\shiftglyph{T}{13}{0}{-75}
+\shiftglyph{U}{-16}{10}{-25} % -16/0
+\shiftglyph{V}{-10}{10}{-50} % 10/0
+\shiftglyph{W}{-20}{10}{-50} % 0/0
+\shiftglyph{X}{15}{10}{-25}  % 35/0
+\shiftglyph{Y}{-20}{10}{-50} % 0/0
+\shiftglyph{Z}{15}{10}{0}    % 35/0
+\shiftglyph{a}{15}{0}{0}     % -3/0
+\shiftglyph{f}{130}{0}{25}
+\shiftglyph{g}{22}{0}{0}
+\shiftglyph{h}{5}{0}{0}
+\shiftglyph{i}{-7}{7}{0}     
+\shiftglyph{j}{104}{0}{0}
+%\shiftglyph{l}{-21}{0}{0}   
+\shiftglyph{l}{0}{30}{0}
+\shiftglyph{o}{0}{-50}{0}
+\shiftglyph{p}{55}{0}{0}
+\shiftglyph{q}{0}{0}{0}
+\shiftglyph{r}{-10}{0}{0}
+\shiftglyph{x}{17}{0}{0}
+\shiftglyph{y}{44}{0}{0}
+\shiftglyph{z}{18}{0}{0}
+
+\shiftglyph{alpha}{-75}{-50}{0}
+\shiftglyph{beta}{-35}{-135}{0}
+\shiftglyph{gamma}{-35}{-50}{0}
+\shiftglyph{delta}{-35}{-100}{0}
+\shiftglyph{epsilon}{-75}{-100}{0}
+\shiftglyph{epsilon1}{-75}{-100}{0}
+\shiftglyph{zeta}{-75}{-50}{0}
+\shiftglyph{eta}{0}{-100}{0}
+\shiftglyph{theta}{-75}{-100}{0}
+\shiftglyph{theta1}{-35}{-135}{0}
+\shiftglyph{iota}{-75}{-135}{0}
+\shiftglyph{kappa}{-75}{-50}{0}
+\shiftglyph{lambda}{0}{-100}{0}
+\shiftglyph{mu}{-35}{-50}{0}
+\shiftglyph{nu}{-35}{-50}{0}
+\shiftglyph{xi}{-75}{-50}{0}
+%\shiftglyph{pi}{}{}{0}
+\shiftglyph{pi1}{-45}{-135}{0} % -35/-135
+\shiftglyph{rho}{-35}{-100}{0}
+\shiftglyph{sigma}{-75}{0}{0}
+\shiftglyph{tau}{-35}{0}{0}
+\shiftglyph{upsilon}{0}{-50}{0}
+\shiftglyph{phi}{-50}{-135}{0} % -35/-135
+\shiftglyph{phi1}{-75}{-135}{0}
+\shiftglyph{chi}{0}{-100}{0}
+\shiftglyph{psi}{-35}{-135}{0}
+\shiftglyph{omega}{-45}{-100}{0} % -25/-100
+%\shiftglyph{omega}{-45}{-100}{0}
+
+\shiftglyph{Gamma}{0}{100}{0}
+\shiftglyph{Delta}{0}{-50}{0}
+\shiftglyph{Lambda}{0}{-50}{0}
+\shiftglyph{Upsilon}{-75}{0}{0}
+\shiftglyph{Phi}{-75}{-125}{0}
+\shiftglyph{Psi}{-35}{0}{0}
+\shiftglyph{Theta}{-25}{-25}{0}
+
+\shiftglyph{vector}{-75}{+75}{0}
+
+\skewkern{A}{125} %\skewkern{A}{75}
+\skewkern{B}{75} %\skewkern{B}{100}
+\skewkern{C}{100}
+\skewkern{D}{50}
+\skewkern{E}{75}
+\skewkern{F}{75}
+\skewkern{G}{100}
+\skewkern{H}{50}
+\skewkern{I}{100}
+\skewkern{J}{100} %\skewkern{J}{200}
+\skewkern{K}{75}
+\skewkern{M}{100}
+\skewkern{N}{25}
+\skewkern{O}{75} %\skewkern{O}{100}
+\skewkern{P}{100}
+\skewkern{Q}{100}
+\skewkern{R}{50} %\skewkern{R}{100}
+\skewkern{S}{100}
+\skewkern{T}{50}
+\skewkern{U}{50}
+\skewkern{V}{50} %
+\skewkern{Y}{25} %
+\skewkern{X}{50}
+\skewkern{Z}{50}
+\skewkern{a}{25} % \skewkern{a}{75} % 50?
+\skewkern{c}{75}
+\skewkern{d}{200}
+\skewkern{e}{75}
+\skewkern{f}{150}
+\skewkern{g}{75}
+\skewkern{i}{75}
+\skewkern{j}{150}
+\skewkern{l}{75} %\skewkern{l}{100}
+\skewkern{m}{50}
+\skewkern{n}{25} %\skewkern{n}{50}
+\skewkern{o}{50} %\skewkern{o}{75}
+\skewkern{p}{75} %\skewkern{p}{100}
+\skewkern{q}{75}
+\skewkern{r}{25} %\skewkern{r}{50} ???
+\skewkern{s}{50} %\skewkern{s}{100}
+\skewkern{t}{50}
+\skewkern{u}{75}
+\skewkern{v}{75}
+\skewkern{w}{75}
+\skewkern{x}{75}
+\skewkern{y}{75}
+\skewkern{z}{50}
+
+\skewkern{dotlessj}{50}
+\skewkern{beta}{75}  
+\skewkern{chi}{25}
+\skewkern{delta}{50}
+\skewkern{epsilon}{50}
+\skewkern{epsilon1}{75}
+\skewkern{gamma}{75}
+\skewkern{mu}{50}
+\skewkern{nu}{50}
+\skewkern{pi}{50} %%
+\skewkern{phi}{75} %% \skewkern{phi}{125}
+\skewkern{psi}{75} %% \skewkern{psi}{125}
+\skewkern{omega}{50} %%
+\skewkern{rho}{50}
+\skewkern{rho1}{50}
+\skewkern{sigma1}{25}
+\skewkern{tau}{25} %%%
+\skewkern{theta}{75}
+\skewkern{theta1}{50} %%% 125
+\skewkern{upsilon}{25}
+\skewkern{xi}{25}
+\skewkern{zeta}{50}
+\skewkern{Delta}{100} %% 50
+\skewkern{Gamma}{100} %% 50
+\skewkern{Lambda}{100} %% 50
+\skewkern{Pi}{25} %%
+\skewkern{Sigma}{50} %%
+\skewkern{Upsilon}{25} %%
+\skewkern{Phi}{50}
+\skewkern{Psi}{75} %% 50
+\skewkern{Theta}{50}
+\skewkern{Xi}{25} %%
+\skewkern{Omega}{50}
+
+\comment{\section{Math symbol glyphs}}
+
+\unfakable{Gamma}
+\unfakable{Delta}
+\unfakable{Theta}
+\unfakable{Lambda}
+\unfakable{Xi}
+\unfakable{Pi}
+\unfakable{Sigma}
+\unfakable{Phi}
+\unfakable{Psi}
+\unfakable{Omega}
+\unfakable{alpha}
+\unfakable{beta}
+\unfakable{gamma}
+\unfakable{delta}
+\unfakable{zeta}
+\unfakable{eta}
+\unfakable{theta}
+\unfakable{iota}
+\unfakable{kappa}
+\unfakable{lambda}
+\unfakable{mu}
+\unfakable{nu}
+\unfakable{xi}
+\unfakable{pi}
+\unfakable{rho}
+\unfakable{sigma}
+\unfakable{tau}
+\unfakable{upsilon}
+\unfakable{phi}
+\unfakable{chi}
+\unfakable{psi}
+\unfakable{omega}
+\unfakable{epsilon}
+
+
+\unfakable{triangleright}
+\unfakable{triangleleft}
+\unfakable{period}
+\unfakable{comma}
+\unfakable{less}
+\unfakable{slash}
+\unfakable{greater}
+\unfakable{star}
+\unfakable{partialdiff}
+\unfakable{A}
+\unfakable{B}
+\unfakable{C}
+\unfakable{D}
+\unfakable{E}
+\unfakable{F}
+\unfakable{G}
+\unfakable{H}
+\unfakable{I}
+\unfakable{J}
+\unfakable{K}
+\unfakable{L}
+\unfakable{M}
+\unfakable{N}
+\unfakable{O}
+\unfakable{P}
+\unfakable{Q}
+\unfakable{R}
+\unfakable{S}
+\unfakable{T}
+\unfakable{U}
+\unfakable{V}
+\unfakable{W}
+\unfakable{X}
+\unfakable{Y}
+\unfakable{Z}
+\unfakable{flat}
+\unfakable{sharp}
+\unfakable{natural}
+\unfakable{slurabove}
+\unfakable{slurbelow}
+\unfakable{lscript}
+\unfakable{a}
+\unfakable{b}
+\unfakable{c}
+\unfakable{d}
+\unfakable{e}
+\unfakable{f}
+\unfakable{g}
+\unfakable{h}
+\unfakable{i}
+\unfakable{j}
+\unfakable{k}
+\unfakable{l}
+\unfakable{m}
+\unfakable{n}
+\unfakable{o}
+\unfakable{p}
+\unfakable{q}
+\unfakable{r}
+\unfakable{s}
+\unfakable{t}
+\unfakable{u}
+\unfakable{v}
+\unfakable{w}
+\unfakable{x}
+\unfakable{y}
+\unfakable{z}
+\unfakable{dotlessi}
+\unfakable{dotlessj}
+\unfakable{weierstrass}
+\unfakable{tie}
+
+
+\unfakable{zero}
+\unfakable{one}
+\unfakable{two}
+\unfakable{three}
+\unfakable{four}
+\unfakable{five}
+\unfakable{six}
+\unfakable{seven}
+\unfakable{eight}
+\unfakable{nine}
+
+\setkern{d}{f}{-50}
+\setkern{d}{j}{-25}
+
+\endmetrics
+
+
+\endmetrics
+

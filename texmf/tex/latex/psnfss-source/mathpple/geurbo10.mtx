@@ -1,0 +1,60 @@
+%Filename: geurbo10.mtx
+%Created using: \mtxtomtx{eurb10}{eurbo10}
+
+%This file is used by the fontinst package.
+
+% greek letters from Euler Bold oblique;
+% unused symbols deleted manually
+
+\relax
+\metrics
+
+\needsfontinstversion{1.801}
+
+%\setint{italicslant}{167}
+%\setint{maxheight}{723}
+%\setint{maxdepth_neg}{-208}
+%\setint{xheight}{486}
+%\setint{capheight}{702}
+%\setint{ascender}{702}
+%\setint{descender_neg}{-189}
+\setrawglyph{Gamma}{eurbo10}{10pt}{0}{536}{702}{0}{117}
+\setrawglyph{Delta}{eurbo10}{10pt}{1}{783}{702}{0}{117}
+\setrawglyph{Theta}{eurbo10}{10pt}{2}{969}{702}{0}{117}
+\setrawglyph{Lambda}{eurbo10}{10pt}{3}{848}{702}{0}{117}
+\setrawglyph{Xi}{eurbo10}{10pt}{4}{653}{702}{0}{117}
+\setrawglyph{Pi}{eurbo10}{10pt}{5}{845}{702}{0}{117}
+\setrawglyph{Sigma}{eurbo10}{10pt}{6}{713}{702}{0}{117}
+\setrawglyph{Upsilon}{eurbo10}{10pt}{7}{794}{702}{0}{117}
+\setrawglyph{Phi}{eurbo10}{10pt}{8}{974}{702}{0}{117}
+\setrawglyph{Psi}{eurbo10}{10pt}{9}{782}{702}{0}{117}
+\setrawglyph{Omega}{eurbo10}{10pt}{10}{960}{702}{0}{117}
+\setrawglyph{alpha}{eurbo10}{10pt}{11}{715}{486}{0}{81}
+\setrawglyph{beta}{eurbo10}{10pt}{12}{700}{702}{189}{117}
+\setrawglyph{gamma}{eurbo10}{10pt}{13}{646}{486}{189}{81}
+\setrawglyph{delta}{eurbo10}{10pt}{14}{584}{702}{0}{117}
+\setrawglyph{epsilon1}{eurbo10}{10pt}{15}{588}{486}{0}{81}
+\setrawglyph{zeta}{eurbo10}{10pt}{16}{524}{702}{126}{117}
+\setrawglyph{eta}{eurbo10}{10pt}{17}{652}{486}{189}{81}
+\setrawglyph{theta}{eurbo10}{10pt}{18}{649}{702}{0}{117}
+\setrawglyph{iota}{eurbo10}{10pt}{19}{354}{486}{0}{81}
+\setrawglyph{kappa}{eurbo10}{10pt}{20}{583}{486}{0}{81}
+\setrawglyph{lambda}{eurbo10}{10pt}{21}{596}{702}{0}{117}
+\setrawglyph{mu}{eurbo10}{10pt}{22}{646}{486}{189}{81}
+\setrawglyph{nu}{eurbo10}{10pt}{23}{639}{486}{0}{81}
+\setrawglyph{xi}{eurbo10}{10pt}{24}{588}{702}{126}{117}
+\setrawglyph{pi}{eurbo10}{10pt}{25}{664}{486}{0}{81}
+\setrawglyph{rho}{eurbo10}{10pt}{26}{611}{486}{189}{81}
+\setrawglyph{sigma}{eurbo10}{10pt}{27}{700}{486}{0}{81}
+\setrawglyph{tau}{eurbo10}{10pt}{28}{581}{486}{0}{81}
+\setrawglyph{upsilon}{eurbo10}{10pt}{29}{622}{486}{0}{81}
+\setrawglyph{phi}{eurbo10}{10pt}{30}{874}{702}{189}{117}
+\setrawglyph{chi}{eurbo10}{10pt}{31}{588}{486}{189}{81}
+\setrawglyph{psi}{eurbo10}{10pt}{32}{822}{702}{189}{117}
+\setrawglyph{omega}{eurbo10}{10pt}{33}{973}{486}{0}{81}
+\setrawglyph{epsilon}{eurbo10}{10pt}{34}{532}{486}{0}{81}
+\setrawglyph{theta1}{eurbo10}{10pt}{35}{639}{702}{0}{117}
+\setrawglyph{pi1}{eurbo10}{10pt}{36}{933}{629}{0}{105}
+\setrawglyph{phi1}{eurbo10}{10pt}{39}{817}{486}{0}{81}
+
+\endmetrics

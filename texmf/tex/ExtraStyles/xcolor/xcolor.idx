@@ -1,0 +1,849 @@
+\indexentry{packages>\textsf  {xcolor}|usage}{1}
+\indexentry{packages>\textsf  {xcolor}|usage}{1}
+\indexentry{packages>\textsf  {color}|usage}{4}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{4}
+\indexentry{color names>\textsl  {green}|usage}{4}
+\indexentry{color names>\textsl  {yellow}|usage}{4}
+\indexentry{color names>\textsl  {red}|usage}{4}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{4}
+\indexentry{packages>\textsf  {xcolor}|usage}{4}
+\indexentry{tint|usage}{4}
+\indexentry{color names>\textsl  {white}|usage}{4}
+\indexentry{shade|usage}{4}
+\indexentry{color names>\textsl  {black}|usage}{4}
+\indexentry{tone|usage}{4}
+\indexentry{color names>\textsl  {gray}|usage}{4}
+\indexentry{color names>\textsl  {white}|usage}{5}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{5}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{5}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{5}
+\indexentry{color names>\textsl  {red}|usage}{5}
+\indexentry{color names>\textsl  {green}|usage}{5}
+\indexentry{color names>\textsl  {blue}|usage}{5}
+\indexentry{packages>\textsf  {xcolor}|usage}{5}
+\indexentry{packages>\textsf  {color}|usage}{5}
+\indexentry{package options>\texttt  {dvips}|usage}{5}
+\indexentry{package options>\texttt  {xdvi}|usage}{5}
+\indexentry{package options>\texttt  {dvipdf}|usage}{5}
+\indexentry{package options>\texttt  {dvipdfm}|usage}{5}
+\indexentry{package options>\texttt  {pdftex}|usage}{5}
+\indexentry{package options>\texttt  {dvipsone}|usage}{5}
+\indexentry{package options>\texttt  {dviwindo}|usage}{5}
+\indexentry{package options>\texttt  {emtex}|usage}{5}
+\indexentry{package options>\texttt  {dviwin}|usage}{5}
+\indexentry{package options>\texttt  {oztex}|usage}{5}
+\indexentry{package options>\texttt  {textures}|usage}{5}
+\indexentry{package options>\texttt  {pctexps}|usage}{5}
+\indexentry{package options>\texttt  {pctexwin}|usage}{5}
+\indexentry{package options>\texttt  {pctexhp}|usage}{5}
+\indexentry{package options>\texttt  {pctex32}|usage}{5}
+\indexentry{package options>\texttt  {truetex}|usage}{5}
+\indexentry{package options>\texttt  {tcidvi}|usage}{5}
+\indexentry{package options>\texttt  {vtex}|usage}{5}
+\indexentry{package options>\texttt  {natural}|usage}{5}
+\indexentry{package options>\texttt  {rgb}|usage}{5}
+\indexentry{package options>\texttt  {cmy}|usage}{5}
+\indexentry{package options>\texttt  {cmyk}|usage}{5}
+\indexentry{package options>\texttt  {hsb}|usage}{5}
+\indexentry{package options>\texttt  {gray}|usage}{5}
+\indexentry{package options>\texttt  {RGB}|usage}{5}
+\indexentry{package options>\texttt  {HTML}|usage}{5}
+\indexentry{package options>\texttt  {HSB}|usage}{5}
+\indexentry{package options>\texttt  {Gray}|usage}{5}
+\indexentry{package options>\texttt  {monochrome}|usage}{5}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{5}
+\indexentry{package options>\texttt  {svgnames}|usage}{5}
+\indexentry{package options>\texttt  {pst}|usage}{5}
+\indexentry{package options>\texttt  {table}|usage}{5}
+\indexentry{package options>\texttt  {hyperref}|usage}{5}
+\indexentry{files>\texttt  {pstricks.sty}|usage}{5}
+\indexentry{packages>\textsf  {xcolor}|usage}{5}
+\indexentry{packages>\textsf  {pstcol}|usage}{5}
+\indexentry{package options>\texttt  {showerrors}|usage}{6}
+\indexentry{package options>\texttt  {hideerrors}|usage}{6}
+\indexentry{package options>\texttt  {override}|usage}{6}
+\indexentry{package options>\texttt  {usenames}|usage}{6}
+\indexentry{package options>\texttt  {nodvipsnames}|usage}{6}
+\indexentry{GetGinDriver=\verb!*+\GetGinDriver+|usage}{6}
+\indexentry{GinDriver=\verb!*+\GinDriver+|usage}{6}
+\indexentry{packages>\textsf  {hyperref}|usage}{6}
+\indexentry{packages>\textsf  {hyperref}|usage}{6}
+\indexentry{packages>\textsf  {hyperref}|usage}{6}
+\indexentry{package options>\texttt  {hypertex}|usage}{6}
+\indexentry{packages>\textsf  {xcolor}|usage}{6}
+\indexentry{packages>\textsf  {color}|usage}{6}
+\indexentry{package options>\texttt  {dvips}|usage}{6}
+\indexentry{packages>\textsf  {color}|usage}{6}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{6}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{6}
+\indexentry{packages>\textsf  {xcolor}|usage}{6}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{6}
+\indexentry{xcolorcmd=\verb!*+\xcolorcmd+|usage}{6}
+\indexentry{packages>\textsf  {xcolor}|usage}{6}
+\indexentry{packages>\textsf  {xcolor}|usage}{6}
+\indexentry{color names>\textsl  {black}|usage}{6}
+\indexentry{color names>\textsl  {red}|usage}{6}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{6}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{6}
+\indexentry{adjustUCRBG=\verb!*+\adjustUCRBG+|usage}{6}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{6}
+\indexentry{rangeRGB=\verb!*+\rangeRGB+|usage}{6}
+\indexentry{rangeHSB=\verb!*+\rangeHSB+|usage}{6}
+\indexentry{rangeGray=\verb!*+\rangeGray+|usage}{6}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{6}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{6}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{6}
+\indexentry{packages>\textsf  {xcolor}|usage}{6}
+\indexentry{package options>\texttt  {hyperref}|usage}{6}
+\indexentry{packages>\textsf  {color}|usage}{7}
+\indexentry{packages>\textsf  {pstcol}|usage}{7}
+\indexentry{packages>\textsf  {colortbl}|usage}{7}
+\indexentry{packages>\textsf  {hyperref}|usage}{7}
+\indexentry{packages>\textsf  {xcolor}|usage}{7}
+\indexentry{packages>\textsf  {xcolor}|usage}{7}
+\indexentry{package options>\texttt  {pst}|usage}{7}
+\indexentry{package options>\texttt  {table}|usage}{7}
+\indexentry{packages>\textsf  {xcolor}|usage}{7}
+\indexentry{files>\texttt  {pstricks.sty}|usage}{7}
+\indexentry{package options>\texttt  {natural}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{7}
+\indexentry{package options>\texttt  {rgb}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{7}
+\indexentry{package options>\texttt  {cmy}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{7}
+\indexentry{package options>\texttt  {cmyk}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{7}
+\indexentry{package options>\texttt  {hsb}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{7}
+\indexentry{package options>\texttt  {gray}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{7}
+\indexentry{package options>\texttt  {RGB}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{7}
+\indexentry{package options>\texttt  {HTML}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{7}
+\indexentry{package options>\texttt  {HSB}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{7}
+\indexentry{package options>\texttt  {Gray}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{7}
+\indexentry{package options>\texttt  {pst}|usage}{7}
+\indexentry{packages>\textsf  {pstcol}|usage}{7}
+\indexentry{packages>\textsf  {pstricks}|usage}{7}
+\indexentry{package options>\texttt  {table}|usage}{7}
+\indexentry{packages>\textsf  {colortbl}|usage}{7}
+\indexentry{package options>\texttt  {hyperref}|usage}{7}
+\indexentry{packages>\textsf  {hyperref}|usage}{7}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{7}
+\indexentry{package options>\texttt  {svgnames}|usage}{7}
+\indexentry{package options>\texttt  {showerrors}|usage}{7}
+\indexentry{packages>\textsf  {color}|usage}{7}
+\indexentry{package options>\texttt  {hideerrors}|usage}{7}
+\indexentry{color names>\textsl  {black}|usage}{7}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{8}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{8}
+\indexentry{selectcolormodel=\verb!*+\selectcolormodel+|usage}{8}
+\indexentry{package options>\texttt  {natural}|usage}{8}
+\indexentry{package options>\texttt  {rgb}|usage}{8}
+\indexentry{package options>\texttt  {cmy}|usage}{8}
+\indexentry{package options>\texttt  {cmyk}|usage}{8}
+\indexentry{package options>\texttt  {hsb}|usage}{8}
+\indexentry{package options>\texttt  {gray}|usage}{8}
+\indexentry{package options>\texttt  {RGB}|usage}{8}
+\indexentry{package options>\texttt  {HTML}|usage}{8}
+\indexentry{package options>\texttt  {HSB}|usage}{8}
+\indexentry{package options>\texttt  {Gray}|usage}{8}
+\indexentry{ifconvertcolorsD=\verb!*+\ifconvertcolorsD+|usage}{8}
+\indexentry{ifconvertcolorsU=\verb!*+\ifconvertcolorsU+|usage}{8}
+\indexentry{package options>\texttt  {natural}|usage}{8}
+\indexentry{packages>\textsf  {xcolor}|usage}{9}
+\indexentry{packages>\textsf  {xcolor}|usage}{9}
+\indexentry{arguments>\meta  {empty}|usage}{9}
+\indexentry{arguments>\meta  {minus}|usage}{9}
+\indexentry{arguments>\meta  {plus}|usage}{9}
+\indexentry{arguments>\meta  {int}|usage}{9}
+\indexentry{arguments>\meta  {num}|usage}{9}
+\indexentry{arguments>\meta  {dec}|usage}{9}
+\indexentry{arguments>\meta  {pct}|usage}{9}
+\indexentry{arguments>\meta  {div}|usage}{9}
+\indexentry{packages>\textsf  {xcolor}|usage}{9}
+\indexentry{arguments>\meta  {name}|usage}{9}
+\indexentry{packages>\textsf  {xcolor}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{9}
+\indexentry{arguments>\meta  {core model}|usage}{9}
+\indexentry{arguments>\meta  {num model}|usage}{9}
+\indexentry{arguments>\meta  {model}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{9}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{9}
+\indexentry{color models>`named'|usage}{9}
+\indexentry{arguments>\meta  {empty}|usage}{10}
+\indexentry{arguments>\meta  {minus}|usage}{10}
+\indexentry{arguments>\meta  {plus}|usage}{10}
+\indexentry{arguments>\meta  {int}|usage}{10}
+\indexentry{arguments>\meta  {num}|usage}{10}
+\indexentry{arguments>\meta  {dec}|usage}{10}
+\indexentry{arguments>\meta  {div}|usage}{10}
+\indexentry{arguments>\meta  {pct}|usage}{10}
+\indexentry{arguments>\meta  {name}|usage}{10}
+\indexentry{arguments>\meta  {core model}|usage}{10}
+\indexentry{arguments>\meta  {num model}|usage}{10}
+\indexentry{arguments>\meta  {model}|usage}{10}
+\indexentry{arguments>\meta  {spec}|usage}{10}
+\indexentry{arguments>\meta  {type}|usage}{10}
+\indexentry{arguments>\meta  {expr}|usage}{10}
+\indexentry{arguments>\meta  {prefix}|usage}{10}
+\indexentry{arguments>\meta  {mix expr}|usage}{10}
+\indexentry{arguments>\meta  {postfix}|usage}{10}
+\indexentry{arguments>\meta  {ext expr}|usage}{10}
+\indexentry{arguments>\meta  {color}|usage}{10}
+\indexentry{color models>`named'|usage}{11}
+\indexentry{arguments>\meta  {spec}|usage}{11}
+\indexentry{arguments>\meta  {type}|usage}{11}
+\indexentry{arguments>\meta  {expr}|usage}{11}
+\indexentry{arguments>\meta  {prefix}|usage}{11}
+\indexentry{arguments>\meta  {mix expr}|usage}{11}
+\indexentry{arguments>\meta  {postfix}|usage}{11}
+\indexentry{arguments>\meta  {ext expr}|usage}{11}
+\indexentry{arguments>\meta  {color}|usage}{11}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{12}
+\indexentry{color names>\textsl  {red}|usage}{13}
+\indexentry{color names>\textsl  {green}|usage}{13}
+\indexentry{color names>\textsl  {yellow}|usage}{13}
+\indexentry{color names>\textsl  {yellow}|usage}{13}
+\indexentry{color names>\textsl  {red}|usage}{13}
+\indexentry{color names>\textsl  {green}|usage}{13}
+\indexentry{color names>\textsl  {blue}|usage}{13}
+\indexentry{color names>\textsl  {cyan}|usage}{13}
+\indexentry{color names>\textsl  {magenta}|usage}{13}
+\indexentry{color names>\textsl  {yellow}|usage}{13}
+\indexentry{color names>\textsl  {orange}|usage}{13}
+\indexentry{color names>\textsl  {violet}|usage}{13}
+\indexentry{color names>\textsl  {purple}|usage}{13}
+\indexentry{color names>\textsl  {brown}|usage}{13}
+\indexentry{color names>\textsl  {black}|usage}{13}
+\indexentry{color names>\textsl  {darkgray}|usage}{13}
+\indexentry{color names>\textsl  {gray}|usage}{13}
+\indexentry{color names>\textsl  {lightgray}|usage}{13}
+\indexentry{color names>\textsl  {white}|usage}{13}
+\indexentry{packages>\textsf  {xcolor}|usage}{14}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{14}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{14}
+\indexentry{package options>\texttt  {svgnames}|usage}{14}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{14}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{14}
+\indexentry{color names>\textsl  {Apricot}|usage}{14}
+\indexentry{color names>\textsl  {Aquamarine}|usage}{14}
+\indexentry{color names>\textsl  {Bittersweet}|usage}{14}
+\indexentry{color names>\textsl  {Black}|usage}{14}
+\indexentry{color names>\textsl  {BlueGreen}|usage}{14}
+\indexentry{color names>\textsl  {BlueViolet}|usage}{14}
+\indexentry{color names>\textsl  {Blue}|usage}{14}
+\indexentry{color names>\textsl  {BrickRed}|usage}{14}
+\indexentry{color names>\textsl  {Brown}|usage}{14}
+\indexentry{color names>\textsl  {BurntOrange}|usage}{14}
+\indexentry{color names>\textsl  {CadetBlue}|usage}{14}
+\indexentry{color names>\textsl  {CarnationPink}|usage}{14}
+\indexentry{color names>\textsl  {Cerulean}|usage}{14}
+\indexentry{color names>\textsl  {CornflowerBlue}|usage}{14}
+\indexentry{color names>\textsl  {Cyan}|usage}{14}
+\indexentry{color names>\textsl  {Dandelion}|usage}{14}
+\indexentry{color names>\textsl  {DarkOrchid}|usage}{14}
+\indexentry{color names>\textsl  {Emerald}|usage}{14}
+\indexentry{color names>\textsl  {ForestGreen}|usage}{14}
+\indexentry{color names>\textsl  {Fuchsia}|usage}{14}
+\indexentry{color names>\textsl  {Goldenrod}|usage}{14}
+\indexentry{color names>\textsl  {Gray}|usage}{14}
+\indexentry{color names>\textsl  {GreenYellow}|usage}{14}
+\indexentry{color names>\textsl  {Green}|usage}{14}
+\indexentry{color names>\textsl  {JungleGreen}|usage}{14}
+\indexentry{color names>\textsl  {Lavender}|usage}{14}
+\indexentry{color names>\textsl  {LimeGreen}|usage}{14}
+\indexentry{color names>\textsl  {Magenta}|usage}{14}
+\indexentry{color names>\textsl  {Mahogany}|usage}{14}
+\indexentry{color names>\textsl  {Maroon}|usage}{14}
+\indexentry{color names>\textsl  {Melon}|usage}{14}
+\indexentry{color names>\textsl  {MidnightBlue}|usage}{14}
+\indexentry{color names>\textsl  {Mulberry}|usage}{14}
+\indexentry{color names>\textsl  {NavyBlue}|usage}{14}
+\indexentry{color names>\textsl  {OliveGreen}|usage}{14}
+\indexentry{color names>\textsl  {OrangeRed}|usage}{14}
+\indexentry{color names>\textsl  {Orange}|usage}{14}
+\indexentry{color names>\textsl  {Orchid}|usage}{14}
+\indexentry{color names>\textsl  {Peach}|usage}{14}
+\indexentry{color names>\textsl  {Periwinkle}|usage}{14}
+\indexentry{color names>\textsl  {PineGreen}|usage}{14}
+\indexentry{color names>\textsl  {Plum}|usage}{14}
+\indexentry{color names>\textsl  {ProcessBlue}|usage}{14}
+\indexentry{color names>\textsl  {Purple}|usage}{14}
+\indexentry{color names>\textsl  {RawSienna}|usage}{14}
+\indexentry{color names>\textsl  {RedOrange}|usage}{14}
+\indexentry{color names>\textsl  {RedViolet}|usage}{14}
+\indexentry{color names>\textsl  {Red}|usage}{14}
+\indexentry{color names>\textsl  {Rhodamine}|usage}{14}
+\indexentry{color names>\textsl  {RoyalBlue}|usage}{14}
+\indexentry{color names>\textsl  {RoyalPurple}|usage}{14}
+\indexentry{color names>\textsl  {RubineRed}|usage}{14}
+\indexentry{color names>\textsl  {Salmon}|usage}{14}
+\indexentry{color names>\textsl  {SeaGreen}|usage}{14}
+\indexentry{color names>\textsl  {Sepia}|usage}{14}
+\indexentry{color names>\textsl  {SkyBlue}|usage}{14}
+\indexentry{color names>\textsl  {SpringGreen}|usage}{14}
+\indexentry{color names>\textsl  {Tan}|usage}{14}
+\indexentry{color names>\textsl  {TealBlue}|usage}{14}
+\indexentry{color names>\textsl  {Thistle}|usage}{14}
+\indexentry{color names>\textsl  {Turquoise}|usage}{14}
+\indexentry{color names>\textsl  {VioletRed}|usage}{14}
+\indexentry{color names>\textsl  {Violet}|usage}{14}
+\indexentry{color names>\textsl  {White}|usage}{14}
+\indexentry{color names>\textsl  {WildStrawberry}|usage}{14}
+\indexentry{color names>\textsl  {YellowGreen}|usage}{14}
+\indexentry{color names>\textsl  {YellowOrange}|usage}{14}
+\indexentry{color names>\textsl  {Yellow}|usage}{14}
+\indexentry{packages>\textsf  {color}|usage}{14}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{14}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{14}
+\indexentry{package options>\texttt  {svgnames}|usage}{15}
+\indexentry{color names>\textsl  {AliceBlue}|usage}{15}
+\indexentry{color names>\textsl  {AntiqueWhite}|usage}{15}
+\indexentry{color names>\textsl  {Aqua}|usage}{15}
+\indexentry{color names>\textsl  {Aquamarine}|usage}{15}
+\indexentry{color names>\textsl  {Azure}|usage}{15}
+\indexentry{color names>\textsl  {Beige}|usage}{15}
+\indexentry{color names>\textsl  {Bisque}|usage}{15}
+\indexentry{color names>\textsl  {Black}|usage}{15}
+\indexentry{color names>\textsl  {BlanchedAlmond}|usage}{15}
+\indexentry{color names>\textsl  {Blue}|usage}{15}
+\indexentry{color names>\textsl  {BlueViolet}|usage}{15}
+\indexentry{color names>\textsl  {Brown}|usage}{15}
+\indexentry{color names>\textsl  {BurlyWood}|usage}{15}
+\indexentry{color names>\textsl  {CadetBlue}|usage}{15}
+\indexentry{color names>\textsl  {Chartreuse}|usage}{15}
+\indexentry{color names>\textsl  {Chocolate}|usage}{15}
+\indexentry{color names>\textsl  {Coral}|usage}{15}
+\indexentry{color names>\textsl  {CornflowerBlue}|usage}{15}
+\indexentry{color names>\textsl  {Cornsilk}|usage}{15}
+\indexentry{color names>\textsl  {Crimson}|usage}{15}
+\indexentry{color names>\textsl  {Cyan}|usage}{15}
+\indexentry{color names>\textsl  {DarkBlue}|usage}{15}
+\indexentry{color names>\textsl  {DarkCyan}|usage}{15}
+\indexentry{color names>\textsl  {DarkGoldenrod}|usage}{15}
+\indexentry{color names>\textsl  {DarkGray}|usage}{15}
+\indexentry{color names>\textsl  {DarkGreen}|usage}{15}
+\indexentry{color names>\textsl  {DarkGrey}|usage}{15}
+\indexentry{color names>\textsl  {DarkKhaki}|usage}{15}
+\indexentry{color names>\textsl  {DarkMagenta}|usage}{15}
+\indexentry{color names>\textsl  {DarkOliveGreen}|usage}{15}
+\indexentry{color names>\textsl  {DarkOrange}|usage}{15}
+\indexentry{color names>\textsl  {DarkOrchid}|usage}{15}
+\indexentry{color names>\textsl  {DarkRed}|usage}{15}
+\indexentry{color names>\textsl  {DarkSalmon}|usage}{15}
+\indexentry{color names>\textsl  {DarkSeaGreen}|usage}{15}
+\indexentry{color names>\textsl  {DarkSlateBlue}|usage}{15}
+\indexentry{color names>\textsl  {DarkSlateGray}|usage}{15}
+\indexentry{color names>\textsl  {DarkSlateGrey}|usage}{15}
+\indexentry{color names>\textsl  {DarkTurquoise}|usage}{15}
+\indexentry{color names>\textsl  {DarkViolet}|usage}{15}
+\indexentry{color names>\textsl  {DeepPink}|usage}{15}
+\indexentry{color names>\textsl  {DeepSkyBlue}|usage}{15}
+\indexentry{color names>\textsl  {DimGray}|usage}{15}
+\indexentry{color names>\textsl  {DimGrey}|usage}{15}
+\indexentry{color names>\textsl  {DodgerBlue}|usage}{15}
+\indexentry{color names>\textsl  {FireBrick}|usage}{15}
+\indexentry{color names>\textsl  {FloralWhite}|usage}{15}
+\indexentry{color names>\textsl  {ForestGreen}|usage}{15}
+\indexentry{color names>\textsl  {Fuchsia}|usage}{15}
+\indexentry{color names>\textsl  {Gainsboro}|usage}{15}
+\indexentry{color names>\textsl  {GhostWhite}|usage}{15}
+\indexentry{color names>\textsl  {Gold}|usage}{15}
+\indexentry{color names>\textsl  {Goldenrod}|usage}{15}
+\indexentry{color names>\textsl  {Gray}|usage}{15}
+\indexentry{color names>\textsl  {Grey}|usage}{15}
+\indexentry{color names>\textsl  {Green}|usage}{15}
+\indexentry{color names>\textsl  {GreenYellow}|usage}{15}
+\indexentry{color names>\textsl  {Honeydew}|usage}{15}
+\indexentry{color names>\textsl  {HotPink}|usage}{15}
+\indexentry{color names>\textsl  {IndianRed}|usage}{15}
+\indexentry{color names>\textsl  {Indigo}|usage}{15}
+\indexentry{color names>\textsl  {Ivory}|usage}{15}
+\indexentry{color names>\textsl  {Khaki}|usage}{15}
+\indexentry{color names>\textsl  {Lavender}|usage}{15}
+\indexentry{color names>\textsl  {LavenderBlush}|usage}{15}
+\indexentry{color names>\textsl  {LawnGreen}|usage}{15}
+\indexentry{color names>\textsl  {LemonChiffon}|usage}{15}
+\indexentry{color names>\textsl  {LightBlue}|usage}{15}
+\indexentry{color names>\textsl  {LightCoral}|usage}{15}
+\indexentry{color names>\textsl  {LightCyan}|usage}{15}
+\indexentry{color names>\textsl  {LightGoldenrodYellow}|usage}{15}
+\indexentry{color names>\textsl  {LightGray}|usage}{15}
+\indexentry{color names>\textsl  {LightGreen}|usage}{15}
+\indexentry{color names>\textsl  {LightGrey}|usage}{15}
+\indexentry{color names>\textsl  {LightPink}|usage}{15}
+\indexentry{color names>\textsl  {LightSalmon}|usage}{15}
+\indexentry{color names>\textsl  {LightSeaGreen}|usage}{15}
+\indexentry{color names>\textsl  {LightSkyBlue}|usage}{15}
+\indexentry{color names>\textsl  {LightSlateGray}|usage}{15}
+\indexentry{color names>\textsl  {LightSlateGrey}|usage}{15}
+\indexentry{color names>\textsl  {LightSteelBlue}|usage}{15}
+\indexentry{color names>\textsl  {LightYellow}|usage}{15}
+\indexentry{color names>\textsl  {Lime}|usage}{15}
+\indexentry{color names>\textsl  {LimeGreen}|usage}{15}
+\indexentry{color names>\textsl  {Linen}|usage}{15}
+\indexentry{color names>\textsl  {Magenta}|usage}{15}
+\indexentry{color names>\textsl  {Maroon}|usage}{15}
+\indexentry{color names>\textsl  {MediumAquamarine}|usage}{15}
+\indexentry{color names>\textsl  {MediumBlue}|usage}{15}
+\indexentry{color names>\textsl  {MediumOrchid}|usage}{15}
+\indexentry{color names>\textsl  {MediumPurple}|usage}{15}
+\indexentry{color names>\textsl  {MediumSeaGreen}|usage}{15}
+\indexentry{color names>\textsl  {MediumSlateBlue}|usage}{15}
+\indexentry{color names>\textsl  {MediumSpringGreen}|usage}{15}
+\indexentry{color names>\textsl  {MediumTurquoise}|usage}{15}
+\indexentry{color names>\textsl  {MediumVioletRed}|usage}{15}
+\indexentry{color names>\textsl  {MidnightBlue}|usage}{15}
+\indexentry{color names>\textsl  {MintCream}|usage}{15}
+\indexentry{color names>\textsl  {MistyRose}|usage}{15}
+\indexentry{color names>\textsl  {Moccasin}|usage}{15}
+\indexentry{color names>\textsl  {NavajoWhite}|usage}{15}
+\indexentry{color names>\textsl  {Navy}|usage}{15}
+\indexentry{color names>\textsl  {OldLace}|usage}{15}
+\indexentry{color names>\textsl  {Olive}|usage}{15}
+\indexentry{color names>\textsl  {OliveDrab}|usage}{15}
+\indexentry{color names>\textsl  {Orange}|usage}{15}
+\indexentry{color names>\textsl  {OrangeRed}|usage}{15}
+\indexentry{color names>\textsl  {Orchid}|usage}{15}
+\indexentry{color names>\textsl  {PaleGoldenrod}|usage}{15}
+\indexentry{color names>\textsl  {PaleGreen}|usage}{15}
+\indexentry{color names>\textsl  {PaleTurquoise}|usage}{15}
+\indexentry{color names>\textsl  {PaleVioletRed}|usage}{15}
+\indexentry{color names>\textsl  {PapayaWhip}|usage}{15}
+\indexentry{color names>\textsl  {PeachPuff}|usage}{15}
+\indexentry{color names>\textsl  {Peru}|usage}{15}
+\indexentry{color names>\textsl  {Pink}|usage}{15}
+\indexentry{color names>\textsl  {Plum}|usage}{15}
+\indexentry{color names>\textsl  {PowderBlue}|usage}{15}
+\indexentry{color names>\textsl  {Purple}|usage}{15}
+\indexentry{color names>\textsl  {Red}|usage}{15}
+\indexentry{color names>\textsl  {RosyBrown}|usage}{15}
+\indexentry{color names>\textsl  {RoyalBlue}|usage}{15}
+\indexentry{color names>\textsl  {SaddleBrown}|usage}{15}
+\indexentry{color names>\textsl  {Salmon}|usage}{15}
+\indexentry{color names>\textsl  {SandyBrown}|usage}{15}
+\indexentry{color names>\textsl  {SeaGreen}|usage}{15}
+\indexentry{color names>\textsl  {Seashell}|usage}{15}
+\indexentry{color names>\textsl  {Sienna}|usage}{15}
+\indexentry{color names>\textsl  {Silver}|usage}{15}
+\indexentry{color names>\textsl  {SkyBlue}|usage}{15}
+\indexentry{color names>\textsl  {SlateBlue}|usage}{15}
+\indexentry{color names>\textsl  {SlateGray}|usage}{15}
+\indexentry{color names>\textsl  {SlateGrey}|usage}{15}
+\indexentry{color names>\textsl  {Snow}|usage}{15}
+\indexentry{color names>\textsl  {SpringGreen}|usage}{15}
+\indexentry{color names>\textsl  {SteelBlue}|usage}{15}
+\indexentry{color names>\textsl  {Tan}|usage}{15}
+\indexentry{color names>\textsl  {Teal}|usage}{15}
+\indexentry{color names>\textsl  {Thistle}|usage}{15}
+\indexentry{color names>\textsl  {Tomato}|usage}{15}
+\indexentry{color names>\textsl  {Turquoise}|usage}{15}
+\indexentry{color names>\textsl  {Violet}|usage}{15}
+\indexentry{color names>\textsl  {Wheat}|usage}{15}
+\indexentry{color names>\textsl  {White}|usage}{15}
+\indexentry{color names>\textsl  {WhiteSmoke}|usage}{15}
+\indexentry{color names>\textsl  {Yellow}|usage}{15}
+\indexentry{color names>\textsl  {YellowGreen}|usage}{15}
+\indexentry{color names>\textsl  {Aqua}|usage}{15}
+\indexentry{color names>\textsl  {Cyan}|usage}{15}
+\indexentry{color names>\textsl  {Fuchsia}|usage}{15}
+\indexentry{color names>\textsl  {Magenta}|usage}{15}
+\indexentry{color names>\textsl  {Gray}|usage}{15}
+\indexentry{color names>\textsl  {Grey}|usage}{15}
+\indexentry{color names>\textsl  {DarkGray}|usage}{15}
+\indexentry{color names>\textsl  {DarkGrey}|usage}{15}
+\indexentry{color names>\textsl  {LightGray}|usage}{15}
+\indexentry{color names>\textsl  {LightGrey}|usage}{15}
+\indexentry{color names>\textsl  {SlateGray}|usage}{15}
+\indexentry{color names>\textsl  {SlateGrey}|usage}{15}
+\indexentry{color names>\textsl  {DarkSlateGray}|usage}{15}
+\indexentry{color names>\textsl  {DarkSlateGrey}|usage}{15}
+\indexentry{color names>\textsl  {LightSlateGray}|usage}{15}
+\indexentry{color names>\textsl  {LightSlateGrey}|usage}{15}
+\indexentry{color names>\textsl  {DimGray}|usage}{15}
+\indexentry{color names>\textsl  {DimGrey}|usage}{15}
+\indexentry{package options>\texttt  {dvips}|usage}{16}
+\indexentry{files>\texttt  {dvipsnam.def}|usage}{16}
+\indexentry{package options>\texttt  {pdftex}|usage}{16}
+\indexentry{packages>\textsf  {xcolor}|usage}{16}
+\indexentry{definecolor=\verb!*+\definecolor+|usage}{16}
+\indexentry{color expression|usage}{16}
+\indexentry{packages>\textsf  {color}|usage}{16}
+\indexentry{providecolor=\verb!*+\providecolor+|usage}{16}
+\indexentry{colorlet=\verb!*+\colorlet+|usage}{16}
+\indexentry{color models>`named'|usage}{16}
+\indexentry{definecolorset=\verb!*+\definecolorset+|usage}{16}
+\indexentry{color set|usage}{16}
+\indexentry{packages>\textsf  {xcolor}|usage}{17}
+\indexentry{color names>\textsl  {red}|usage}{17}
+\indexentry{color names>\textsl  {green}|usage}{17}
+\indexentry{color names>\textsl  {blue}|usage}{17}
+\indexentry{providecolorset=\verb!*+\providecolorset+|usage}{17}
+\indexentry{DefineNamedColor=\verb!*+\DefineNamedColor+|usage}{17}
+\indexentry{files>\texttt  {dvipsnam.def}|usage}{17}
+\indexentry{packages>\textsf  {color}|usage}{17}
+\indexentry{packages>\textsf  {xcolor}|usage}{17}
+\indexentry{ifglobalcolors=\verb!*+\ifglobalcolors+|usage}{17}
+\indexentry{xglobal=\verb!*+\xglobal+|usage}{17}
+\indexentry{packages>\textsf  {color}|usage}{17}
+\indexentry{color=\verb!*+\color+|usage}{17}
+\indexentry{textcolor=\verb!*+\textcolor+|usage}{17}
+\indexentry{colorbox=\verb!*+\colorbox+|usage}{17}
+\indexentry{fcolorbox=\verb!*+\fcolorbox+|usage}{17}
+\indexentry{pagecolor=\verb!*+\pagecolor+|usage}{17}
+\indexentry{packages>\textsf  {color}|usage}{17}
+\indexentry{color names>\textsl  {white}|usage}{18}
+\indexentry{color names>\textsl  {gray}|usage}{18}
+\indexentry{color names>\textsl  {black}|usage}{18}
+\indexentry{color names>\textsl  {red}|usage}{18}
+\indexentry{color names>\textsl  {blue}|usage}{18}
+\indexentry{color names>\textsl  {yellow}|usage}{18}
+\indexentry{color names>\textsl  {white}|usage}{18}
+\indexentry{color names>\textsl  {black}|usage}{18}
+\indexentry{color names>\textsl  {yellow}|usage}{18}
+\indexentry{packages>\textsf  {soul}|usage}{18}
+\indexentry{blendcolors=\verb!*+\blendcolors+|usage}{18}
+\indexentry{blendcolors*=\verb!*+\blendcolors*+|usage}{18}
+\indexentry{color names>\textsl  {white}|usage}{19}
+\indexentry{color names>\textsl  {gray}|usage}{19}
+\indexentry{color names>\textsl  {black}|usage}{19}
+\indexentry{color names>\textsl  {red}|usage}{19}
+\indexentry{color names>\textsl  {blue}|usage}{19}
+\indexentry{color names>\textsl  {yellow}|usage}{19}
+\indexentry{color names>\textsl  {white}|usage}{19}
+\indexentry{color names>\textsl  {black}|usage}{19}
+\indexentry{color names>\textsl  {yellow}|usage}{19}
+\indexentry{color names>\textsl  {white}|usage}{19}
+\indexentry{color names>\textsl  {gray}|usage}{19}
+\indexentry{color names>\textsl  {black}|usage}{19}
+\indexentry{color names>\textsl  {red}|usage}{19}
+\indexentry{color names>\textsl  {blue}|usage}{19}
+\indexentry{color names>\textsl  {yellow}|usage}{19}
+\indexentry{color names>\textsl  {white}|usage}{19}
+\indexentry{color names>\textsl  {black}|usage}{19}
+\indexentry{color names>\textsl  {yellow}|usage}{19}
+\indexentry{color names>\textsl  {white}|usage}{20}
+\indexentry{color names>\textsl  {gray}|usage}{20}
+\indexentry{color names>\textsl  {black}|usage}{20}
+\indexentry{color names>\textsl  {red}|usage}{20}
+\indexentry{color names>\textsl  {blue}|usage}{20}
+\indexentry{color names>\textsl  {yellow}|usage}{20}
+\indexentry{color names>\textsl  {white}|usage}{20}
+\indexentry{color names>\textsl  {black}|usage}{20}
+\indexentry{color names>\textsl  {yellow}|usage}{20}
+\indexentry{color names>\textsl  {white}|usage}{20}
+\indexentry{color names>\textsl  {gray}|usage}{20}
+\indexentry{color names>\textsl  {black}|usage}{20}
+\indexentry{color names>\textsl  {red}|usage}{20}
+\indexentry{color names>\textsl  {blue}|usage}{20}
+\indexentry{color names>\textsl  {yellow}|usage}{20}
+\indexentry{color names>\textsl  {white}|usage}{20}
+\indexentry{color names>\textsl  {black}|usage}{20}
+\indexentry{color names>\textsl  {yellow}|usage}{20}
+\indexentry{xglobal=\verb!*+\xglobal+|usage}{21}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{21}
+\indexentry{color names>\textsl  {cyan}|usage}{21}
+\indexentry{color names>\textsl  {magenta}|usage}{21}
+\indexentry{color names>\textsl  {yellow}|usage}{21}
+\indexentry{color names>\textsl  {black}|usage}{21}
+\indexentry{package options>\texttt  {cmyk}|usage}{21}
+\indexentry{color names>\textsl  {foo}|usage}{21}
+\indexentry{color names>\textsl  {foo}|usage}{21}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{21}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{21}
+\indexentry{maskcolors=\verb!*+\maskcolors+|usage}{21}
+\indexentry{ifmaskcolors=\verb!*+\ifmaskcolors+|usage}{21}
+\indexentry{xglobal=\verb!*+\xglobal+|usage}{22}
+\indexentry{color names>\textsl  {cyan}|usage}{22}
+\indexentry{colormask=\verb!*+\colormask+|usage}{22}
+\indexentry{packages>\textsf  {xcolor}|usage}{22}
+\indexentry{files>\texttt  {eps}|usage}{22}
+\indexentry{files>\texttt  {pdf}|usage}{22}
+\indexentry{files>\texttt  {jpg}|usage}{22}
+\indexentry{files>\texttt  {png}|usage}{22}
+\indexentry{packages>\textsf  {xcolor}|usage}{22}
+\indexentry{definecolorseries=\verb!*+\definecolorseries+|usage}{23}
+\indexentry{resetcolorseries=\verb!*+\resetcolorseries+|usage}{24}
+\indexentry{colorseriescycle=\verb!*+\colorseriescycle+|usage}{24}
+\indexentry{packages>\textsf  {xcolor}|usage}{24}
+\indexentry{packages>\textsf  {color}|usage}{24}
+\indexentry{packages>\textsf  {hyperref}|usage}{24}
+\indexentry{keys>\textit  {citecolor}|usage}{26}
+\indexentry{keys>\textit  {filecolor}|usage}{26}
+\indexentry{keys>\textit  {linkcolor}|usage}{26}
+\indexentry{keys>\textit  {menucolor}|usage}{26}
+\indexentry{keys>\textit  {pagecolor}|usage}{26}
+\indexentry{keys>\textit  {runcolor}|usage}{26}
+\indexentry{keys>\textit  {urlcolor}|usage}{26}
+\indexentry{keys>\textit  {citebordercolor}|usage}{26}
+\indexentry{keys>\textit  {filebordercolor}|usage}{26}
+\indexentry{keys>\textit  {linkbordercolor}|usage}{26}
+\indexentry{keys>\textit  {menubordercolor}|usage}{26}
+\indexentry{keys>\textit  {pagebordercolor}|usage}{26}
+\indexentry{keys>\textit  {runbordercolor}|usage}{26}
+\indexentry{keys>\textit  {urlbordercolor}|usage}{26}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{26}
+\indexentry{packages>\textsf  {xcolor}|usage}{26}
+\indexentry{package options>\texttt  {hyperref}|usage}{26}
+\indexentry{keys>\textit  {xcitebordercolor}|usage}{26}
+\indexentry{keys>\textit  {xfilebordercolor}|usage}{26}
+\indexentry{keys>\textit  {xlinkbordercolor}|usage}{26}
+\indexentry{keys>\textit  {xmenubordercolor}|usage}{26}
+\indexentry{keys>\textit  {xpagebordercolor}|usage}{26}
+\indexentry{keys>\textit  {xrunbordercolor}|usage}{26}
+\indexentry{keys>\textit  {xurlbordercolor}|usage}{26}
+\indexentry{keys>\textit  {xpdfborder}|usage}{26}
+\indexentry{keys>\textit  {pdfborder}|usage}{26}
+\indexentry{packages>\textsf  {hyperref}|usage}{26}
+\indexentry{keys>\textit  {xpdfborder}|usage}{26}
+\indexentry{rowcolors=\verb!*+\rowcolors+|usage}{26}
+\indexentry{rowcolors*=\verb!*+\rowcolors*+|usage}{26}
+\indexentry{showrowcolors=\verb!*+\showrowcolors+|usage}{26}
+\indexentry{hiderowcolors=\verb!*+\hiderowcolors+|usage}{26}
+\indexentry{rownum=\verb!*+\rownum+|usage}{26}
+\indexentry{packages>\textsf  {colortbl}|usage}{26}
+\indexentry{extractcolorspec=\verb!*+\extractcolorspec+|usage}{27}
+\indexentry{tracingcolors=\verb!*+\tracingcolors+|usage}{27}
+\indexentry{packages>\textsf  {color}|usage}{27}
+\indexentry{packages>\textsf  {xcolor}|usage}{27}
+\indexentry{packages>\textsf  {color}|usage}{27}
+\indexentry{packages>\textsf  {xcolor}|usage}{27}
+\indexentry{convertcolorspec=\verb!*+\convertcolorspec+|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{28}
+\indexentry{packages>\textsf  {xcolor}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{28}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{28}
+\indexentry{package options>\texttt  {dvipdf}|usage}{28}
+\indexentry{package options>\texttt  {dvips}|usage}{28}
+\indexentry{package options>\texttt  {dvipsone}|usage}{28}
+\indexentry{package options>\texttt  {pctex32}|usage}{28}
+\indexentry{package options>\texttt  {pctexps}|usage}{28}
+\indexentry{package options>\texttt  {pdftex}|usage}{28}
+\indexentry{package options>\texttt  {dvipdfm}|usage}{28}
+\indexentry{package options>\texttt  {dvipdfm}|usage}{28}
+\indexentry{package options>\texttt  {textures}|usage}{28}
+\indexentry{package options>\texttt  {vtex}|usage}{28}
+\indexentry{package options>\texttt  {tcidvi}|usage}{28}
+\indexentry{package options>\texttt  {truetex}|usage}{28}
+\indexentry{package options>\texttt  {dviwin}|usage}{28}
+\indexentry{package options>\texttt  {emtex}|usage}{28}
+\indexentry{package options>\texttt  {pctexhp}|usage}{28}
+\indexentry{package options>\texttt  {pctexwin}|usage}{28}
+\indexentry{package options>\texttt  {dviwindo}|usage}{28}
+\indexentry{package options>\texttt  {dvipsone}|usage}{28}
+\indexentry{package options>\texttt  {oztex}|usage}{28}
+\indexentry{package options>\texttt  {dvips}|usage}{28}
+\indexentry{package options>\texttt  {xdvi}|usage}{28}
+\indexentry{package options>\texttt  {dvips}|usage}{28}
+\indexentry{package options>\texttt  {monochrome}|usage}{28}
+\indexentry{packages>\textsf  {graphics}|usage}{28}
+\indexentry{packages>\textsf  {color}|usage}{28}
+\indexentry{packages>\textsf  {colorinfo}|usage}{29}
+\indexentry{packages>\textsf  {color}|usage}{29}
+\indexentry{package options>\texttt  {usecolors}|usage}{29}
+\indexentry{packages>\textsf  {xcolor}|usage}{29}
+\indexentry{packages>\textsf  {xcolor}|usage}{29}
+\indexentry{package options>\texttt  {dvips}|usage}{29}
+\indexentry{packages>\textsf  {color}|usage}{29}
+\indexentry{packages>\textsf  {xcolor}|usage}{29}
+\indexentry{packages>\textsf  {color}|usage}{29}
+\indexentry{package options>\texttt  {usenames}|usage}{29}
+\indexentry{packages>\textsf  {xcolor}|usage}{29}
+\indexentry{package options>\texttt  {pdftex}|usage}{29}
+\indexentry{packages>\textsf  {color}|usage}{29}
+\indexentry{packages>\textsf  {xcolor}|usage}{29}
+\indexentry{packages>\textsf  {color}|usage}{29}
+\indexentry{package options>\texttt  {usenames}|usage}{29}
+\indexentry{packages>\textsf  {xcolor}|usage}{29}
+\indexentry{packages>\textsf  {realcalc}|usage}{30}
+\indexentry{packages>\textsf  {fp}|usage}{30}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{30}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{30}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{30}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{30}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{32}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{33}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{34}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{34}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{35}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{35}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{35}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{35}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{35}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{35}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{36}
+\indexentry{adjustUCRBG=\verb!*+\adjustUCRBG+|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{36}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{37}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{38}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{38}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{38}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{38}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{38}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{38}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{38}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  cmy}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{39}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  rgb}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  HSB}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  hsb}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  Gray}|usage}{40}
+\indexentry{color models>\textsf  {\bfseries  gray}|usage}{40}
+\indexentry{packages>\textsf  {color}|usage}{40}
+\indexentry{packages>\textsf  {colortbl}|usage}{40}
+\indexentry{packages>\textsf  {pstcol}|usage}{40}
+\indexentry{packages>\textsf  {xcolor}|usage}{41}
+\indexentry{packages>\textsf  {colorinfo}|usage}{41}
+\indexentry{packages>\textsf  {hyperref}|usage}{41}
+\indexentry{packages>\textsf  {color}|usage}{41}
+\indexentry{packages>\textsf  {xcolor}|usage}{41}
+\indexentry{packages>\textsf  {color}|usage}{41}
+\indexentry{packages>\textsf  {color}|usage}{41}
+\indexentry{package options>\texttt  {textures}|usage}{41}
+\indexentry{keys>\textit  {xpdfborder}|usage}{42}
+\indexentry{packages>\textsf  {color}|usage}{42}
+\indexentry{packages>\textsf  {xcolor}|usage}{42}
+\indexentry{package options>\texttt  {override}|usage}{42}
+\indexentry{package options>\texttt  {usenames}|usage}{42}
+\indexentry{package options>\texttt  {nodvipsnames}|usage}{42}
+\indexentry{package options>\texttt  {dvips}|usage}{42}
+\indexentry{package options>\texttt  {dvipsnames}|usage}{42}
+\indexentry{packages>\textsf  {pstricks}|usage}{42}
+\indexentry{package options>\texttt  {hyperref}|usage}{42}
+\indexentry{packages>\textsf  {pstricks}|usage}{42}
+\indexentry{color models>`named'|usage}{42}
+\indexentry{packages>\textsf  {dvips}|usage}{42}
+\indexentry{packages>\textsf  {soul}|usage}{43}
+\indexentry{color models>\textsf  {\bfseries  HTML}|usage}{43}
+\indexentry{color models>\textsf  {\bfseries  RGB}|usage}{43}
+\indexentry{color names>\textsl  {orange}|usage}{43}
+\indexentry{color names>\textsl  {violet}|usage}{43}
+\indexentry{color names>\textsl  {purple}|usage}{43}
+\indexentry{color names>\textsl  {brown}|usage}{43}
+\indexentry{packages>\textsf  {xcolor}|usage}{43}
+\indexentry{color models>\textsf  {\bfseries  cmyk}|usage}{43}
+\indexentry{packages>\textsf  {pstricks}|usage}{44}
+\indexentry{package options>\texttt  {hideerrors}|usage}{44}
+\indexentry{package options>\texttt  {override}|usage}{44}
+\indexentry{packages>\textsf  {hyperref}|usage}{45}
+\indexentry{packages>\textsf  {doc}|usage}{45}

@@ -1,0 +1,47 @@
+Package `xcolor' by Dr. Uwe Kern
+(xcolor at ukern dot de)
+
+v2.00 (2004/07/04)
+
+`xcolor' provides easy driver-independent access to several kinds of
+colors, tints, shades, tones, and mixes of arbitrary colors by means of
+color expressions like \color{red!50!green!20!blue}.
+It allows to select a document-wide target color model and offers tools
+for automatic color schemes, conversion between nine color models,
+alternating table row colors, color blending and masking, and color
+separation.
+
+Installation instructions
+=========================
+
+Extract all package files:
+  `latex xcolor.ins'
+
+Create the documentation:
+  `latex xcolor.dtx'
+  `latex xcolor.dtx'
+  `makeindex -s gind.ist xcolor.idx'
+  `latex xcolor.dtx'
+  `latex xcolor.dtx'
+
+Run the test files (N=1,2,...):
+  `latex xcolorN.tex'
+  `latex xcolorN.tex'
+
+Notes
+=====
+
+- `xcolor1.tex' should run with both LaTeX and pdfLaTeX, it yields a
+  50-page document with several systematic color conversion examples
+- `xcolor2.tex' is a 2-page `pstricks' example document that won't run
+  with pdfLaTeX
+- `xcolor3.tex' is a 1-page example for demonstrating the logging
+  facilities
+- If the file `xcolor.ins' is missing, run `latex xcolor.dtx' once
+  and quit the LaTeX compiler as soon as the first error message
+  appears.
+
+History
+=======
+
+See file `ChangeLog'.

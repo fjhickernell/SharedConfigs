@@ -1,0 +1,106 @@
+%-----------------------------------------------------------------------------
+% Beginning of READ-J-L.ME
+%-----------------------------------------------------------------------------
+
+                    AMERICAN MATHEMATICAL SOCIETY
+                          201 Charles Street
+                   Providence, RI  02904-2294  USA
+
+
+AMS JOURNAL STYLE PACKAGE
+-------------------------
+
+This package contains files to help authors use AMS-LaTeX to prepare a journal
+article for publication at the AMS.  We assume that the following software
+is installed on the user's system.
+
+    LaTeX           version 2e, December 1995 or later
+    AMS-LaTeX       version 2.0, December 1999 or later
+    AMSFonts        version 2.0, January 1995 or later
+
+We also assume that the user is familiar with LaTeX and AMS-LaTeX document
+structuring commands such as \section, \footnote, \newtheorem, etc., and
+with the techniques for inputting math expressions.
+
+1) This package contains the following files.
+
+general files
+
+    READ-J-L.ME            overview of journal package (this file)
+    instr-l.pdf            Instructions
+    handbk.pdf             AMS Author Handbook
+    creating-graphics.pdf  Creating graphics for use in AMS books and journals
+
+journal-specific files
+
+    *-l.cls         document class file
+    *.template      topmatter template
+
+sample paper file
+
+    journal.tex     journal sample article
+
+(where "*" represents the specific journal code)
+
+2) Start by printing or viewing the files instr-l.pdf and handbk.pdf.
+instr-l is an instruction manual for using the package.  handbk is an
+author's handbook which includes a check list to be consulted, before
+keyboarding your manuscript, in order to avoid the most common problems,
+and detailed instructions for submitting your article to the AMS.
+
+3) If your article will contain graphics, print out, or open on screen,
+the file creating-graphics.pdf and read it.  This file contains general
+and specific guidelines for preparation of graphics (line art,
+photographs, and other forms of illustrations) in a manner that will
+ensure their accurate reproduction in print and on-line.
+
+4) Two files are listed above under "journal-specific files". 
+
+The *-l.cls file is the document class which provides the formatting
+and other elements specific to the particular journal.
+
+*.template is a template file that contains all the tags required in
+the top matter for the journal, as well as a starting set of theorem
+styles and commentary on other common elements such as figures.
+
+Copy the template file to "filename.tex", where "filename" is the name
+that will identify your article.  (A good choice will contain your last
+name or other unique information.)  Be sure to follow instructions that
+appear as comments in the file.
+
+5) By default, the "sample article" file listed above uses the basic
+AMS journal article style, amsart.cls.
+
+Modify the \documentclass{amsart} line in this file to refer to the
+specific publication code and then LaTeX it, in order to view the
+printed style for that particular journal.  For example, if you are
+preparing a manuscript for the Transactions, BEFORE you LaTeX the files,
+replace amsart with tran-l (i.e., \documentclass{tran-l}).
+
+Do NOT use the sample article as a "starter" for your article.  Use
+the template file instead.  The sample article should be used only for
+reference.
+
+6) Various technical and administrative information can be found in the
+AMS Author FAQ:
+    http://www.ams.org/authors/author-faq.html
+This document contains information on various topics that have been the
+subject of questions to our Technical Support Group, as well as links
+to other useful web pages, including the page with instructions for
+submitting files when your article is ready.
+
+
+Should you have any technical questions that aren't answered by the FAQ,
+please contact our Technical Support Group.  The most effective method
+is to send electronic mail to tech-support@ams.org, including a concise
+statement of the problem, along with (if appropriate) a brief file that
+illustrates the problem and the log of your attempt to LaTeX the file.
+If e-mail is not an option, you can call 800-321-4AMS (800-321-4267,
+in the U.S. or Canada) or 401-455-4080, or write to Technical Support,
+Publications Technical Group, AMS, 201 Charles Street, Providence,
+RI 02904-2294.
+
+[2005/09/16, read-j-l.me]
+%-----------------------------------------------------------------------------
+% End of READ-J-L.ME
+%-----------------------------------------------------------------------------

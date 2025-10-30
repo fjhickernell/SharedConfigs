@@ -1,0 +1,99 @@
+%%%%  This is pdfsync.tex
+%%%%  Ascii text file
+%%%%  2004-01-20:
+%%%%
+%%%%  Version 0.1 usage: \input pdfsync.tex
+%%%%  ============================
+%%%%  appends reference points before each \par and at each \hbox, inline math;
+%%%%  Known commands:
+%%%%  \pdfsync: add this command everywhere you want to reference a point
+%%%%  \pdfsyncstop, \pdfsyncstart: if pdfsync beaks your code, enclose the dangerous part in stop start group
+%%%%
+%%%%  THIS IS NOT COMPATIBLE WITH \input
+%%%%  USE THE \import{foo} syntax whenever you want to import a file.
+%%%%  Credits:
+%%%%  ========
+%%%%  This file is due to Piero D'Ancona and jlaurens@users.sourceforge.net
+%%%%  iTeXMac and TeXShop are supporting pdfsync
+%%%%  Copy this file to ~/Library/texmf/tex/plain or ~/Library/TeX/texmf/tex/plain if available
+%%%%  This file is distributed under the GPL and the "smart licence": please make things better if you can
+%%%%  copyright 2004, jlaurens@users.sourceforge.net
+%
+\catcode`\@11\relax
+\newif\ifPDFSYNCOK%
+\newif\ifPDFSYNCStar%
+\newif\ifPDFSYNCPar\PDFSYNCPartrue%
+\newif\ifPDFSYNCMath\PDFSYNCMathtrue%
+\newif\ifPDFSYNCHBox\PDFSYNCHBoxtrue%
+\newif\ifPDFSYNCExtra\PDFSYNCExtratrue%
+\newif\ifPDFSYNCOn\PDFSYNCOntrue%
+\newwrite\PDFPOS%
+\newcount\PDFSYNC@folio\PDFSYNC@folio=0%
+\newcount\PDFSYNC@rder\PDFSYNC@rder=0%
+\ifx\pdfsavepos\undefined%
+  \wlog{****  pdfsync.tex: Synchronization is only available with pdf. Use a dvi viewer instead.}%
+  \let\pdfsyncstart\relax%
+  \let\pdfsyncstop\relax%
+  \let\pdfsync\relax%
+  \let\@PDFSYNC\relax%
+\else%
+ \def\pdfsyncstart{\global\PDFSYNCOKtrue}%
+  \def\pdfsyncstop{\global\PDFSYNCOKfalse}%
+  \def\configure@PDFSYNC{%
+  \ifPDFSYNCOn%
+    \wlog{****  pdfsync.tex: Synchronization is enabled.}%
+    \immediate\openout\PDFPOS\jobname.pdfsync%
+    \immediate\write\PDFPOS{\jobname}%            control info
+    \immediate\write\PDFPOS{version 0}%            control info
+	\global\advance\PDFSYNC@folio by 1\relax
+	\immediate\write\PDFPOS{s\space\the\PDFSYNC@folio}
+   % patching plain \advancepageno
+	\global\let\PDFSYNC@advancepageno\advancepageno%
+	\gdef\advancepageno{%
+	\global\advance\PDFSYNC@folio by 1\relax
+		\immediate\write\PDFPOS{s\space\the\PDFSYNC@folio}
+	\PDFSYNC@advancepageno
+	}%
+   % new command to import
+    \def\import##1{%
+	  \immediate\write\PDFPOS{(##1}%
+      \input ##1%
+      \immediate\write\PDFPOS{)}}%
+    \def\@PDFSYNC{%
+    \relax
+    \ifPDFSYNCOK
+	\pdfsavepos
+	\immediate\write\PDFPOS{l\space\the\PDFSYNC@rder\space\the\inputlineno}%
+	\def\PDFSYNC@position{\the\pdflastxpos\space\the\pdflastypos}%
+	\ifPDFSYNCStar%
+	    \edef\argument%
+		    {{p*\space\the\PDFSYNC@rder\space\noexpand\PDFSYNC@position}}%
+	\else%
+	    \edef\argument%
+		    {{p\space\the\PDFSYNC@rder\space\noexpand\PDFSYNC@position}}%
+	\fi%
+	\expandafter\write\expandafter\PDFPOS\argument%
+	\global\advance\PDFSYNC@rder by 1%
+    \fi\relax}%
+    \ifPDFSYNCPar\wlog{****  pdfsync.tex: Synchronizing par}%
+	    \global\let\PDFSYNC@par\par\gdef\par{\PDFSYNC@par\@PDFSYNC}\fi%
+    \ifPDFSYNCMath\wlog{****  pdfsync.tex: Synchronizing math}%
+	    \everymath{\@PDFSYNC\relax}\fi%
+    \ifPDFSYNCHBox\wlog{****  pdfsync.tex: Synchronizing hbox}%
+	    \everyhbox{\@PDFSYNC}\fi%
+%	    \everyhbox{\aftergroup\@PDFSYNC\relax}\fi%
+    \def\pdfsync{\global\PDFSYNCStartrue\@PDFSYNC\global\PDFSYNCStarfalse}%
+  \else%
+    \wlog{****  pdfsync.tex: Synchronization is disabled.}%
+    \let\pdfsyncstart\relax%
+    \let\pdfsyncstop\relax%
+    \let\pdfsync\relax%
+    \let\@PDFSYNC\relax%  
+  \fi%
+  }%
+ \def\PDFSYNC@Extra{}%
+\pdfsyncstart%
+\configure@PDFSYNC%
+\fi
+\catcode`\@12\relax
+\endinput

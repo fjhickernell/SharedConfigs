@@ -1,0 +1,134 @@
+%%
+%% This is file `xcolor3.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% xcolor.dtx  (with options: `test3')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from xcolor3.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file xcolor.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%% ---------------------------------------------------------
+%% Copyright (C) 2003-2004 by Dr. Uwe Kern <xcolor@ukern.de>
+%% ---------------------------------------------------------
+%%
+%% Please send error reports and suggestions for
+%% improvements to the above email address.
+%%
+%%
+\def\XCfilesource{xcolor.dtx}%
+\def\XCfileversion{v2.00}%
+\def\XCfiledate{2004/07/04}%
+\listfiles
+\ProvidesFile{xcolor3}[\XCfiledate\space\XCfileversion\space
+                       Color logging test (UK)]
+
+\documentclass{article}
+\usepackage[table,dvipsnames]{xcolor}[2004/07/04]
+
+\tracingcolors=4
+%%\tracingcolors=3
+%%\tracingcolors=2
+%%\tracingcolors=1
+%%\tracingcolors=0
+
+\parindent0pt
+\pagecolor{gray!25}
+
+\begin{document}
+\title{Color extensions with the \textsf{xcolor} package --- log file example}
+\author{Dr. Uwe Kern\thanks{This file is part of the \textsf{xcolor} distribution which can be downloaded from the CTAN mirrors (\texttt{macros/latex/contrib/xcolor/}) or the homepage \texttt{www.ukern.de/tex/xcolor.html}. Please send error reports and suggestions for improvements to \texttt{xcolor@ukern.de}.}}
+\date{\XCfileversion{} (\XCfiledate)}
+\maketitle
+
+The purpose of this file is to demonstrate the logging facilities of the \textsf{xcolor} package.
+By playing around with different values of \texttt{\string\tracingcolors}, one can observe the different behavior in the \texttt{log} file.
+
+\bigskip
+Table example:
+\rowcolors[\hline]{1}{green!25}{yellow!50}
+\begin{tabular}{ll}
+test & row \number\rownum\\
+test & row \number\rownum\\
+\rowcolor{blue!25}
+test & row \number\rownum\\
+test & row \number\rownum\\
+\hiderowcolors
+test & row \number\rownum\\
+test & row \number\rownum\\
+\showrowcolors
+test & row \number\rownum\\
+test & row \number\rownum\\
+\multicolumn{1}%
+ {>{\columncolor{red!12}}l}{test} & row \number\rownum\\
+\end{tabular}
+
+\bigskip
+\providecolor{dummy}{rgb}{.6,.5,.4}
+\definecolor{dummy}{rgb}{.6,.5,.4}
+\providecolor{dummy}{rgb}{.6,.5,.4}
+\hbox{\textcolor{dummy}{Test with \texttt{\string\definecolor}}}
+
+{\color[rgb]{.4,.5,.6}Test with \texttt{\string\color}}
+
+\bigskip
+Current color application:\par
+\def\test{current, \textcolor{.!50}{50\%}, \textcolor{-.}{complement},
+          \textcolor{yellow!50!.}{mix}}
+\textcolor{blue}{\test} and \textcolor{red}{\test},\par
+\def\Test{\color{.!80}Test}
+\textcolor{blue}{\Test\Test\Test\Test\Test} and
+\textcolor{red}{\Test\Test\Test\Test\Test}.
+
+\bigskip
+Current color test with \texttt{\string\definecolorseries}:\par
+\color{blue}
+\definecolorseries{foo}{rgb}{last}{.}{-.}
+\resetcolorseries[5]{foo}
+\def\test{\hbox to 1em{{\color{foo!!+}\vrule width 1em height 1.5ex}}}
+Test\test\test\test\test\test\test Test
+
+\resetcolorseries[5]{foo}
+\def\test{\hbox to 1em{{\color{foo!!++}\vrule width 1em height 1.5ex}}}
+Test\test\test\test\test\test\test Test
+
+\resetcolorseries[5]{foo}
+\def\test{\hbox to 1em{{\color{foo!![2]}\vrule width 1em height 1.5ex}}}
+Test\test\test\test\test\test\test Test
+
+\bigskip
+\color{black}
+Test with named colors:\par
+\color{blue}
+Test: \textcolor[named]{JungleGreen}{JungleGreen};
+Test: \textcolor{JungleGreen}{JungleGreen};
+Test: \textcolor{JungleGreen!50!DarkOrchid}{JungleGreen!50!DarkOrchid};
+Test: \textcolor{green!50!red}{green!50!red}.
+
+Type test:
+\makeatletter
+\@namedef{\string\color@foo1}{foo1{}{}{}{}}\edef\tempa{\XC@type{foo1}}\tempa
+\@namedef{\string\color@foo2}{\xcolor@{foo2}{}{}{}}\edef\tempb{\XC@type{foo2}}\tempb
+\@namedef{\string\color@foo3}{\xcolor@{}{foo3}{}{}}\edef\tempc{\XC@type{foo3}}\tempc
+\@namedef{\string\color@foo4}{\xcolor@{}{}{foo4}{}}\edef\tempd{\XC@type{foo4}}\tempd
+\makeatother
+
+\textcolor{rgb:red!50,4;green!25,2}{Extended color expression (rgb:red!50,4;green!25,2)}.
+
+\end{document}
+\endinput
+%%
+%% End of file `xcolor3.tex'.

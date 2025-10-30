@@ -1,0 +1,33 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fred's Problem Definitions for Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\usepackage{comment}
+\usepackage{ifthen}
+\textwidth 16.5 cm
+\textheight 23.5 cm
+\voffset -23.5mm
+\hoffset -17mm
+\newlength{\unithsp}
+\setlength{\unithsp}{1mm}
+\def\hs#1{\hspace*{#1\unitvsp}}
+\newlength{\unitvsp}
+\setlength{\unitvsp}{1mm}
+\def\vertspc#1{\vspace*{#1\unitvsp}}
+\def\ProblemSep{\vertspc{2}}
+\def\SubProblemSep{\vertspc{0}}
+\def\beginproblem{\newcounter{bean}\begin{list}
+    {\arabic{bean}.\ }{\usecounter{bean}
+    \setlength{\rightmargin 0mm}{\leftmargin 7mm}}}
+\def\problem#1{\ProblemSep\item (#1 points)\newline}
+\def\endproblem{\end{list}}
+\def\beginsubproblem{\SubProblemSep\begin{enumerate}
+\renewcommand{\labelenumi}{\alph{enumi}.}}
+\def\subproblem#1#2{\item{#2 \hspace*{\fill} (#1~points)}\newline}
+\def\endsubproblem{\end{enumerate}}
+
+\specialcomment{Answer}{\begingroup \par \bigskip \itshape Answer:\ }{\par \bigskip \endgroup}
+\specialcomment{SpecialAnswer}{\begingroup \par \bigskip \itshape Answer:\ }{\par \bigskip 
+\endgroup}
+
+
+

@@ -1,0 +1,106 @@
+StartFontMetrics 2.0
+Comment Copyright (c) 1989, 1990, 1992 Adobe Systems Incorporated.  All Rights Reserved.
+Comment Creation Date: Thu Jan 23 14:04:58 1992
+Comment UniqueID 37910
+Comment VMusage 17381 22558
+FontName UtopiaExp-BoldItalic
+FullName Utopia Expert Bold Italic
+FamilyName Utopia
+Weight Bold
+ItalicAngle -13
+IsFixedPitch false
+FontBBox -176 -242 1189 748 
+UnderlinePosition -100
+UnderlineThickness 50
+Version 001.002
+Notice Copyright (c) 1989, 1990, 1992 Adobe Systems Incorporated.  All Rights Reserved.Utopia is a registered trademark of Adobe Systems Incorporated.
+EncodingScheme FontSpecific
+StartCharMetrics 86
+C 32 ; WX 210 ; N space ; B 0 0 0 0 ;
+C 36 ; WX 530 ; N dollaroldstyle ; B 23 -83 529 581 ;
+C 37 ; WX 402 ; N dollarsuperior ; B 60 207 439 725 ;
+C 40 ; WX 260 ; N parenleftsuperior ; B 113 200 350 692 ;
+C 41 ; WX 260 ; N parenrightsuperior ; B 40 200 277 692 ;
+C 42 ; WX 500 ; N twodotenleader ; B 0 -12 430 166 ;
+C 43 ; WX 500 ; N onedotenleader ; B 141 -12 321 166 ;
+C 44 ; WX 280 ; N comma ; B -9 -167 207 180 ;
+C 45 ; WX 392 ; N hyphen ; B 71 203 354 298 ;
+C 46 ; WX 280 ; N period ; B 32 -12 212 166 ;
+C 47 ; WX 100 ; N fraction ; B -176 -27 370 695 ;
+C 48 ; WX 572 ; N zerooldstyle ; B 55 -12 557 514 ;
+C 49 ; WX 370 ; N oneoldstyle ; B 3 0 345 514 ;
+C 50 ; WX 535 ; N twooldstyle ; B -1 0 531 514 ;
+C 51 ; WX 510 ; N threeoldstyle ; B -9 -133 501 514 ;
+C 52 ; WX 515 ; N fouroldstyle ; B 5 -121 501 502 ;
+C 53 ; WX 512 ; N fiveoldstyle ; B 7 -133 529 502 ;
+C 54 ; WX 564 ; N sixoldstyle ; B 69 -12 577 636 ;
+C 55 ; WX 496 ; N sevenoldstyle ; B 59 -133 545 502 ;
+C 56 ; WX 557 ; N eightoldstyle ; B 42 -12 562 636 ;
+C 57 ; WX 550 ; N nineoldstyle ; B 24 -133 527 514 ;
+C 58 ; WX 280 ; N colon ; B 32 -12 280 490 ;
+C 59 ; WX 280 ; N semicolon ; B -9 -167 280 490 ;
+C 60 ; WX 202 ; N commasuperior ; B 34 157 187 384 ;
+C 61 ; WX 750 ; N threequartersemdash ; B 12 209 781 292 ;
+C 62 ; WX 202 ; N periodsuperior ; B 69 265 190 383 ;
+C 65 ; WX 444 ; N asuperior ; B 62 265 482 590 ;
+C 66 ; WX 450 ; N bsuperior ; B 70 265 473 742 ;
+C 67 ; WX 402 ; N centsuperior ; B 84 257 460 680 ;
+C 68 ; WX 458 ; N dsuperior ; B 53 265 498 742 ;
+C 69 ; WX 374 ; N esuperior ; B 72 265 413 590 ;
+C 73 ; WX 264 ; N isuperior ; B 87 265 297 748 ;
+C 76 ; WX 256 ; N lsuperior ; B 84 265 301 742 ;
+C 77 ; WX 691 ; N msuperior ; B 73 265 716 590 ;
+C 78 ; WX 476 ; N nsuperior ; B 73 265 501 590 ;
+C 79 ; WX 412 ; N osuperior ; B 86 265 446 590 ;
+C 82 ; WX 348 ; N rsuperior ; B 80 265 403 590 ;
+C 83 ; WX 342 ; N ssuperior ; B 59 265 370 590 ;
+C 84 ; WX 288 ; N tsuperior ; B 92 265 351 671 ;
+C 86 ; WX 661 ; N ff ; B -129 -242 866 742 ;
+C 87 ; WX 651 ; N fi ; B -129 -242 655 742 ;
+C 88 ; WX 652 ; N fl ; B -129 -242 685 742 ;
+C 89 ; WX 964 ; N ffi ; B -129 -242 968 742 ;
+C 90 ; WX 965 ; N ffl ; B -129 -242 998 742 ;
+C 91 ; WX 260 ; N parenleftinferior ; B 53 -72 290 420 ;
+C 93 ; WX 260 ; N parenrightinferior ; B -21 -72 216 420 ;
+C 95 ; WX 266 ; N hyphensuperior ; B 88 434 293 503 ;
+C 123 ; WX 644 ; N colonmonetary ; B 83 -99 691 743 ;
+C 124 ; WX 412 ; N onefitted ; B 1 0 399 680 ;
+C 125 ; WX 1192 ; N rupiah ; B 18 -233 1189 667 ;
+C 162 ; WX 560 ; N centoldstyle ; B 67 -73 572 554 ;
+C 178 ; WX 560 ; N figuredash ; B 158 289 462 382 ;
+C 179 ; WX 266 ; N hypheninferior ; B 36 162 241 231 ;
+C 188 ; WX 940 ; N onequarter ; B 104 -27 849 695 ;
+C 189 ; WX 940 ; N onehalf ; B 90 -27 898 695 ;
+C 190 ; WX 940 ; N threequarters ; B 95 -27 876 695 ;
+C 192 ; WX 940 ; N oneeighth ; B 87 -27 907 695 ;
+C 193 ; WX 940 ; N threeeighths ; B 79 -27 918 695 ;
+C 194 ; WX 940 ; N fiveeighths ; B 81 -27 918 695 ;
+C 195 ; WX 940 ; N seveneighths ; B 132 -27 892 695 ;
+C 196 ; WX 940 ; N onethird ; B 90 -27 896 695 ;
+C 197 ; WX 940 ; N twothirds ; B 57 -27 915 695 ;
+C 200 ; WX 402 ; N zerosuperior ; B 65 265 433 680 ;
+C 201 ; WX 402 ; N onesuperior ; B 84 272 361 680 ;
+C 202 ; WX 402 ; N twosuperior ; B 29 272 423 680 ;
+C 203 ; WX 402 ; N threesuperior ; B 59 265 421 680 ;
+C 204 ; WX 402 ; N foursuperior ; B 50 272 411 673 ;
+C 205 ; WX 402 ; N fivesuperior ; B 57 265 434 673 ;
+C 206 ; WX 402 ; N sixsuperior ; B 71 265 433 680 ;
+C 207 ; WX 402 ; N sevensuperior ; B 104 265 461 673 ;
+C 208 ; WX 402 ; N eightsuperior ; B 51 265 431 680 ;
+C 209 ; WX 402 ; N ninesuperior ; B 62 265 424 680 ;
+C 210 ; WX 402 ; N zeroinferior ; B 26 -7 394 408 ;
+C 211 ; WX 402 ; N oneinferior ; B 45 0 322 408 ;
+C 212 ; WX 402 ; N twoinferior ; B -10 0 384 408 ;
+C 213 ; WX 402 ; N threeinferior ; B 20 -7 382 408 ;
+C 214 ; WX 402 ; N fourinferior ; B 11 0 372 401 ;
+C 215 ; WX 402 ; N fiveinferior ; B 18 -7 395 401 ;
+C 216 ; WX 402 ; N sixinferior ; B 32 -7 394 408 ;
+C 217 ; WX 402 ; N seveninferior ; B 65 -7 422 401 ;
+C 218 ; WX 402 ; N eightinferior ; B 12 -7 392 408 ;
+C 219 ; WX 402 ; N nineinferior ; B 23 -7 385 408 ;
+C 220 ; WX 402 ; N centinferior ; B 35 -15 411 408 ;
+C 221 ; WX 402 ; N dollarinferior ; B 11 -65 390 453 ;
+C 222 ; WX 202 ; N periodinferior ; B 17 -7 138 111 ;
+C 223 ; WX 202 ; N commainferior ; B -18 -115 135 112 ;
+EndCharMetrics
+EndFontMetrics

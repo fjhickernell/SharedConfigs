@@ -1,0 +1,98 @@
+\relax
+\metrics
+
+\needsfontinstversion{1.9}
+
+\setcommand\fixedbotaccent#1#2#3{
+   \push
+      \movert{\sub{\scale{\width{#1}}{#3}}{\scale{\width{#2}}{500}}}
+      \moveup{\max{\neg{\height{#2}}}{0}}
+      \glyph{#2}{1000}
+   \pop
+   \glyph{#1}{1000}
+}
+
+\resetglyph{Aogonek}
+  \fixedbotaccent{A}{ogonek}{800}%{900}
+\endsetglyph
+
+\resetglyph{Eogonek}
+   \fixedbotaccent{E}{ogonek}{700}%{850}
+\endsetglyph
+
+\resetglyph{aogonek}
+   \fixedbotaccent{a}{ogonek}{700}%{850}
+\endsetglyph
+
+\resetglyph{eogonek}
+   \fixedbotaccent{e}{ogonek}{500}
+\endsetglyph
+
+
+\unsetkerns{one}{one}
+\setkern{g}{f}{45}
+\setkern{gbreve}{f}{45}
+
+\setkern{r}{oacute}{-18}
+\setkern{r}{ocircumflex}{-18}
+\setkern{r}{odieresis}{-18}
+\setkern{r}{oe}{-18}
+\setkern{r}{ograve}{-18}
+\setkern{r}{oslash}{-18}
+\setkern{r}{ohungarumlaut}{-18}
+\setkern{r}{gbreve}{-18}
+\setkern{r}{eacute}{-18}
+\setkern{r}{ecaron}{-18}
+\setkern{r}{ecircumflex}{-18}
+\setkern{r}{edieresis}{-18}
+\setkern{r}{egrave}{-18}
+\setkern{r}{dquoteright}{-18}
+\setkern{r}{cacute}{-18}
+\setkern{r}{ccaron}{-18}
+\setkern{r}{ccedilla}{-18}
+
+\setrightkerning{racute}{r}{1000}
+\setrightkerning{rcaron}{r}{1000}
+
+\setkern{L}{yacute}{-37}
+\setkern{L}{ydieresis}{-37}
+
+\setrightkerning{yacute}{y}{1000}
+\setrightkerning{ydieresis}{y}{1000}
+
+\setkern{e}{V}{-80}
+\setkern{Y}{g}{-92}
+\setkern{Y}{s}{-92}
+
+\setkern{A}{guillemotleft}{-56}
+\setkern{A}{guilsinglleft}{-56}
+\setkern{T}{guillemotleft}{-124}
+\setkern{T}{guilsinglleft}{-124}
+\setkern{V}{guillemotleft}{-112}
+\setkern{V}{guilsinglleft}{-112}
+\setkern{W}{guillemotleft}{-57}
+\setkern{W}{guilsinglleft}{-57}
+\setkern{Y}{guillemotleft}{-124}
+\setkern{Y}{guilsinglleft}{-124}
+\setkern{guillemotright}{A}{-72}
+\setkern{guillemotright}{AE}{-80}
+\setkern{guillemotright}{T}{-103}
+\setkern{guillemotright}{V}{-85}
+\setkern{guillemotright}{W}{-63}
+\setkern{guillemotright}{Y}{-114}
+\setkern{guilsinglright}{A}{-72}
+\setkern{guilsinglright}{AE}{-80}
+\setkern{guilsinglright}{T}{-103}
+\setkern{guilsinglright}{V}{-84}
+\setkern{guilsinglright}{W}{-63}
+\setkern{guilsinglright}{Y}{-114}
+
+\setleftkerning{AE}{A}{1000}
+\setleftkerning{ae}{a}{1000}
+\setrightkerning{ae}{e}{1000}
+\setrightkerning{oe}{e}{1000}
+\setleftkerning{quotedblright}{quoteright}{1000}
+\setrightkerning{quotedblleft}{quoteleft}{1000}
+
+\endmetrics
+

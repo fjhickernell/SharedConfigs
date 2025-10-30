@@ -1,0 +1,33 @@
+\documentclass{article}
+
+\usepackage[showboxes]{textpos}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{textblock}{5}(0,0)
+In this document we have figures~\ref{figa} and~\ref{figb}.
+\end{textblock}
+
+\begin{textblock}{5}(1,1)
+  Here is a figure.
+  \begin{figure}
+  Text
+  \caption{This is the first figure}
+  \label{figa}
+  \end{figure}
+\end{textblock}
+
+\begin{textblock}{5}(2,2)
+  Here is another figure.
+  \begin{figure}
+  More text
+  \caption{\label{figb}This is the second figure}
+  \end{figure}
+\end{textblock}
+
+\begin{textblock}{5}(3,3)
+  We can still refer to figures~\ref{figb} and~\ref{figa}.
+\end{textblock}
+
+\end{document}

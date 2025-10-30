@@ -1,0 +1,10 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [1][-]{section.2}{Problem definition \(statistical model description\)}{}
+\BOOKMARK [1][-]{section.3}{Scaled Integrated Mean Squared Error}{}
+\BOOKMARK [1][-]{section.4}{Reproducing Kernel Hilbert Space}{}
+\BOOKMARK [1][-]{section.5}{result}{}
+\BOOKMARK [1][-]{section.6}{Numerical Experiments}{}
+\BOOKMARK [1][-]{section.7}{Optimal Design When Gradient Information Is Available}{}
+\BOOKMARK [2][-]{subsection.7.1}{D-optimality}{section.7}
+\BOOKMARK [2][-]{subsection.7.2}{D-optimal Design When Gradient Information Is Available}{section.7}
+\BOOKMARK [2][-]{subsection.7.3}{I-optimal Design When Gradient Information Is Available}{section.7}

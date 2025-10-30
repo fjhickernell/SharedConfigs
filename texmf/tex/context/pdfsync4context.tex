@@ -1,0 +1,84 @@
+%%%%  This is pdfsync4context.tex
+%%%%  Ascii text file
+%%%%  2004-01-31: Version 0.2
+%%%%  - The pdfsync anchor is used after the \par
+%%%%  2004-01-20:
+%%%%  THIS IS BETA SOFTWARE
+%%%%  Version 0.2 usage: \input pdfsync4context.tex
+%%%%  ============================
+%%%%  appends reference points before each \par and at each \hbox, inline math;
+%%%%  Known commands:
+%%%%  \pdfsync: add this command everywhere you want to reference a point
+%%%%  \pdfsyncstop, \pdfsyncstart: if pdfsync beaks your code, enclose the dangerous part in stop start group
+%%%%
+%%%%  THIS IS NOT COMPATIBLE WITH \input
+%%%%  USE THE STANDARD CONTEXT CODE TO READ FILES.
+%%%%  Credits:
+%%%%  ========
+%%%%  This file is due to Piero D'Ancona and jlaurens@users.sourceforge.net
+%%%%  iTeXMac and TeXShop are supporting pdfsync
+%%%%  Copy this file to ~/Library/texmf/tex/plain or ~/Library/TeX/texmf/tex/plain if available
+%%%%  This file is distributed under the GPL and the "smart licence": please make things better if you can
+%%%%  copyright 2004, jlaurens@users.sourceforge.net (Sat Jan 24 09:42:35 GMT 2004)
+%
+\wlog{****  This pdfsync4context.tex version 0.2.}%
+\catcode`\@11\relax%
+\ifx\pdfsavepos\undefined%
+    \wlog{****  pdfsync4context.tex: Synchronization is only available with pdf. Use a dvi viewer instead.}%
+    \let\pdfsyncstart\relax%
+    \let\pdfsyncstop\relax%
+    \let\pdfsync\relax%
+    \let\@PDFSYNC\relax%
+\else%
+    \wlog{****  pdfsync4context.tex: Synchronization is available.}%
+    \newif\ifPDFSYNCOK%
+    \newif\ifPDFSYNCStar%
+    \newcount\PDFSYNC@folio\PDFSYNC@folio=0%
+    \newcount\PDFSYNC@rder\PDFSYNC@rder=0%
+    \gdef\pdfsyncstart{\PDFSYNCOKtrue}%
+    \gdef\pdfsyncstop{\PDFSYNCOKfalse}%
+    \wlog{****  pdfsync.tex: configuring synchronization.}%
+    \newwrite\PDFPOS%
+    \immediate\openout\PDFPOS\jobname.pdfsync%
+    \immediate\write\PDFPOS{\jobname}%            control info
+    \immediate\write\PDFPOS{version 0}%            control info
+    % patching \shipout
+    \global\let\PDFSYNC@oldshipout\shipout%
+    \gdef\shipout#1{%
+        \global\advance\PDFSYNC@folio by 1\relax%
+        \immediate\write\PDFPOS{s\space\the\PDFSYNC@folio}%
+        \PDFSYNC@oldshipout#1}%
+    \gdef\PDFSYNC@position{\the\pdflastxpos\space\the\pdflastypos}%
+    \gdef\@PDFSYNC{%
+%        \relax%
+        \ifPDFSYNCOK%
+            \pdfsavepos%
+            \immediate\write\PDFPOS{l\space\the\PDFSYNC@rder\space\the\inputlineno}%
+            \ifPDFSYNCStar%
+                \edef\argument%
+                    {{p*\space\the\PDFSYNC@rder\space\noexpand\PDFSYNC@position}}%
+            \else%
+                \edef\argument%
+                    {{p\space\the\PDFSYNC@rder\space\noexpand\PDFSYNC@position}}%
+            \fi%
+            \expandafter\write\expandafter\PDFPOS\argument%
+            \global\advance\PDFSYNC@rder by 1%
+        \fi%\relax%
+    }%
+    \wlog{****  pdfsync.tex: Synchronizing par}%
+    \global\let\PDFSYNC@par\par%
+    \gdef\par{\PDFSYNC@par\@PDFSYNC}%
+    \wlog{****  pdfsync.tex: Synchronizing math}%
+    \everymath{\@PDFSYNC\relax}%
+    \wlog{****  pdfsync.tex: Synchronizing hbox}%
+    \everyhbox{\@PDFSYNC\relax}%
+    \def\pdfsync{\global\PDFSYNCStartrue\@PDFSYNC\global\PDFSYNCStarfalse}%
+    \def\PDFSYNC@begin{\immediate\write\PDFPOS{(\space\readfilename}}%
+    \def\PDFSYNC@end{\immediate\write\PDFPOS{)}}%
+    \appendtoks\PDFSYNC@begin\to\everybeforereadfile%
+    \appendtoks\PDFSYNC@end\to\everyafterreadfile%
+    \pdfsyncstart%
+    \wlog{****  pdfsync.tex: BUG WARNING, DID YOU LOOK AT THE README?}%
+\fi%
+\catcode`\@12\relax%
+\endinput%

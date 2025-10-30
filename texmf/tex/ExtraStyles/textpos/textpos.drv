@@ -1,0 +1,81 @@
+%%
+%% This is file `textpos.drv',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% textpos.dtx  (with options: `driver')
+%% Textpos: absolute positioning of text on the page
+%% This software is copyright, 1999, 2001--2003, 2005--7 Norman Gray.
+%%
+%% This program is free software; you can redistribute it and/or
+%% modify it under the terms of the GNU General Public License
+%% as published by the Free Software Foundation; either version 2
+%% of the License, or (at your option) any later version.
+%%
+%% This program is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%%
+%% You should have received a copy of the GNU General Public License
+%% along with this program; if not, write to the Free Software
+%% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+%%
+%% Author: Norman Gray, norman@astro.gla.ac.uk.
+%% Department of Physics and Astronomy, University of Glasgow, UK
+%%
+%% See the file LICENCE for a copy of the GPL.
+%% You can also find an online copy at http://www.gnu.org/copyleft/gpl.html .
+%%
+%%% Source: $Id: textpos.dtx.in,v 1.13 2007/03/21 20:37:33 norman Exp $
+%%
+%%\def\ParseRCSDate$#1: #2 #3 ${\def\TP@Date{#2}}
+%%\ParseRCSDate$Date: 2007/03/21 20:37:33 $
+\def\filename{textpos}
+\def\fileversion{1.7b}
+\def\filedate{2007/03/21}
+\def\docdate{2007 March 21}
+\documentclass{ltxdoc}
+\title{Textpos: absolute positioning of text on the page}
+\author{Norman Gray\\(\texttt{norman@astro.gla.ac.uk})}
+\date{Version \fileversion, \filedate}
+\newcommand\Lopt[1]{\textsf {\small [#1]}}
+\newcommand\file[1]{\texttt {#1}}
+\newcommand\Lcount[1]{\textsl {\small#1}}
+\newcommand\Lenv[1]{\texttt{\{#1\}}}
+\newcommand\pstyle[1]{\textsl {#1}}
+\makeatletter % make the ttfamily font less overbearingly large
+\renewcommand\ttfamily{\not@math@alphabet\ttfamily\mathtt
+    \fontfamily\ttdefault
+    \fontsize{9}{\f@baselineskip}\selectfont}
+\makeatother
+\def\activemeta#1>{\meta{#1}}
+{\catcode`\<=\active
+ \gdef\cmd{\begingroup
+   \catcode`\\=12 \catcode`\{=12 \catcode`\}=12
+   \catcode`\<=\active \let<\activemeta
+   \catcode`\|=12
+   \docmd}}
+\def\docmd|#1|{\texttt{#1}\endgroup}
+%% \url macro (url.sty does this better)
+\def\setpathdots{\discretionary{.}{}{.}}
+\def\setpathslash{\discretionary{/}{}{/}}
+{\catcode`\.=\active
+ \catcode`\/=\active
+  \gdef\pathcats{%
+    \catcode`\%=12      \catcode`\~=12
+    \catcode`\.=\active  \let.\setpathdots
+    \catcode`\/=\active \let/\setpathslash
+    \catcode`\#=12      \catcode`\_=12}%
+    }
+\def\setpath#1{\ttfamily\small <\nobreak #1\nobreak>\endgroup}
+\def\url{\begingroup\pathcats\setpath}
+\OnlyDescription
+\begin{document}
+\maketitle
+\DocInput{textpos.dtx}
+\end{document}
+\endinput
+%%
+%% End of file `textpos.drv'.

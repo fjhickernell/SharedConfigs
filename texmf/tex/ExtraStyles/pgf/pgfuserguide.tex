@@ -1,0 +1,2722 @@
+\documentclass{ltxdoc}
+
+% Copyright 2003 by Till Tantau <tantau@cs.tu-berlin.de>.
+%
+% This program can be redistributed and/or modified under the terms
+% of the LaTeX Project Public License Distributed from CTAN
+% archives in directory macros/latex/base/lppl.txt.
+
+\usepackage{pgf,pgfarrows,pgfautomata,pgfheaps,pgfnodes,pgfshade}
+\usepackage[left=2.25cm,right=2.25cm,top=2.5cm,bottom=2.5cm,nohead]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage{xxcolor}
+
+\def\pgf{\textsc{pgf}}
+\def\pstricks{\textsc{pstricks}}
+\def\Class#1{\hbox{\small#1}}
+\def\bs{$\backslash$}
+
+\def\Environment#1{\par\bigskip\noindent\textbf{Environment \texttt{#1}}\par}
+\def\Command#1{\par\bigskip\noindent\textbf{Command \texttt{#1}}\par}
+\long\def\Parameters#1{\medskip\noindent Parameters:
+  \begin{enumerate}\itemsep=0pt\parskip=0pt
+    #1
+  \end{enumerate}}
+\long\def\Description#1{\unskip\medskip\noindent Description: #1}
+\def\Example{\par\medskip\noindent Example: }
+
+
+\renewcommand*\descriptionlabel[1]{\hspace\labelsep\normalfont #1}
+
+
+\def\declare#1{{\color{red!75!black}#1}}
+
+\def\command#1{\list{}{\leftmargin=2em\itemindent-\leftmargin\def\makelabel##1{\hss##1}}%
+\item\extractcommand#1@\par\topsep=0pt}
+\def\endcommand{\endlist}
+\def\extractcommand#1#2@{\strut\declare{\texttt{\string#1}}#2}
+
+\def\example{\par\smallskip\noindent\textit{Example: }}
+
+\def\environment#1{\list{}{\leftmargin=2em\itemindent-\leftmargin\def\makelabel##1{\hss##1}}%
+\extractenvironement#1@\par\topsep=0pt}
+\def\endenvironment{\endlist}
+\def\extractenvironement#1#2@{%
+\item{{\ttfamily\char`\\begin\char`\{\declare{#1}\char`\}}#2}%
+  {\itemsep=0pt\parskip=0pt\item{\meta{environment contents}}%
+  \item{\ttfamily\char`\\end\char`\{\declare{#1}\char`\}}}}
+
+
+\def\packageoption#1{\list{}{\leftmargin=2em\itemindent-\leftmargin\def\makelabel##1{\hss##1}}%
+\item{{\ttfamily\char`\\usepackage[\declare{#1}]\char`\{pgf\char`\}}}\par\topsep=0pt}
+\def\endpackageoption{\endlist}
+
+\def\smallpackage{\vbox\bgroup\package}
+\def\endsmallpackage{\egroup\endpackage}
+\def\package#1{\list{}{\leftmargin=2em\itemindent-\leftmargin\def\makelabel##1{\hss##1}}%
+\extracttheme#1@\par\topsep=0pt}
+\def\endpackage{\endlist}
+\def\extracttheme#1#2@{%
+\item{{{\ttfamily\char`\\usepackage}#2{\ttfamily\char`\{\declare{#1}\char`\}}}}}
+
+
+\newcommand\opt[1]{{\color{black!50!green}#1}}
+\renewcommand\oarg[1]{\opt{{\ttfamily[}\meta{#1}{\ttfamily]}}}
+\newcommand\ooarg[1]{{\ttfamily[}\meta{#1}{\ttfamily]}}
+\newcommand\sarg[1]{\opt{{\ttfamily\char`\<}\meta{#1}{\ttfamily\char`\>}}}
+\newcommand\ssarg[1]{{\ttfamily\char`\<}\meta{#1}{\ttfamily\char`\>}}
+
+\begin{document}
+
+\title{User's Guide to the PGF Package, Version 0.62\\
+  \Large\href{http://www.ctan.org/tex-archive/graphics/pgf/}{|http://www.ctan.org/tex-archive/graphics/pgf/|}}
+\author{Till Tantau\\
+  \href{mailto:tantau@cs.tu-berlin.de}{|tantau@cs.tu-berlin.de|}}
+
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+\subsection{Overview}
+
+This user's guide explains the functionality of the \pgf\ package.
+\pgf\ stands for `portable graphics format'. It is a \TeX\ macro
+package that allows you to create graphics in your \TeX\ documents
+using a special |pgfpicture| environment and special macros for
+drawing lines, curves, rectangles, and many other kind of graphic
+objects. Its usage closely resembles the \pstricks\ package or the
+normal picture environment of \LaTeX.
+
+Although \pgf\ is less powerful than \pstricks, it has the advantage
+that it can generate both PostScript output and \textsc{pdf} output
+from the same file. The \pgf\ package works together both with
+|dvips| and |pdftex|. In particular, packages that rely
+on |pdftex| or |pdflatex| (like some packages for
+creating presentations) can be used together with \pgf.
+
+The package consists of the core style |pgf.sty| and a number
+of extension styles that are build on top of it. Currently, the
+documented ones are
+\begin{itemize}\itemsep=0pt\parskip=0pt
+\item
+  |pgfarrows.sty|, used to draw a large variety of arrows.
+\item
+  |pgfnodes.sty|, used to draw nodes in diagrams and to connect
+  them in a convenient way.
+\item
+  |pgfshade.sty|, used to create shadings (also called
+  gradients). 
+\end{itemize}
+
+In order to use \pgf\ you will have to include the command
+\begin{verbatim}
+\usepackage{pgf}
+\end{verbatim}
+at the beginning of your main \TeX\ file. If you also wish to use the
+extensions, you also have to include them. For example, you will
+typically use the following command:
+\begin{verbatim}
+\usepackage{pgf,pgfarrows,pgfnodes}
+\end{verbatim}
+
+In this guide you will find the descriptions of all ``public''
+commands provided by the |pgf| package. In each such description, the
+described command, environment or option is printed in red. Text shown
+in green is optional and can be left out. Note that (currently) many
+commands take arguments in square brackets that are \emph{not}
+optional. In some future version of \pgf\ it will possible to omit
+these optional arguments. 
+
+
+
+
+\subsection{Installation}
+
+To use \pgf, you just need to put all files with the ending
+|.sty| of the pgf package in a directory that is read by
+\TeX. You need to have the package |xcolor| installed, version 2.00 or
+higher. To uninstall |pgf|, simply remove these files once more. 
+Unfortunately, there are different ways of making \TeX\ ``aware'' of
+files. Which way you should choose depends on how permanently you
+intend to use it.
+
+
+\subsection{Installing Prebundled Packages}
+
+I do not create or manage prebundled packages of \pgf, but,
+fortunately, nice other people do. I cannot give detailed instructions
+on how to install these packages, since I do not manage them, but I
+\emph{can} tell you were to find them. You install them the ``usual
+way'' you install packages. If anyone has any hints and additional
+information on this, please email me.
+
+For Debian, you need the packages at
+\begin{verbatim}
+http://packages.debian.org/pgf
+http://packages.debian.org/latex-xcolor
+\end{verbatim}
+
+For MiK\TeX, you need the packages called |pgf| and |xcolor|. 
+
+
+
+\subsubsection{Temporary Installation}
+
+If you only wish to install \pgf\ for a quick appraisal, do
+the following: Obtain all files from the directory
+\href{http://www.ctan.org/tex-archive/graphics/pgf/}{|http://www.ctan.org/tex-archive/graphics/pgf/|}.
+(most likely, you have already done this).
+Place all files in a new directory. For example,
+|/home/tantau/pgf/| would work fine for me. Then setup the
+environment variable called |TEXINPUTS| to be the following
+string (how exactly this is done  depends on your operating system and
+shell):
+
+\begin{verbatim}
+.:/home/tantau/pgf:
+\end{verbatim}
+
+Naturally, if the |TEXINPUTS| variable is already defined
+differently, you should \emph{add} the directories to the list. Do
+not forget to place a colon at the end (corresponding to an empty
+path), which will include all standard directories.
+
+
+
+\subsubsection{Installation in a texmf Tree}
+
+For a more permanent installation, you can place the files of the
+the \textsc{pgf} package (see the previous subsection on how to obtain
+them) in an appropriate |texmf| tree. 
+
+When you ask \TeX\ to use a certain class or package, it usually looks
+for the necessary files in so-called |texmf| trees. These trees
+are simply huge directories that contain these files. By default,
+\TeX\ looks for files in three different |texmf| trees:
+\begin{itemize}
+\item
+  The root |texmf| tree, which is usually located at
+  |/usr/share/|, \verb!c:\texmf\!, or\\
+  \verb!c:\Program Files\TeXLive\texmf\!.
+\item
+  The local  |texmf| tree, which is usually located at
+  |/usr/local/share/|, \verb!c:\localtexmf\!, or\\
+  \verb!c:\Program Files\TeXLive\texmf-local\!.
+\item
+  Your personal  |texmf| tree, which is located in your home
+  directory.   
+\end{itemize}
+
+You should install the packages either in the local tree or in
+your personal tree, depending on whether you have write access to the
+local tree. Installation in the root tree can cause problems, since an
+update of the whole \TeX\ installation will replace this whole tree.
+
+Inside whatever |texmf| directory you have chosen, create
+the sub-sub-sub-directory |texmf/tex/latex/pgf|
+and place all files in it. Then rebuild \TeX's filename database. This
+done by running the command  |texhash| or |mktexlsr|
+(they are the same). In MikTeX, there is a menu option to do this.
+
+If you want to be really tidy, you can place the documentation in the
+directory |texmf/doc/latex/pgf|.
+
+\vskip1em
+For a more detailed explanation of the standard installation process
+of packages, you might wish to consult
+\href{http://www.ctan.org/installationadvice/}{|http://www.ctan.org/installationadvice/|}.
+However, note that the \pgf\ package does not come with a
+|.ins| file (simply skip that part).
+
+
+
+
+\subsection{Quick Start}
+
+This section presents some simple examples. By copying these examples
+and modifying them slightly, you can create your first pictures using
+\pgf.
+
+The first example draws a rectangle and a circle next to each other.
+
+\noindent
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  % (0cm,0cm) is the lower left corner,
+  % (5cm,2cm) is the upper right corner.
+
+  \pgfrect[stroke]{\pgfpoint{0cm}{0cm}}{\pgfpoint{2cm}{10pt}}
+  % Paint a rectangle (stroke it, do not fill it)
+  % The lower left corner is at (0cm,0cm)
+  % The rectangle is 2cm wide and 10pt high.
+
+  \pgfcircle[fill]{\pgfpoint{3cm}{1cm}}{10pt}
+  % Paint a filled circle
+  % The center is at (3cm,1cm)
+  % The radius is 10pt
+\end{pgfpicture}
+\begin{verbatim}
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  % (0cm,0cm) is the lower left corner,
+  % (5cm,2cm) is the upper right corner.
+
+  \pgfrect[stroke]{\pgfpoint{0cm}{0cm}}{\pgfpoint{2cm}{10pt}}
+  % Paint a rectangle (stroke it, do not fill it)
+  % The lower left corner is at (0cm,0cm)
+  % The rectangle is 2cm wide and 10pt high.
+
+  \pgfcircle[fill]{\pgfpoint{3cm}{1cm}}{10pt}
+  % Paint a filled circle
+  % The center is at (3cm,1cm)
+  % The radius is 10pt
+\end{pgfpicture}
+\end{verbatim}
+
+The |\pgfpoint| command is used to specify a point. It is often
+more convenient to use the command |pgfxy| instead, which lets
+you specify a point in terms of multiples of a $x$-vector
+and a $y$-vector. They are predefined to |\pgfpoint{1cm}{0cm}|
+and |\pgfpoint{0cm}{1cm}|, but you can change these settings.
+
+\noindent
+\begin{pgfpicture}{0cm}{0cm}{5cm}{1.25cm}
+
+  \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+  % Draws a line from (0cm,0cm) to (1cm,1cm)
+  % Command \pgfline{\pgfpoint{0cm}{0cm}}{\pgfpoint{1cm}{1cm}}
+  % would have the same effect.
+  
+  \pgfline{\pgfxy(1,1)}{\pgfxy(2,1)}
+  \pgfline{\pgfxy(2,1)}{\pgfxy(3,0)}
+  \pgfline{\pgfxy(3,0)}{\pgfxy(4,0)}
+  \pgfline{\pgfxy(4,0)}{\pgfxy(5,1)}
+\end{pgfpicture}
+\begin{verbatim}
+\begin{pgfpicture}{0cm}{0cm}{5cm}{1.25cm}
+
+  \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+  % Draws a line from (0cm,0cm) to (1cm,1cm)
+  % Command \pgfline{\pgfpoint{0cm}{0cm}}{\pgfpoint{1cm}{1cm}}
+  % would have the same effect.
+  
+  \pgfline{\pgfxy(1,1)}{\pgfxy(2,1)}
+  \pgfline{\pgfxy(2,1)}{\pgfxy(3,0)}
+  \pgfline{\pgfxy(3,0)}{\pgfxy(4,0)}
+  \pgfline{\pgfxy(4,0)}{\pgfxy(5,1)}
+\end{pgfpicture}
+\end{verbatim}
+
+You can put text into a picture using the |\pgfbox| command.
+
+\noindent
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[center,center]{Hi!}}
+  % pgfputat places something at a certain position
+  % pgfbox shows the text `hi!'. The horizontal alignment
+  % is centered (other options: left, right). The vertical
+  % alignment is also centered (other options: top, bottom,
+  % base).
+
+  \pgfcircle[stroke]{\pgfxy(1,1)}{0.5cm}
+
+  \pgfsetendarrow{\pgfarrowto}
+  % In the following, all lines will end with an arrow that looks like
+  % the arrow of TeX's \to command
+
+  \pgfline{\pgfxy(1.5,1)}{\pgfxy(2.2,1)}
+
+  \pgfputat{\pgfxy(3,1)}{
+    \begin{pgfrotateby}{\pgfdegree{30}}
+      % You can rotate things like this
+      \pgfbox[center,center]{$\int_0^\infty xdx$}
+    \end{pgfrotateby}}
+  \pgfcircle[stroke]{\pgfxy(3,1)}{0.75cm}
+\end{pgfpicture}
+\begin{verbatim}
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[center,center]{Hi!}}
+  % pgfputat places something at a certain position
+  % pgfbox shows the text `hi!'. The horizontal alignment
+  % is centered (other options: left, right). The vertical
+  % alignment is also centered (other options: top, bottom,
+  % base).
+
+  \pgfcircle[stroke]{\pgfxy(1,1)}{0.5cm}
+
+  \pgfsetendarrow{\pgfarrowto}
+  % In the following, all lines will end with an arrow that looks like
+  % the arrow of TeX's \to command
+
+  \pgfline{\pgfxy(1.5,1)}{\pgfxy(2.2,1)}
+
+  \pgfputat{\pgfxy(3,1)}{
+    \begin{pgfrotateby}{\pgfdegree{30}}
+      % You can rotate things like this
+      \pgfbox[center,center]{$\int_0^\infty xdx$}
+    \end{pgfrotateby}}
+  \pgfcircle[stroke]{\pgfxy(3,1)}{0.75cm}
+\end{pgfpicture}
+\end{verbatim}
+
+In order to draw curves and complicated lines, you can use the commands
+|pgfmoveto|, |pgflineto|, and |pgfcurveto|. To
+actually draw or fill the painted area, you use |pgfstroke| or
+|pgffill|.
+
+\noindent
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfmoveto{\pgfxy(0,1)}
+  \pgfcurveto{\pgfxy(1,0.5)}{\pgfxy(1,1.5)}{\pgfxy(2,1)}
+  \pgfstroke
+
+  \pgfsetdash{{3pt}{3pt}}{0pt}
+  \pgfmoveto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0.5)}
+  \pgflineto{\pgfxy(1,1.5)}
+  \pgflineto{\pgfxy(2,1)}
+  \pgfstroke
+
+  \pgfmoveto{\pgfxy(3,1)}
+  \pgfcurveto{\pgfxy(3,0)}{\pgfxy(4,0)}{\pgfxy(4,1)}
+  \pgfcurveto{\pgfxy(4,2)}{\pgfxy(3,2)}{\pgfxy(3,1)}
+  \pgfclosepath
+  \pgffill  
+\end{pgfpicture}
+\begin{verbatim}
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfmoveto{\pgfxy(0,1)}
+  \pgfcurveto{\pgfxy(1,0.5)}{\pgfxy(1,1.5)}{\pgfxy(2,1)}
+  \pgfstroke
+
+  \pgfsetdash{{3pt}{3pt}}{0pt}
+  \pgfmoveto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0.5)}
+  \pgflineto{\pgfxy(1,1.5)}
+  \pgflineto{\pgfxy(2,1)}
+  \pgfstroke
+
+  \pgfmoveto{\pgfxy(3,1)}
+  \pgfcurveto{\pgfxy(3,0)}{\pgfxy(4,0)}{\pgfxy(4,1)}
+  \pgfcurveto{\pgfxy(4,2)}{\pgfxy(3,2)}{\pgfxy(3,1)}
+  \pgfclosepath
+  \pgffill  
+\end{pgfpicture}
+\end{verbatim}
+
+
+\subsection{Gallery}
+
+In the following, a number of figures are shown that have been created
+using \pgf. Please see the source code for how they are created.
+
+\pgfdeclareverticalshading{shadow}{200pt}{%
+  rgb(0pt)=(.2,.2,.2);
+  rgb(110pt)=(1,1,1)}
+\pgfdeclareverticalshading{paper}{200pt}{%
+  rgb(0pt)=(0.8,0.8,0.5);
+  rgb(150pt)=(1,1,1)}
+\pgfdeclareverticalshading{pic}{25pt}{%
+  rgb(0pt)=(0.25,0.75,0.25);
+  rgb(15pt)=(0.75,0.25,0.25);
+  rgb(35pt)=(0.25,0.25,0.75)}
+\pgfdeclareverticalshading{corner}{20pt}{%
+  rgb(0pt)=(0.5,0.5,0);
+  rgb(20pt)=(0.8,0.8,0.8)}
+\pgfdeclarehorizontalshading{cover}{200pt}{%
+  rgb(0pt)=(0.84,.5,.5);
+  rgb(18pt)=(0.82,.48,.48);
+  rgb(19pt)=(0.83,.66,.65);
+  rgb(21pt)=(0.83,.66,.65);
+  rgb(30pt)=(0.69,.25,.3);
+  rgb(80pt)=(0.45,0.05,0.05)}
+\pgfdeclareverticalshading{side}{100pt}{%
+  rgb(0pt)=(0.78,.78,.78);
+  rgb(25pt)=(0.60,.60,.60);
+  rgb(50pt)=(0.25,.25,.25)}
+
+
+\begin{pgfpicture}{-10pt}{-20pt}{100pt}{120pt}
+  \pgfsetxvec{\pgfpoint{10pt}{0pt}}
+  \pgfsetyvec{\pgfpoint{0pt}{10pt}}
+  \pgfsetlinewidth{4pt}
+
+  \begin{pgfscope}
+    \pgfmoveto{\pgfxy(0,0)}
+    \pgflineto{\pgfxy(8,0)}
+    \pgflineto{\pgfxy(8,9)}
+    \pgflineto{\pgfxy(6,9)}
+    \pgflineto{\pgfxy(6,11)}
+    \pgflineto{\pgfxy(0,11)}
+    \pgfclip
+
+    \pgfputat{\pgfxy(0,-10)}
+    {%
+      \begin{pgfrotateby}{\pgfdegree{45}}
+        \pgfbox[left,base]{\pgfuseshading{paper}}
+      \end{pgfrotateby}
+    }
+  \end{pgfscope}
+  
+  \begin{pgfscope}
+    \pgfmoveto{\pgfxy(8,9)}
+    \pgflineto{\pgfxy(6,9)}
+    \pgflineto{\pgfxy(6,11)}
+    \pgfclip
+
+    \pgfputat{\pgfxy(6,9)}{\pgfbox[left,base]{\pgfuseshading{corner}}}
+  \end{pgfscope}
+
+  \pgfmoveto{\pgfxy(0,0)}
+  \pgflineto{\pgfxy(8,0)}
+  \pgflineto{\pgfxy(8,9)}
+  \pgflineto{\pgfxy(6,11)}
+  \pgflineto{\pgfxy(0,11)}
+  \pgfclosepath
+  \pgfstroke
+  
+  \color[gray]{0.5}
+  \pgfxyline(1,9.5)(6,9.5)
+  \color[gray]{0.6}
+  \pgfxyline(2,8)(6,8)
+  \pgfxyline(2,7)(6,7)
+  
+  \color[gray]{0.7}
+  \pgfxyline(1,5.5)(3.5,5.5)
+  \pgfxyline(1,4.5)(3.5,4.5)
+  \pgfxyline(1,3.5)(3.5,3.5)
+  \pgfxyline(1,2.5)(3.5,2.5)
+  \pgfxyline(1,1.5)(3.5,1.5)
+
+  \pgfputat{\pgfxy(4.5,2.25)}{\pgfbox[left,base]{\pgfuseshading{pic}}}
+  \pgfxyline(4.5,1.5)(7,1.5)
+
+  \color{black}
+  \pgfmoveto{\pgfxy(8,9)}
+  \pgflineto{\pgfxy(6,9)}
+  \pgflineto{\pgfxy(6,11)}
+  \pgfstroke
+\end{pgfpicture}
+\begin{pgfpicture}{0pt}{0pt}{140pt}{110pt}
+  \pgfsetxvec{\pgfpoint{10pt}{0pt}}
+  \pgfsetyvec{\pgfpoint{0pt}{10pt}}
+  \pgfsetlinewidth{4pt}
+  \pgfsetroundjoin
+  
+  \pgfsetlinewidth{8pt}
+  \color[gray]{0.5}
+  \pgfmoveto{\pgfxy(6.5,11.5)}
+  \pgflineto{\pgfxy(1,10.5)}
+  \pgfcurveto{\pgfxy(0.6,9.75)}{\pgfxy(0.6,8.75)}{\pgfxy(1,8)}
+  \pgflineto{\pgfxy(6.5,2)}
+  \pgflineto{\pgfxy(13,3)}
+  \pgfcurveto{\pgfxy(12,4)}{\pgfxy(12,5)}{\pgfxy(13,6)}
+  \pgfclosepath
+  
+  \pgfmoveto{\pgfxy(6.5,2)}  
+  \pgfcurveto{\pgfxy(6,3)}{\pgfxy(6,4)}{\pgfxy(6.5,5)}
+  \pgflineto{\pgfxy(13,6)}
+  \pgfstroke
+
+  \begin{pgfscope}
+    \pgfmoveto{\pgfxy(6.5,11.5)}
+    \pgflineto{\pgfxy(1,10.5)}
+    \pgfcurveto{\pgfxy(0.6,9.75)}{\pgfxy(0.6,8.75)}{\pgfxy(1,8)}
+    \pgflineto{\pgfxy(6.5,2)}
+    \pgfcurveto{\pgfxy(6,3)}{\pgfxy(6,4)}{\pgfxy(6.5,5)}
+    \pgflineto{\pgfxy(13,6)}
+    \pgfclosepath
+    \pgfclip
+
+    \pgfputat{\pgfxy(8.5,0)}
+    {%
+      \begin{pgfrotateby}{\pgfdegree{45}}
+        \pgfbox[left,base]{\pgfuseshading{cover}}
+      \end{pgfrotateby}
+    }
+  \end{pgfscope}      
+  
+  \begin{pgfscope}
+    \pgfmoveto{\pgfxy(6.5,2)}  
+    \pgfcurveto{\pgfxy(6,3)}{\pgfxy(6,4)}{\pgfxy(6.5,5)}
+    \pgflineto{\pgfxy(13,6)}
+    \pgfcurveto{\pgfxy(12,5)}{\pgfxy(12,4)}{\pgfxy(13,3)}
+    \pgfclosepath
+    \pgfclip
+
+    \pgfputat{\pgfxy(7.5,0)}
+    {%
+      \begin{pgfrotateby}{\pgfdegree{30}}
+        \pgfbox[left,base]{\pgfuseshading{side}}
+      \end{pgfrotateby}
+    }
+  \end{pgfscope}      
+  
+  \pgfsetlinewidth{4pt}
+  \color[gray]{0.2}
+  \pgfmoveto{\pgfxy(6.5,11.5)}
+  \pgflineto{\pgfxy(1,10.5)}
+  \pgfcurveto{\pgfxy(0.6,9.75)}{\pgfxy(0.6,8.75)}{\pgfxy(1,8)}
+  \pgflineto{\pgfxy(6.5,2)}
+  \pgflineto{\pgfxy(13,3)}
+  \pgfcurveto{\pgfxy(12,4)}{\pgfxy(12,5)}{\pgfxy(13,6)}
+  \pgfclosepath
+  
+  \pgfmoveto{\pgfxy(6.5,2)}  
+  \pgfcurveto{\pgfxy(6,3)}{\pgfxy(6,4)}{\pgfxy(6.5,5)}
+  \pgflineto{\pgfxy(13,6)}
+  \pgfstroke
+\end{pgfpicture}
+
+\noindent
+\begin{pgfpicture}{-5.4cm}{0cm}{5.4cm}{6.5cm}
+  \pgfsetlinewidth{0.8pt}
+  \pgfxyline(-5,0)(5,0)
+    
+  \pgfsetlinewidth{0.4pt}
+
+  \pgfheaplabeledcentered{2cm}{2.5cm}{$\Class{CFL}$}
+  \pgfheaplabeledcentered{3.5cm}{3cm}{\raise10pt\hbox{}$\Class{DLINSPACE}$}
+  \pgfheaplabeledcentered{5cm}{4cm}{\raise13pt\hbox{}$\Class{NLINSPACE} = \Class{CSL}$}
+  \pgfheaplabeledcentered{6cm}{5cm}{$\Class{PSPACE}$}
+
+  \pgfsetdash{{3pt}{3pt}}{0pt}
+  \pgfheaplabeled{\pgfxy(0,3.3)}{\pgfxy(-5,6)}{\pgfxy(5,6)}{}%
+  \pgfputat{\pgfxy(-4.6,5.75)}{\pgfbox[left,base]{$\Class{PSPACE}$-hard}}%      
+\end{pgfpicture}
+
+\def\WordBlock#1#2#3#4#5{%
+  \pgfnoderect{#1}[stroke]{#2}{\pgfxy(1.5,0.5)}
+  \pgfputat{#2}{%
+    \pgfxyline(-0.25,-0.25)(-0.25,0.25)%
+    \pgfxyline(0.25,-0.25)(0.25,0.25)%
+    \pgfputat{\pgfxy(-.5,-0.1)}{\pgfbox[center,base]{#3}}
+    \pgfputat{\pgfxy(0,-0.1)}{\pgfbox[center,base]{#4}}
+    \pgfputat{\pgfxy(.5,-0.1)}{\pgfbox[center,base]{#5}}
+  }%
+}
+
+\def\Connect#1#2{%
+  \pgfmoveto{\pgfnodeborder{#1}{90}{0pt}}
+  \pgflineto{\pgfnodeborder{#2}{-90}{0pt}}
+  \pgfstroke}
+
+\def\Bush{%
+  \pgfsetdash{{2pt}{1pt}}{0pt}
+  \pgfxyline(0,0)(-.525,0.3)
+  \pgfxyline(0,0)(-.175,0.3)
+  \pgfxyline(0,0)(.525,0.3)
+  \pgfxyline(0,0)(.175,0.3)
+  \pgfsetdash{}{0pt}}
+\def\SmallBush{%
+  \pgfsetdash{{2pt}{1pt}}{0pt}
+  \pgfxyline(0,0)(-.29,0.29)
+  \pgfxyline(0,0)(-.1,0.3)
+  \pgfxyline(0,0)(.29,0.29)
+  \pgfxyline(0,0)(.1,0.3)
+  \pgfsetdash{}{0pt}}
+\def\BoldSmallBush{%
+  \pgfsetdash{{2pt}{1pt}}{0pt}
+  \pgfxyline(0,0)(-.29,0.29)
+  \pgfxyline(0,0)(-.1,0.3)
+  \pgfxyline(0,0)(.1,0.3)
+  \pgfsetdash{}{0pt}
+  \Bold{\pgfxyline(0,0)(0.8,0.8)}
+  \pgfputlabelrotated{0.5}{\pgfxy(0,0)}{\pgfxy(1,1)}{2pt}%
+  {\pgfbox[center,base]{110}}}
+
+\def\Label#1#2#3{%
+  \pgfputlabelrotated{.5}{\pgfnodeborder{#1}{90}{0pt}}%
+  {\pgfnodeborder{#2}{-90}{0pt}}{2pt}{\pgfbox[center,base]{#3}}}
+
+\def\Rabel#1#2#3{%
+  \pgfputlabelrotated{.5}{\pgfnodeborder{#2}{-90}{0pt}}%
+  {\pgfnodeborder{#1}{90}{0pt}}{2pt}{\pgfbox[center,base]{#3}}}
+
+\def\Bold#1{\pgfsetlinewidth{0.8pt}#1\pgfsetlinewidth{0.4pt}}
+
+\begin{pgfpicture}{-5.5cm}{-0.25cm}{5.cm}{6cm}
+  \Bold{\WordBlock{root}{\pgfxy(0,0)}{$\in$}{$\notin$}{$\in$}}
+  \WordBlock{1}{\pgfxy(-4.5,2)}{$*$}{$*$}{$*$}
+  \WordBlock{2}{\pgfxy(-1.5,2)}{$*$}{$*$}{$*$}
+  \Bold{\WordBlock{3}{\pgfxy(1.5,2)}{$\notin$}{$\notin$}{$\in$}}
+  \WordBlock{31}{\pgfxy(-1.5,4)}{$*$}{$*$}{$*$}
+  \Bold{\WordBlock{32}{\pgfxy(0.5,4)}{$\in$}{$\in$}{$\notin$}}
+  \WordBlock{33}{\pgfxy(2.5,4)}{$*$}{$*$}{$*$}
+  \WordBlock{34}{\pgfxy(4.5,4)}{$*$}{$*$}{$*$}
+  \WordBlock{4}{\pgfxy(4.5,2)}{$*$}{$*$}{$*$}
+
+  \Connect{root}{1}
+  \Rabel  {root}{1}{000}
+  \pgfputat{\pgfnodeborder{1}{90}{0pt}}{\Bush}
+  
+  \Connect{root}{2}
+  \Rabel  {root}{2}{001}
+  \pgfputat{\pgfnodeborder{2}{90}{0pt}}{\Bush}
+
+  \Bold{\Connect{root}{3}}
+  \Label  {root}{3}{101}
+
+  \Connect{3}{31}
+  \Rabel  {3}{31}{000}
+  \pgfputat{\pgfnodeborder{31}{90}{0pt}}{\SmallBush}
+
+  \Bold{\Connect{3}{32}}
+  \Rabel  {3}{32}{001}
+  \pgfputat{\pgfnodeborder{32}{90}{0pt}}{\BoldSmallBush}
+
+  \Connect{3}{33}
+  \Label  {3}{33}{101}
+  \pgfputat{\pgfnodeborder{33}{90}{0pt}}{\SmallBush}
+
+  \Connect{3}{34}
+  \Label  {3}{34}{110}
+  \pgfputat{\pgfnodeborder{34}{90}{0pt}}{\SmallBush}
+  
+  \Connect{root}{4}
+  \Label  {root}{4}{110}
+  \pgfputat{\pgfnodeborder{4}{90}{0pt}}{\Bush}
+\end{pgfpicture}
+
+\newcommand{\Node}[3]{%
+  \pgfnodecircle{#1}[stroke]{#2}{0.3cm}%
+  \pgfputat{\pgfrelative{#2}{\pgfxy(0,-.075)}}{\pgfbox[center,base]{#3}}}
+
+\newcommand{\Claim}[2]{%
+  \pgfputat{\pgfrelative{\pgfxy(0.4,-0.075)}{\pgfnodecenter{#1}}}%
+  {\pgfbox[left,base]{#2}}}
+
+\renewcommand{\Bush}[3]{%
+  \pgfnodecircle{#1}[virtual]{\pgfrelative{\pgfnodecenter{#2}}{#3}}{1pt}%
+  \pgfnodeconnline{#2}{#1}}
+
+\begin{pgfpicture}{-2.3cm}{-1.5cm}{1.8cm}{5.25cm}
+
+  \Node{A}{\pgfxy(0.5,0)}{$w_1$}
+  \Node{B}{\pgfxy(-1,1.5)}{$w_2$}
+  \Node{C}{\pgfxy(-2,3)}{$w_3$}
+  \Node{D}{\pgfxy(0,3)}{$w_4$}
+  \Node{E}{\pgfxy(-0.75,4.5)}{$w_5$}
+
+  \pgfnodeconnline{A}{B}
+  \pgfnodeconnline{B}{C}
+  \pgfnodeconnline{B}{D}
+  \pgfnodeconnline{D}{E}
+  
+  \pgfnodelabelrotated{B}{A}[.5][2pt]{\pgfbox[center,base]{0}}
+  \pgfnodelabelrotated{C}{B}[.5][2pt]{\pgfbox[center,base]{0}}
+  \pgfnodelabelrotated{B}{D}[.5][2pt]{\pgfbox[center,base]{1}}
+  \pgfnodelabelrotated{E}{D}[.5][2pt]{\pgfbox[center,base]{0}}
+  
+  \Claim{A}{`$\in A$'}
+  \Claim{B}{`$\in A$'}
+  \Claim{C}{`$\in B$'}
+  \Claim{D}{`$\in A$'}
+
+  \Bush{In}{A}{\pgfxy(-1,-.75)}
+  \pgfsetdash{{2pt}{1pt}}{0pt}
+  \Bush{Ar}{A}{\pgfxy(.75,.75)}
+  \Bush{Cl}{C}{\pgfxy(-.375,.75)}
+  \Bush{Cr}{C}{\pgfxy(.375,.75)}
+  \Bush{Dr}{D}{\pgfxy(.375,.75)}
+  \Bush{El}{E}{\pgfxy(-.3,.75)}
+  \Bush{Er}{E}{\pgfxy(.3,.75)}
+\end{pgfpicture}
+\begin{pgfpicture}{-2.8cm}{-1.5cm}{3.7cm}{5.25cm}
+
+  \Node{A}{\pgfxy(0,0)}{$w_1$}
+  \Node{B}{\pgfxy(-1.5,1.5)}{$w_3$}
+  \Node{C}{\pgfxy(-2.5,3)}{$w_2$}
+  \Node{D}{\pgfxy(1.5,1.5)}{$w_4$}
+  \Node{E}{\pgfxy(0.5,3)}{$w_5$}
+
+  \pgfnodeconnline{A}{B}
+  \pgfnodeconnline{B}{C}
+  \pgfnodeconnline{A}{D}
+  \pgfnodeconnline{D}{E}
+  
+  \pgfnodelabelrotated{B}{A}[.5][2pt]{\pgfbox[center,base]{0}}
+  \pgfnodelabelrotated{A}{D}[.5][2pt]{\pgfbox[center,base]{1}}
+  \pgfnodelabelrotated{C}{B}[.5][2pt]{\pgfbox[center,base]{0}}
+  \pgfnodelabelrotated{E}{D}[.5][2pt]{\pgfbox[center,base]{0}}
+
+  \Claim{A}{`${\in}\kern2pt A$'}
+  \Claim{B}{`${\in}\kern2pt A$', `$\in B$'}
+  \Claim{D}{`$\in A$', `$\in B$'}
+  
+  \Bush{In}{A}{\pgfxy(1,-.75)}
+  \pgfsetdash{{2pt}{1pt}}{0pt}
+  \Bush{Br}{B}{\pgfxy(.5,.75)}
+  \Bush{Dr}{D}{\pgfxy(.5,.75)}
+  \Bush{Cl}{C}{\pgfxy(-.375,.75)}
+  \Bush{Cr}{C}{\pgfxy(.375,.75)}
+  \Bush{El}{E}{\pgfxy(-.375,.75)}
+  \Bush{Er}{E}{\pgfxy(.375,.75)}
+\end{pgfpicture}
+
+\begin{pgfpicture}{-5.4cm}{-3.2cm}{4.25cm}{3.2cm}
+  \begin{pgfautomaton}
+    \pgfsetstatemooreradius{1.05cm}
+    
+    \pgfstatemoore{eq}{\pgfxy(-3,0)}
+    {$q_=$}{$\{00,11\}$}
+    \pgfstatemoore{neq}{\pgfxy(2,0)}%
+    {$q_{\not\sqsubseteq,\not\sqsupseteq}$}{$\{00,01,10\}$}
+    \pgfstatemoore{less}{\pgfxy(2,2.3)}
+    {$q_{\sqsubseteq}$}{$\{00,10,11\}$} 
+    \pgfstatemoore{more}{\pgfxy(2,-2.3)}
+    {$q_{\sqsupseteq}$}{$\{00,01,11\}$} 
+
+    \pgfstateinitial{eq}[left]{start}
+
+    \pgfstateconnectrotated{eq}{less}[.6]{$\binom{\square}{x}$}
+    \pgfstateconnectrotated{eq}{neq}[.6]{$\binom{0}{1},\binom{1}{0}$}
+    \pgfstateconnectrotated{eq}{more}[.6]{$\binom{x}{\square}$}
+
+    \pgfstateloop{eq}{\pgfdirection{below}}{$\binom{x}{x}$}
+    \pgfstateloop{less}{\pgfdirection{right}}{$\binom{y}{z}$}
+    \pgfstateloop{neq}{\pgfdirection{right}}{$\binom{y}{z}$}
+    \pgfstateloop{more}{\pgfdirection{right}}{$\binom{y}{z}$}
+  \end{pgfautomaton}
+\end{pgfpicture}
+
+\begin{pgfpicture}{-5.1cm}{-2.1cm}{5cm}{4.3cm}
+  \begin{pgfautomaton}
+    \pgfstatemoore{a}{\pgfxy(-3,0)}{$q_1$}{$\{0,1\}$}
+    \pgfstatemoore{b}{\pgfxy(0,1.2)}{$q_2$}{$\{0,1\}$}
+    \pgfstatemoore{c}{\pgfxy(3,1.2)}{$q_3$}{$\{0,2\}$}
+    \pgfstatemoore{d}{\pgfxy(0,-1.2)}{$q_4$}{$\{0,1\}$}
+
+    \pgfstateinitial{a}[left]{start}
+
+    \pgfstateconnectrotated{a}{b}[.6]{$\binom{1}{1}$}
+    \pgfstateconnectrotated{b}{c}[.6]{$\binom{x}{y}$}
+    \pgfstateconnectrotated{a}{d}[.6]{$\binom{x}{y}$}
+
+    \pgfstateloop{a}{\pgfdirection{below}}{$\binom{0}{0}$}
+    \pgfstateloop{b}{\pgfdirection{above}}{$\binom{z}{z}$}
+    \pgfstateloop{c}{\pgfdirection{right}}{$\binom{u}{v}$}
+    \pgfstateloop{d}{\pgfdirection{right}}{$\binom{u}{v}$}
+  \end{pgfautomaton}
+\end{pgfpicture}
+
+\def\QuadA#1#2#3{
+  \pgfmoveto{\pgfxyz(#1,#2,#2)}
+  \pgflineto{\pgfxyz(#1,#2,#3)}
+  \pgflineto{\pgfxyz(#1,#3,#3)}
+  \pgflineto{\pgfxyz(#1,#3,#2)}
+  \pgfclosepath
+  \pgfstroke}
+\def\QuadB#1#2#3{
+  \pgfmoveto{\pgfxyz(#2,#1,#2)}
+  \pgflineto{\pgfxyz(#2,#1,#3)}
+  \pgflineto{\pgfxyz(#3,#1,#3)}
+  \pgflineto{\pgfxyz(#3,#1,#2)}
+  \pgfclosepath
+  \pgfstroke}
+\def\QuadC#1#2#3{
+  \pgfmoveto{\pgfxyz(#2,#2,#1)}
+  \pgflineto{\pgfxyz(#2,#3,#1)}
+  \pgflineto{\pgfxyz(#3,#3,#1)}
+  \pgflineto{\pgfxyz(#3,#2,#1)}
+  \pgfclosepath
+  \pgfstroke}
+\def\HyperCube{
+  \QuadA003 \QuadA303 \QuadA112
+  \QuadA212 \QuadB003 \QuadB303
+  \QuadB112 \QuadB212 \QuadC003
+  \QuadC303 \QuadC112 \QuadC212
+  \pgfline{\pgfxyz(0,0,0)}{\pgfxyz(1,1,1)}
+  \pgfline{\pgfxyz(3,0,0)}{\pgfxyz(2,1,1)}
+  \pgfline{\pgfxyz(0,3,0)}{\pgfxyz(1,2,1)}
+  \pgfline{\pgfxyz(0,0,3)}{\pgfxyz(1,1,2)}
+  \pgfline{\pgfxyz(3,3,0)}{\pgfxyz(2,2,1)}
+  \pgfline{\pgfxyz(0,3,3)}{\pgfxyz(1,2,2)}
+  \pgfline{\pgfxyz(3,0,3)}{\pgfxyz(2,1,2)}
+  \pgfline{\pgfxyz(3,3,3)}{\pgfxyz(2,2,2)}}
+
+\makeatletter
+\def\Shear#1{\pgf@process{#1}\divide\pgf@y by 3\advance\pgf@x by .6\pgf@y}
+\makeatother
+  
+\begin{pgfpicture}{0cm}{0cm}{10cm}{2cm}
+  \pgfsetroundjoin
+  \pgfsetxvec{\Shear{\pgfpolar{0}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-90}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-10}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-100}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-20}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-110}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-30}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-120}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-40}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-130}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-50}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-140}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-60}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-150}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-70}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-160}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-80}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-170}{0.25cm}}}
+  \HyperCube
+
+  \pgftranslateto{\pgfpoint{1.5cm}{0cm}}
+  \pgfsetxvec{\Shear{\pgfpolar{-90}{.25cm}}}
+  \pgfsetyvec{\pgfpolar{90}{.25cm}}
+  \pgfsetzvec{\Shear{\pgfpolar{-180}{0.25cm}}}
+  \HyperCube
+\end{pgfpicture}
+
+
+
+\section{Basic Graphic Drawing}
+
+
+\subsection{Main Environments}
+
+In order to draw a picture using \pgf, you have to put the picture
+inside the environment |pgfpicture| or the environment
+|pgfpictureboxed|.
+
+\begin{environment}{{pgfpicture}\marg{lower left x}\marg{lower
+      left y}\marg{upper right x}\marg{upper right y}} 
+  Sets up a \pgf-picture environment. The dimensions tell \TeX\ how much
+  space it should reserve. These sizes are not used for clipping.
+
+  Inside this environment, \TeX's null font is used. This causes any
+  text (including spaces) that is not put inside a |\pgfbox| to be
+  suppressed. Furthermore, the dimensions 1ex and 1em are zero. To
+  access the original dimensions, you can use the dimensions
+  \declare{\texttt{\string\pgfex}} and \declare{\texttt{\string\pgfem}}, which are setup are the
+  beginning of the environment to the value of 1ex and 1em,
+  respectively. 
+  \example
+\begin{verbatim}
+\begin{pgfpicture}{0cm}{0cm}{1cm}{1cm}
+  \pgfline{\pgforigin}{\pgfpoint{10pt}{10pt}}
+\end{pgfpicture}
+\end{verbatim}
+\end{environment}
+
+\begin{environment}{{pgfpictureboxed}\marg{lower left x}\marg{lower
+      left y}\marg{upper right x}\marg{upper right y}}
+  Identical to |pgfpicture|, except that a frame of the size of
+  the picture is drawn around it.
+\end{environment}
+
+Inside a picture, you can create nested scopes using
+|pgfscope|. Changes made inside a |pgfscope| are undone when the scope
+ends.
+
+\begin{environment}{{pgfscope}}
+  All changes made inside a scope are local to that scope.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{0.75cm}
+  \pgfxyline(0,0)(5,0)
+  \begin{pgfscope}
+    \pgfsetlinewidth{2pt}
+    \pgfxyline(0,0.25)(5,0.25)
+  \end{pgfscope}
+  \pgfxyline(0,0.5)(5,0.5)
+\end{pgfpicture}
+\begin{verbatim}
+\begin{pgfpicture}{0cm}{0cm}{5cm}{0.75cm}
+  \pgfxyline(0,0)(5,0)
+  \begin{pgfscope}
+    \pgfsetlinewidth{2pt}
+    \pgfxyline(0,0.25)(5,0.25)
+  \end{pgfscope}
+  \pgfxyline(0,0.5)(5,0.5)
+\end{pgfpicture}
+\end{verbatim}
+\end{environment}
+
+
+
+\subsection{How to Specify a Point}
+
+\pgf\ uses a two dimensional coordinate system that is local to the
+current picture been drawn. A point inside the coordinate system can
+be specified using the command |pgfpoint|. You can use all
+dimensions available in \TeX\ when specifying a dimension.
+
+\begin{command}{\pgforigin}
+  Yields the origin.
+  \example |\pgmoveto{\pgforigin}|
+\end{command}
+
+
+\begin{command}{\pgfpoint\marg{x coordinate}\marg{y coordinate}}
+  Yields a point location. The coordinates are given as \TeX\ dimensions.
+  \example |\pgfline{\pgfpoint{10sp}{-1.5cm}}{\pgfpoint{10pt}{1cm}}|
+\end{command}
+
+\begin{command}{\pgfpolar\marg{degree}\marg{radius}}
+  Yields a point location given in polar coordinates.
+  \example |\pgfmoveto{\pgfpolar{30}{1cm}}|
+\end{command}
+
+\begin{command}{\pgfdirection\marg{direction string}}
+    Returns the degree that corresponds to the direction.
+  Allowed values for \meta{direction string} are
+  |n[orth]|, |s[south]|, |e[east]|,
+  |w[est]|, |ne|, |nw|, |se|, and |sw|.
+  \example |\pgfmoveto{\pgfpolar{\pgfdirection{n}}{1cm}}|
+\end{command}
+
+Coordinates can also be specified as multiples of an $x$-vector and a
+$y$-vector. Normally, the $x$-vector points one centimeter in the
+$x$-direction and the $y$-vector points one centimeter in the
+$y$-direction, but using the commands |pgfsetxvec| and
+|pgfsetyvec| they can be changed.
+
+It is also possible to specify a point as a multiple of three vectors,
+the $x$-, $y$-, and $z$-vector. This is useful for creating simple
+three dimensional graphics.
+
+\begin{command}{\pgfxy|(|\meta{$s_x$}|,|\meta{$s_y$}|)|}
+  Yields a point that is situated at $s_x$ times the
+  $x$-vector plus $s_y$ times the $y$-vector.
+  \example |\pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}|
+\end{command}
+
+\begin{command}{\pgfxyz|(|\meta{$s_x$}|,|\meta{$s_y$}|,|\meta{$s_z$}|)|}
+  Yields a point that is situated at $s_x$ times the
+  $x$-vector plus $s_y$ times the $y$-vector plus  $s_z$ times the
+  $z$-vector.
+  \example
+
+\begin{pgfpicture}{-0.5cm}{-0.5cm}{1cm}{1.25cm}
+  \pgfsetendarrow{\pgfarrowto}
+  \pgfline{\pgfxyz(0,0,0)}{\pgfxyz(0,0,1)}
+  \pgfline{\pgfxyz(0,0,0)}{\pgfxyz(0,1,0)}
+  \pgfline{\pgfxyz(0,0,0)}{\pgfxyz(1,0,0)}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfsetendarrow{\pgfarrowto}
+  \pgfline{\pgfxyz(0,0,0)}{\pgfxyz(0,0,1)}
+  \pgfline{\pgfxyz(0,0,0)}{\pgfxyz(0,1,0)}
+  \pgfline{\pgfxyz(0,0,0)}{\pgfxyz(1,0,0)}
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfsetxvec\marg{point}}
+  A point that replaces the current $x$-vector. The commands
+  \declare{\texttt{\string\pgfsetyvec}} and
+  \declare{\texttt{\string\pgfsetzvec}} are defined the same way.
+  \example
+\begin{verbatim}
+  \pgfsetxvec{\pgfpoint{2cm}{0cm}}
+  \pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}
+  % Same as \pgfline{\pgforigin}{\pgfpoint{2cm}{1cm}}
+\end{verbatim}
+\end{command}
+
+
+
+There exist different commands for treating points as vectors.
+
+\begin{command}{\pgfdiff\marg{point $p_1$}\marg{point $p_2$}}
+  Yields the difference vector $p_2 - p_1$.
+  \example |\pgfmoveto{\pgfdiff{\pgfxy(1,1)}{\pgfxy(2,3)}}|
+\end{command}
+
+
+\begin{command}{\pgfrelative\marg{point $p_1$}\marg{point $p_2$}}
+  Yields the  the sum $p_1 + p_2$
+  \example  |\pgfmoveto{\pgfrelative{\pgfxy(0,1)}{\pgfpoint{1pt}{2pt}}}|
+\end{command}
+
+
+\begin{command}{\pgfpartway\marg{scalar $r$}\marg{point $p_1$}\marg{point $p_2$}}
+  Yields a point that is the $r$th fraction between $p_1$
+  and~$p2$, that is, $p_1 + r(p_2-p_1)$. For $r=0.5$ the middle
+  between $p_1$ and~$p_2$ is returned.
+  \example |\pgfmoveto{\pgfpartway{0.5}{\pgfxy(1,1)}{\pgfxy(2,3)}}|
+\end{command}
+
+\begin{command}{\pgfbackoff\marg{distance}\marg{start point}\marg{end point}}
+  Yields a point that is located \meta{distance} many units removed
+  from the start point in the direction of the end point.
+  \example
+\begin{verbatim}
+\pgfline{\pgfbackoff{2pt}{\pgfxy(1,1)}{\pgfxy(2,3)}}
+        {\pgfbackoff{3pt}{\pgfxy(2,3)}{\pgfxy(1,1)}}
+\end{verbatim}
+\end{command}
+
+
+
+\subsection{Coordinate Systems}
+
+Coordinate systems can be translated, rotated, and magnified using two
+environments. \emph{Please note that these operations are incompatible
+  with the node drawing commands.} Note also that the magnify
+operation also makes lines appear bigger. If this is not desired, you
+might wish to enlarge the $x$- and $y$-vectors instead.
+
+\begin{environment}{{pgftranslate}\marg{new origin}}
+  Makes \meta{new origin} the new origin within the scope of
+  the environment.
+  \example
+\begin{verbatim}
+\begin{pgftranslate}{\pgfpoint{0cm}{1cm}}
+  \pgfline{\pgforigin}{\pgfxy(1,0)}
+\end{pgftranslate}
+\end{verbatim}
+\end{environment}
+
+\begin{command}{\pgftranslateto\marg{new origin}}
+  Makes the parameter the new origin.
+  \example
+\begin{verbatim}
+\pgftranslateto{\pgfpoint{0cm}{1cm}}
+\pgfline{\pgforigin}{\pgfxy(1,0)}
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfputat\marg{an origin}\marg{commands}}
+  Executes the commands after having translated the origin
+  to the given location.
+  \example |\pgfputat{\pgfxy(1,0)}{\pgfbox[center,center]{Hello world}}|
+\end{command}
+
+
+\begin{environment}{{pgfrotateby}\marg{sin/cos of rotation degree}}
+  Rotates the current coordinate system by \marg{sin/cos of rotation
+    degree} within the scope of the environment. Use |\pgfdegree| to
+  calculate the rotation degree.  
+  \example
+\begin{verbatim}
+\begin{pgfrotateby}{\pgfdegree{30}}
+  \pgfline{\pgforigin}{\pgfxy(1,0)}
+\end{pgfrotateby}
+\end{verbatim}
+\end{environment}
+
+\begin{environment}{{pgfmagnify}\marg{x magnification}\marg{y magnification}}
+  Magnifies everything within the environment by the given
+  factors.
+  \example
+\begin{verbatim}
+\begin{pgfmagnify}{2}{2}
+  \pgfline{\pgforigin}{\pgfxy(1,0)}
+\end{pgfmagnify}
+\end{verbatim}
+\end{environment}
+
+
+
+
+\subsection{Path Construction}
+
+Lines and shapes can be drawn by constructing paths and by then
+stroking and filling them. In order to construct a path, you must
+first use the command |\pgfmoveto|, followed by a series of
+|\pgflineto| and |\pgfcurveto| commands. You can use
+|\pgfclosepath| to create a closed shape. You can also use
+|\pgfmoveto| commands while constructing a path.
+
+
+\begin{command}{\pgfmoveto\marg{point}}
+  Makes \meta{point} the current point.
+  \example |\pgfmoveto{\pgforigin}|
+\end{command}
+
+
+\begin{command}{\pgflineto\marg{point}}
+  Extends the path by a straight line from the current point to
+  \meta{point}. This point is then made the current point.
+  \example
+\begin{verbatim}
+  \pgfmoveto{\pgforigin}
+  \pgflineto{\pgfxy(1,1)}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfcurveto\marg{support point 1}\marg{support point 2}\marg{point}}
+  Extends the path by a curve from the current point to
+  \meta{point}. This point is then made the current point. The support
+  points govern in which direction the curves head 
+  at the start and at the end. At the start it will head in a
+  straight line towards \marg{support point 1}, at the destination it
+  will head in a straight line towards the destination as if it came
+  from \marg{support point 2}.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{2cm}{1.25cm}
+  \pgfmoveto{\pgforigin}
+  \pgfcurveto{\pgfxy(1,1)}{\pgfxy(2,1)}{\pgfxy(2,0)}
+  \pgfstroke
+
+  \pgfcircle[fill]{\pgforigin}{2pt}
+  \pgfcircle[fill]{\pgfxy(1,1)}{2pt}
+  \pgfcircle[fill]{\pgfxy(2,1)}{2pt}
+  \pgfcircle[fill]{\pgfxy(2,0)}{2pt}
+
+  \pgfputat{\pgfxy(1.1,1)}{\pgfbox[left,center]{\footnotesize $(1,1)$}}
+  \pgfputat{\pgfxy(2.1,1)}{\pgfbox[left,center]{\footnotesize $(2,1)$}}
+  \pgfputat{\pgfxy(2.1,0)}{\pgfbox[left,center]{\footnotesize $(2,0)$}}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfmoveto{\pgforigin}
+  \pgfcurveto{\pgfxy(1,1)}{\pgfxy(2,1)}{\pgfxy(2,0)}
+  \pgfstroke
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfclosepath}
+  Connects the current point to the point where the current path
+  started.
+\end{command}
+
+
+\begin{command}{\pgfzerocircle\marg{radius}}
+  Appends a circle around the origin of the given radius to the
+  current path.
+  \example |\pgfzerocircle{1cm}|
+\end{command}
+
+\begin{command}{\pgfzeroellipse\marg{axis vector 1}\marg{axis vector 2}}
+  Appends an ellipse with the given axis vectors centered at the
+  origin to the current path.
+  \example
+\begin{pgfpicture}{-1cm}{-1cm}{1cm}{1cm}
+  \pgfzeroellipse{\pgfxy(0.5,0.5)}{\pgfxy(-0.75,0.75)}
+  \pgfstroke
+  \pgfline{\pgforigin}{\pgfxy(0.5,0.5)}
+  \pgfline{\pgforigin}{\pgfxy(-0.75,0.75)}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfzeroellipse{\pgfxy(0.5,0.5)}{\pgfxy(-0.75,0.75)}
+  \pgfstroke
+  \pgfline{\pgforigin}{\pgfxy(0.5,0.5)}
+  \pgfline{\pgforigin}{\pgfxy(-0.75,0.75)}
+\end{verbatim}
+\end{command}
+
+The basic drawing commands also come in `quick' versions. These
+versions get plain numbers as input that represent \TeX\ points. These
+commands are executed much quicker than the normal commands. They are
+useful if you need to do construct very long or numerous paths.
+
+\begin{command}{\pgfqmoveto\marg{x bp}\marg{y bp}}
+  Makes the given point the current point. The real numbers given are
+  interpreted as \TeX\ ``big points,'' which are a 1/72th of an inch
+  (as opposed to \TeX\ points, which are a 1/72.27th of an inch).
+  \example |\pgfqmoveto{10}{20}|
+\end{command}
+
+\begin{command}{\pgfqlineto\marg{x bp}\marg{y bp}}
+  Extends the path by a straight line from the current point to the
+  parameter point. The parameter point is then made the current
+  point.
+  \example
+\begin{verbatim}
+  \pgfqmoveto{0}{0}
+  \pgfqlineto{100}{100}
+  \pgfstroke
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfqcurveto\marg{$s^1_x$ bp}\marg{$s^1_y$ bp}\marg{$s^2_x$ bp}\marg{$s^2_y$ bp}\marg{x bp}\marg{y bp}}
+  Quick version of the |\pgfcurveto| command.
+  \example
+\begin{verbatim}
+  \pgfqmoveto{0}{0}
+  \pgfqcurveto{100}{100}{200}{100}{200}{0}
+  \pgfstroke
+\end{verbatim}
+\end{command}
+
+
+
+\subsection{Stroking and Filling}
+
+Once you have constructed a path, you can use the commands
+|\pgfstroke| and |\pgffill| to paint the path. How the
+path is painted depends on a number of parameters: For filling, the
+fill color is important (the fill color is the same as the stroke
+color and it set by using the standard |\color| commands from the
+|color| package or any compatible package). For stroking, the
+line width, the line dashing, the miter join, and the cap form are
+furthermore of importance.
+
+\begin{command}{\pgfstroke}
+  Draws the current path with current color, thickness, dashing,
+  miter, and cap. If an arrow type is set up, arrows are drawn at the
+  beginning and at the end.
+  \example
+\begin{verbatim}
+  \pgfmoveto{\pgforigin}
+  \pgflineto{\pgfxy(1,1)}
+  \pgfstroke
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfqstroke}
+  Like |\pgfstroke|, except that no arrows are drawn.
+\end{command}
+
+
+\begin{command}{\pgfclosestroke}
+  Closes the current path and then draws it.
+  \example
+\begin{verbatim}
+  \pgfmoveto{\pgforigin}
+  \pgflineto{\pgfxy(1,1)}
+  \pgflineto{\pgfxy(0,1)}
+  \pgfclosestroke
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgffill}
+  Closes the current path, if necessary, and then fill the area with
+  the current color.
+  \example
+\begin{verbatim}
+  \pgfmoveto{\pgforigin}
+  \pgflineto{\pgfxy(1,1)}
+  \pgfstroke
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfeofill}
+  Same as |\pgffill|, except that the even-odd rule is used.
+\end{command}
+
+\begin{command}{\pgffillstroke}
+  Strokes the current path, the closes the current path, if necessary,
+  and then fills the area with the current color.
+\end{command}
+
+\begin{command}{\pgfeofillstroke}
+  Same as |\pgffillstroke|, except that the even-odd rule is used.
+\end{command}
+
+
+\begin{command}{\pgfsetlinewidth\marg{line width}}
+  Sets the line width for subsequent stroking commands to \meta{line
+    width}. A dimension of 0pt corresponds to the thinnest drawable 
+  line. On high resolution printers these will be impossible to see.
+  \example |\pgfsetlinewidth{3pt}|
+\end{command}
+
+
+
+\begin{command}{\pgfsetdash\marg{list of even length of dimensions}\marg{phase}}
+  Sets the dashing of a line. The first entry in the list specifies
+  the length of the first solid part of the list. The second entry
+  specifies the length of the following gap. Then comes the length of
+  the second solid part, following by the length of the second gap,
+  and so on. The \meta{phase} specifies where the first solid part
+  starts relative to the beginning of the line.
+  \example
+
+\begin{pgfpicture}{0cm}{0.5cm}{5cm}{1.25cm}
+  \pgfsetdash{{0.5cm}{0.5cm}{0.1cm}{0.2cm}}{0cm}
+  \pgfxyline(0,1)(5,1)
+  \pgfsetdash{{0.5cm}{0.5cm}{0.1cm}{0.2cm}}{0.1cm}
+  \pgfxyline(0,0.9)(5,0.9)
+  \pgfsetdash{{0.5cm}{0.5cm}{0.1cm}{0.2cm}}{0.2cm}
+  \pgfxyline(0,0.8)(5,0.8)
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfsetdash{{0.5cm}{0.5cm}{0.1cm}{0.2cm}}{0cm}
+  \pgfxyline(0,1)(5,1)
+  \pgfsetdash{{0.5cm}{0.5cm}{0.1cm}{0.2cm}}{0.1cm}
+  \pgfxyline(0,0.9)(5,0.9)
+  \pgfsetdash{{0.5cm}{0.5cm}{0.1cm}{0.2cm}}{0.2cm}
+  \pgfxyline(0,0.8)(5,0.8)
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfsetbuttcap}
+  Set a butt line cap for subsequent stroking commands.
+\end{command}
+
+\begin{command}{\pgfsetroundcap}
+  Set a round line cap for subsequent stroking commands.
+\end{command}
+
+\begin{command}{\pgfsetrectcap}
+  Set a rectangular line cap for subsequent stroking commands.
+\end{command}
+
+\begin{command}{\pgfsetbeveljoin}
+  Set a bevel line join for subsequent stroking commands.
+\end{command}
+
+\begin{command}{\pgfsetroundjoin}
+  Set a round line join for subsequent stroking commands.
+\end{command}
+
+\begin{command}{\pgfsetmiterjoin}
+  Set a miter line join for subsequent stroking commands.
+\end{command}
+
+
+\begin{command}{\pgfsetmiterlimit\marg{miter limit}}
+  Sets the miter limit for subsequent stroking commands. See the
+  \textsc{pdf} manual for details on what the miter limit is.
+  \example |\pgfsetmiterlimit{3pt}|
+\end{command}
+
+
+
+\subsection{Clipping}
+
+Paths can also be used to clip subsequent drawings. Executing the clip
+operator intersects the current clipping area with the area specified
+by the path. There is no way of enlarging the clipping area once
+more. However, if a clipping operations is done inside a
+\text{pgfscope} environment, the end of the scope restores the
+original clipping area.
+
+\begin{command}{\pgfclip}
+  Closes the current path and intersect it with the current clipping
+  path to form a new clipping path.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{2cm}{1.25cm}
+  \pgfmoveto{\pgfxy(0,0)}
+  \pgflineto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0)}
+  \pgfclip
+
+  \pgfcircle[fill]{\pgfxy(0.25,0.25)}{14pt}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfmoveto{\pgfxy(0,0)}
+  \pgflineto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0)}
+  \pgfclip
+
+  \pgfcircle[fill]{\pgfxy(0.25,0.25)}{14pt}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfstrokeclip}
+  Stroke the current path, then close it, and intersect it with the
+  current clipping path to form a new clipping path.
+\example
+
+\begin{pgfpicture}{0cm}{0cm}{2cm}{1.25cm}
+  \pgfmoveto{\pgfxy(0,0)}
+  \pgflineto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0)}
+  \pgfstrokeclip
+
+  \pgfcircle[fill]{\pgfxy(0.25,0.25)}{14pt}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfmoveto{\pgfxy(0,0)}
+  \pgflineto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0)}
+  \pgfstrokeclip
+
+  \pgfcircle[fill]{\pgfxy(0.25,0.25)}{14pt}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfclosestrokeclip}
+  Close the current path, strokes it, and intersect it with the
+  current clipping path to form a new clipping path.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{2cm}{1.25cm}
+  \pgfmoveto{\pgfxy(0,0)}
+  \pgflineto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0)}
+  \pgfclosestrokeclip
+
+  \pgfcircle[fill]{\pgfxy(0.25,0.25)}{14pt}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfmoveto{\pgfxy(0,0)}
+  \pgflineto{\pgfxy(0,1)}
+  \pgflineto{\pgfxy(1,0)}
+  \pgfclosestrokeclip
+
+  \pgfcircle[fill]{\pgfxy(0.25,0.25)}{14pt}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgffillclip}
+  Closes the current path, fills it, and intersect it with the
+  current clipping path to form a new clipping path.
+\end{command}
+
+
+\begin{command}{\pgffillstrokeclip}
+  Closes the current path, fills it, strokes it, and intersect it with the
+  current clipping path to form a new clipping path.
+\end{command}
+
+
+
+
+\subsection{Shape and Line Drawing}
+
+There are several commands that make drawing shapes and lines
+easier. However, in principle these could be implemented using the
+path construction and stroking and filling commands introduced above.
+
+\begin{command}{\pgfline\marg{start point}\marg{end point}}
+  Draws a line from \meta{start point} to \meta{end point}. This command is
+  equivalent to constructing a path from the start to the end point
+  and then stroking it.
+  \example |\pgfline{\pgfxy(0,0)}{\pgfxy(1,1)}|
+\end{command}
+
+\begin{command}{\pgfxyline|(|\meta{$x_1$}|,|\meta{$y_1$}|),(|\meta{$x_2$}|,|\meta{$y_2$}|)|}
+  Like the |\pgfline| command, except the start and end points
+  are given in $xy$-coordinates.
+  \example |\pgfxyline(0,0)(1,1)|
+\end{command}
+
+\begin{command}{\pgfcurve\marg{start point}\marg{support point
+      1}\marg{support point 2}\marg{end point}}
+  Draws a curve from the start to the end point with given support
+  points.
+  \example |\pgfcurve{\pgfxy(0,0)}{\pgfxy(0,1)}{\pgfxy(1,1)}{\pgfxy(1,0)}| 
+\end{command}
+
+\begin{command}{\pgfxycurve|(|\meta{$x_1$}|,|\meta{$y_1$}|),(|\meta{$x_1'$}|,|\meta{$y_1'$}|),(|\meta{$x_2'$}|,|\meta{$y_2'$}|),(|\meta{$x_2$}|,|\meta{$y_2$}|)|}
+  Like the |\pgfcurve| command, except that all points 
+  are given in $xy$-coordinates.
+  \example |\pgfxycurve(0,0)(0,1)(1,1)(1,0)|
+\end{command}
+
+
+
+\begin{command}{\pgfrect\ooarg{drawing type}\marg{lower left
+      corner}\marg{height/width vector}}
+  Draws a rectangle. The \meta{drawing type} can be |stroke|, |fill|,
+  |fillstroke|, or |clip|. 
+  \example
+\begin{verbatim}
+  % Draw a filled rectangle with corners (2,2) and (3,3)
+  \pgfrect[fill]{\pgfxy(2,2)}{\pgfxy(1,1)}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfcircle\ooarg{drawing type}\marg{center}\marg{radius}}
+  Draws a circle centered at \meta{center} of radius
+  \meta{radius}. The \meta{drawing type} can be   |stroke|, |fill|, or
+  |fillstroke|.
+  \example |\pgfcircle[stroke]{\pgfxy(1,1)}{10pt}|
+\end{command}
+
+\begin{command}{\pgfellipse\ooarg{drawing type}\marg{center}\marg{axis
+      vector 1}\marg{axis vector 2}}
+  Draws an ellipse at a given position. The drawing type can be
+  |stroke|, |fill|, or |fillstroke|. 
+  \example |\pgfellipse[fill]{\pgforigin}{\pgfxy(2,0)}{\pgfxy(0,1)}|
+\end{command}
+
+\begin{command}{\pgfgrid\oarg{options}\marg{lower left}\marg{upper right}}
+  Draws a grid. The origin is part of the grid and the grid is clipped
+  to the rectanlge specified by the \meta{lower left} and
+  the \meta{upper right} corner. Allowed \meta{options} are:
+  \begin{description}
+  \item[\declare{|stepx=|\meta{dimension}}]
+    Sets the horizontal steping to \meta{dimension}. Default is 1cm.
+  \item[\declare{|stepy=|\meta{dimension}}]
+    Sets the vertical steping to \meta{dimension}. Default is 1cm.
+  \item[\declare{|step=|\meta{vector}}]
+    Sets the horizontal stepping to the $x$-coordinate of
+    \meta{vector} and the vertical steping its $y$-coordinate.
+  \end{description}
+
+  \example
+\begin{verbatim}
+\pgfsetlinewidth{0.8pt}
+\pgfgrid[step={\pgfpoint{1cm}{1cm}}]{\pgfxy(-.3,-.3)}{\pgfxy(3.3,2.3)}{}
+\pgfsetlinewidth{0.4pt}
+\pgfgrid[stepx=0.1cm,stepy=0.1cm]{\pgfxy(-.15,-.15)}{\pgfxy(3.15,2.15)}
+\end{verbatim}
+  \begin{pgfpicture}{0cm}{0cm}{5cm}{2.5cm}
+    \pgfsetlinewidth{0.8pt}
+    \pgfgrid[step={\pgfpoint{1cm}{1cm}}]{\pgfxy(-.3,-.3)}{\pgfxy(3.3,2.3)}{}
+    \pgfsetlinewidth{0.4pt}
+    \pgfgrid[stepx=0.1cm,stepy=0.1cm]{\pgfxy(-.15,-.15)}{\pgfxy(3.15,2.15)}
+  \end{pgfpicture}
+\end{command}
+
+
+
+\subsection{Image Inclusion}
+
+The \pgf\ package offers an abstraction of the image inclusion
+process, but you can still use the usual image inclusion facilities of
+the |graphics| package. The main reason why you might wish to
+use \pgf's image inclusion instead is that file extensions are added
+automatically, depending on whether |.pdf| or |.dvi| is requested
+(this is important for packages that must work with both).
+
+The general approach to including an image is the following: First,
+you use |\pgfdeclareimage| to declare the image. This must
+be done prior to the first use of the image. Once you have declared an
+image, you can insert it into the text using |\pgfuseimage|. The
+advantage of this two-phase approach is that, at least for
+\textsc{pdf}, the image data will only be included once in the
+file. This can drastically reduce the file size if you use an image
+repeatedly, for example in an overlay. However, there is also a
+command called |\pgfimage| that declares and then immediately uses the
+image.
+
+\begin{command}{\pgfdeclareimage\oarg{options}\marg{image
+      name}\marg{filename}}
+  Declares an image, but does not paint anything. To draw the image,
+  use |\pgfuseimage{|\meta{image name}|}|. The \meta{filename} may not
+  have an extension.  For \textsc{pdf}, the extensions |.pdf|, |.jpg|,
+  and |.png| will automatically tried. For PostScript, the extensions
+  |.eps|, |.epsi|, and |.ps| will be tried. 
+
+  The following options are possible:
+  \begin{itemize}
+  \item
+    \declare{|height=|\meta{dimension}} sets the height of the
+    image. If the width is not specified simultaneously, the aspect
+    ratio of the image is kept.
+  \item
+    \declare{|width=|\meta{dimension}} sets the width of the
+    image. If the height is not specified simultaneously, the aspect
+    ratio of the image is kept.
+  \item
+    \declare{|page=|\meta{page number}} selects a given page number
+    from a multipage document. Specifying this option will have the
+    following effect: first, \pgf\ tries to find a file named
+    \begin{quote}
+      \meta{filename}|.page|\meta{page number}|.|\meta{extension}
+    \end{quote}
+    If such a file is found, it will be used instead of the originally
+    specified filename. If not, \pgf\ inserts the image stored in
+    \meta{filename}|.|\meta{extension} and if a recent version of
+    |pdflatex| is used, only the selected page is inserted. For older
+    versions of |pdflatex| and for |dvips| the complete document is
+    inserted and a warning is printed.    
+  \item
+    \declare{|interpolate=|\meta{true or false}} selects whether the
+    image should ``smoothed'' when zoomed. False by default.
+  \item
+    \declare{|mask=|\meta{mask name}} selects a transparency mask. The
+    mask must previously be declared using |\pgfdeclaremask| (see
+    below). This option only has an effect for |pdf|. Not all viewers
+    support masking. 
+  \end{itemize}
+ \example
+\begin{verbatim}
+\pgfdeclareimage[interpolate=true,height=1cm]{image1}{pgf-tu-logo}
+\pgfdeclareimage[interpolate=true,width=1cm,height=1cm]{image2}{pgf-tu-logo}
+\pgfdeclareimage[interpolate=true,height=1cm]{image3}{pgf-tu-logo}
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfuseimage\marg{image name}}
+  Inserts a previously declared image into the text. If you wish to
+  use it in a picture environment, you should put a |\pgfbox|
+  around it.
+
+  If the macro |\pgfalternateextension| expands to some nonempty
+  \meta{alternate extension}, \pgf\ will first try to use the image
+  names \meta{image name}|.|\meta{alternate extension}. If this
+  image is not defined, \pgf\ will next check whether \meta{alternate
+    extension} contains a |!| character. If so, everythings up to this
+  exclamation mark and including it is deleted from \meta{alternate
+    extension} and the \pgf\ again tries to use the image \meta{image
+    name}|.|\meta{alternate extension}. This is repeated until
+  \meta{alternate extension} no longer contains a |!|. Then the
+  original image is used.
+
+  The |xxcolor| package sets the alternate extension to the current
+  color mixin. 
+
+  \example
+
+\begin{verbatim}
+\begin{pgfpictureboxed}{0cm}{0cm}{7cm}{2.1cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]{\pgfuseimage{image1}}}
+  \pgfputat{\pgfxy(3,1)}{\pgfbox[left,base]{\pgfuseimage{image2}}}
+  \pgfputat{\pgfxy(5,1)}{\pgfbox[left,base]{\pgfuseimage{image3}}}
+
+  \pgfrect[stroke]{\pgfxy(1,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(3,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(5,1)}{\pgfxy(1,1)}
+
+  \pgfputat{\pgfxy(1,0)}{\pgfbox[left,base]{Some text.}}
+\end{pgfpictureboxed}
+\end{verbatim}
+
+\pgfdeclareimage[interpolate=true,height=1cm]{image1}{pgf-tu-logo}
+\pgfdeclareimage[interpolate=true,width=1cm,height=1cm]{image2}{pgf-tu-logo}
+\pgfdeclareimage[interpolate=true,height=1cm]{image3}{pgf-tu-logo}
+
+\begin{pgfpictureboxed}{0cm}{0cm}{7cm}{2.1cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]{\pgfuseimage{image1}}}
+  \pgfputat{\pgfxy(3,1)}{\pgfbox[left,base]{\pgfuseimage{image2}}}
+  \pgfputat{\pgfxy(5,1)}{\pgfbox[left,base]{\pgfuseimage{image3}}}
+  \pgfrect[stroke]{\pgfxy(1,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(3,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(5,1)}{\pgfxy(1,1)}
+
+  \pgfputat{\pgfxy(1,0.5)}{\pgfbox[left,base]{Some text.}}
+\end{pgfpictureboxed}
+
+  The following example demonstrates the effect of using
+  |\pgfuseimage| inside a color mixin environment.
+
+\begin{verbatim}
+\pgfdeclareimage[interpolate=true,height=1cm]{image1.!25!white}{pgf-tu-logo.25}
+\pgfdeclareimage[interpolate=true,width=1cm,height=1cm]{image2.!25!white}{pgf-tu-logo.25}
+\pgfdeclareimage[interpolate=true,height=1cm]{image3.!25!white}{pgf-tu-logo.25}
+\begin{colormixin}{25!white}
+\begin{pgfpictureboxed}{0cm}{0cm}{7cm}{2.1cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]{\pgfuseimage{image1}}}
+  ... % as above
+\end{pgfpictureboxed}
+\end{colormixin}
+\end{verbatim}
+
+\pgfdeclareimage[interpolate=true,height=1cm]{image1.!25!white}{pgf-tu-logo.25}
+\pgfdeclareimage[interpolate=true,width=1cm,height=1cm]{image2.25!white}{pgf-tu-logo.25}
+\pgfdeclareimage[interpolate=true,height=1cm]{image3.white}{pgf-tu-logo.25}
+\begin{colormixin}{25!white}
+\begin{pgfpictureboxed}{0cm}{0cm}{7cm}{2.1cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]{\pgfuseimage{image1}}}
+  \pgfputat{\pgfxy(3,1)}{\pgfbox[left,base]{\pgfuseimage{image2}}}
+  \pgfputat{\pgfxy(5,1)}{\pgfbox[left,base]{\pgfuseimage{image3}}}
+
+  \pgfrect[stroke]{\pgfxy(1,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(3,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(5,1)}{\pgfxy(1,1)}
+
+  \pgfputat{\pgfxy(1,0.5)}{\pgfbox[left,base]{Some text.}}
+\end{pgfpictureboxed}
+\end{colormixin}
+\end{command}
+
+\begin{command}{\pgfalternateextension}
+  You should redefine this command to install a different alternate
+  extension.
+
+  \example |\def\pgfalternateextension{!25!white}|
+\end{command}
+
+\begin{command}{\pgfaliasimage\marg{new image name}\marg{existing image name}}
+  The \marg{existing image name} is ``cloned'' and the \marg{new image
+    name} can now be used whenever original image is used. This
+  command is useful for creating aliases for alternate extensions
+  and for accessing the last image inserted using |\pgfimage|.
+  \example |\pgfaliasimage{image.!30!white}{image.!25!white}|
+\end{command}
+
+
+\begin{command}{\pgfimage\oarg{options}\marg{filename}}
+  Declares the image under the name |pgflastimage| and
+  immediately uses it. You can ``save'' the image for later usage by
+  invoking |\pgfaliasimage| on |pgflastimage|.
+  \example
+
+\begin{verbatim}
+\begin{pgfpictureboxed}{0cm}{0.9cm}{7cm}{2.1cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]
+    {\pgfimage[interpolate=true,width=1cm,height=1cm]{pgf-tu-logo}}}
+  \pgfputat{\pgfxy(3,1)}{\pgfbox[left,base]
+    {\pgfimage[interpolate=true,width=1cm]{pgf-tu-logo}}}
+  \pgfputat{\pgfxy(5,1)}{\pgfbox[left,base]
+    {\pgfimage[interpolate=true,height=1cm]{pgf-tu-logo}}}
+
+  \pgfrect[stroke]{\pgfxy(1,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(3,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(5,1)}{\pgfxy(1,1)}
+\end{pgfpictureboxed}
+\end{verbatim}
+
+\begin{pgfpictureboxed}{0cm}{0.9cm}{7cm}{2.1cm}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]{\pgfimage[interpolate=true,width=1cm,height=1cm]{pgf-tu-logo}}}
+  \pgfputat{\pgfxy(3,1)}{\pgfbox[left,base]{\pgfimage[interpolate=true,width=1cm]{pgf-tu-logo}}}
+  \pgfputat{\pgfxy(5,1)}{\pgfbox[left,base]{\pgfimage[interpolate=true,height=1cm]{pgf-tu-logo}}}
+
+  \pgfrect[stroke]{\pgfxy(1,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(3,1)}{\pgfxy(1,1)}
+  \pgfrect[stroke]{\pgfxy(5,1)}{\pgfxy(1,1)}
+\end{pgfpictureboxed}
+\end{command}
+
+
+\begin{command}{\pgfdeclaremask\oarg{options}\marg{mask
+      name}\marg{filename}}
+  Declares a transparency mask named \meta{mask name}. This mask is
+  read from the file \meta{filename}. This file should contain a
+  grayscale image that is as large as the actual image. A white
+  pixel in the mask will correspond to ``transparent,'' a black pixel
+  to ``solid,'' and grey values correspond to intermediate values. The
+  image must have a single ``color channel.'' This means that the
+  image must be a ``real'' grayscale image, not an \textsc{rgb}-image
+  in which all \textsc{rgb}-triples happen to have the same
+  components.
+
+  The following options may be given:
+  \begin{itemize}
+  \item |matte=|\marg{color components} sets the so-called
+    \emph{matte} of the actual image (strangely, this has to be
+    specified together with the mask, not with the image itself). The
+    matte is the color that has been used to preblend the image. For
+    example, if the image has been preblended with a white background,
+    then \meta{color components} should be set to |{1 1 1}|. White is
+    the default.
+  \end{itemize}
+  \example
+\begin{verbatim}
+%% Draw a large colorful background
+\pgfdeclarehorizontalshading{colorful}{5cm}{color(0cm)=(red);
+color(2cm)=(green); color(4cm)=(blue); color(6cm)=(red);
+color(8cm)=(green); color(10cm)=(blue); color(12cm)=(red);
+color(14cm)=(green); color(16cm)=(blue)}
+\hbox{\pgfuseshading{colorful}\hskip-16cm\hskip1cm
+\pgfimage[height=4cm]{pgf-apple}\hskip1cm
+\pgfimage[height=4cm]{pgf-apple.mask}\hskip1cm
+\pgfdeclaremask{mymask}{pgf-apple.mask}
+\pgfimage[mask=mymask,height=4cm,interpolate=true]{pgf-apple}}
+\end{verbatim}
+%% Draw a large colorful background
+\pgfdeclarehorizontalshading{colorful}{5cm}{color(0cm)=(red);
+color(2cm)=(green); color(4cm)=(blue); color(6cm)=(red);
+color(8cm)=(green); color(10cm)=(blue); color(12cm)=(red);
+color(14cm)=(green); color(16cm)=(blue)}
+\hbox{\pgfuseshading{colorful}\hskip-16cm\hskip1cm
+\pgfimage[height=4cm]{pgf-apple}\hskip1cm
+\pgfimage[height=4cm]{pgf-apple.mask}\hskip1cm
+\pgfdeclaremask{mymask}{pgf-apple.mask}
+\pgfimage[mask=mymask,height=4cm,interpolate=true]{pgf-apple}}
+\end{command}
+
+
+To speedup the compilation, you may wish to use the following class
+option:
+\begin{packageoption}{{draft}}
+  In draft mode boxes showing the image name replace the
+  images. It is checked whether the image files exist, but they are
+  not read. If either height or width is not given, 1cm is used
+  instead. 
+\end{packageoption}
+
+
+\subsection{Text Drawing}
+
+In order to draw text, you must use the |pgfbox| command. It
+draws some text with a given alignment at the origin. Typically, you
+will use a |pgfputat| to put the text at some other location
+instead.
+
+\begin{command}{\pgfbox|[|\meta{horizontal alignment}|,|\meta{vertical
+      alignment}|]|\marg{\TeX\ text}}
+   Draws the given text with the given alignment at the
+   origin. Allowed alignments are |left|, |center|, and |right|
+   horizontally; and |bottom|, |base| (the base line of the text),
+  |center|, and |top| vertically.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{13cm}{2cm}
+  \pgfxyline(1,1.25)(1,0)
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]{left}}
+  \pgfputat{\pgfxy(1,0.5)}{\pgfbox[center,base]{center}}
+  \pgfputat{\pgfxy(1,0)}{\pgfbox[right,base]{right}}
+  
+  \pgfxyline(3,1)(12.5,1)
+  \pgfputat{\pgfxy(3,1)}{\pgfbox[left,bottom]{lovely bottom}}
+  \pgfputat{\pgfxy(5.5,1)}{\pgfbox[left,base]{lovely base}}
+  \pgfputat{\pgfxy(8,1)}{\pgfbox[left,center]{lovely center}}
+  \pgfputat{\pgfxy(10.5,1)}{\pgfbox[left,top]{lovely top}}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfxyline(1,1.25)(1,0)
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[left,base]{left}}
+  \pgfputat{\pgfxy(1,0.5)}{\pgfbox[center,base]{center}}
+  \pgfputat{\pgfxy(1,0)}{\pgfbox[right,base]{right}}
+  
+  \pgfxyline(3,1)(12.5,1)
+  \pgfputat{\pgfxy(3,1)}{\pgfbox[left,bottom]{lovely bottom}}
+  \pgfputat{\pgfxy(5.5,1)}{\pgfbox[left,base]{lovely base}}
+  \pgfputat{\pgfxy(8,1)}{\pgfbox[left,center]{lovely center}}
+  \pgfputat{\pgfxy(10.5,1)}{\pgfbox[left,top]{lovely top}}
+\end{verbatim}
+\end{command}
+
+
+
+\subsection{Drawing Arrows at Line Ends}
+
+When you stroke a line or curve, \pgf\ can append arrows at the start
+and at the end of the line or curve. There is a wide variety of arrows
+available.
+
+\begin{command}{\pgfsetstartarrow\marg{arrow type}}
+  Henceforth, the specified \meta{arrow type} is added to all stroked 
+  lines and curves. This does not apply to lines constructed using
+  quick commands or lines that are stroked using |\pgfqstroke|. The
+  allowed arrow types are listed below.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{.5cm}
+  \pgfsetstartarrow{\pgfarrowto}
+  \pgfsetendarrow{\pgfarrowsingle}
+  \pgfxycurve(0,0.25)(0.5,0.5)(1,0)(1.5,0.25)
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfsetstartarrow{\pgfarrowto}
+  \pgfsetendarrow{\pgfarrowsingle}
+  \pgfxycurve(0,0.25)(0.5,0.5)(1,0)(1.5,0.25)
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfsetendarrow\marg{arrow type}}
+  Like |\pgfsetstartarrow|, except that the type of
+  arrow at the end is specified.
+\end{command}
+
+
+\begin{command}{\pgfclearstartarrow}
+  Clears the setting for the start arrows.
+\end{command}
+
+\begin{command}{\pgfclearendarrow}
+  Clears the setting for the end arrows.
+\end{command}
+
+The arrow types are explained below. Some arrow types take a parameter
+that govern its size.
+
+\begin{pgfpicture}{0cm}{-0.25cm}{10cm}{6cm}
+  \pgfsetendarrow{\pgfarrowto}
+  \pgfxyline(0,0)(1,0)
+  \pgfputat{\pgfxy(1.5,0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowto}}}
+  
+  \pgfsetendarrow{\pgfarrowsingle}
+  \pgfxyline(0,0.5)(1,0.5)
+  \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowsingle}}}
+  
+  \pgfsetendarrow{\pgfarrowbar}
+  \pgfxyline(0,1.0)(1,1.0)
+  \pgfputat{\pgfxy(1.5,1.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowbar}}}
+ 
+  \pgfsetendarrow{\pgfarrowsquare}
+  \pgfxyline(0,1.5)(1,1.5)
+  \pgfputat{\pgfxy(1.5,1.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowsquare}}}
+ 
+  \pgfsetendarrow{\pgfarrowround}
+  \pgfxyline(0,2.0)(1,2.0)
+  \pgfputat{\pgfxy(1.5,2.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowround}}}
+ 
+  \pgfsetendarrow{\pgfarrowpointed}
+  \pgfxyline(0,2.5)(1,2.5)
+  \pgfputat{\pgfxy(1.5,2.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowpointed}}}
+
+  \pgfsetendarrow{\pgfarrowdot}
+  \pgfxyline(0,3.0)(1,3.0)
+  \pgfputat{\pgfxy(1.5,3.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowdot}}}
+ 
+  \pgfsetendarrow{\pgfarrowdiamond}
+  \pgfxyline(0,3.5)(1,3.5)
+  \pgfputat{\pgfxy(1.5,3.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowdiamond}}}
+
+  \pgfsetendarrow{\pgfarrowcircle{4pt}}
+  \pgfxyline(0,4.0)(1,4.0)
+  \pgfputat{\pgfxy(1.5,4.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowcirvle$\{$4pt$\}$}}}  
+
+  \pgfsetendarrow{\pgfarrowtriangle{4pt}}
+  \pgfxyline(0,4.5)(1,4.5)
+  \pgfputat{\pgfxy(1.5,4.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowtriangle$\{$4pt$\}$}}}
+
+  \pgfsetendarrow{\pgfarrowlargepointed{6pt}}
+  \pgfxyline(0,5.0)(1,5.0)
+  \pgfputat{\pgfxy(1.5,5.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowlargepointed$\{$6pt$\}$}}}  
+\end{pgfpicture}
+
+You can build more complicated arrow types by applying the following
+modifiers.
+
+\begin{command}{\pgfarrowswap\marg{arrow type}}
+  Yields an arrow type that has a swapped direction.
+  \example
+
+\begin{pgfpicture}{0cm}{-0.25cm}{5cm}{2cm}
+  \pgfsetendarrow{\pgfarrowswap{\pgfarrowto}}
+  \pgfxyline(0,0)(1,0)
+  \pgfputat{\pgfxy(1.5,0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowswap$\{$\bs pgfarrowto$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowswap{\pgfarrowsingle}}
+  \pgfxyline(0,0.5)(1,0.5)
+  \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowswap$\{$\bs pgfarrowsingle$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowswap{\pgfarrowbar}}
+  \pgfxyline(0,1.0)(1,1.0)
+  \pgfputat{\pgfxy(1.5,1.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowswap$\{$\bs pgfarrowbar$\}$}}}
+ 
+  \pgfsetendarrow{\pgfarrowswap{\pgfarrowsquare}}
+  \pgfxyline(0,1.5)(1,1.5)
+  \pgfputat{\pgfxy(1.5,1.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowswap$\{$\bs pgfarrowsquare$\}$}}}
+\end{pgfpicture} 
+\end{command}
+
+
+\begin{command}{\pgfarrowdouble\marg{arrow type}}
+  Yields an arrow type that doubles the given arrow.
+  \example
+
+\begin{pgfpicture}{0cm}{-0.25cm}{5cm}{2cm}
+  \pgfsetendarrow{\pgfarrowdouble{\pgfarrowto}}
+  \pgfxyline(0,0)(1,0)
+  \pgfputat{\pgfxy(1.5,0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowdouble$\{$\bs pgfarrowto$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowdouble{\pgfarrowsingle}}
+  \pgfxyline(0,0.5)(1,0.5)
+  \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowdouble$\{$\bs pgfarrowsingle$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowdouble{\pgfarrowbar}}
+  \pgfxyline(0,1.0)(1,1.0)
+  \pgfputat{\pgfxy(1.5,1.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowdouble$\{$\bs pgfarrowbar$\}$}}}
+ 
+  \pgfsetendarrow{\pgfarrowdouble{\pgfarrowsquare}}
+  \pgfxyline(0,1.5)(1,1.5)
+  \pgfputat{\pgfxy(1.5,1.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowdouble$\{$\bs pgfarrowsquare$\}$}}}
+\end{pgfpicture} 
+\end{command}
+
+
+\begin{command}{\pgfarrowtriple\marg{arrow type}}
+  Yields an arrow type that triples the given arrow.
+  \example
+
+\begin{pgfpicture}{0cm}{-0.25cm}{5cm}{2cm}
+  \pgfsetendarrow{\pgfarrowtriple{\pgfarrowto}}
+  \pgfxyline(0,0)(1,0)
+  \pgfputat{\pgfxy(1.5,0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowtriple$\{$\bs pgfarrowto$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowtriple{\pgfarrowsingle}}
+  \pgfxyline(0,0.5)(1,0.5)
+  \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowtriple$\{$\bs pgfarrowsingle$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowtriple{\pgfarrowbar}}
+  \pgfxyline(0,1.0)(1,1.0)
+  \pgfputat{\pgfxy(1.5,1.0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowtriple$\{$\bs pgfarrowbar$\}$}}}
+ 
+  \pgfsetendarrow{\pgfarrowtriple{\pgfarrowsquare}}
+  \pgfxyline(0,1.5)(1,1.5)
+  \pgfputat{\pgfxy(1.5,1.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowtriple$\{$\bs pgfarrowsquare$\}$}}}
+\end{pgfpicture} 
+\end{command}
+
+
+\begin{command}{\pgfarrowcombine\marg{first arrow type}\marg{second
+      arrow type}}
+  Yields an arrow type that is made up from the two given
+  arrow types, one after the other. The command
+  \declare{\texttt{\string\pgfarrowcombineloose}} does the same, but gives more spacing.
+  \example
+
+\begin{pgfpicture}{0cm}{-0.25cm}{5cm}{2cm}
+  \pgfsetendarrow{\pgfarrowcombine{\pgfarrowto}{\pgfarrowsingle}}
+  \pgfxyline(0,0)(1,0)
+  \pgfputat{\pgfxy(1.5,0)}{\pgfbox[left,center]{\texttt{\bs pgfarrowcombine$\{$\bs pgfarrowto$\}\{$\bs pgfarrowsingle$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowcombine{\pgfarrowsquare}{\pgfarrowround}}
+  \pgfxyline(0,0.5)(1,0.5)
+  \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowcombine$\{$\bs pgfarrowsquare$\}\{$\bs pgfarrowround$\}$}}}
+  
+  \pgfsetendarrow{\pgfarrowcombine{\pgfarrowswap{\pgfarrowsingle}}{\pgfarrowsingle}}
+  \pgfxyline(0,1.0)(1,1.0)
+  \pgfputat{\pgfxy(1.5,1.0)}{\pgfbox[left,center]{\texttt{\bs
+        pgfarrowcombine$\{$\bs pgfarrowswap$\{$\bs pgfarrowsingle$\}\}\{$\bs pgfarrowsingle$\}$}}}
+ 
+  \pgfsetendarrow{\pgfarrowcombineloose{\pgfarrowbar}{\pgfarrowdot}}
+  \pgfxyline(0,1.5)(1,1.5)
+  \pgfputat{\pgfxy(1.5,1.5)}{\pgfbox[left,center]{\texttt{\bs pgfarrowcombineloose$\{$\bs pgfarrowbar$\}\{$\bs pgfarrowdot$\}$}}}
+\end{pgfpicture} 
+\end{command}
+
+
+
+\subsection{Placing Labels on Lines}
+
+Two commands can be used to place labels on lines.
+
+\begin{command}{\pgflabel\marg{fraction}\marg{start point}\marg{end
+      point}\marg{orthogonal offset}}
+  This command yields a position for placing a label on a straight
+  line between two points. Note that this command does not draw a
+  line; it only yields a position. The \meta{offset} is orthogonal to the
+  line. A \meta{fraction} of $0$ means \meta{start point}, $1$~means
+  \meta{end point}, and $0.5$ means the middle.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfxyline(0,0)(5,2)
+  \pgfputat{\pgflabel{.5}{\pgfxy(0,0)}{\pgfxy(5,2)}{5pt}}{\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfputat{\pgflabel{.75}{\pgfxy(0,0)}{\pgfxy(5,2)}{5pt}}{\pgfbox[center,base]{Hi!}}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfxyline(0,0)(5,2)
+  \pgfputat
+    {\pgflabel{.5}{\pgfxy(0,0)}{\pgfxy(5,2)}{1pt}}
+    {\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfputat{\pgflabel{.75}{\pgfxy(0,0)}{\pgfxy(5,2)}{5pt}}{\pgfbox[center,base]{Hi!}}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfputlabelrotated\marg{fraction}\marg{start point}\marg{end
+      point}\marg{orthogonal offset}\marg{commands}}
+  This command executes the graphics commands, after having translated
+  are rotated the coordinate system to the label position on a
+  straight line between the two end points.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfxyline(0,0)(5,2)
+  \pgfputlabelrotated{.5}{\pgfxy(0,0)}{\pgfxy(5,2)}{5pt}{\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfputlabelrotated{.75}{\pgfxy(0,0)}{\pgfxy(5,2)}{5pt}{\pgfbox[center,base]{Hi!}}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfxyline(0,0)(5,2)
+  \pgfputlabelrotated{.5}{\pgfxy(0,0)}{\pgfxy(5,2)}{1pt}
+    {\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfputlabelrotated{.75}{\pgfxy(0,0)}{\pgfxy(5,2)}{5pt}{\pgfbox[center,base]{Hi!}}
+\end{verbatim}
+\end{command}
+
+
+
+\subsection{Shadings}
+
+The package |pgfshade| can be used to create shadings. A shading
+is an area in which the color changes smoothly between different
+colors. Note that you need a recent version of |pdflatex| for the
+shadings to work in \textsc{pdf}. Note also that |ghostview| may do a
+poor job at displaying shadings when doing anti-aliasing.
+
+Similarly to an image, a shading must first be declared before it can
+be used. Also similarly to an image, a shading is put into a
+\TeX-box. Hence, in order to include a shading in a |pgfpicture|,
+you have to place it in a |\pgfbox|.
+
+There are three kinds of shadings: horizontal, vertical, and radial
+shadings. However, you can rotate and clip shadings like any other
+graphics object, which allows you to create more complicated
+shadings. Horizontal shadings could be created by rotating a vertical
+shading by 90 degrees, but explicit commands for creating both
+horizontal and vertical shadings are included for convenience.
+
+Once you have declared a shading, you can insert it into text using
+the command |\pgfuseshading|.
+
+A horizontal shading is a horizontal bar of a certain height whose
+color changes smoothly. You must at least specify the colors at the
+left and at the right end of the bar, but you can also add color
+specifications for points in the middle. For example, suppose you
+which to create a bar that is red at the left end, green in the
+middle, and blue at the end. Suppose you would like the bar to be 4cm
+long. This could be specified as follows:
+\begin{verbatim}
+rgb(0cm)=(1,0,0); rgb(2cm)=(0,1,0); rgb(4cm)=(0,0,1)
+\end{verbatim}
+This line means that at 0cm (the left end) of the bar, the color
+should be red, which has red-green-blue (rgb) components (1,0,0). At
+2cm, the bar should be green, and at 4cm it should be blue.
+Instead of |rgb|, you can currently also specify |gray| as
+color model, in which case only one value is needed, or |color|,
+in which case you must provide the name of a color in round
+brackets. In a color specification the individual specifications must
+be separated using a semicolon, which may be followed by a whitespace
+(like a space or a newline). Individual specifications must be given
+in increasing order. 
+
+\begin{command}{\pgfdeclarehorizontalshading\oarg{color list}\marg{shading
+      name}\marg{shading height}\marg{color specification}}
+  Declares a horizontal shading named \meta{shading name} of the specified
+  \meta{height} with the specified colors. The length of the bar is
+  automatically deduced from the maximum specification.
+  \example
+
+\pgfdeclarehorizontalshading{myshading}{1cm}{rgb(0cm)=(1,0,0); color(2cm)=(green); color(4cm)=(blue)}
+\pgfuseshading{myshading}
+
+\begin{verbatim}
+\pgfdeclarehorizontalshading{myshading}{1cm}%
+  {rgb(0cm)=(1,0,0); color(2cm)=(green); color(4cm)=(blue)}
+\pgfuseshading{myshading}
+\end{verbatim}
+
+  The effect of the \meta{color list}, which is a
+  comma-separated list of colors, is the following: Normally, when
+  this list is empty, once a shading is declared it becomes
+  ``frozen.'' This means that even if you change a color that was used
+  in the declaration of the shading later on, the shading will not
+  change. By specifying a \meta{color list} you can specify
+  that the shading should be recalculated whenever one of the colors
+  listed in the list changes (this includes effects like color
+  mixins). Thus, when you specify a \meta{color list},
+  whenever the shading is used, \pgf\ first converts the colors in the
+  list to \textsc{rgb} triples using the current values of the
+  colors and taking any mixins and blendings into account. If the
+  resulting \textsc{rgb} triples have not yet been   used, a new
+  shading is internally created and used. Note that if the 
+  option \meta{color list} is used, then no shading is created until
+  the first use of |\pgfuseshading|. In particular, the colors
+  mentioned in the shading need not be defined when the declaration is
+  given.
+
+  When a shading is recalculated because of a change in the
+  colors mentioned in \meta{color list}, the complete shading
+  is recalculated. Thus even colors not mentioned in the list will be
+  used with their current values, not with the values they had upon
+  declaration. 
+  \example
+\pgfdeclarehorizontalshading[mycolor]{myshading}{1cm}{rgb(0cm)=(1,0,0); color(2cm)=(mycolor)}
+\colorlet{mycolor}{green}
+\pgfuseshading{myshading}
+\colorlet{mycolor}{blue}
+\pgfuseshading{myshading}
+
+\begin{verbatim}
+\pgfdeclarehorizontalshading[mycolor]{myshading}{1cm}{rgb(0cm)=(1,0,0); color(2cm)=(mycolor)}
+\colorlet{mycolor}{green}
+\pgfuseshading{myshading}
+\colorlet{mycolor}{blue}
+\pgfuseshading{myshading}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfdeclareverticalshading\marg{shading
+      name}\marg{shading width}\marg{color specification}}
+   Declares a vertical shading named \meta{shading name} of the
+   specified \meta{width}. The height of the bar is automatically
+   deduced from the maximum specification.
+  \example
+
+\pgfdeclareverticalshading{myshading2}{5cm}{rgb(0cm)=(1,0,0); rgb(1.5cm)=(0,1,0); rgb(2cm)=(0,0,1)}
+\pgfuseshading{myshading2}
+
+\begin{verbatim}
+\pgfdeclareverticalshading{myshading}{5cm}%
+  {rgb(0cm)=(1,0,0); rgb(1.5cm)=(0,1,0); rgb(2cm)=(0,0,1)}
+\pgfuseshading{myshading}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfdeclareradialshading\marg{shading
+      name}\marg{center point}\marg{color specification}}
+  Declares an radial shading. A radial shading is a circle whose inner
+  color changes as specified by the color specification. Assuming that
+  the center of the shading is at the origin, the color of the center
+  will be the color specified for 0cm and the color of the border of
+  the circle will be the color for the maximum specification. The
+  radius of the circle will be the maximum specification. If the
+  center coordinate is not at the origin, the whole shading inside the
+  circle (whose size remains exactly the same) will be distorted such
+  that the given center now has the color specified for 0cm.
+  \example
+
+\pgfdeclareradialshading{sphere}{\pgfpoint{0.5cm}{0.5cm}}%
+ {rgb(0.3cm)=(0.9,0,0); rgb(0.7cm)=(0.7,0,0); rgb(1cm)=(0.5,0,0); rgb(1.05cm)=(1,1,1)}
+\pgfuseshading{sphere}
+
+\begin{verbatim}
+\pgfdeclareradialshading{sphere}{\pgfpoint{0.5cm}{0.5cm}}%
+ {rgb(0.3cm)=(0.9,0,0);
+  rgb(0.7cm)=(0.7,0,0);
+  rgb(1cm)=(0.5,0,0);
+  rgb(1.05cm)=(1,1,1)}
+\pgfuseshading{sphere}
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfuseshading\marg{shading name}}
+  Inserts a previously declared shading into the text. If you wish to
+  use it in a |pgfpicture| environment, you should put a |\pgfbox|
+  around it. Like |\pgfuseimage|, alternate extensions are tried
+  before the actual shading is used.
+  \example
+
+\begin{verbatim}
+  \pgfputat{\pgfxy(1,1)}{\pgfbox[center,center]{\pgfuseshading{myshading}}}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfaliasshading\marg{new shading name}\marg{existing shading name}}
+  The \meta{existing shading name} is ``cloned'' and the shading
+  \meta{new shading name} can now be used whenever original shading
+  is used. This command is mainly useful for creating aliases for
+  environments that use alternate extensions.
+  \example \verb/\pgfaliasshading{shading!30}{shading!25}/
+\end{command}
+
+
+
+\section{Using Nodes}
+
+The package |pgfnodes| allows you to draw all sorts of graphs
+in a convenient way. You draw them by first defining
+\emph{nodes}. Once you have defined a node, you can connect nodes
+using lines or curves. The advantage of using nodes is that if, later
+on, you decide to move a node slightly, all connecting lines `follow'
+automatically.
+
+
+
+\subsection{Node Creation}
+
+In all of the following command, the possible drawing types are
+|stroke|, |fill|, |fillstroke|, and |virtual| (draws nothing).
+
+\begin{command}{\pgfnodecircle\marg{node name}\ooarg{drawing type}\marg{center}\marg{radius}}
+  Creates a circular node with the given radius at the
+  given position.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfnodecircle{Node1}[stroke]{\pgfxy(1,1)}{0.5cm}
+  \pgfnodecircle{Node2}[virtual]{\pgfxy(3,0.5)}{0.25cm}
+  \pgfnodecircle{Node3}[fill]{\pgfxy(5,1)}{0.25cm}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodeconnline{Node2}{Node3}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodecircle{Node1}[stroke]{\pgfxy(1,1)}{0.5cm}
+  \pgfnodecircle{Node2}[virtual]{\pgfxy(3,0.5)}{0.25cm}
+  \pgfnodecircle{Node3}[fill]{\pgfxy(5,1)}{0.25cm}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodeconnline{Node2}{Node3}
+\end{verbatim}
+\end{command}
+
+
+
+\begin{command}{\pgfnoderect\marg{node name}\ooarg{drawing
+      type}\marg{center}\marg{width/height vector}}
+  Creates a rectangular node with the width and height that
+  is centered at the given position.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfnoderect{Node1}[fill]{\pgfxy(1,1)}{\pgfxy(1,0.5)}
+  \pgfnodecircle{Node2}[virtual]{\pgfxy(3,0.5)}{0.25cm}
+  \pgfnoderect{Node3}[stroke]{\pgfxy(5,1)}{\pgfxy(2,1)}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodeconnline{Node2}{Node3}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnoderect{Node1}[fill]{\pgfxy(1,1)}{\pgfxy(1,0.5)}
+  \pgfnodecircle{Node2}[virtual]{\pgfxy(3,0.5)}{0.25cm}
+  \pgfnoderect{Node3}[stroke]{\pgfxy(5,1)}{\pgfxy(2,1)}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodeconnline{Node2}{Node3}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfnodebox\marg{node name}\ooarg{drawing
+      type}\marg{center}\marg{\TeX\ text}\marg{horiz.\
+      margin}\marg{vert.\ margin}}
+  Creates a rectangular node that is centered at \meta{center}. The
+  size of the node is calculated from the size of the box that is
+  placed inside. The margins can be used to leave a little space
+  around the text. 
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,1)}{Hi!}{2pt}{2pt}
+  \pgfnodebox{Node2}[virtual]{\pgfxy(3,0.5)}{There}{2pt}{2pt}
+  \pgfnodebox{Node3}[stroke]{\pgfxy(5,1)}{You}{10pt}{0pt}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodeconnline{Node2}{Node3}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,1)}{Hi!}{2pt}{2pt}
+  \pgfnodebox{Node2}[virtual]{\pgfxy(3,0.5)}{There}{2pt}{2pt}
+  \pgfnodebox{Node3}[stroke]{\pgfxy(5,1)}{You}{10pt}{0pt}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodeconnline{Node2}{Node3}
+\end{verbatim}
+\end{command}
+
+
+
+\subsection{Coordinates Relative to Nodes}
+
+\begin{command}{\pgfnodecenter\marg{node name}}
+  Yields the center of a node. This command is especially
+  useful for placing nodes relative to other nodes.
+  \example
+
+\begin{pgfpicture}{0cm}{.25cm}{5cm}{1cm}
+  \pgfnodecircle{Node1}[stroke]{\pgfxy(1,0.5)}{0.25cm}
+  \pgfnodecircle{Node2}[stroke]
+    {\pgfrelative{\pgfxy(1,0)}{\pgfnodecenter{Node1}}}{0.25cm}
+  \pgfnodecircle{Node3}[stroke]
+    {\pgfrelative{\pgfxy(1,0)}{\pgfnodecenter{Node2}}}{0.25cm}
+  \pgfnodecircle{Node4}[stroke]
+    {\pgfrelative{\pgfxy(1,0)}{\pgfnodecenter{Node3}}}{0.25cm}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodecircle{Node1}[stroke]{\pgfxy(1,0.5)}{0.25cm}
+  \pgfnodecircle{Node2}[stroke]
+    {\pgfrelative{\pgfxy(1,0)}{\pgfnodecenter{Node1}}}{0.25cm}
+  \pgfnodecircle{Node3}[stroke]
+    {\pgfrelative{\pgfxy(1,0)}{\pgfnodecenter{Node2}}}{0.25cm}
+  \pgfnodecircle{Node4}[stroke]
+    {\pgfrelative{\pgfxy(1,0)}{\pgfnodecenter{Node3}}}{0.25cm}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfnodeborder\marg{node name}\marg{angle}\marg{border
+      offset}}
+  Returns a position on the border of the node named \meta{node
+    name} at an angle of \meta{angle} (in degrees). For a positive
+  offset, the position is removed from the border by the amount of the
+  offset.
+  \example
+
+\begin{pgfpicture}{0cm}{.25cm}{5cm}{1cm}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello world}{2pt}{2pt}
+
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{0}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{10}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{20}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{30}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{40}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{50}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{60}{5pt}}{2pt}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello world}{2pt}{2pt}
+
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{0}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{10}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{20}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{30}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{40}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{50}{5pt}}{2pt}
+  \pgfcircle[fill]{\pgfnodeborder{Node1}{60}{5pt}}{2pt}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfconnstart\ooarg{border offset}\marg{start
+      node}\marg{end node}}
+  Returns a position on the border of the first node for a
+  line in the direction of the second node.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{1.25cm}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello world}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(3,0)}{2}{2pt}{2pt}
+  \pgfnodebox{Node3}[stroke]{\pgfxy(3,0.5)}{3}{2pt}{2pt}
+  \pgfnodebox{Node4}[stroke]{\pgfxy(3,1)}{4}{2pt}{2pt}
+  
+  \pgfcircle[fill]{\pgfnodeconnstart[5pt]{Node1}{Node2}}{2pt}
+  \pgfcircle[fill]{\pgfnodeconnstart[10pt]{Node1}{Node3}}{2pt}
+  \pgfcircle[fill]{\pgfnodeconnstart[15pt]{Node1}{Node4}}{2pt}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello world}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(3,0)}{2}{2pt}{2pt}
+  \pgfnodebox{Node3}[stroke]{\pgfxy(3,0.5)}{3}{2pt}{2pt}
+  \pgfnodebox{Node4}[stroke]{\pgfxy(3,1)}{4}{2pt}{2pt}
+  
+  \pgfcircle[fill]{\pgfnodeconnstart[5pt]{Node1}{Node2}}{2pt}
+  \pgfcircle[fill]{\pgfnodeconnstart[10pt]{Node1}{Node3}}{2pt}
+  \pgfcircle[fill]{\pgfnodeconnstart[15pt]{Node1}{Node4}}{2pt}
+\end{verbatim}
+\end{command}
+
+
+
+
+\subsection{Connecting Nodes}
+
+\begin{command}{\pgfnodesetsepstart\marg{offset}}
+  Sets the offset for the start of lines that are drawn
+  using the below node connection commands. Use
+  \declare{\texttt{\string\pgfnodesetsepend}} for setting the end
+  offset.
+  \example
+  
+\begin{pgfpicture}{0cm}{0.25cm}{5cm}{1.25cm}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello world}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(4,.5)}{2}{2pt}{2pt}
+
+  \pgfnodesetsepstart{0pt}
+  \pgfnodesetsepend{5pt}
+  \pgfsetendarrow{\pgfarrowto}
+
+  \pgfnodeconnline{Node1}{Node2}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello world}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(4,.5)}{2}{2pt}{2pt}
+
+  \pgfnodesetsepstart{0pt}
+  \pgfnodesetsepend{5pt}
+  \pgfsetendarrow{\pgfarrowto}
+
+  \pgfnodeconnline{Node1}{Node2}
+\end{verbatim}
+\end{command}
+
+
+\begin{command}{\pgfnodeconnline\marg{start node}\marg{end node}}
+  Draws a straight line from the border of the first node
+  to the border of the second node.
+  \example |\pgfnodeconnline{A}{B}|
+\end{command}
+
+
+\begin{command}{\pgfnodeconncurve\marg{start node}\marg{end node}%
+    \marg{start angle}\marg{end angle}\marg{$d_1$}\marg{$d_2$}}
+  Draws a curve from the \meta{start node} to the \meta{end node}. The
+  curve will start at the \meta{start angle} on the border of the
+  \meta{start node}. It ends at angle \meta{end angle}  on the border
+  of the \marg{end node}. The parameters $d_1$ and $d_2$ are the
+  distances of the first, respectively second, support point from the
+  border of the first, respectively second, node.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{9cm}{2cm}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(4,.5)}{world}{2pt}{2pt}
+  \pgfnodebox{Node3}[stroke]{\pgfxy(7,.5)}{lovely}{2pt}{2pt}
+
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{1cm}
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{1.5cm}
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{2cm}
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{2.5cm}
+  
+  \pgfnodeconncurve{Node2}{Node3}{-10}{80}{1cm}{1cm}
+  \pgfnodeconncurve{Node2}{Node3}{-20}{70}{1cm}{1cm}
+  \pgfnodeconncurve{Node2}{Node3}{-30}{60}{1cm}{1cm}
+  \pgfnodeconncurve{Node2}{Node3}{-40}{50}{1cm}{1cm}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(4,.5)}{world}{2pt}{2pt}
+  \pgfnodebox{Node3}[stroke]{\pgfxy(7,.5)}{lovely}{2pt}{2pt}
+
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{1cm}
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{1.5cm}
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{2cm}
+  \pgfnodeconncurve{Node1}{Node2}{0}{90}{1cm}{2.5cm}
+  
+  \pgfnodeconncurve{Node2}{Node3}{-10}{80}{1cm}{1cm}
+  \pgfnodeconncurve{Node2}{Node3}{-20}{70}{1cm}{1cm}
+  \pgfnodeconncurve{Node2}{Node3}{-30}{60}{1cm}{1cm}
+  \pgfnodeconncurve{Node2}{Node3}{-40}{50}{1cm}{1cm}
+\end{verbatim}
+\end{command}
+
+
+
+\subsection{Placing Labels on Node Connections}
+
+\begin{command}{\pgfnodelabel\marg{start node}\marg{end node}%
+    \marg{fraction}\ooarg{vertical offset}\marg{command}}
+  This command places a label at the given \meta{fraction} of a
+  straight line between two nodes.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(5,1.5)}{world}{2pt}{2pt}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodelabel{Node1}{Node2}[0.5][5pt]{\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfnodelabel{Node1}{Node2}[0.75][5pt]{\pgfbox[center,base]{Hi!}}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(5,1.5)}{world}{2pt}{2pt}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodelabel{Node1}{Node2}[0.5][5pt]{\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfnodelabel{Node1}{Node2}[0.75][5pt]{\pgfbox[center,base]{Hi!}}
+\end{verbatim}
+\end{command}
+
+\begin{command}{\pgfnodelabelrotated\marg{start node}\marg{end node}%
+    \marg{fraction}\ooarg{vertical offset}\marg{command}}
+  This command places a rotated label at the given \meta{fraction} of
+  a straight line between two nodes. The label is rotated according to the slope
+  of the line.
+  \example
+
+\begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(5,1.5)}{world}{2pt}{2pt}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodelabelrotated{Node1}{Node2}[0.5][5pt]{\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfnodelabelrotated{Node1}{Node2}[0.75][5pt]{\pgfbox[center,base]{Hi!}}
+\end{pgfpicture}
+\begin{verbatim}
+  \pgfnodebox{Node1}[stroke]{\pgfxy(1,0.5)}{hello}{2pt}{2pt}
+  \pgfnodebox{Node2}[stroke]{\pgfxy(5,1.5)}{world}{2pt}{2pt}
+
+  \pgfnodeconnline{Node1}{Node2}
+  \pgfnodelabelrotated{Node1}{Node2}[0.5][5pt]{\pgfcircle[stroke]{\pgforigin}{5pt}}
+  \pgfnodelabelrotated{Node1}{Node2}[0.75][5pt]{\pgfbox[center,base]{Hi!}}
+\end{verbatim}
+\end{command}
+
+
+
+\section{Extended Color Support}
+
+This section documents the package \texttt{xxcolor}, which is
+currently distributed as part of \pgf. This package extends the
+\texttt{xcolor} package, written by Uwe Kern, which in turn extends
+the \texttt{color} package. I hope that the commands in
+\texttt{xxcolor} will some day migrate to \texttt{xcolor}, such that
+this package becomes superfluous.
+
+The main aim of the \texttt{xxcolor} package is to provide an
+environment inside which all colors are ``washed out'' or ``dimmed.''
+This is useful in numerous situations and must typically be achieved
+in a roundabout manner if such an environment is not available.
+
+\begin{environment}{{colormixin}\marg{mix-in specification}}
+  The mix-in specification is applied to all colors inside
+  the environment. At the beginning of the environment, the mix-in is
+  applied to the current color, i.\,e., the color that was in effect
+  before the environment started. A mix-in specification is a number
+  between 0 and 100 followed by an exclamation mark and a color
+  name. When a |\color| command is 
+  encountered inside a mix-in environment, the number states what
+  percentage of the desired color should be used. The rest is
+  ``filled up'' with the color given in the mix-in
+  specification. Thus, a mix-in specification like |90!blue|
+  will mix in 10\% of blue into everything, whereas |25!white| will
+  make everything nearly white.
+  \example
+\begin{verbatim}
+\color{red}Red text,%
+\begin{colormixin}{25!white}
+  washed-out red text,
+  \color{blue} washed-out blue text,
+  \begin{colormixin}{25!black}
+    dark washed-out blue text,
+    \color{green} dark washed-out green text,%
+  \end{colormixin}
+  back to washed-out blue text,%
+\end{colormixin}
+and back to red.
+\end{verbatim}
+
+{
+\noindent\color{red}Red text,
+\begin{colormixin}{50!white}
+  washed-out red text,
+  \color{blue} washed-out blue text,
+  \begin{colormixin}{25!black}
+    dark washed-out blue text,
+    \color{green} dark washed-out green text,%
+  \end{colormixin}
+  back to washed-out blue text,%
+\end{colormixin}
+and back to red.}
+\end{environment}
+
+Note that the environment only changes colors that have been installed
+using the standard \LaTeX\ |\color| command. In particular,
+the colors in images are not changed. There is, however, some support
+offered by the commands |\pgfuseimage| and
+|\pgfuseshading|. If the first command is invoked 
+inside a |colormixin| environment with the parameter, say,
+|50!black| on an image with the name |foo|, the command
+will first check whether there is also a defined image with the name
+|foo.!50!black|. If so, this image is used instead. This allows
+you to provide a different image for this case. If you nest
+|colormixin| environments, the different mix-ins are appended as
+a comma-separated list. For example, inside the inner environment of
+the above example, |\pgfuseimage{foo}| would first check whether
+there exists an image named |foo.!50!white!25!black|.
+
+\begin{command}{\colorcurrentmixin}
+  Expands to the current accumulated mix-in. Each nesting of a
+  |colormixin| adds a mix-in to this list.
+  \example 
+\begin{verbatim}
+\begin{colormixin}{25!white}
+  \colorcurrentmixin is now ``25!white''
+  \begin{colormixin}{75!black}
+    \colorcurrentmixin is now ``75!black!25!white''
+    \begin{colormixin}{50!white}
+      \colorcurrentmixin is now ``50!white!75!black!25!white''
+    \end{colormixin}
+  \end{colormixin}
+\end{colormixin}
+\end{verbatim}
+\end{command}
+
+
+
+
+\end{document}
+
+

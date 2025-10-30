@@ -1,0 +1,22 @@
+% file unsetppl.mtx
+
+\relax
+
+\metrics
+
+\needsfontinstversion{1.313}
+
+% We unset the glyphs that should come from CM Math rather than Palatino
+
+
+\unsetglyph{dotlessj}
+
+\unsetglyph{plus}
+\unsetglyph{equal}
+
+\unsetglyph{parenleft}
+\unsetglyph{parenright}
+\unsetglyph{bracketleft}
+\unsetglyph{bracketright}
+
+\endmetrics

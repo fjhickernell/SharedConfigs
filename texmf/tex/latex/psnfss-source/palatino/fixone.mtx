@@ -1,0 +1,10 @@
+%% file fixone.mtx, to remove the one-one kern from Palatino
+\relax
+\metrics
+
+\needsfontinstversion{1.916}
+
+\unsetkerns{one}{one}
+
+\endmetrics
+

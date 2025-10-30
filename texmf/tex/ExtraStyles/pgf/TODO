@@ -1,0 +1,9 @@
+1) more nodes stuff
+2) new "simple input mode" (more pstricks like input)
+3) plotting interface to gnuplot
+4) xfig interface
+5) Syntax extensions, such as easy color specifications.
+6) rotated shadings
+7) option to reference nodes defined in other pictures
+8) shading as a primitive like fill or stroke
+9) \graphicspath command.

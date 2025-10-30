@@ -1,0 +1,51 @@
+============================================================
+                   PSNFSS 9.2 -- sources
+============================================================
+                                                  2004-09-15
+                                              Walter Schmidt
+
+This directory contains the sources of the virtual fonts and
+TeX font metrics of the PSNFSS collection.  They support the
+use of the PostScript `Base35' and sevral other free fonts
+with TeX.  Ready-made virtual fonts and font metrics created
+from these sources, together with suitable LaTeX font
+definition (.fd) files, are distributed in the ZIP archives
+
+    CTAN:macros/latex/required/psnfss/lw35nfss.zip
+and 
+    CTAN:macros/latex/required/psnfss/freenfss.zip .
+  
+Each subdirectory contains a makefile for the particular
+font family; each makefile provides a target named "all",
+which creates the virtual fonts and font metrics and moves
+them to the appropriate place in a TDS-conforming TeX
+system.  Notice that the makefiles need editing to reflect
+the program names and the directory layout of your TeX
+system.
+
+Some of the fonts were still installed using fontinst
+version 1.801 with the fixes from the directory fi-patches.
+Notice that using a newer version of the fontinst program
+may yield slightly different results.
+
+Executing the makefiles will NOT install the fd files
+generated in this step; these files are NOT to be used.
+Instead, use the ready-made fd files from the
+above-mentioned ZIP archives; they define additional font
+substitutions, which were added manually.
+
+The sources of the virtual mathpazo fonts can be found in 
+the CTAN directory fonts/mathpazo/pazofnst/
+
+
+
+License conditions
+------------------
+The sources of PSNFSS v9.x may be distributed and/or
+modified under the conditions of the LaTeX Project Public
+License, either version 1.2 of this license or (at your
+option) any later version.  The latest version of this
+license is in <http://www.latex-project.org/lppl.txt>.
+
+
+== finis

@@ -1,0 +1,27 @@
+#!/bin/tcsh
+
+set docroot=${1:r}
+set docext=${1:e}
+
+#set latexapp="/usr/local/teTeX/bin/powerpc-apple-darwin-current/pdflatex"
+#set postprocessor="/usr/local/teTeX/bin/ppower4/ppower4p"
+set latexapp="/usr/local/teTeX/bin/powerpc-apple-darwin-current/bg5latex "
+set psapp="/usr/local/teTeX/bin/powerpc-apple-darwin-current/dvips -Ppdf  "
+set pdfapp="/usr/local/bin/ps2pdf -sPAPERSIZE=a4 "
+
+echo "using $latexapp"
+
+$latexapp "$docroot.$docext" 
+
+echo "Generate ps"
+$psapp "-o" "$docroot.ps" "$docroot.dvi"
+
+echo "Generate pdf"
+$pdfapp "$docroot.ps"
+
+
+echo "moving files to the right location"
+
+rm -f "$docroot.cjk"
+
+echo "Finished creating $docroot.pdf"

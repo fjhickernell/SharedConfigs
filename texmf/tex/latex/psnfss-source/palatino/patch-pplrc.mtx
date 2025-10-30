@@ -1,0 +1,74 @@
+\relax
+\metrics
+
+\needsfontinstversion{1.914}
+
+\setcommand\botaccent#1#2#3{
+   \push
+      \movert{\sub{\scale{\width{#1}}{#3}}{\scale{\width{#2}}{500}}}
+      \glyph{#2}{1000}
+   \pop
+   \glyph{#1}{1000}
+}
+
+\setcommand\fixedbotaccent#1#2#3{
+   \push
+      \movert{\sub{\scale{\width{#1}}{#3}}{\scale{\width{#2}}{500}}}
+      \moveup{\max{\neg{\height{#2}}}{0}}
+      \glyph{#2}{1000}
+   \pop
+   \glyph{#1}{1000}
+}
+
+\resetglyph{Aogoneksmall}
+   \fixedbotaccent{Asmall}{Ogoneksmall}{825}%{775}%{750}%{850}
+\endsetglyph
+
+\resetglyph{Eogoneksmall}
+   \fixedbotaccent{Esmall}{Ogoneksmall}{750}%{700}%{850}
+\endsetglyph
+
+\resetglyph{Aogonek}
+  \botaccent{A}{ogonek}{850}%{800}%{775}%{750}%{900}
+\endsetglyph
+
+\resetglyph{Eogonek}
+  \botaccent{E}{ogonek}{750}%{700}%{850}
+\endsetglyph
+
+
+\setkern{A}{guillemotleft}{-84}
+\setkern{A}{guilsinglleft}{-92}
+\setkern{T}{guillemotleft}{-126}
+\setkern{T}{guilsinglleft}{-134}
+\setkern{V}{guillemotleft}{-115}
+\setkern{V}{guilsinglleft}{-123}
+\setkern{W}{guillemotleft}{-93}
+\setkern{W}{guilsinglleft}{-101}
+\setkern{Y}{guillemotleft}{-127}
+\setkern{Y}{guilsinglleft}{-135}
+\setkern{guillemotright}{A}{-86}
+\setkern{guillemotrigh}{AE}{-79}
+\setkern{guillemotright}{T}{-126}
+\setkern{guillemotright}{V}{-115}
+\setkern{guillemotright}{W}{-81}
+\setkern{guillemotright}{Y}{-139}
+\setkern{guilsinglright}{A}{-94}
+\setkern{guilsinglright}{AE}{-87}
+\setkern{guilsinglright}{T}{-134}
+\setkern{guilsinglright}{V}{-123}
+\setkern{guilsinglright}{W}{-89}
+\setkern{guilsinglright}{Y}{-147}
+
+\setkern{L}{yacutesmall}{-55}
+\setkern{L}{ydieresissmall}{-55}
+
+\setleftkerning{quotedblright}{quoteright}{1000}
+\setrightkerning{quotedblleft}{quoteleft}{1000}
+
+\setleftkerning{AEsmall}{Asmall}{1000}
+\setrightkerning{AEsmall}{Esmall}{1000}
+\setleftkerning{OEsmall}{Osmall}{1000}
+\setrightkerning{OEsmall}{Esmall}{1000}
+
+\endmetrics

@@ -1,0 +1,32 @@
+This are the Elsevier BibTeX styles
+Last update: 24 June 2008
+
+Versions
+========
+
+elsart-harv.bst,v 1.3 2005/01/21
+elsart-num.bst,v 1.3 2005/01/21
+elsart-num-sort.bst,v 1.4 2005/01/21
+elsart-num-names.bst,v 1.2 2005/01/21
+
+(Due to an error these dates are earlier than the dates in previously
+published BibTeX style files. Nevertheless, these are newer versions
+with some small bug fixes, and consequently the version numbers are
+higher.)
+
+The latest version of this package can always be found at Elsevier's
+web site: http://www.elsevier.com/locate/latex.
+
+Requirements
+============
+Standard BibTeX version 0.99a or later.
+
+Contained files
+===============
+
+elsart-harv.bst is an author-year citation style
+elsart-num.bst is a numerical citation style
+elsart-num-sort.bst is a numerical citation style, sorted alphabetically
+elsart-num-names.bst is a numerical citation style, with name-year labels
+
+Copyright (C) 1998-2008 by Elsevier B.V., The Netherlands

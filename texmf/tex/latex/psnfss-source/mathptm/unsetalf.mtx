@@ -1,0 +1,99 @@
+%%%========================================================================
+%%% @TeX-font-metrics-file{
+%%%    author              = "Alan Jeffrey",
+%%%    version             = "1.313",
+%%%    date                = "25 January 1994",
+%%%    time                = "17:36:29 BST",
+%%%    filename            = "unsetalf.mtx",
+%%%    address             = "School of Cognitive and Computing Sciences
+%%%                           University of Sussex
+%%%                           Brighton BN1 9QH
+%%%                           UK",
+%%%    telephone           = "+44 273 606755 x 3238",
+%%%    FAX                 = "+44 273 678188",
+%%%    checksum            = "???",
+%%%    email               = "alanje@cogs.sussex.ac.uk",
+%%%    codetable           = "ISO/ASCII",
+%%%    keywords            = "encoding, TeX, PostScript",
+%%%    supported           = "yes",
+%%%    abstract            = "This TeX font metrics file unsets all of 
+%%%                           the alphabetic glyphs and parameters.",
+%%%    docstring           = "The checksum field above contains a CRC-16
+%%%                           checksum as the first value, followed by the
+%%%                           equivalent of the standard UNIX wc (word
+%%%                           count) utility output of lines, words, and
+%%%                           characters.  This is produced by Robert
+%%%                           Solovay's checksum utility.",
+%%%    package             = "fontinst",
+%%%    dependencies        = "none",
+%%% }
+%%%========================================================================
+
+\relax
+
+\metrics
+
+\unsetint{xheight}
+\unsetint{ascender}
+\unsetint{descender}
+\unsetint{capheight}
+\unsetint{italicslant}
+
+\unsetglyph{A}
+\unsetglyph{B}
+\unsetglyph{C}
+\unsetglyph{D}
+\unsetglyph{E}
+\unsetglyph{F}
+\unsetglyph{G}
+\unsetglyph{H}
+\unsetglyph{I}
+\unsetglyph{J}
+\unsetglyph{K}
+\unsetglyph{L}
+\unsetglyph{M}
+\unsetglyph{N}
+\unsetglyph{O}
+\unsetglyph{P}
+\unsetglyph{Q}
+\unsetglyph{R}
+\unsetglyph{S}
+\unsetglyph{T}
+\unsetglyph{U}
+\unsetglyph{V}
+\unsetglyph{W}
+\unsetglyph{X}
+\unsetglyph{Y}
+\unsetglyph{Z}
+
+\unsetglyph{a}
+\unsetglyph{b}
+\unsetglyph{c}
+\unsetglyph{d}
+\unsetglyph{e}
+\unsetglyph{f}
+\unsetglyph{g}
+\unsetglyph{h}
+\unsetglyph{i}
+\unsetglyph{j}
+\unsetglyph{k}
+\unsetglyph{l}
+\unsetglyph{m}
+\unsetglyph{n}
+\unsetglyph{o}
+\unsetglyph{p}
+\unsetglyph{q}
+\unsetglyph{r}
+\unsetglyph{s}
+\unsetglyph{t}
+\unsetglyph{u}
+\unsetglyph{v}
+\unsetglyph{w}
+\unsetglyph{x}
+\unsetglyph{y}
+\unsetglyph{z}
+
+\unsetglyph{dotlessi}
+\unsetglyph{dotlessj}
+
+\endmetrics

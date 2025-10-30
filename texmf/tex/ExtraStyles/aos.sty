@@ -1,0 +1,1515 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Style file for aos (Annals of Statistics) with CM fonts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\typeout{AOS Style built on `ARTICLE.STY'}
+
+\@ifundefined{tenrm}{\font\tenrm=CMR10}{}
+\@ifundefined{sevit}{\font\sevit=CMTI7}{}
+\@ifundefined{sevrm}{\font\sevrm=CMR7}{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\long\def\koo#1#2#3{\vbox to0pt{\hsize0pt\kern #2\hbox to0pt{\kern
+#1{#3}\hss}\vss}}%
+\long\def\zeroCC#1{\vbox to0pt{\vss\hbox to0pt{\hss #1\hss}\vss}}%
+\long\def\zeroLC#1{\vbox to0pt{\vss\hbox to0pt{\hss #1\hss}}}%
+\long\def\zeroUC#1{\vbox to0pt{\hbox to0pt{\hss #1\hss}\vss}}%
+\long\def\zeroLR#1{\vbox to0pt{\vss\hbox to0pt{\hss #1}}}%
+\long\def\zeroLL#1{\vbox to0pt{\vss\hbox to0pt{#1\hss}}}%
+\long\def\zeroUR#1{\vbox to0pt{\hbox to0pt{\hss #1}\vss}}%
+\long\def\zeroUL#1{\vbox to0pt{\hbox to0pt{#1\hss}\vss}}%
+\def\VRHDW#1#2#3{\vrule height #1 depth #2 width #3}%
+\def\HRHDW#1#2#3{\hrule height #1 depth #2 width #3}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\SP{\spaceskip 0.33em plus 0.167em minus 0.11em\relax}
+\def\sst#1{\vtop{\offinterlineskip\def\\{\crcr}\tabskip0pt\halign{\strut 
+##\hfil\cr #1\cr}}}%
+\def\ssb#1{\vbox{\offinterlineskip\def\\{\crcr}\tabskip0pt\halign{\strut 
+##\hfil\cr #1\cr}}}%
+\def\sstc#1{\vtop{\offinterlineskip\def\\{\crcr}\tabskip0pt\halign{\strut 
+\hfil ##\hfil\cr #1\cr}}}%
+\def\ssbc#1{\vbox{\offinterlineskip\def\\{\crcr}\tabskip0pt\halign{\strut 
+\hfil ##\hfil\cr #1\cr}}}%
+\def\ssbr#1{\vbox{\offinterlineskip\def\\{\crcr}\tabskip0pt\halign{\strut 
+\hfil ##\cr #1\cr}}}%
+\def\smbc#1{\smash{\vbox{\offinterlineskip\def\\{\crcr}\tabskip0pt\halign
+ {\strut \hfil ##\hfil\cr #1\cr}}}}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\Cent#1{\hbox to\textwidth{\hfil #1\hfil}}%
+\def\Line#1{\hbox to\textwidth{#1}}%
+\def\HD#1#2{\vrule width 0pt height #1 pt depth #2 pt\relax}%
+\def\halmos{\VRHDW{8.6pt}{1.4pt}{.2pt}\VRHDW{8.6pt}{-8.4pt}{9.6pt}\kern-9.6pt
+\VRHDW{-1.2pt}{1.4pt}{9.6pt}\VRHDW{8.6pt}{1.4pt}{.2pt}}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% \Trivlist, \TRivlist, \Center, \Flushleft, \Flushright
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\Trivlist{\parskip0pt\topsep=0pt\parsep0pt\partopsep0pt\@nmbrlistfalse
+  \@trivlist \labelwidth\z@ \leftmargin\z@
+  \itemindent\z@ \def\makelabel##1{##1}}
+\def\endTrivlist{\if@newlist\@noitemerr\fi
+   \if@inlabel\indent\fi
+   \ifhmode\unskip \par\fi
+   \if@noparlist \else
+      \ifdim\lastskip >\z@ \@tempskipa\lastskip \vskip -\lastskip
+         \advance\@tempskipa\parskip \advance\@tempskipa -\@outerparskip
+         \vskip\@tempskipa
+   \fi\@endparenv\fi}
+
+\def\TRivlist{\parskip0pt\topsep=12pt plus 3pt minus 2pt
+  \parsep0pt\partopsep0pt\@nmbrlistfalse
+  \@trivlist \labelwidth\z@ \leftmargin\z@
+  \itemindent\z@ \def\makelabel##1{##1}}
+\def\endTRivlist{\if@newlist\@noitemerr\fi
+   \if@inlabel\indent\fi
+   \ifhmode\unskip \par\fi
+   \if@noparlist \else
+      \ifdim\lastskip >\z@ \@tempskipa\lastskip \vskip -\lastskip
+         \advance\@tempskipa\parskip \advance\@tempskipa -\@outerparskip
+         \vskip\@tempskipa
+   \fi\@endparenv\fi}
+ 
+\def\Center{\Trivlist \centering\item[]}
+\let\endCenter=\endTrivlist
+\def\Flushleft{\Trivlist \raggedright\item[]}
+\let\endFlushleft=\endTrivlist 
+\def\Flushright{\Trivlist \raggedleft\item[]}
+\let\endFlushright=\endTrivlist 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\partname{Part}
+\def\contentsname{Contents}
+\def\listfigurename{List of Figures}
+\def\listtablename{List of Tables}
+\def\refname{References}
+\def\indexname{Index}
+\def\figurename{Figure}
+\def\tablename{Table}
+\def\abstractname{Abstract}
+
+%  Two-side or one-side printing.
+%
+% \@twosidefalse               %  Default is one-sided printing.
+\def\ds@twoside{\@twosidetrue  %  Defines twoside option.
+           \@mparswitchtrue}   %    Marginpars go on outside of page.
+%  draft option
+%
+\overfullrule = 5pt               % Default is to mark overfull hboxes.
+\def\ds@draft{\overfullrule 5\p@} % Causes overfull hboxes to be marked.
+\def\ds@final{\overfullrule 0\p@} % Causes overfull hboxes to disappear
+
+\newif\if@titlepage \@titlepagefalse
+\def\ds@titlepage{\@titlepagetrue}
+
+\def\ds@twocolumn{\@twocolumntrue}
+
+\def\NONUMBIB{\def\thebibliography##1{\addvspace{12pt plus 4pt 
+  minus 2pt}\begin{Center}\normalsize\rm REFERENCES\end{Center}
+  \addvspace{6pt}\footnotesize
+  \list{}{\labelwidth0pt
+    \leftmargin40pt
+    \itemindent-40pt
+    \itemsep=0pt\parsep=0pt
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \def\theenumiv{\arabic{enumiv}}}%
+    \def\newblock{\hskip .11em plus.33em minus.07em}%
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}}
+
+
+\@options
+
+%%%\input art1\@ptsize.sty\relax
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%ART10.STY (DOC)
+
+% ARTICLE STANDARD DOCUMENT STYLE -- Released 14 Jan 1992
+%    for LaTeX version 2.09
+% Copyright (C) 1992 by Leslie Lamport
+ 
+%  ****************************************
+%  *               FONTS                  *
+%  ****************************************
+%
+ 
+\lineskip 1pt            % \lineskip is 1pt for all font sizes.
+\normallineskip 1pt
+\def\baselinestretch{2}
+ 
+\def\@normalsize{\@setsize\normalsize{12pt}\xpt\@xpt
+\abovedisplayskip 6\p@ plus5\p@ minus1\p@
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip\abovedisplayskip%%%  \z@ plus3\p@   
+\belowdisplayshortskip\belowdisplayskip%%  6\p@ plus3\p@ minus3\p@
+\let\@listi\@listI\rm\SP}   % Setting of \@listi added 9 Jun 87
+ 
+\def\small{\@setsize\small{11pt}\ixpt\@ixpt
+\abovedisplayskip 5.5\p@ plus4\p@ minus1\p@
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \abovedisplayskip%%%\z@ plus2\p@
+\belowdisplayshortskip \abovedisplayskip%%%4\p@ plus2\p@ minus2\p@
+\def\@listi{\leftmargin\leftmargini %% Added 22 Dec 87
+\topsep 4\p@ plus2\p@ minus2\p@\parsep 2\p@ plus\p@ minus\p@
+\itemsep \parsep}\rm\SP}
+ 
+\def\footnotesize{\@setsize\footnotesize{10pt}\viiipt\@viiipt
+\abovedisplayskip 5\p@ plus4\p@ minus1\p@
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \abovedisplayskip%%%\z@ plus\p@
+\belowdisplayshortskip \abovedisplayskip%%%3\p@ plus\p@ minus2\p@
+\def\@listi{\leftmargin\leftmargini %% Added 22 Dec 87
+\topsep 3\p@ plus\p@ minus\p@\parsep 2\p@ plus\p@ minus\p@
+\itemsep \parsep}\rm\SP}
+ 
+\def\scriptsize{\@setsize\scriptsize{8pt}\viipt\@viipt\rm\SP}
+\def\tiny{\@setsize\tiny{6pt}\vpt\@vpt\rm\SP}
+\def\large{\@setsize\large{14pt}\xiipt\@xiipt\rm\SP}
+\def\Large{\@setsize\Large{18pt}\xivpt\@xivpt\rm\SP}
+\def\LARGE{\@setsize\LARGE{22pt}\xviipt\@xviipt\rm\SP}
+\def\huge{\@setsize\huge{25pt}\xxpt\@xxpt\rm\SP}
+\def\Huge{\@setsize\Huge{30pt}\xxvpt\@xxvpt\rm\SP}
+ 
+\normalsize  % Choose the normalsize font.
+ 
+
+%  ****************************************
+%  *            PAGE LAYOUT               *
+%  ****************************************
+%
+% All margin dimensions measured from a point one inch from top and side
+% of page.  
+ 
+% SIDE MARGINS:
+\if@twoside               % Values for two-sided printing:
+   \oddsidemargin  63pt   %   Left margin on odd-numbered pages.
+   \evensidemargin 63pt   %   Left margin on even-numbered pages.
+   \marginparwidth 107pt  %   Width of marginal notes.
+\else                     % Values for one-sided printing:
+   \oddsidemargin  63pt   %   Note that \oddsidemargin = \evensidemargin
+   \evensidemargin 63pt
+   \marginparwidth 90pt 
+\fi
+\marginparsep 11pt        % Horizontal space between outer margin and 
+                          % marginal note
+ 
+ 
+% VERTICAL SPACING:        
+                       % Top of page:
+\topmargin=27pt        %    Nominal distance from top of page to top of
+                       %    box containing running head.
+\headheight=8pt        %    Height of box containing running head.
+\headsep 14pt          %    Space between running head and text.
+\topskip=10pt          %    '\baselineskip' for first line of page.
+                       % Bottom of page:
+\footskip 14pt         %    Distance from baseline of box containing
+                       %    foot to baseline of last line of text.
+ 
+ 
+% DIMENSION OF TEXT:
+ 
+\textheight=538pt\textwidth=29pc%%%30pc
+\columnsep=10pt\columnseprule=0pt
+ 
+% A \raggedbottom command causes 'ragged bottom' pages: pages set to
+% natural height instead of being stretched to exactly \textheight.
+ 
+% FOOTNOTES:
+ 
+\footnotesep 7pt   % Height of strut placed at the beginning of every
+                      % footnote = height of normal \footnotesize strut,
+                      % so no extra space between footnotes.
+ 
+\skip\footins 18pt plus 4pt minus 2pt  % Space between last line of text
+                                      % and top of first footnote.
+
+\floatsep 12pt plus 2pt minus 2pt        % Space between adjacent floats
+                                         % moved to top or bottom of
+                                         % text page.
+\textfloatsep 20pt plus 2pt minus 4pt    % Space between main text and
+                                         % floats at top or bottom of
+                                         % page.
+\intextsep 12pt plus 2pt minus 2pt       % Space between in-text figures
+                                         % and text.
+\@maxsep 20pt                            % The maximum of \floatsep, 
+                                         % \textfloatsep and \intextsep
+                                         % (minus the stretch and
+                                         % shrink).
+ 
+%  FOR FLOATS ON A SEPARATE FLOAT PAGE OR COLUMN:
+%    ONE-COLUMN MODE OR SINGLE-COLUMN FLOATS IN TWO-COLUMN MODE:
+\@fptop 0pt plus 1fil    % Stretch at top of float page/column. (Must
+                         % be 0pt plus ...)
+\@fpsep 8pt plus 2fil    % Space between floats on float page/column. 
+\@fpbot 0pt plus 1fil    % Stretch at bottom of float page/column. (Must
+                         % be 0pt plus ... )
+ 
+% MARGINAL NOTES:
+%
+\marginparpush 5pt       % Minimum vertical separation between two
+                         % marginal notes.
+
+%  ****************************************
+%  *           PARAGRAPHING               *
+%  ****************************************
+%
+\parskip 0pt plus 1pt              % Extra vertical space between
+                                   % paragraphs.
+\parindent=12pt                    % Width of paragraph indentation.
+%\topsep 8pt plus 2pt minus 4pt    % Extra vertical space, in addition
+                                   % to \parskip, added above and below
+                                   % list and paragraphing environments.
+\partopsep 2pt plus 1pt minus 1pt  % Extra vertical space, in addition
+                                   % to \parskip and \topsep, added when
+                                   % user leaves blank line before
+                                   % environment.
+%\itemsep 4pt plus 2pt minus 1pt   % Extra vertical space, in addition
+                                   % to \parskip, added between list
+                                   % items.
+% See \@listI for values of \topsep and \itemsep
+% (Change made 9 Jun 87)
+ 
+% The following page-breaking penalties are defined
+ 
+\@lowpenalty   51      % Produced by \nopagebreak[1] or \nolinebreak[1]
+\@medpenalty  151      % Produced by \nopagebreak[2] or \nolinebreak[2]
+\@highpenalty 301      % Produced by \nopagebreak[3] or \nolinebreak[3]
+ 
+\@beginparpenalty -\@lowpenalty    % Before a list or paragraph
+                                   % environment.
+\@endparpenalty   -\@lowpenalty    % After a list or paragraph
+                                   % environment.
+\@itempenalty     -\@lowpenalty    % Between list items.
+ 
+% \clubpenalty         % 'Club line'  at bottom of page.
+% \widowpenalty        % 'Widow line' at top of page.
+% \displaywidowpenalty % Math display widow line.
+% \predisplaypenalty   % Breaking before a math display.
+% \postdisplaypenalty  % Breaking after a math display.
+% \interlinepenalty    % Breaking at a line within a paragraph.
+% \brokenpenalty       % Breaking after a hyphenated line.
+ 
+
+%    ****************************************
+%    *             SECTIONS                 *
+%    ****************************************
+%
+% FMi 91/03/30: \part moved to article.doc
+%
+ 
+% \@startsection {NAME}{LEVEL}{INDENT}{BEFORESKIP}{AFTERSKIP}{STYLE} 
+%            optional * [ALTHEADING]{HEADING}
+%    Generic command to start a section.  
+%    NAME       : e.g., 'subsection'
+%    LEVEL      : a number, denoting depth of section -- i.e.,
+%                 section=1, subsection = 2, etc.  A section number will
+%                 be printed if and only if LEVEL < or = the value of
+%                 the secnumdepth counter.
+%    INDENT     : Indentation of heading from left margin
+%    BEFORESKIP : Absolute value = skip to leave above the heading.  
+%                 If negative, then paragraph indent of text following 
+%                 heading is suppressed.
+%    AFTERSKIP  : if positive, then skip to leave below heading,
+%                       else - skip to leave to right of run-in heading.
+%    STYLE      : commands to set style
+%  If '*' missing, then increments the counter.  If it is present, then
+%  there should be no [ALTHEADING] argument.  A sectioning command
+%  is normally defined to \@startsection + its first six arguments.
+
+%MJCH
+\def\@startsection#1#2#3#4#5#6{\if@noskipsec \leavevmode \fi
+   \par \@tempskipa #4\relax
+   \@afterindenttrue
+   \ifdim \@tempskipa <\z@ \@tempskipa -\@tempskipa \@afterindentfalse\fi
+   \if@nobreak \everypar{}\else
+     \addpenalty{\@secpenalty}\addvspace{\@tempskipa}\fi \@ifstar
+     {\@ssect{#3}{#4}{#5}{#6}}{\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+
+\def\@sect#1#2#3#4#5#6[#7]#8{\ifnum #2>\c@secnumdepth
+     \let\@svsec\@empty\else
+     \refstepcounter{#1}\edef\@svsec{\kern12pt\csname 
+        the#1\endcsname.\hskip .5em}\fi
+     \@tempskipa #5\relax
+      \ifdim \@tempskipa>\z@
+        \begingroup #6\relax
+       \@hangfrom{\hskip #3\relax\@svsec}{\interlinepenalty \@M #8\par}%
+        \endgroup
+       \csname #1mark\endcsname{#7}\addcontentsline
+         {toc}{#1}{\ifnum #2>\c@secnumdepth \else
+                      \protect\numberline{\csname the#1\endcsname}\fi
+                    #7}\else
+        \def\@svsechd{#6\hskip #3\relax  %% \relax added 2 May 90
+                   \@svsec #8\csname #1mark\endcsname
+                      {#7}\addcontentsline
+                           {toc}{#1}{\ifnum #2>\c@secnumdepth \else
+                             \protect\numberline{\csname the#1\endcsname}\fi
+                       #7}}\fi
+     \@xsect{#5}}
+
+\def\@xsect#1{\@tempskipa #1\relax
+      \ifdim \@tempskipa>\z@
+       \par \nobreak
+       \vskip \@tempskipa
+       \@afterheading
+    \else \global\@nobreakfalse \global\@noskipsectrue
+       \everypar{\if@noskipsec \global\@noskipsecfalse
+                   \clubpenalty\@M \hskip -\parindent
+                   \begingroup \@svsechd \endgroup \unskip
+                   \hskip -#1\relax  % relax added 14 Jan 91
+                  \else \clubpenalty \@clubpenalty
+                    \everypar{}\fi}\fi\ignorespaces}
+
+\def\@ssect#1#2#3#4#5{\@tempskipa #3\relax
+   \ifdim \@tempskipa>\z@
+     \begingroup #4\@hangfrom{\hskip #1}{\interlinepenalty \@M #5\par}\endgroup
+   \else \def\@svsechd{\kern12pt{}#4\hskip #1\relax #5}\fi %%%HERE
+    \@xsect{#3}}
+
+\def\@hangfrom#1{\setbox\@tempboxa\hbox{#1}%
+      \hangindent \wd\@tempboxa\noindent\box\@tempboxa}
+
+\def\secdef#1#2{\@ifstar{#2}{\@dblarg{#1}}}
+%MJCHend
+ 
+\def\section{\@startsection {section}{1}{\z@}{12pt plus 4pt minus 
+   2pt}{-10pt}{\reset@font\normalsize\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-12pt plus -4pt minus 
+   -2pt}{-10pt}{\reset@font\normalsize\it}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@
+   }{0pt}{-10pt}{\reset@font\normalsize\it}}
+\def\paragraph{\@startsection
+     {paragraph}{4}{\z@}{3.25ex plus1ex minus.2ex}{-1em}{\reset@font
+     \normalsize\bf}}
+\def\subparagraph{\@startsection
+     {subparagraph}{4}{\parindent}{3.25ex plus1ex minus
+     .2ex}{-1em}{\reset@font\normalsize\bf}}
+ 
+ 
+% Default initializations of \...mark commands.  (See below for their
+% use in defining page styles.
+%
+ 
+% \def\sectionmark#1{}           % Preloaded definitions
+% \def\subsectionmark#1{}
+% \def\subsubsectionmark#1{}
+% \def\paragraphmark#1{}
+% \def\subparagraphmark#1{}
+ 
+% The value of the counter secnumdepth gives the depth of the
+% highest-level sectioning command that is to produce section numbers.
+%
+ 
+\setcounter{secnumdepth}{3}
+ 
+% APPENDIX
+%
+% The \appendix command must do the following:
+%    -- reset the section and subsection counters to zero
+%    -- redefine the section counter to produce appendix numbers
+%    -- redefine the \section command if appendix titles and headings
+%       are to look different from section titles and headings.
+ 
+\def\appendix{\par
+  \setcounter{section}{0}
+  \setcounter{subsection}{0}
+  \def\thesection{\Alph{section}}}
+ 
+
+%    ****************************************
+%    *                LISTS                 *
+%    ****************************************
+%
+ 
+% The following commands are used to set the default values for the list
+% environment's parameters. See the LaTeX manual for an explanation of
+% the meanings of the parameters.  Defaults for the list environment are
+% set as follows.  First, \rightmargin, \listparindent and \itemindent
+% are set to 0pt.  Then, for a Kth level list, the command \@listK is
+% called, where 'K' denotes 'i', 'ii', ... , 'vi'.  (I.e., \@listiii is
+% called for a third-level list.)  By convention, \@listK should set
+% \leftmargin to \leftmarginK.
+%
+% For efficiency, level-one list's values are defined at top level, and
+% \@listi is defined to set only \leftmargin.
+ 
+\leftmargini 25pt
+\leftmarginii 22pt     % > \labelsep + width of '(m)'
+\leftmarginiii 18.7pt  % > \labelsep + width of 'vii.'
+\leftmarginiv 17pt     % > \labelsep + width of 'M.'
+\leftmarginv 10pt
+\leftmarginvi 10pt
+ 
+\leftmargin\leftmargini
+\labelsep 5pt
+\labelwidth\leftmargini\advance\labelwidth-\labelsep
+% \parsep 4pt plus 2pt minus 1pt (Removed 9 Jun 87)
+ 
+% \@listI defines top level and \@listi values of
+% \leftmargin, \topsep, \parsep, and \itemsep
+% (Added 9 Jun 87)
+\def\@listI{\leftmargin\leftmargini \parsep 4\p@ plus2\p@ minus\p@
+\topsep 8\p@ plus2\p@ minus4\p@
+\itemsep 4\p@ plus2\p@ minus\p@}
+ 
+\let\@listi\@listI
+\@listi 
+ 
+\def\@listii{\leftmargin\leftmarginii
+   \labelwidth\leftmarginii\advance\labelwidth-\labelsep
+   \topsep 4\p@ plus2\p@ minus\p@
+   \parsep 2\p@ plus\p@ minus\p@
+   \itemsep \parsep}
+ 
+\def\@listiii{\leftmargin\leftmarginiii
+    \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
+    \topsep 2\p@ plus\p@ minus\p@ 
+    \parsep \z@ \partopsep \p@ plus\z@ minus\p@
+    \itemsep \topsep}
+ 
+\def\@listiv{\leftmargin\leftmarginiv
+     \labelwidth\leftmarginiv\advance\labelwidth-\labelsep}
+ 
+\def\@listv{\leftmargin\leftmarginv
+     \labelwidth\leftmarginv\advance\labelwidth-\labelsep}
+ 
+\def\@listvi{\leftmargin\leftmarginvi
+     \labelwidth\leftmarginvi\advance\labelwidth-\labelsep}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%end_ART10.STY (DOC)
+
+%    ****************************************
+%    *                LISTS                 *
+%    ****************************************
+%
+
+% ENUMERATE
+%  Enumeration is done with four counters: enumi, enumii, enumiii
+%  and enumiv, where enumN controls the numbering of the Nth level
+%  enumeration.  The label is generated by the commands \labelenumi
+%  ... \labelenumiv.  The expansion of \p@enumN\theenumN defines the
+%  output of a \ref command.
+%
+% 16 Mar 88 -- changed defs of \labelenum... to use \theenum...
+
+\def\labelenumi{\theenumi.}
+\def\theenumi{\arabic{enumi}}
+
+\def\labelenumii{(\theenumii)}
+
+\def\theenumii{\alph{enumii}}
+\def\p@enumii{\theenumi}
+
+\def\labelenumiii{\theenumiii.}
+\def\theenumiii{\roman{enumiii}}
+\def\p@enumiii{\theenumi(\theenumii)}
+
+\def\labelenumiv{\theenumiv.}
+\def\theenumiv{\Alph{enumiv}}
+\def\p@enumiv{\p@enumiii\theenumiii}
+
+% ITEMIZE
+% Itemization is controlled by four commands: \labelitemi, \labelitemii,
+% \labelitemiii, and \labelitemiv, which define the labels of the
+% various itemization levels.
+
+\def\labelitemi{$\m@th\bullet$}
+\def\labelitemii{\bf --}
+\def\labelitemiii{$\m@th\ast$}
+\def\labelitemiv{$\m@th\cdot$}
+
+
+% VERSE
+%   The verse environment is defined by making clever use of the
+%   list environment's parameters.  The user types \\ to end a line.
+%   This is implemented by \let'in \\ equal \@centercr.
+%
+\def\verse{\let\\=\@centercr
+  \list{}{\itemsep\z@ \itemindent -1.5em\listparindent \itemindent
+          \rightmargin\leftmargin\advance\leftmargin 1.5em}\item[]}
+\let\endverse\endlist
+
+% QUOTATION
+%   Fills lines
+%   Indents paragraph
+%
+\def\quotation{\list{}{\listparindent 1.5em
+    \itemindent\listparindent
+    \rightmargin\leftmargin \parsep \z@ plus\p@}\item[]}
+\let\endquotation=\endlist
+
+% QUOTE -- same as quotation except no paragraph indentation,
+%
+\def\quote{\list{}{\rightmargin\leftmargin}\item[]}
+\let\endquote=\endlist
+
+% DESCRIPTION
+%
+%  To change the formatting of the label, you must redefine
+%  \descriptionlabel.
+
+\def\descriptionlabel#1{\hspace\labelsep \bf #1}
+\def\description{\list{}{\labelwidth\z@ \itemindent-\leftmargin
+       \let\makelabel\descriptionlabel}}
+
+\let\enddescription\endlist
+
+%\newdimen\descriptionmargin
+%\descriptionmargin=3em
+
+%    ****************************************
+%    *         OTHER ENVIRONMENTS           *
+%    ****************************************
+%
+%
+% THEOREM
+% \@begintheorem ... \@endtheorem are the commands executed at the
+% beginning and end of a (user-defined) theorem-like environment.
+% Except \@opargbegintheorem is executed when an optional argument is
+% given.  Cf. LATEX.TEX.
+%
+% \def\@begintheorem#1#2{\it \trivlist
+%       \item[\hskip \labelsep{\bf #1\ #2}]}
+% \def\@opargbegintheorem#1#2#3{\it \trivlist
+%       \item[\hskip \labelsep{\bf #1\ #2\ (#3)}]}
+% \def\@endtheorem{\endtrivlist}
+
+
+%    *********************************
+%    *            THEOREMS           *
+%    *********************************
+
+\def\@begintheorem#1#2{\TRivlist \item[\hspace*{12pt}\hskip 
+\labelsep{\sc #1\ #2\periodaftertheorem}]\it \hspace*{5pt}\ignorespaces}
+\def\@opargbegintheorem#1#2#3{\TRivlist
+  \item[\hspace*{12pt}\hskip 
+  \labelsep{\sc #1\ #2\ {#3}\periodaftertheorem}\enskip ]\it\ignorespaces}
+\def\@endtheorem{\endTRivlist}
+\def\periodaftertheorem{.}
+
+%\def\proof#1{\par\addvspace{12pt plus 7pt minus 5pt}%
+%  \bgroup{\sc #1}.\quad\ignorespaces}
+%\def\endproof{\egroup\par\addvspace{12pt plus 7pt minus 5pt}}
+
+\def\proof#1{\TRivlist \item[\hspace*{12pt}\hskip 
+\labelsep{\sc #1.\enskip }]\ignorespaces}
+\def\endproof{\endTRivlist}
+
+
+% EQUATION and EQNARRAY
+%
+% \newcounter{equation}
+%  Default is for left-hand side of equations to be flushleft.
+%  To make them flushright, do:
+%  \let\@eqnsel = \hfil
+%
+
+\def\theequation{\thesection.\arabic{equation}}
+
+\jot = 6\p@      % Extra space added between lines of an eqnarray
+                  % environment
+
+% The macro \@eqnnum defines how equation numbers are to appear
+% in equations.
+%
+% \def\@eqnnum{(\theequation)}
+%
+
+% TITLEPAGE
+%  In the normal environments, the titlepage environment does nothing
+%  but start and end a page, and inhibit page numbers.  It also resets
+%  the page number to zero.
+%
+
+\def\titlepage{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+     \else \newpage \fi \thispagestyle{empty}\c@page\z@}
+
+\def\endtitlepage{\if@restonecol\twocolumn \else \newpage \fi}
+
+% ARRAY AND TABULAR
+%
+
+\arraycolsep 1.4pt     % Half the space between columns in an array
+                     % environment.
+\tabcolsep 6pt       % Half the space between columns in a tabular
+                     % environment.
+\arrayrulewidth .4pt % Width of rules in array and tabular environment.
+\doublerulesep 2pt   % Space between adjacent rules in array or tabular
+                     % environment.
+
+% TABBING
+%
+\tabbingsep \labelsep   % Space used by the \' command.
+                        %  (See LaTeX manual.)
+
+% MINIPAGE
+%  \@minipagerestore is called upon entry to a minipage environment to
+%  set up things that are to be handled differently inside a minipage
+%  environment. In the current styles, it does nothing.
+
+% \skip\@mpfootins : plays same role for footnotes in a minipage as
+%                    \skip\footins does for ordinary footnotes
+
+\skip\@mpfootins = \skip\footins
+
+% FRAMEBOX
+%
+\fboxsep = 3pt    % Space left between box and text by \fbox and
+                  % \framebox.
+\fboxrule = .4pt  % Width of rules in box made by \fbox and \framebox.
+
+
+%    ****************************************
+%    *             SECTIONS                 *
+%    ****************************************
+%
+% DEFINE COUNTERS:
+%
+% \newcounter{NEWCTR}[OLDCTR] : Defines NEWCTR to be a counter, which is
+%                               reset to zero when counter OLDCTR is
+%                               stepped.
+%                               Counter OLDCTR must already be defined.
+
+\newcounter{part}
+\newcounter {section}
+\newcounter {subsection}[section]
+\newcounter {subsubsection}[subsection]
+\newcounter {paragraph}[subsubsection]
+\newcounter {subparagraph}[paragraph]
+
+% For any counter CTR, \theCTR is a macro that defines the printed
+% version of counter CTR.  It is defined in terms of the following
+% macros:
+%
+%  \arabic{COUNTER} : The value of COUNTER printed as an arabic numeral.
+%  \roman{COUNTER}  : Its value printed as a lower-case roman numberal.
+%  \Roman{COUNTER}  : Its value printed as an upper-case roman numberal.
+%  \alph{COUNTER}   : Value of COUNTER printed as a lower-case letter:
+%                         1 = a, 2 = b, etc.
+%  \Alph{COUNTER}   : Value of COUNTER printed as an upper-case letter:
+%                           1 = A, 2 = B, etc.
+%
+
+\def\thepart          {\Roman{part}} % Roman numeral part numbers.
+\def\thesection       {\arabic{section}}
+\def\thesubsection    {{\tenrm\thesection}.%
+                      {\tenrm\arabic{subsection}}}
+\def\thesubsubsection {{\tenrm\thesubsection}.%
+                      {\tenrm\arabic{subsubsection}}}
+\def\theparagraph     {\thesubsubsection.\arabic{paragraph}}
+\def\thesubparagraph  {\theparagraph.\arabic{subparagraph}}
+
+
+% \secdef{UNSTARCMDS}{STARCMDS} :
+%    When defining a sectionioning command without using
+%    \@startsection, you can use \secdef as follows:
+%       \def\part { ... \secdef \CMDA \CMDB }
+%       \def\CMDA  [#1]#2{ ... }     % Command to define \part[...]{...}
+%       \def\CMDB  #1{ ... }         % Command to define \part*{...}
+ 
+\def\part{\par               % New paragraph
+   \addvspace{4ex}           % Adds vertical space above title.
+   \@afterindentfalse        % Suppresses indent in first paragraph.
+   \secdef\@part\@spart}     % Change to \@afterindenttrue to have
+                             % indent.
+
+% FMi 91/03/30:   extra space removed below.
+
+\def\@part[#1]#2{\ifnum \c@secnumdepth >\m@ne  % IF secnumdepth > -1
+        \refstepcounter{part}                  %  THEN step part counter
+        \addcontentsline{toc}{part}{\thepart   %       add toc line
+        \hspace{1em}#1}\else                   %  ELSE add unnumb. line
+      \addcontentsline{toc}{part}{#1}\fi       % FI
+   {\parindent \z@ \raggedright
+    \interlinepenalty \@M                      %% RmS added 11 Nov 91
+    \ifnum \c@secnumdepth >\m@ne   % IF secnumdepth > -1 
+      \Large \bf \partname~\thepart%   THEN Print '\partname' and 
+      \par\nobreak                 %          number in \Large boldface.
+    \fi                            % FI
+    \huge \bf                      % Select \huge boldface.
+    #2%                            % Print title
+    \markboth{}{}\par              % Set heading marks null.
+   }\nobreak                       % TeX penalty to prevent page break.
+   \vskip 3ex                      % Space between title and text.
+   \@afterheading                  % Routine called after part and
+  }                                %     section heading.
+ 
+% Heading for \part* command
+\def\@spart#1{{\parindent \z@ \raggedright 
+    \interlinepenalty \@M           %% RmS added 11 Nov 91
+    \huge \bf                       
+    #1\par}                         % Title.
+    \nobreak                        % TeX penalty to prevent page break.
+    \vskip 3ex                      % Space between title and text.
+    \@afterheading                  % Routine called after part and
+  }                                 %     section heading.
+ 
+
+
+
+%    ****************************************
+%    *         TABLE OF CONTENTS, ETC.      *
+%    ****************************************
+%
+% A \subsection command writes a
+%       \contentsline{subsection}{TITLE}{PAGE}
+% command on the .toc file, where TITLE contains the contents of the
+% entry and PAGE is the page number.  If subsections are being numbered,
+% then TITLE will be of the form
+%       \numberline{NUM}{HEADING}
+% where NUM is the number produced by \thesubsection.  Other sectioning
+% commands work similarly.
+%
+% A \caption command in a 'figure' environment writes
+%    \contentsline{figure}{\numberline{NUM}{CAPTION}}{PAGE}
+% on the .lof file, where NUM is the number produced by \thefigure and
+% CAPTION is the figure caption.  It works similarly for a 'table'
+% environment.
+%
+% The command \contentsline{NAME} expands to \l@NAME.  So, to specify
+% the table of contents, we must define \l@section,
+% \l@subsection, ... ; to specify the list of figures, we must define
+% \l@figure; and so on.  Most of these can be defined with the
+% \@dottedtocline command, which works as follows.
+%
+% \@dottedtocline{LEVEL}{INDENT}{NUMWIDTH}{TITLE}{PAGE}
+%    LEVEL    : An entry is produced only if LEVEL < or = value of
+%               'tocdepth' counter.  Note that \section is level 1,
+%               \subsection is level 2, etc.
+%    INDENT   : The indentation from the outer left margin of the start
+%               of the contents line.
+%    NUMWIDTH : The width of a box in which the section number is to go,
+%               if TITLE includes a \numberline command.
+%
+% This command uses the following three parameters, which are set
+% with a \def (so em's can be used to make them depend upon the font).
+%   \@pnumwidth : The width of a box in which the page number is put.
+%   \@tocrmarg  : The right margin for multiple line entries.  One
+%                 wants \@tocrmarg > or = \@pnumwidth
+%   \@dotsep    : Separation between dots, in mu units.  Should be
+%                 \def'd to a number like 2 or 1.7
+
+\def\@pnumwidth{1.55em}
+\def\@tocrmarg {2.55em}
+\def\@dotsep{4.5}
+\setcounter{tocdepth}{3}
+
+
+% TABLEOFCONTENTS
+%
+
+\def\tableofcontents{\section*{\contentsname
+        \@mkboth{\uppercase{\contentsname}}{\uppercase{\contentsname}}}%
+  \@starttoc{toc}}
+
+\def\l@part#1#2{\addpenalty{\@secpenalty}%
+   \addvspace{2.25em plus\p@}%  % space above part line
+   \begingroup
+   \@tempdima 3em         % width of box holding part number, used by
+     \parindent \z@ \rightskip \@pnumwidth             %% \numberline
+     \parfillskip -\@pnumwidth
+     {\large \bf          % set line in \large boldface
+     \leavevmode          % TeX command to enter horizontal mode.
+     #1\hfil \hbox to\@pnumwidth{\hss #2}}\par
+     \nobreak             % Never break after part entry
+   \endgroup}
+
+\def\l@section#1#2{\addpenalty{\@secpenalty}% good place for page break
+   \addvspace{1.0em plus\p@}%  % space above toc entry
+   \@tempdima 1.5em            % width of box holding section number
+   \begingroup
+     \parindent \z@ \rightskip \@pnumwidth
+     \parfillskip -\@pnumwidth
+     \bf                  % Boldface.
+     \leavevmode          % TeX command to enter horizontal mode.
+      \advance\leftskip\@tempdima  %% added 5 Feb 88 to conform to
+      \hskip -\leftskip            %% 25 Jan 88 change to \numberline
+     #1\nobreak\hfil \nobreak\hbox to\@pnumwidth{\hss #2}\par
+   \endgroup}
+
+
+\def\l@subsection{\@dottedtocline{2}{1.5em}{2.3em}}
+\def\l@subsubsection{\@dottedtocline{3}{3.8em}{3.2em}}
+\def\l@paragraph{\@dottedtocline{4}{7.0em}{4.1em}}
+\def\l@subparagraph{\@dottedtocline{5}{10em}{5em}}
+
+% LIST OF FIGURES
+%
+\def\listoffigures{\section*{\listfigurename
+    \@mkboth{\uppercase{\listfigurename}}{\uppercase{\listfigurename}}}%
+  \@starttoc{lof}}
+
+\def\l@figure{\@dottedtocline{1}{1.5em}{2.3em}}
+
+% LIST OF TABLES
+%
+\def\listoftables{\section*{\listtablename\@mkboth
+   {\uppercase{\listtablename}}{\uppercase{\listtablename}}}%
+  \@starttoc{lot}}
+\let\l@table\l@figure
+
+
+
+%    ****************************************
+%    *             BIBLIOGRAPHY             *
+%    ****************************************
+%
+% The thebibliography environment executes the following commands:
+%
+%  \def\newblock{\hskip .11em plus .33em minus .07em} --
+%      Defines the `closed' format, where the blocks (major units of
+%      information) of an entry run together.
+%
+%  \sloppy  -- Used because it's rather hard to do line breaks in
+%      bibliographies,
+%
+%  \sfcode`\.=1000\relax --
+%      Causes a `.' (period) not toproduce an end-of-sentence space.
+
+%% RmS 91/10/27 [ .. ] replaced by \@biblabel{ .. }
+%% RmS 91/11/13: Changed counter enumi to enumiv,
+%%               as it says in the comment in latex.tex
+%% RmS 92/01/14: Set \p@enumiv to {} and \theenumiv to \arabic{enumiv}
+%%               to get correct references
+\def\thebibliography#1{\addvspace{12pt plus 4pt 
+  minus 2pt}\begin{Center}\normalsize\rm REFERENCES\end{Center}
+  \addvspace{6pt}\footnotesize\list
+  {\@biblabel{\arabic{enumiv}}}{\settowidth\labelwidth{\@biblabel{[#1]}}%
+    \leftmargin40pt
+    \itemindent\labelwidth
+    \advance\itemindent-40pt
+    \itemsep=0pt\parsep=0pt
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \def\theenumiv{\arabic{enumiv}}}%
+    \def\newblock{\hskip .11em plus.33em minus.07em}%
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% second version
+
+%% 91/08/26 FMI & RmS: introduced warning instead of error
+
+\def\endthebibliography{%
+  \def\@noitemerr{\@warning{Empty `thebibliography' environment}}%
+  \endlist}
+
+
+% \def\@biblabel#1{[#1]\hfill}  % Produces the label for a \bibitem[...]
+                                % command.
+% \def\@cite#1{[#1]}            % Produces the output of the \cite
+                                % command.
+
+
+
+%    ****************************************
+%    *              THE INDEX               *
+%    ****************************************
+%
+% THE THEINDEX ENVIRONMENT
+% Produces double column format, with each paragraph a separate entry.
+% The user commands \item, \subitem and \subsubitem are used to
+% produce the entries, and \indexspace adds an extra vertical space
+% that's the right size to put above the first entry with a new letter
+% of the alphabet.
+
+\newif\if@restonecol
+
+\def\theindex{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi
+\columnseprule \z@
+\columnsep 35\p@\twocolumn[\section*{\indexname}]%
+    \@mkboth{\uppercase{\indexname}}{\uppercase{\indexname}}%
+    \thispagestyle{plain}\parindent\z@
+    \parskip\z@ plus.3\p@\relax\let\item\@idxitem}
+
+\def\@idxitem{\par\hangindent 40\p@}
+
+\def\subitem{\par\hangindent 40\p@ \hspace*{20\p@}}
+
+\def\subsubitem{\par\hangindent 40\p@ \hspace*{30\p@}}
+
+\def\endtheindex{\if@restonecol\onecolumn\else\clearpage\fi}
+
+\def\indexspace{\par \vskip 10\p@ plus5\p@ minus3\p@\relax}
+
+
+%    ****************************************
+%    *             FOOTNOTES                *
+%    ****************************************
+%
+% \footnoterule is a macro to draw the rule separating the footnotes
+% from the text.  It should take zero vertical space, so it needs a
+% negative skip to compensate for any positive space taken by the rule.
+% (See PLAIN.TEX.)
+
+\def\footnoterule{\kern-5\p@
+  \hrule width 5.5pc height .2pt depth0pt
+  \kern 4.8\p@}                 % The \hrule is hairline
+
+% \newcounter{footnote}
+
+% The numbering style (arabic, alph, etc.) for ordinary footnotes
+% is defined by the macro \thefootnote.
+%
+%   \@makefntext{NOTE} :
+%        Must produce the actual footnote, using \@thefnmark as the mark
+%        of the footnote and NOTE as the text.  It is called when
+%        effectively inside a \parbox of width \columnwidth (i.e., with
+%        \hsize =\columnwidth).
+%
+%        The following macro indents all lines of the footnote by 10pt,
+%        and indents the first line of a new paragraph by 1em.  To
+%        change these dimensions, just substitute the desired value for
+%        '10pt' [in both places] or '1em'.  The mark is flushright
+%        against the footnote.
+%          \long\def\@makefntext#1{\@setpar{\@@par\@tempdima \hsize
+%             \advance\@tempdima-10pt\parshape \@ne 10pt \@tempdima}\par
+%             \parindent 1em\noindent
+%             \hbox to \z@{\hss$\m@th^{\@thefnmark}$}#1}
+%
+%        A simpler macro is used, in which the footnote text is
+%        set like an ordinary text paragraph, with no indentation except
+%        on the first line of a paragraph, and the first line of the
+%        footnote.  Thus, all the macro must do is set \parindent
+%        to the appropriate value for succeeding paragraphs and put the
+%        proper indentation before mark.
+
+\long\def\@makefntext#1{\parindent 12pt\noindent
+            \kern12pt\hbox{$\m@th^{\@thefnmark}$}#1}
+\long\def\@makefnmark{\hbox{$^\@thefnmark$}}%
+
+%    ****************************************
+%    *         FIGURES AND TABLES           *
+%    ****************************************
+%
+% Float placement parameters.  See LaTeX manual for their definition.
+%
+\setcounter{topnumber}{2}
+\def\topfraction{.7}
+\setcounter{bottomnumber}{1}
+\def\bottomfraction{.3}
+\setcounter{totalnumber}{3}
+\def\textfraction{.2}
+\def\floatpagefraction{.5}
+\setcounter{dbltopnumber}{2}
+\def\dbltopfraction{.7}
+\def\dblfloatpagefraction{.5}
+
+% \@makecaption{NUMBER}{TEXT} : Macro to make a figure or table caption.
+%      NUMBER : Figure or table number--e.g., 'Figure 3.2'
+%      TEXT   : The caption text.
+%  Macro should be called inside a \parbox of right width, with
+%  \normalsize.
+% changed 25 Jun 86 to fix according to Howard Trickey:
+% instead of \unhbox\@tempboxa\par we do #1: #2\par
+
+\newdimen\realtablewidth
+\realtablewidth\textwidth
+\def\@tabtxt{table}
+
+\long\def\@makecaption#1#2{\footnotesize
+\parindent0pt
+\ifx\@captype\@tabtxt
+\Cent{\strut{\sc #1}}%
+ \setbox\@tempboxa\hbox{{\it #2}}%
+ \ifdim \wd\@tempboxa > \realtablewidth 
+ \Cent{\parbox{\realtablewidth}{\strut\it #2}} \else
+ \Cent{{\it #2}}\fi
+ \vskip 10pt
+\else \vskip 10pt 
+ \setbox\@tempboxa\hbox{{\sc #1}.\kern8pt{}{\it #2}}
+ \ifdim \wd\@tempboxa >\textwidth \noindent {\sc #1}.\kern8pt{}{\it #2}\par 
+\else \Cent{{\sc #1}.\kern8pt{}{\it #2}}%
+ \fi
+ \fi}
+
+% To define a float of type TYPE (e.g., TYPE = figure), the document
+% style must define the following.
+%
+%  \fps@TYPE   : The default placement specifier for floats of type
+%                TYPE.
+%
+%  \ftype@TYPE : The type number for floats of type TYPE.  Each TYPE has
+%                associated a unique positive TYPE NUMBER, which is a
+%                power of two.  E.g., figures might have type number 1,
+%                tables type number 2, programs type number 4, etc.
+%
+%  \ext@TYPE   : The file extension indicating the file on which the
+%                contents list for float type TYPE is stored.  For
+%                example, \ext@figure = 'lof'.
+%
+%  \fnum@TYPE  : A macro to generate the figure number for a caption.
+%                For example, \fnum@TYPE == Figure \thefigure.
+%
+%  The actual float-making environment commands--e.g., the commands
+%  \figure and \endfigure--are defined in terms of the macros \@float
+%  and \end@float, which are described below.
+%
+%  \@float{TYPE}[PLACEMENT] : Macro to begin a float environment for a
+%     single-column float of type TYPE with PLACEMENT as the placement
+%     specifier. The default value of PLACEMENT is defined by \fps@TYPE.
+%     The environment is ended by \end@float.
+%     E.g., \figure == \@float{figure}, \endfigure == \end@float.
+
+% FIGURE
+
+\newcounter{figure}
+\def\thefigure{\@arabic\c@figure}
+\def\fps@figure{tp}
+\def\ftype@figure{1}
+\def\ext@figure{lof}
+\def\fnum@figure{Fig.\ \thefigure}
+\def\figure{\@float{figure}}
+\let\endfigure\end@float
+\@namedef{figure*}{\@dblfloat{figure}}
+\@namedef{endfigure*}{\end@dblfloat}
+\newcounter{table}
+\def\thetable{\@arabic\c@table}
+\def\fps@table{tp}
+\def\ftype@table{2}
+\def\ext@table{lot}
+\def\fnum@table{Table \thetable}
+\def\table{\@float{table}}
+\let\endtable\end@float
+\@namedef{table*}{\@dblfloat{table}}
+\@namedef{endtable*}{\end@dblfloat}
+
+
+%    ****************************************
+%    *         TITLE AND ABSTRACT           *
+%    ****************************************
+%
+
+% \maketitle ==
+%  BEGIN
+%    \par
+%    \begingroup
+%      redefine \@makefnmark so footnote marks take zero space (this
+%        makes centering look better)
+%      \thefootnote == \fnsymbol{footnote} %to number by *, dagger, etc.
+%      if @twocolumn = true
+%        then  \twocolumn[\@maketitle]
+%        else \@maketitle
+%      fi
+%   \thispagestyle{plain}
+%   \@thanks   % \thanks defines \@thanks to have \footnotetext commands
+%              % for producing footnotes.
+%   \endgroup
+%  END
+
+\def\maketitle{\par
+ \begingroup
+   \def\thefootnote{\fnsymbol{footnote}}%
+   \def\@makefnmark{\hbox
+       to\z@{$\m@th^{\@thefnmark}$\hss}}%
+   \if@twocolumn
+     \twocolumn[\@maketitle]%
+     \else \newpage
+     \global\@topnum\z@   % Prevents figures from going at top of page.
+     \@maketitle \fi\thispagestyle{plain}\@thanks
+ \endgroup
+ \setcounter{footnote}{0}%
+ \let\maketitle\relax
+ \let\@maketitle\relax
+ \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
+
+\def\@maketitle{\newpage
+ \null
+ \vskip 2em                 % Vertical space above title.
+ \begin{center}%
+  {\LARGE \@title \par}%    % Title set in \LARGE size.
+  \vskip 1.5em              % Vertical space after title.
+  {\large                   % each author set in \large, in a
+   \lineskip .5em           % tabular environment
+   \begin{tabular}[t]{c}\@author
+   \end{tabular}\par}%
+  \vskip 1em                % Vertical space after author.
+  {\large \@date}%          % Date set in \large size.
+ \end{center}%
+ \par
+ \vskip 1.5em}              % Vertical space after date.
+
+\def\abstract{\if@twocolumn
+\section*{\abstractname}%
+\else \small
+\begin{center}%
+{\bf \abstractname\vspace{-.5em}\vspace{\z@}}%
+\end{center}%
+\quotation
+\fi}
+
+\def\endabstract{\if@twocolumn\else\endquotation\fi}
+
+
+%    ****************************************
+%    *            PAGE STYLES               *
+%    ****************************************
+%
+% The page style 'foo' is defined by defining the command \ps@foo.  This
+% command should make only local definitions.  There should be no stray
+% spaces in the definition, since they could lead to mysterious extra
+% spaces in the output.
+%
+% The \ps@... command defines the macros \@oddhead, \@oddfoot,
+% \@evenhead, and \@evenfoot to define the running heads and
+% feet---e.g., \@oddhead is the macro to produce the contents of the
+% heading box for odd-numbered pages.  It is called inside an \hbox of
+% width \textwidth.
+%
+% To make headings determined by the sectioning commands, the page style
+% defines the commands \sectionmark, ... , where
+% \sectionmark{TEXT} is called by \section to set a mark, and so on.
+% The \...mark commands and the \...head macros are defined with the
+% help of the following macros.  (All the \...mark commands should be
+% initialized to no-ops.)
+%
+% MARKING CONVENTIONS:
+% LaTeX extends TeX's \mark facility by producing two kinds of marks
+% a 'left' and a 'right' mark, using the following commands:
+%     \markboth{LEFT}{RIGHT} : Adds both marks.
+%     \markright{RIGHT}      : Adds a 'right' mark.
+%     \leftmark  : Used in the \@oddhead, \@oddfoot, \@evenhead or
+%                  \@evenfoot macro, gets the current 'left'  mark.
+%                  Works like TeX's \botmark command.
+%     \rightmark : Used in the \@oddhead, \@oddfoot, \@evenhead or
+%                  \@evenfoot macro, gets the current 'right'  mark.
+%                  Works like TeX's \firstmark command.
+% The marking commands work reasonably well for right marks 'numbered
+% within' left marks--e.g., the left mark is changed by a \section
+% command and the right mark is changed by a \subsection command.
+% However, it does produce somewhat anomalous results if two \bothmark's
+% occur on the same page.
+%
+% Commands like \tableofcontents that should set the marks in some page
+% styles use a \@mkboth command, which is \let by the pagestyle command
+% (\ps@...) to \markboth for setting the heading or \@gobbletwo to do
+% nothing.
+
+\mark{{}{}}   % Initializes TeX's marks
+
+\def\CROPMARKS{}
+
+\if@twoside         % If two-sided printing.
+ \def\ps@headings{\let\@mkboth\markboth
+  \def\@oddfoot{}\def\@evenfoot{}%       No feet.
+  \def\@evenhead{\CROPMARKS\HD80{\small\rm\thepage}\hfil 
+    {\footnotesize\rm\leftmark}\hfil}%        Left heading.
+  \def\@oddhead{\CROPMARKS\HD80\hfil{\footnotesize\rm\rightmark}\hfil
+    {\small\rm\thepage}}% Right heading.
+  \def\sectionmark##1{}%
+  \def\subsectionmark##1{}}%
+\else               % If one-sided printing.
+ \def\ps@headings{}
+\fi
+
+% Definition of 'myheadings' page style.
+%
+\def\ps@myheadings{\let\@mkboth\@gobbletwo
+ \def\@oddhead{\CROPMARKS\HD80\hfil}%
+ \def\@evenhead{\CROPMARKS\HD80\hfil}%
+ \def\@oddfoot{\hfil{\small\thepage}\hfil}%
+ \def\@evenfoot{\hfil{\small\thepage}\hfil}%
+ \def\sectionmark##1{}\def\subsectionmark##1{}}
+
+\def\ps@galleys{\let\@mkboth\@gobbletwo
+ \def\@oddhead{\CROPMARKS\HD80\hfill
+ {\tenbf\leftmark~/~GALLEY~\thepage}}% 
+ \let\@evenhead\@oddhead
+ \def\@oddfoot{\hfil}%
+ \def\@evenfoot{\hfil}%
+ \def\sectionmark##1{}\def\subsectionmark##1{}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ps@plain
+\def\ps@plain{\let\@mkboth\@gobbletwo
+     \def\@oddhead{\CROPMARKS\hfil}\def\@oddfoot{\reset@font\rm\hfil\thepage
+     \hfil}\def\@evenhead{\CROPMARKS\hfil}\let\@evenfoot\@oddfoot}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ps@empty
+\def\ps@empty{\let\@mkboth\markboth
+ \def\@oddfoot{}\def\@evenfoot{}%       No feet.
+ \def\@evenhead{\CROPMARKS\HD80\hfill}\def\@oddhead{\CROPMARKS\HD80\hfill}}
+
+
+%    ****************************************
+%    *            MISCELLANEOUS             *
+%    ****************************************
+%
+% DATE
+%
+\def\today{\ifcase\month\or
+  January\or February\or March\or April\or May\or June\or
+  July\or August\or September\or October\or November\or December\fi
+  \space\number\day, \number\year}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% additional style
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\BACKTONORMALFOOTNOTE#1{\setcounter{footnote}{#1}\addtocounter
+{footnote}{-1}\renewcommand{\thefootnote}{\arabic{footnote}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\SPECFNSYMBOL#1#2#3#4#5#6#7#8#9{\def
+  \@fnsymbol##1{\ifcase##1\or{\FNone}\or {\FNtwo}\or 
+  {\FNthree}\or {\FNfour}\or {\FNfive}\or {\FNsix}\or {\FNseven}\or 
+  {\FNeight}\or {\FNnine}\else\@ctrerr\fi\relax}%
+  \def\FNone{#1}%
+  \def\FNtwo{#2}%
+  \def\FNthree{#3}%
+  \def\FNfour{#4}%
+  \def\FNfive{#5}%
+  \def\FNsix{#6}%
+  \def\FNseven{#7}%
+  \def\FNeight{#8}%
+  \def\FNnine{#9}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\long\def\AOSMAKETITLE{\def\maketitle{\par
+ \begingroup
+   \def\thefootnote{\fnsymbol{footnote}}%
+   \def\@makefnmark{\hbox{$\m@th^{\@thefnmark}$}}%
+   \def\ftncorr{\kern-7.7pt\relax}%%
+   \if@twocolumn
+     \twocolumn[\@maketitle]%
+     \else \newpage
+     \global\@topnum\z@   % Prevents figures from going at top of page.
+     \@maketitle \fi\thispagestyle{plain}\@thanks
+ \endgroup
+ \setcounter{footnote}{0}%
+ \let\maketitle\relax
+ \let\@maketitle\relax
+\gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}%%%%%
+\def\AOSyr##1{\gdef\@AOSyr{##1}}%
+\def\AOSvol##1{\gdef\@AOSvol{##1}}%
+\def\AOSno##1{\gdef\@AOSno{##1}}%
+\def\AOSpp##1{\gdef\@AOSpp{##1}}%
+\def\AOSReceived##1{\gdef\@AOSReceived{##1}}%
+\def\AOSAMS##1{\gdef\@AOSAMS{##1}}%
+\def\AOSKeywords##1{\gdef\@AOSKeywords{##1}}%
+\def\@AOSyr{}%
+\def\@AOSvol{}%
+\def\@AOSno{}%
+\def\@AOSpp{}%
+\def\@AOSReceived{}%
+\def\@AOSAMS{}%
+\def\@AOSKeywords{}%
+\def\AOSauthor##1{\gdef\@AOSauthor{##1}}\def\@AOSauthor{}%
+\def\AOStitle##1{\gdef\@AOStitle{\spaceskip.5em ##1}}\def\@AOStitle{}%
+\def\AOSaffil##1{\gdef\@AOSaffil{##1}}\def\@AOSaffil{}%
+\def\AOSlrh##1{\gdef\@AOSlrh{{\spaceskip.5em ##1}}}\def\@AOSlrh{}%
+\def\AOSrrh##1{\gdef\@AOSrrh{{\spaceskip.5em ##1}}}\def\@AOSrrh{}%
+\long\def\AOSAbstract##1{\long\gdef\@AOSAbstract{##1}}\long\def\@AOSAbstract{}%
+\def\@maketitle{\newpage
+\hrule height0pt
+\vskip-30pt
+\begingroup
+\baselineskip7pt\noindent \hbox{\sevit 
+  The Annals of Statistics}\\
+  \hbox{\sevrm \@AOSyr, Vol.~\@AOSvol, 
+  No.~\@AOSno, {\@AOSpp}}\footnote{\@AOSReceived}\par
+\endgroup
+\vskip8pt
+\begin{Center}
+\normalsize\bf\@AOStitle
+\end{Center}
+\vskip12pt
+\begin{Center}
+\normalsize\sc By\ \@AOSauthor
+\end{Center}
+\vskip6pt
+\begin{Center}
+\normalsize\it\@AOSaffil
+\end{Center}
+\vskip6pt
+\begingroup
+\leftskip3.5pc\rightskip3.5pc\footnotesize\rm\noindent
+\hspace*{16pt}\strut\footnote{{\it AMS\/\ {\rm 1991} subject
+classifications}.\ \@AOSAMS}\footnote{{\it Key words and phrases}.\ 
+\@AOSKeywords}\@AOSAbstract\endgraf 
+\endgroup
+\markboth{\@AOSlrh}{\@AOSrrh}%
+\vskip18pt}}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\long\def\AOSaddress#1{\leavevmode{\footnotesize\sc
+ \sst{\HD40\\ \noalign{\vskip-6pt} #1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%AOS-lists
+
+\newbox\boxH
+\newenvironment{AOSlist}[1]{\setbox\boxH=\hbox{#1\enskip }\begin{list}{}{%
+ \topsep=6pt plus 2pt minus 1pt
+ \partopsep=0pt
+ \itemsep=0pt
+ \parsep=0pt
+ \labelsep=5pt
+ \labelwidth=\wd\boxH
+ \leftmargin=\labelwidth
+ \rightmargin=0pt
+ \listparindent=0pt
+ \itemindent=0pt}}{\end{list}}%
+\newenvironment{AOSsublist}[1]{\setbox\boxH=\hbox{#1\enskip }\begin{list}{}{%
+ \topsep=0pt
+ \partopsep=0pt
+ \itemsep=0pt
+ \parsep=0pt
+ \labelsep=5pt
+ \labelwidth=\wd\boxH
+ \leftmargin=\labelwidth
+ \rightmargin=0pt
+ \listparindent=0pt
+ \itemindent=0pt
+ \labelsep=5pt}}{\end{list}}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%improved \eqnarray
+
+\newdimen\eqnarraycolsep
+\eqnarraycolsep=.139em
+\def\eqnarray{\stepcounter{equation}%
+ \def\@currentlabel{\p@equation\theequation}%
+ \global\@eqnswtrue\m@th
+ \global\@eqcnt\z@\tabskip\@centering\let\\\@eqncr
+ $$\everycr{}\halign to\displaywidth\bgroup\hskip\@centering
+  $\displaystyle\tabskip\z@skip{##}$\@eqnsel&\global\@eqcnt\@ne
+  \hskip \tw@\eqnarraycolsep \hfil$\displaystyle{##}$\hfil
+  &\global\@eqcnt\tw@ \hskip \tw@\eqnarraycolsep
+  $\displaystyle{##}$\hfil
+   \tabskip\@centering&\global\@eqcnt\thr@@
+       \hbox to\z@\bgroup\hss##\egroup\tabskip\z@skip\cr}
+\def\endeqnarray{\@@eqncr\egroup
+      \global\advance\c@equation\m@ne$$\global\@ignoretrue}
+\let\@eqnsel=\relax
+\def\nonumber{\global\@eqnswfalse}
+\def\@eqncr{{\ifnum0=`}\fi\@ifstar{\global\@eqpen\@M
+    \@yeqncr}{\global\@eqpen\interdisplaylinepenalty \@yeqncr}}
+\def\@yeqncr{\@ifnextchar [{\@xeqncr}{\@xeqncr[\z@skip]}}
+\def\@xeqncr[#1]{\ifnum0=`{\fi}\@@eqncr
+   \noalign{\penalty\@eqpen\vskip\jot\vskip #1\relax}}
+\def\@@eqncr{\let\@tempa\relax
+    \ifcase\@eqcnt \def\@tempa{& & &}\or \def\@tempa{& &}%
+     \or \def\@tempa{&}\else
+       \let\@tempa\@empty
+       \@latexerr{Too many columns in eqnarray environment}\@ehc\fi
+     \@tempa \if@eqnsw\@eqnnum\stepcounter{equation}\fi
+     \global\@eqnswtrue\global\@eqcnt\z@\cr}
+\let\@seqncr=\@eqncr
+\@namedef{eqnarray*}{\def\@eqncr{\nonumber\@seqncr}\eqnarray}
+\@namedef{endeqnarray*}{\nonumber\endeqnarray}
+\def\lefteqn#1{\hbox to\z@{$\displaystyle #1$\hss}}
+
+%%%%%%%%%%%%%%%%%%%%%%%\normalsize with improved handling of bold letters
+
+\font\sevbf=cmbx7
+\font\fivbf=cmbx5
+
+\def\xpt{\textfont\z@\tenrm
+  \scriptfont\z@\sevrm \scriptscriptfont\z@\fivrm
+\textfont\@ne\tenmi \scriptfont\@ne\sevmi \scriptscriptfont\@ne\fivmi
+\textfont\tw@\tensy \scriptfont\tw@\sevsy \scriptscriptfont\tw@\fivsy
+\textfont\thr@@\tenex \scriptfont\thr@@\tenex \scriptscriptfont\thr@@\tenex
+\def\unboldmath{\everymath{}\everydisplay{}\@nomath\unboldmath
+          \textfont\@ne\tenmi
+          \textfont\tw@\tensy \textfont\lyfam\tenly
+          \@boldfalse}\@boldfalse
+\def\boldmath{\@ifundefined{tenmib}{\global\font\tenmib\@mbi
+   \global\font\tensyb\@mbsy
+   \global\font\tenlyb\@lasyb\relax\@addfontinfo\@xpt
+   {\def\boldmath{\everymath{\mit}\everydisplay{\mit}\@prtct\@nomathbold
+        \textfont\@ne\tenmib \textfont\tw@\tensyb
+        \textfont\lyfam\tenlyb \@prtct\@boldtrue}}}{}\@xpt\boldmath}%
+\def\prm{\fam\z@\tenrm}%
+\def\pit{\fam\itfam\tenit}\textfont\itfam\tenit \scriptfont\itfam\sevit
+    \scriptscriptfont\itfam\sevit
+\def\psl{\fam\slfam\tensl}\textfont\slfam\tensl
+     \scriptfont\slfam\tensl \scriptscriptfont\slfam\tensl
+\def\pbf{\fam\bffam\tenbf}\textfont\bffam\tenbf
+    \scriptfont\bffam\sevbf \scriptscriptfont\bffam\fivbf
+\def\ptt{\fam\ttfam\tentt}\textfont\ttfam\tentt
+    \scriptfont\ttfam\tentt \scriptscriptfont\ttfam\tentt
+\def\psf{\fam\sffam\tensf}\textfont\sffam\tensf
+    \scriptfont\sffam\tensf \scriptscriptfont\sffam\tensf
+\def\psc{\@getfont\psc\scfam\@xpt{\@mcsc}}%
+\def\ly{\fam\lyfam\tenly}\textfont\lyfam\tenly
+   \scriptfont\lyfam\sevly \scriptscriptfont\lyfam\fivly
+\@setstrut \rm}%
+
+\normalsize\rm
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% setup for openface uppercase letters
+\font\msbmv=msbm5%
+\font\msbmvii=msbm7%
+\font\msbmx=msbm10%
+\newfam\msbmfam
+\font\mbiv=cmmib5%
+\font\mbivii=cmmib7%
+\font\mbix=cmmib10%
+\font\eufmx=eufm10%
+\newfam\mbifam
+\textfont\msbmfam=\msbmx
+\scriptfont\msbmfam=\msbmvii
+\scriptscriptfont\msbmfam=\msbmv
+\textfont\mbifam=\mbix
+\scriptfont\mbifam=\mbivii
+\scriptscriptfont\mbifam=\mbiv
+\def\Bbb#1{{\fam\msbmfam #1}}%
+\def\mbf#1{{\fam\bffam #1}}%
+\def\mbi#1{{\fam\mbifam #1}}%
+\def\frak#1{{\mbox{\eufmx #1}}}
+\def\emptyset{{\fam\msbmfam\char"3F}}%
+%\def\BBBRvii{\mbox{\msbmvii{R}}}%
+%\def\BBBR{\mbox{\msbmx{R}}}%
+%\def\EE{\mathop{{\kern0pt\fam\msbmfam E}}\nolimits}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\DS{\displaystyle}%
+\def\HD#1#2{\vrule width 0pt height #1 pt depth #2 pt\relax}
+\def\dfrac#1#2{{\displaystyle{#1\over #2}}}
+\def\tfrac#1#2{{\textstyle{{#1}\over{#2}}}}
+\def\dsub#1#2{{\vcenter{\baselineskip9pt\ialign{\hfill ##\hfill \cr
+ $\scriptstyle{#1}$\cr $\scriptstyle{#2}$\cr}}}}%
+  %%\overfullrule=0pt
+\def\mlsub#1{{\vcenter{\baselineskip.8em\let\\\cr\ialign{\hfil 
+ $\scriptstyle{\vrule width0pt height0.56em depth 0.24em ##}$\hfil \cr 
+ #1\crcr}}}}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\mcr{\\[-.6em] \\ }
+\newenvironment{pMatrix}[1]{\bgroup%
+\arraycolsep.5em
+\left(\kern-.2em\begin{array}{#1}}{\end{array}\kern-.2em\right)\egroup}
+\newenvironment{bMatrix}[1]{\bgroup%
+\arraycolsep.5em
+\left[\kern-.2em\begin{array}{#1}}{\end{array}\kern-.2em\right]\egroup}
+\newenvironment{vMatrix}[1]{\bgroup%
+\arraycolsep.5em
+\left\vert\kern-.2em\begin{array}{#1}}{\end{array}\kern-.2em\right\vert\egroup}
+\newenvironment{Matrix}[1]{\bgroup%
+\arraycolsep.5em
+\begin{array}{#1}}{\end{array}\egroup}
+\newenvironment{Array}[1]{\bgroup%
+\arraycolsep0.139em
+\begin{array}{#1}}{\end{array}\egroup}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%    ****************************************
+%    *           INITIALIZATION             *
+%    ****************************************
+%
+% Default initializations
+
+\ps@headings\pagenumbering{arabic}
+\if@twoside\else\raggedbottom\fi % Ragged bottom unless twoside option.
+\if@twocolumn
+ \@@input twocolum.sty\relax
+\else
+ \onecolumn                 % Single-column.
+\fi
+
+\if@titlepage
+  \@@input titlepag.sty\relax
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\emergencystretch=20pt
+\frenchspacing
+\SP
+
+\endinput
+
+

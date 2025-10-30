@@ -1,0 +1,157 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fswiss\fcharset0 Helvetica-Oblique;
+}
+{\colortbl;\red255\green255\blue255;\red127\green127\blue127;}
+{\*\expandedcolortbl;;\cssrgb\c57046\c57047\c57046;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww12320\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <$publications>\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\fs20 \cf2 <$citeKey/> (<$pubType/>)\cf0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\f1\b\fs24 \cf0 <$fields.Title.titleCapitalizedString.stringByRemovingTeX/>\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\f0\b0 \cf0 <$pubType=article?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\f2\i \cf0 <$fields.Journal/>
+\f0\i0 , <$fields.Volume/><$fields.Number.parenthesizedStringIfNotEmpty/><$fields.Pages?><$fields.Volume?>:<?$fields.Volume?><$fields.Number?>:<?$fields.Number?>page </$fields.Number?></$fields.Volume?><$fields.Pages.stringByConvertingDoubleHyphenToEndash/>, <?$fields.Pages?><$fields.Volume?>, <?$fields.Volume?><$fields.Number?>, </$fields.Number?></$fields.Volume?></$fields.Pages?><$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=book?>\
+<$authors?><$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<?$authors?><$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editor\
+</$authors?>\
+<$fields.Volume?>volume <$fields.Volume/><$fields.Series?> of 
+\f2\i <$fields.Series/>
+\f0\i0 </$fields.Series?><?$fields.Volume?><$fields.Number?>. Number <$fields.Number/><$fields.Series?> in <$fields.Series/></$fields.Series?><?$fields.Number?><$fields.Series?>. <$fields.Series/></$fields.Series?></$fields.Number?></$fields.Volume?>. <$fields.Publisher/><$fields.Address.stringByPrependingCommaAndSpaceIfNotEmpty/>, <$fields.Edition?><$fields.Edition.titleCapitalizedString.stringByRemovingTeX/> edition, </$fields.Edition?><$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=booklet?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>.\
+<$fields.Howpublished.stringByAppendingCommaAndSpaceIfNotEmpty/><$fields.Address.stringByAppendingCommaAndSpaceIfNotEmpty/><$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=conference?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+In <$editors?><$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editors, </$editors?>
+\f2\i <$fields.Booktitle.titleCapitalizedString.stringByRemovingTeX/>
+\f0\i0 <$fields.Volume?>, volume <$fields.Volume/><$fields.Series?> of 
+\f2\i <$fields.Series/>
+\f0\i0 </$fields.Series?><?$fields.Volume?><$fields.Number?>, number <$fields.Number/><$fields.Series?> in <$fields.Series/></$fields.Series?><?$fields.Number?><$fields.Series.stringByPrependingCommaAndSpaceIfNotEmpty/></$fields.Number?></$fields.Volume?><$fields.Pages.stringByConvertingDoubleHyphenToEndash.stringByPrependingCommaAndSpaceIfNotEmpty/><$fields.Address?>, <$fields.Address/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/>. <$fields.Organization/>, <$fields.Publisher/><?$fields.Address?>, <$fields.Organization/>, <$fields.Publisher/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/></$fields.Address?><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=inbook?>\
+<$authors?><$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<?$authors?><$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editor\
+</$authors?>\
+<$fields.Volume?>, volume <$fields.Volume/><$fields.Series?> of 
+\f2\i <$fields.Series/>
+\f0\i0 </$fields.Series?></$fields.Volume?><$fields.Chapter?>, <$fields.Type?><$fields.Type/><?$fields.Type?>chapter</$fields.Type?><$fields.Chapter/><$fields.Pages.stringByConvertingDoubleHyphenToEndash.stringByPrependingCommaAndSpaceIfNotEmpty/><?$fields.Chapter?><$fields.Pages?>, page <$fields.Pages.stringByConvertingDoubleHyphenToEndash/></$fields.Pages?></$fields.Chapter?><$fields.Volume?><?$fields.Volume?><$fields.Number?>. Number <$fields.Number/><$fields.Series?> in <$field.Series/></$fields.Series?><?$fields.Number?><$fields.Series.stringByPrependingCommaAndSpaceIfNotEmpty/></$fields.Number?></$fields.Volume?>. <$fields.Publisher/><$fields.Address.stringByPrependingCommaAndSpaceIfNotEmpty/>, <$fields.Edition?><$fields.Edition.titleCapitalizedString.stringByRemovingTeX/> edition, </$fields.Edition?><$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=incollection?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+In <$editors?><$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editors, </$editors?>
+\f2\i <$fields.Booktitle.titleCapitalizedString.stringByRemovingTeX/>
+\f0\i0 <$fields.Volume?>, volume <$fields.Volume/><$fields.Series?> of 
+\f2\i <$fields.Series/>
+\f0\i0 </$fields. Series?><?$fields.Volume?><$fields.Number?>, number <$fields.Number/><$fields.Series?> in <$field.Series/></$fields.Series?><?$fields.Number?><$fields.Series.stringByPrependingCommaAndSpaceIfNotEmpty/></$fields.Number?></$fields.Volume?><$fields.Chapter?>, <$fields.Type?><$fields.Type/><?$fields.Type?>chapter</$fields.Type?><$fields.Chapter/><$fields.Pages.stringByConvertingDoubleHyphenToEndash.stringByPrependingCommaAndSpaceIfNotEmpty/><?$fields.Chapter?><$fields.Pages?>, page <$fields.Pages.stringByConvertingDoubleHyphenToEndash/></$fields.Pages?></$fields.Chapter?>. <$fields.Publisher/><$fields.Address.stringByPrependingCommaAndSpaceIfNotEmpty/>, <$fields.Edition?><$fields.Edition.titleCapitalizedString.stringByRemovingTeX/> edition, </$fields.Edition?><$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=inproceedings?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+In <$editors?><$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editors, </$editors?>
+\f2\i <$fields.Booktitle.titleCapitalizedString.stringByRemovingTeX/>
+\f0\i0 <$fields.Volume?>, volume <$fields.Volume/><$fields.Series?> of 
+\f2\i <$fields.Series/>
+\f0\i0 </$fields.Series?><?$fields.Volume?><$fields.Number?>, number <$fields.Number/><$fields.Series?> in <$fields.Series/></$fields.Series?><?$fields.Number?><$fields.Series.stringByPrependingCommaAndSpaceIfNotEmpty/></$fields.Number?></$fields.Volume?><$fields.Pages.stringByConvertingDoubleHyphenToEndash.stringByPrependingCommaAndSpaceIfNotEmpty/><$fields.Address?>, <$fields.Address/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/>. <$fields.Organization/>, <$fields.Publisher/><?$fields.Address?>, <$fields.Organization/>, <$fields.Publisher/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/></$fields.Address?><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=manual?>\
+<$authors?><$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>.\
+</$authors?>
+\f2\i \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\f0\i0 \cf0 <$fields.Organization.stringByAppendingCommaAndSpaceIfNotEmpty/><$fields.Address.stringByAppendingCommaAndSpaceIfNotEmpty/><$fields.Edition?><$fields.Edition.titleCapitalizedString.stringByRemovingTeX/> edition, </$fields.Edition?><$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=mastersthesis?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<$fields.Type?><$fields.Type.titleCapitalizedString.stringByRemovingTeX/><?$fields.Type?>Master's thesis</$fields.Type?>, <$fields.School/><$fields.Address.stringByPrependingCommaAndSpaceIfNotEmpty/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=misc?>\
+<$authors?><$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>.\
+</$authors?>\
+<$fields.Howpublished.stringByPrependingFullStopAndSpaceIfNotEmpty/>. <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=phdthesis?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<$fields.Type?><$fields.Type.titleCapitalizedString.stringByRemovingTeX/><?$fields.Type?>PhD thesis</$fields.Type?>, <$fields.School/><$fields.Address.stringByPrependingCommaAndSpaceIfNotEmpty/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=jurthesis?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<$fields.Type?><$fields.Type.titleCapitalizedString.stringByRemovingTeX/><?$fields.Type?>Dr.Jur. thesis</$fields.Type?>, <$fields.School/><$fields.Address.stringByPrependingCommaAndSpaceIfNotEmpty/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=proceedings?>\
+<$editors?><$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editor. \
+<?$editors?>\
+<$fields.Organization?><$fields.Organization/>. </$fields.Organization?></$editors?>
+\f2\i <$fields.Title.titleCapitalizedString.stringByRemovingTeX/>
+\f0\i0 <$fields.Volume?>, volume <$fields.Volume/><$fields.Series?> of 
+\f2\i <$fields.Series/>
+\f0\i0 </$fields.Series?><?$fields.Volume?><$fields.Number?>, number <$fields.Number/><$fields.Series?> in <$fields.Series/></$fields.Series?><?$fields.Number?><$fields.Series.stringByPrependingCommaAndSpaceIfNotEmpty/></$fields.Number?></$fields.Volume?><$fields.Address?>, <$fields.Address/>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/>. <$fields.Organization/>, <$fields.Publisher/><?$fields.Address?>. <$fields.Organization.stringByAppendingCommaAndSpaceIfNotEmpty/><$fields.Publisher.stringByAppendingCommaAndSpaceIfNotEmpty/><$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/></$fields.Address?><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=techreport?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<$fields.Type?><$fields.Type.titleCapitalizedString/><?$fields.Type?>Technical report</$fields.Type?><$fields.Number.stringByPrependingSpaceIfNotEmpty/>, <$fields.Institution/><$fields.Address?>, <$fields.Address/></$fields.Address?>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=unpublished?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<$fields.Note/><$fields.Year?>, <$fields.Month.stringByAppendingSpaceIfNotEmpty/><$fields.Year/></$fields.Year?>\
+<?$pubType=periodical?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\f2\i \cf0 <$fields.Journal/>
+\f0\i0 , <$fields.Volume/><$fields.Pages?><$fields.Volume?>:<?$fields.Volume?>page </$fields.Volume?><$fields.Pages.stringByConvertingDoubleHyphenToEndash/><$fields.Year?>, </$fields.Year?><?$fields.Pages?><$fields.Volume?><$fields.Year?>, </$fields.Year?></$fields.Volume?></$fields.Pages?><$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType=commented?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+<$fields.Volumetitle?>In <$editors?><$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editors, </$editors?>
+\f2\i <$fields.Volumetitle.titleCapitalizedString.stringByRemovingTeX/>, 
+\f0\i0 </$fields.Volumetitle?><$fields.Publisher/><$fields.Address.stringByPrependingCommaAndSpaceIfNotEmpty/>, <$fields.Year/><$fields.Note.stringByPrependingFullStopAndSpaceIfNotEmpty/>\
+<?$pubType?>\
+<$fields.Author?>\
+<$authors.abbreviatedName.@componentsJoinedByCommaAndAnd/>\
+</$fields.Author?>\
+<$fields.Editor?>\
+<$editors.abbreviatedName.@componentsJoinedByCommaAndAnd/>, editor\
+</$fields.Editor?>\
+<$fields.Doi?></$fields.Doi?><$fields.Isbn?></$fields.Isbn?><$fields.Eprint?></$fields.Eprint?>\
+<$requiredFields.@nonEmpty>\
+<$name/>: <$value/>\
+</$requiredFields.@nonEmpty>\
+<$optionalFields.@nonEmpty>\
+<$name/>: <$value/>\
+</$optionalFields.@nonEmpty>\
+</$pubType?>\
+<$fields.Doi?>\
+DOI: <$fields.Doi/>\
+</$fields.Doi?>\
+<$fields.Isbn?>\
+ISBN: <$fields.Isbn/>\
+</$fields.Isbn?>\
+<$fields.Eprint?>\
+arXiv: <$fields.Eprint/>\
+</$fields.Eprint?>\
+<$fields.Abstract?>\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\fs8 \cf2 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-19\pardirnatural\partightenfactor0
+
+\fs22 \cf0 <$fields.Abstract.stringByRemovingTeX/>\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\fs24 \cf0 </$fields.Abstract?>\
+<$fields.Annote?>\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\fs8 \cf0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-19\pardirnatural\partightenfactor0
+
+\f2\i\fs22 \cf0 <$fields.Annote/>
+\f0\i0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li560\fi-560\pardirnatural\partightenfactor0
+
+\fs24 \cf0 </$fields.Annote?>
+\fs8 \cf2 \
+
+\fs24 \cf0 <?$publications>\
+\
+</$publications>\
+}

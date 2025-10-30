@@ -1,0 +1,102 @@
+%%% ====================================================================
+%%%  @TeX-metrics-file{
+%%%     author          = "Alan Jeffrey",
+%%%     version         = "1.314",
+%%%     date            = "26 January 1994",
+%%%     time            = "19:12:37 GMT",
+%%%     filename        = "zrvhax.mtx",
+%%%     address         = "School of Cognitive and Computing Sciences
+%%%                        University of Sussex
+%%%                        Brighton BN1 9QH
+%%%                        UK",
+%%%     telephone       = "+44 273 606755 x 3238",
+%%%     FAX             = "+44 273 678188",
+%%%     checksum        = "???",
+%%%     email           = "alanje@cogs.sussex.ac.uk",
+%%%     codetable       = "ISO/ASCII",
+%%%     keywords        = "AFM, virtual fonts, fonts, PostScript, TeX",
+%%%     supported       = "yes",
+%%%     abstract        = "These are the adjustments for Adobe Symbol and 
+%%%                        cmex to make a math extension font.",
+%%%     docstring       = "The checksum field above contains a CRC-16
+%%%                        checksum as the first value, followed by the
+%%%                        equivalent of the standard UNIX wc (word
+%%%                        count) utility output of lines, words, and
+%%%                        characters.  This is produced by Robert
+%%%                        Solovay's checksum utility.",
+%%%     package         = "fontinst",
+%%%     dependencies    = "none",
+%%%  }
+%%% ====================================================================
+
+\relax
+
+\metrics
+
+\needsfontinstversion{1.313}
+
+\setint{psy-textscale}{1000}
+\setint{psy-displayscale}{1440}
+
+\unsetglyph{circledotdisplay}
+\unsetglyph{circledottext}
+\unsetglyph{circlemultiplydisplay}
+\unsetglyph{circlemultiplytext}
+\unsetglyph{circleplusdisplay}
+\unsetglyph{circleplustext}
+\unsetglyph{contintegraldisplay}
+\unsetglyph{contintegraltext}
+\unsetglyph{integraldisplay}
+\unsetglyph{integraltext}
+\unsetglyph{intersectiondisplay}
+\unsetglyph{intersectiontext}
+\unsetglyph{logicalanddisplay}
+\unsetglyph{logicalandtext}
+\unsetglyph{logicalordisplay}
+\unsetglyph{logicalortext}
+\unsetglyph{uniondisplay}
+\unsetglyph{unionmultidisplay}
+\unsetglyph{unionmultitext}
+\unsetglyph{unionsqdisplay}
+\unsetglyph{unionsqtext}
+\unsetglyph{uniontext}
+
+\resetglyph{summationtext}
+   \glyph{summation}{\int{psy-textscale}}
+\endresetglyph
+
+\resetglyph{summationdisplay}
+   \glyph{summation}{\int{psy-displayscale}}
+\endresetglyph
+
+\resetglyph{producttext}
+   \glyph{product}{\int{psy-textscale}}
+\endresetglyph
+
+\resetglyph{productdisplay}
+   \glyph{product}{\int{psy-displayscale}}
+\endresetglyph
+
+\resetglyph{coproducttext}
+   \moveup{\neg{\depth{producttext}}}
+   \glyphrule{
+      \width{producttext}
+   }{
+      \add{\height{producttext}}{\depth{producttext}}
+   }
+   \moveup{\depth{producttext}}
+   \glyphwarning{missing glyph `coproducttext'}
+\endresetglyph
+
+\resetglyph{coproductdisplay}
+   \moveup{\neg{\depth{productdisplay}}}
+   \glyphrule{
+      \width{productdisplay}
+   }{
+      \add{\height{productdisplay}}{\depth{productdisplay}}
+   }
+   \moveup{\depth{productdisplay}}
+   \glyphwarning{missing glyph `coproductdisplay'}
+\endresetglyph
+
+\endmetrics
