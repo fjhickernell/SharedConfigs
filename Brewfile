@@ -1,58 +1,34 @@
-# Tool for generating GNU Standards-compliant Makefiles
-brew "automake"
-# Cryptography and SSL/TLS Toolkit
-brew "openssl@3"
-# Clone of cat(1) with syntax highlighting and Git integration
-brew "bat"
-# General-purpose data compression with high compression ratio
 brew "xz"
-# Remove large files or passwords from Git history like git-filter-branch
+brew "automake"
+brew "openssl@3"
+brew "bat"
 brew "bfg"
-# Parser generator
 brew "bison"
-# Ruby environment tool
 brew "chruby"
-# Simple, fast and user-friendly alternative to find
 brew "fd"
-# GNU compiler collection
 brew "gcc"
-# Interpreter for PostScript and PDF
 brew "ghostscript"
-# Distributed revision control system
 brew "git"
-# Git extension for versioning large files
 brew "git-lfs"
-# Library for command-line editing
-brew "readline"
-# Portable Foreign Function Interface library
+brew "jq"
 brew "libffi"
-# YAML Parser
 brew "libyaml"
-# Utility for directing compilation
 brew "make"
-# High performance message passing library
 brew "open-mpi"
-# C language header files for the OpenCL API
 brew "opencl-headers"
-# PDF converter to SVG
 brew "pdf2svg"
-# Search PDFs for strings matching a regular expression
 brew "pdfgrep"
-# Port of pdftk in java
 brew "pdftk-java"
-# Search tool like grep and The Silver Searcher
+brew "pygments"
 brew "ripgrep"
-# Powerful, clean, object-oriented scripting language
 brew "ruby"
-# Install Ruby, JRuby, Rubinius, TruffleRuby, or mruby
 brew "ruby-install"
-# Display directories as trees (with optional color/HTML output)
 brew "tree"
-# Open-source Markdown editor
+brew "weasyprint"
 cask "macdown"
-# Open-source code editor
 cask "visual-studio-code"
 vscode "alefragnani.bookmarks"
+vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
 vscode "github.copilot"
@@ -73,6 +49,7 @@ vscode "ms-python.python"
 vscode "ms-python.vscode-pylance"
 vscode "ms-python.vscode-python-envs"
 vscode "ms-toolsai.jupyter"
+vscode "ms-toolsai.jupyter-hub"
 vscode "ms-toolsai.jupyter-keymap"
 vscode "ms-toolsai.jupyter-renderers"
 vscode "ms-toolsai.vscode-jupyter-cell-tags"
