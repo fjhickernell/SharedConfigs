@@ -1,0 +1,175 @@
+.Karabiner-VirtualHIDDevice-Manager.app
+Adobe Acrobat Reader.app
+Agapé.app
+AI Chat.app
+Air Printer.app
+Airalo.app
+Alamo.app
+Allset.app
+Amazon Kindle.app
+Antivirus One.app
+Art of Manliness.app
+Bartender 6.app
+BBBox 2 Lite.app
+BBBox Lite.app
+BBEdit.app
+BBMR.app
+BetterZip.app
+BibDesk.app
+Bike.app
+Blink Charging.app
+Blinq.app
+Blu-ray Ripper.app
+Box.app
+C&MA Events.app
+calibre.app
+California Pizza Kitchen (CPK).app
+Capital One Shopping.app
+CARR.app
+CAVA.app
+ChargeHub EV Map.app
+Chatbot App - AI Chatbot.app
+ChatGPT Atlas.app
+ChatGPT.app
+ChowNow.app
+CNET Shopping.app
+Comet.app
+CotEditor.app
+CouponCabin.app
+Cowbell.app
+CSC Go.app
+Curb.app
+DaisyDisk.app
+Default Folder X.app
+Delta Dental Mobile App.app
+Din Tai Fung Waitlist.app
+Docker.app
+Downie 4.app
+Dropbox Dash.app
+Dropbox.app
+Fantastical.app
+Feit Electric.app
+Firefox.app
+Fivestars.app
+Flighty.app
+Fly Delta.app
+Franz.app
+GarageBand.app
+Geekbench 5.app
+Geekbench 6.app
+GitHub Desktop.app
+GitKraken.app
+Goodnotes.app
+GoodTask.app
+Google Chrome.app
+Google Docs.app
+Google Drive.app
+Google Sheets.app
+Google Slides.app
+GraphicConverter 12.app
+Haidilao.app
+HealthEquity.app
+HP Smart.app
+IKEA.app
+iMovie.app
+Impulse.app
+iParkit.app
+iStat Menus 6.app
+iStat Menus.app
+Joy.app
+JupyterLab.app
+Kee Wah Bakery 奇華月餅 - LA.app
+Keynote.app
+Klara.app
+Lasso.app
+LastPass for Safari.app
+LaTeXiT.app
+LeCab.app
+LIFY+.app
+Logos.app
+MacDown.app
+Maggiano's.app
+MarkEdit.app
+Marugame Udon, USA.app
+MATLAB_R2025a.app
+MATLAB_R2025b.app
+Menya Ultra.app
+Metropolis.app
+Microsoft Edge.app
+Microsoft Excel.app
+Microsoft OneNote.app
+Microsoft Outlook.app
+Microsoft PowerPoint.app
+Microsoft Teams.app
+Microsoft Word.app
+MuniMobile.app
+My Card Wallet.app
+My Energy Center.app
+My Firestone.app
+MyLinks.app
+Name Mangler.app
+NTFoods.app
+Numbers.app
+NZeTA.app
+NZTD.app
+Obi.app
+OneDrive.app
+OTP Manager.app
+Pages.app
+Parallels Desktop.app
+Pass2U Wallet.app
+Pass4Wallet.app
+Paste.app
+Pause.app
+PayPal Honey.app
+Perplexity.app
+Plex Media Server.app
+Pretty Progress.app
+Rakuten Cash Back.app
+Rectangle Pro.app
+Rocket Typist.app
+Safari.app
+SageMath-10-0.app
+Scapple.app
+Shop.app
+Slack.app
+Solitaire.app
+Soulver 3.app
+Spaces by Wix.app
+Speedtest.app
+SplitPrint.app
+Spotify.app
+SWE Events.app
+Taio.app
+Tempus Stopwatch.app
+TeX Live Utility.app
+TeXShop.app
+TeXStudio (FIXED).app
+texstudio-4.8.9-osx-m1.app
+TextSniper.app
+TickPick.app
+Time Out Market.app
+Translator GO.app
+TripIt.app
+TripSource.app
+Twitter.app
+Unclutter.app
+United MileagePlus Shopping℠.app
+Unreached of the Day.app
+Visual Studio Code.app
+VLC.app
+Wealthfront.app
+Webex.app
+WeChat.app
+Wegmans.app
+Westfield.app
+WhatsApp.app
+White Noise.app
+Wolfram.app
+WolframScript.app
+Wondershare UniConverter 15.app
+Wondershare UniConverter 16.app
+Wondr Health.app
+World Time.app
+Xcode.app
+zoom.us.app
