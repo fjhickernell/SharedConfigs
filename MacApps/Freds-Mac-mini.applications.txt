@@ -1,0 +1,55 @@
+.Karabiner-VirtualHIDDevice-Manager.app
+Amazon Kindle.app
+Anaconda-Navigator.app
+Bartender 6.app
+BBEdit.app
+BibDesk.app
+Capital One Shopping.app
+ChatGPT Atlas.app
+ChatGPT.app
+Default Folder X.app
+Fantastical.app
+GarageBand.app
+GitKraken.app
+Google Chrome.app
+Google Docs.app
+Google Drive.app
+Google Sheets.app
+Google Slides.app
+GraphicConverter 12.app
+iMovie.app
+iStat Menus.app
+JupyterLab.app
+Keynote.app
+LaTeXiT.app
+MacDown.app
+MATLAB_R2025a.app
+MATLAB_R2025b.app
+Messenger.app
+Microsoft Excel.app
+Microsoft Outlook.app
+Microsoft PowerPoint.app
+Microsoft Teams.app
+Microsoft Word.app
+Name Mangler.app
+Numbers.app
+OneDrive.app
+Pages.app
+Perplexity.app
+Pretty Progress.app
+Rectangle Pro.app
+Rectangle.app
+Safari.app
+Shop.app
+Signal.app
+Slack.app
+Speedtest.app
+TeX Live Utility.app
+TeXShop.app
+texstudio-4.8.9-osx-m1.app
+TripIt.app
+United MileagePlus Shopping℠.app
+Visual Studio Code.app
+WeChat.app
+WhatsApp.app
+zoom.us.app
