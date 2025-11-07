@@ -1,0 +1,4 @@
+#!/bin/zsh
+export XDG_CONFIG_HOME="$HOME/Library/Application Support"
+exec "/Applications/texstudio-4.8.9-osx-m1.app/Contents/MacOS/texstudio" \
+  --ini-file="$HOME/Library/Application Support/texstudio/texstudio.ini"

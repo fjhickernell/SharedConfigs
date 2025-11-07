@@ -9,41 +9,44 @@ BREWFILE="$REPO_DIR/Brewfile"
 SUMMARY_TMP="$(mktemp)"
 HOST="$(hostname -s)"
 
+# --- Helpers ----------------------------------------------------------------
 note()  { print -P "%F{blue}==>%f $*"; }
 good()  { print -P "%F{green}✓%f  $*"; }
 warn()  { print -P "%F{yellow}!%f  $*"; }
 fail()  { print -P "%F{red}✗%f  $*"; exit 1; }
 have()  { command -v "$1" >/dev/null 2>&1; }
 
-# --- iCloud (light) ----------------------------------------------------------
 icloud_light_check() {
-  if [[ "${SKIP_ICLOUD_CHECK:-0}" == "1" ]]; then
-    warn "Skipping iCloud check (SKIP_ICLOUD_CHECK=1)."
-    return 0
-  fi
-  note "Light iCloud check for $REPO_DIR…"
-  [[ -d "$REPO_DIR" ]] && { good "iCloud folder found. Proceeding."; return 0; }
-  warn "iCloud folder not present yet, waiting briefly…"
-  for i in {1..10}; do
-    sleep 1
-    [[ -d "$REPO_DIR" ]] && { good "iCloud folder appeared. Proceeding."; return 0; }
-  done
-  warn "iCloud folder still not present; continuing anyway."
+  return 0  # placeholder; leave if you later add an iCloud availability check
 }
 
 # --- Git utilities -----------------------------------------------------------
-git_ready()      { [[ -d "$REPO_DIR/.git" ]] && have git; }
-git_has_remote() { git -C "$REPO_DIR" remote | grep -q .; }
+git_ready() {
+  [[ -d "$REPO_DIR/.git" ]] && have git
+}
+
+git_has_remote() {
+  git -C "$REPO_DIR" remote | grep -q .
+}
 
 brew_summary_diff() {
   local before="$1" after="$2"
   print "Changes summary:"
   for kind in brew cask mas; do
     local add remove
-    add=$(diff -U0 <(grep -E "^$kind " "$before" || true) <(grep -E "^$kind " "$after" || true) \
-            | grep '^+' | grep -vE '^\+\+\+|^@@' | sed 's/^+//')
-    remove=$(diff -U0 <(grep -E "^$kind " "$before" || true) <(grep -E "^$kind " "$after" || true) \
-               | grep '^- ' | sed 's/^-//')
+    add=$(
+      diff -U0 <(grep -E "^$kind " "$before" || true) \
+                <(grep -E "^$kind " "$after"  || true) \
+        | grep '^+' \
+        | grep -vE '^\+\+\+|^@@' \
+        | sed 's/^+//'
+    )
+    remove=$(
+      diff -U0 <(grep -E "^$kind " "$before" || true) \
+                <(grep -E "^$kind " "$after"  || true) \
+        | grep '^- ' \
+        | sed 's/^-//'
+    )
     [[ -n "$add$remove" ]] || continue
     print "  • ${kind}:"
     [[ -n "$add"    ]] && print -- "$add"    | sed 's/^/      + /'
@@ -57,23 +60,32 @@ have brew || fail "Homebrew not found. Install from https://brew.sh"
 
 icloud_light_check
 
-# --- Pull from Git -----------------------------------------------------------
-if git_ready; then
-  note "Git repo detected in $REPO_DIR."
-  if git_has_remote; then
-    note "Pulling latest changes (git pull --rebase)…"
-    git -C "$REPO_DIR" pull --rebase --autostash || warn "git pull had issues; continuing."
+# --- Pull from Git (can be skipped) -----------------------------------------
+if [[ "${SKIP_GIT_PULL:-0}" != "1" ]]; then
+  if git_ready; then
+    note "Git repo detected in $REPO_DIR."
+    if git_has_remote; then
+      note "Pulling latest changes (git pull --rebase)…"
+      git -C "$REPO_DIR" pull --rebase --autostash || warn "git pull had issues; continuing."
+    else
+      warn "No git remote configured; skipping pull."
+    fi
   else
-    warn "No git remote configured; skipping pull."
+    warn "No git repo in $REPO_DIR; skipping git pull."
   fi
 else
-  warn "Git repo not initialized; proceeding without Git features."
+  warn "SKIP_GIT_PULL=1 — skipping git pull step."
 fi
 
 # --- Capture previous Brewfile for diff -------------------------------------
-PREV_BREWFILE="${BREWFILE}.prev.$$"
+# Use a temp file outside Documents so launchd/TCC can't block it.
+PREV_BREWFILE="$(mktemp)"
+
 if [[ -f "$BREWFILE" ]]; then
-  cp "$BREWFILE" "$PREV_BREWFILE"
+  if ! cp "$BREWFILE" "$PREV_BREWFILE" 2>/dev/null; then
+    warn "Could not copy Brewfile to temp for diff; diffs may be incomplete, continuing."
+    : > "$PREV_BREWFILE"
+  fi
 else
   : > "$PREV_BREWFILE"
 fi
@@ -81,7 +93,9 @@ fi
 # --- Conditionally dump ------------------------------------------------------
 if [[ "${DO_BREW_DUMP:-0}" == "1" ]]; then
   note "DO_BREW_DUMP=1 → dumping current system to Brewfile…"
-  brew bundle dump --force --describe --file="$BREWFILE"
+  cd "$REPO_DIR"
+  # your earlier version used plain dump; keep that for compatibility
+  brew bundle dump --force
 else
   note "Not dumping Brewfile on this run (set DO_BREW_DUMP=1 to force)."
 fi
@@ -105,7 +119,8 @@ if git_ready; then
   if ! git -C "$REPO_DIR" diff --quiet -- "$BREWFILE"; then
     note "Committing Brewfile changes…"
     git -C "$REPO_DIR" add "$BREWFILE"
-    git -C "$REPO_DIR" commit -m "Update Brewfile on ${HOST}" -m "$(cat "$SUMMARY_TMP")" || warn "Nothing to commit?"
+    git -C "$REPO_DIR" commit -m "Update Brewfile on ${HOST}" -m "$(cat "$SUMMARY_TMP")" \
+      || warn "Nothing to commit?"
     if git_has_remote; then
       note "Pushing to remote…"
       git -C "$REPO_DIR" push || warn "git push failed; push manually later."
@@ -116,8 +131,12 @@ if git_ready; then
 fi
 
 # --- Apply Brewfile locally -------------------------------------------------
-note "Applying Brewfile to this Mac (brew bundle)…"
-brew bundle --file="$BREWFILE"
+if [[ "${SKIP_APPLY:-0}" != "1" ]]; then
+  note "Applying Brewfile to this Mac (brew bundle)…"
+  brew bundle --file="$BREWFILE"
+else
+  warn "SKIP_APPLY=1 — not applying Brewfile on this run."
+fi
 
 good "Homebrew packages are synced on ${HOST}."
 good "Done."
