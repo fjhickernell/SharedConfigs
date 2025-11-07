@@ -16,6 +16,7 @@ __pycache__/
 
 # Brew backups
 Brewfile.bak
+Brewfile.prev.*
 
 # Misc cache
 *.tmp
