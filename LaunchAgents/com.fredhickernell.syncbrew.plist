@@ -8,18 +8,23 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>$HOME/bin/sync-brew-launchd.sh</string>
+    <string>/Users/fredjhickernell/bin/sync-brew-launchd.sh</string>
   </array>
   
   <!-- Run once at load and then every 24 hours -->
   <key>RunAtLoad</key>
   <true/>
-  <key>StartInterval</key>
-  <integer>86400</integer>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
 
   <key>StandardOutPath</key>
-  <string>$HOME/Library/Logs/syncbrew.log</string>
+  <string>/Users/fredjhickernell/Library/Logs/syncbrew.log</string>
   <key>StandardErrorPath</key>
-  <string>$HOME/Library/Logs/syncbrew.log</string>
+  <string>/Users/fredjhickernell/Library/Logs/syncbrew.log</string>
 </dict>
 </plist>
