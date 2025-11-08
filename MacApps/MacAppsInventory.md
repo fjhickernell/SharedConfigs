@@ -50,8 +50,8 @@ Usage categories:
 | ChowNow |  | ✓ |  |  |  |  |  |
 | CNET |  |  |  |  |  |  |  |
 | Comet |  | ✓ |  |  |  |  |  |
-| CotEditor |  | ✓ |  |  |  |  |  |
-| CouponCabin |  | ✓ |  |  |  |  |  |
+| CotEditor | App Store | ✓ |  |  |  |  |  |
+| CouponCabin | App Store | ✓ |  |  |  |  |  |
 | Cowbell |  | ✓ |  |  |  |  |  |
 | CSC |  |  |  |  |  |  |  |
 | Curb |  | ✓ |  |  |  |  |  |
@@ -67,7 +67,7 @@ Usage categories:
 | Feit |  |  |  |  |  |  |  |
 | Firefox |  | ✓ |  |  |  |  |  |
 | Fivestars |  | ✓ |  |  |  |  |  |
-| Flighty |  | ✓ |  |  |  |  |  |
+| Flighty | App Store | ✓ |  |  |  |  |  |
 | Fly |  |  |  |  |  |  |  |
 | Franz |  | ✓ |  |  |  |  |  |
 | GarageBand | App Store | ✓ |  | ✓ |  |  |  |
@@ -75,8 +75,8 @@ Usage categories:
 | Geekbench |  |  |  |  |  |  |  |
 | GitHub |  |  |  |  |  |  |  |
 | GitKraken |  | ✓ |  | ✓ |  |  |  |
-| Goodnotes |  | ✓ |  |  |  |  |  |
-| GoodTask |  | ✓ |  |  |  |  |  |
+| Goodnotes | App Store | ✓ |  |  |  |  |  |
+| GoodTask | App Store | ✓ |  |  |  |  |  |
 | Google |  |  |  |  |  |  |  |
 | Google |  |  |  |  |  |  |  |
 | Google |  |  |  |  |  |  |  |
@@ -136,7 +136,7 @@ Usage categories:
 | Parallels |  |  |  |  |  |  |  |
 | Pass2U |  |  |  |  |  |  |  |
 | Pass4Wallet |  | ✓ |  |  |  |  |  |
-| Paste |  | ✓ |  |  |  |  |  |
+| Paste | App Store | ✓ |  |  |  |  |  |
 | Pause |  | ✓ |  |  |  |  |  |
 | PayPal |  |  |  |  |  |  |  |
 | Perplexity | App Store | ✓ |  | ✓ |  |  |  |
@@ -151,28 +151,28 @@ Usage categories:
 | Scapple |  | ✓ |  |  |  |  |  |
 | Shop |  | ✓ |  | ✓ |  |  |  |
 | Signal |  |  |  | ✓ |  |  |  |
-| Slack |  | ✓ |  | ✓ |  |  |  |
+| Slack | App Store | ✓ |  | ✓ |  |  |  |
 | Solitaire |  | ✓ |  |  |  |  |  |
 | Soulver |  |  |  |  |  |  |  |
 | Spaces |  |  |  |  |  |  |  |
 | Speedtest | App Store | ✓ |  | ✓ |  |  |  |
-| SplitPrint |  | ✓ |  |  |  |  |  |
+| SplitPrint | App Store | ✓ |  |  |  |  |  |
 | Spotify |  | ✓ |  |  |  |  |  |
 | SWE |  |  |  |  |  |  |  |
-| Taio |  | ✓ |  |  |  |  |  |
+| Taio | App Store | ✓ |  |  |  |  |  |
 | Tempus |  |  |  |  |  |  |  |
 | TeX |  |  |  |  |  |  |  |
 | TeXShop |  | ✓ |  | ✓ |  |  |  |
 | TeXStudio |  |  |  |  |  |  |  |
 | texstudio-4.8.9-osx-m1 |  | ✓ |  | ✓ |  |  |  |
-| texstudio-4.9.0-osx-m1 |  |  |  | ✓ |  |  |  |
+| texstudio-4.9.0-osx-m1 |  | ✓ |  | ✓ |  |  |  |
 | TextSniper |  | ✓ |  |  |  |  |  |
 | TickPick |  | ✓ |  |  |  |  |  |
 | Time |  |  |  |  |  |  |  |
 | Translator |  |  |  |  |  |  |  |
-| TripIt |  | ✓ |  | ✓ |  |  |  |
+| TripIt | App Store | ✓ |  | ✓ |  |  |  |
 | TripSource |  | ✓ |  |  |  |  |  |
-| Twitter |  | ✓ |  |  |  |  |  |
+| Twitter | App Store | ✓ |  |  |  |  |  |
 | Unclutter |  | ✓ |  |  |  |  |  |
 | United |  |  |  |  |  |  |  |
 | Unreached |  |  |  |  |  |  |  |
@@ -191,5 +191,5 @@ Usage categories:
 | Wondershare |  |  |  |  |  |  |  |
 | Wondr |  |  |  |  |  |  |  |
 | World |  |  |  |  |  |  |  |
-| Xcode |  | ✓ |  |  |  |  |  |
+| Xcode | App Store | ✓ |  |  |  |  |  |
 | zoom.us |  | ✓ |  | ✓ |  |  |  |
