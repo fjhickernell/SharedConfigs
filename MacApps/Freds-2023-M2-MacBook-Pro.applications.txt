@@ -146,6 +146,7 @@ TeX Live Utility.app
 TeXShop.app
 TeXStudio (FIXED).app
 texstudio-4.8.9-osx-m1.app
+texstudio-4.9.0-osx-m1.app
 TextSniper.app
 TickPick.app
 Time Out Market.app
