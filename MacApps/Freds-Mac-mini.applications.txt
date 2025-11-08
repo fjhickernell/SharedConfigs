@@ -1,4 +1,3 @@
-.Karabiner-VirtualHIDDevice-Manager.app
 Amazon Kindle.app
 Anaconda-Navigator.app
 Bartender 6.app
@@ -47,6 +46,7 @@ Speedtest.app
 TeX Live Utility.app
 TeXShop.app
 texstudio-4.8.9-osx-m1.app
+texstudio-4.9.0-osx-m1.app
 TripIt.app
 United MileagePlus Shopping℠.app
 Visual Studio Code.app

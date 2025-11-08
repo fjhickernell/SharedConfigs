@@ -5,13 +5,15 @@ BASE="$HOME/Documents/SharedConfigs/MacApps"
 INVENTORY="$BASE/MacAppsInventory.md"
 TMP_APPS="$BASE/apps_with_macs.tmp"
 APPS_LIST="$BASE/apps_names.tmp"
+APPSTORE_TMP="$BASE/appstore_names.tmp"
 
+mkdir -p "$BASE"
 : > "$TMP_APPS"
+: > "$APPSTORE_TMP"
 
+# Collect app → Mac mappings from all *.applications.txt files
 for f in "$BASE"/*.applications.txt; do
-  if [ ! -f "$f" ]; then
-    continue
-  fi
+  [ -f "$f" ] || continue
   fname="$(basename "$f")"
   mac="UNKNOWN"
   case "$fname" in
@@ -31,6 +33,19 @@ for f in "$BASE"/*.applications.txt; do
   awk -v mac="$mac" '{ line=$0; sub(/\.app$/,"",line); print line "," mac }' "$f" >> "$TMP_APPS"
 done
 
+# Collect App Store app names from all *.appstore.txt files
+for f in "$BASE"/*.appstore.txt; do
+  [ -f "$f" ] || continue
+  awk 'NF >= 3 {
+    name = $2
+    for (i = 3; i < NF; i++) {
+      name = name " " $i
+    }
+    print name
+  }' "$f" >> "$APPSTORE_TMP"
+done
+
+# Build sorted unique app name list
 cut -d, -f1 "$TMP_APPS" | sort -u > "$APPS_LIST"
 
 OUT="$INVENTORY"
@@ -39,18 +54,22 @@ if [ -f "$INVENTORY" ]; then
   awk '
   function trim(s) { gsub(/^ +/,"",s); gsub(/ +$/,"",s); return s }
   FILENAME==ARGV[1] {
+    # Parse existing inventory to preserve Source, Usage, Notes
     if ($0 !~ /^\|/) next
     split($0, fields, "|")
     app=trim(fields[2])
-    if (app=="App" || app=="") next
+    if (app=="" || app=="App") next
+    source=trim(fields[3])
     usage=trim(fields[8])
     notes=trim(fields[9])
+    src[app]=source
     u[app]=usage
     n[app]=notes
     next
   }
   FILENAME==ARGV[2] {
     app=$1
+    if (app=="") next
     apps[++k]=app
     next
   }
@@ -61,6 +80,13 @@ if [ -f "$INVENTORY" ]; then
     row[app,mac]="✓"
     next
   }
+  FILENAME==ARGV[4] {
+    # App Store app names
+    appname=$0
+    if (appname=="") next
+    appstore[appname]=1
+    next
+  }
   END {
     print "# Mac Applications Inventory"
     print ""
@@ -83,16 +109,24 @@ if [ -f "$INVENTORY" ]; then
       m3=row[app,"M3"]
       mini=row[app,"Mini"]
       intel=row[app,"Intel"]
+      source=src[app]
+      if (source=="") {
+        if (appstore[app]) {
+          source="App Store"
+        }
+      }
       usage=u[app]
       notes=n[app]
-      printf "| %s |  | %s | %s | %s | %s | %s | %s |\n", app, m2, m3, mini, intel, usage, notes
+      printf "| %s | %s | %s | %s | %s | %s | %s | %s |\n", app, source, m2, m3, mini, intel, usage, notes
     }
   }
-  ' "$INVENTORY" "$APPS_LIST" "$TMP_APPS" > "$OUT"
+  ' "$INVENTORY" "$APPS_LIST" "$TMP_APPS" "$APPSTORE_TMP" > "$OUT"
 else
   awk '
+  function trim(s) { gsub(/^ +/,"",s); gsub(/ +$/,"",s); return s }
   FILENAME==ARGV[1] {
     app=$1
+    if (app=="") next
     apps[++k]=app
     next
   }
@@ -103,6 +137,12 @@ else
     row[app,mac]="✓"
     next
   }
+  FILENAME==ARGV[3] {
+    appname=$0
+    if (appname=="") next
+    appstore[appname]=1
+    next
+  }
   END {
     print "# Mac Applications Inventory"
     print ""
@@ -125,10 +165,16 @@ else
       m3=row[app,"M3"]
       mini=row[app,"Mini"]
       intel=row[app,"Intel"]
-      printf "| %s |  | %s | %s | %s | %s |  |  |\n", app, m2, m3, mini, intel
+      source=""
+      if (appstore[app]) {
+        source="App Store"
+      }
+      printf "| %s | %s | %s | %s | %s | %s |  |  |\n", app, source, m2, m3, mini, intel
     }
   }
-  ' "$APPS_LIST" "$TMP_APPS" > "$OUT"
+  ' "$APPS_LIST" "$TMP_APPS" "$APPSTORE_TMP" > "$OUT"
 fi
 
-echo "MacAppsInventory.md updated"
+rm -f "$TMP_APPS" "$APPS_LIST" "$APPSTORE_TMP"
+
+echo "MacAppsInventory.md updated at $OUT"

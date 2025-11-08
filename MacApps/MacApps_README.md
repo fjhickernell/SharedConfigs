@@ -46,9 +46,9 @@ All scripts live in `~/Documents/SharedConfigs/bin/`.
 
 3. Verify:
    ```bash
-   mas account
+   mas list
    ```
-   It should display your Apple ID.
+   It should display a list of Mac apps.
 
 ---
 
@@ -59,7 +59,7 @@ On each Mac (M2, M3, Mini, Intel):
 ```bash
 cd ~/Documents/SharedConfigs
 git pull
-bin/dump-mac-apps.sh
+dump-mac-apps.sh
 git add MacApps
 git commit -m "Update Mac apps list for $(hostname -s)"
 git push
@@ -79,7 +79,7 @@ On **any** Mac:
 ```bash
 cd ~/Documents/SharedConfigs
 git pull
-bin/update-macapps-inventory.sh
+update-macapps-inventory.sh
 git add MacApps/MacAppsInventory.md
 git commit -m "Update Mac apps inventory"
 git push
