@@ -1,0 +1,73 @@
+Adobe Acrobat Reader.app
+Amazon Kindle.app
+Bartender 5.app
+BBEdit.app
+BibDesk.app
+Box.app
+Camera Settings.app
+Capital One Shopping.app
+ChatGPT.app
+CouponCabin.app
+Default Folder X.app
+DiskWarrior.app
+Dropbox Capture.app
+Dropbox.app
+Fantastical.app
+Flighty.app
+GarageBand.app
+GitKraken.app
+Good Stopwatch.app
+Google Chrome.app
+Google Docs.app
+Google Drive.app
+Google Sheets.app
+Google Slides.app
+GraphicConverter 12.app
+iMovie.app
+iStat Menus.app
+JupyterLab.app
+Keyboard Maestro.app
+Keynote.app
+LastPass.app
+LaTeXiT.app
+LINE.app
+MacDown.app
+MATLAB_R2025a.app
+MATLAB_R2025b.app
+Messenger.app
+Microsoft Excel.app
+Microsoft OneNote.app
+Microsoft Outlook.app
+Microsoft PowerPoint.app
+Microsoft Remote Desktop.app
+Microsoft Teams.app
+Microsoft To Do.app
+Microsoft Word.app
+Numbers.app
+OneDrive.app
+OTP Manager.app
+Pages.app
+Parallels Desktop.app
+Parallels Toolbox.app
+PDFCombo.app
+Perplexity.app
+Poll Everywhere.app
+Quick Note.app
+Rectangle Pro.app
+Safari.app
+Slack.app
+Speedtest.app
+Spotify.app
+Tabletop Simulator.app
+Tempus Stopwatch.app
+TeX Live Utility.app
+TeXShop.app
+texstudio-4.8.9-osx.app
+TextSniper.app
+TripIt.app
+Twitter.app
+Unclutter.app
+United MileagePlus Shopping℠.app
+Visual Studio Code.app
+WeChat.app
+zoom.us.app

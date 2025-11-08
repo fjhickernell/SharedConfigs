@@ -68,7 +68,7 @@ if [ -f "$INVENTORY" ]; then
     next
   }
   FILENAME==ARGV[2] {
-    app=$1
+    app=trim($0)
     if (app=="") next
     apps[++k]=app
     next
@@ -125,7 +125,7 @@ else
   awk '
   function trim(s) { gsub(/^ +/,"",s); gsub(/ +$/,"",s); return s }
   FILENAME==ARGV[1] {
-    app=$1
+    app=trim($0)
     if (app=="") next
     apps[++k]=app
     next
