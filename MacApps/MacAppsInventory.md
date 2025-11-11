@@ -13,56 +13,33 @@ Usage categories:
 
 | App | Source | M2 | M3 | Mini | Intel | Usage | Notes |
 |-----|--------|----|----|------|-------|-------|-------|
-| .Karabiner-VirtualHIDDevice-Manager |  | ✓ |  |  |  |  |  |
 | Adobe Acrobat Reader |  | ✓ |  |  | ✓ | Active | PDF Reader |
 | Agapé |  | ✓ |  |  |  |  |  |
 | AI Chat |  | ✓ |  |  |  |  |  |
 | Air Printer | App Store | ✓ |  |  |  |  |  |
-| Airalo |  | ✓ |  |  |  |  |  |
-| Alamo |  | ✓ |  |  |  |  |  |
-| Allset |  | ✓ |  |  |  |  |  |
 | Amazon Kindle |  | ✓ |  | ✓ | ✓ |  |  |
 | Anaconda-Navigator |  |  |  | ✓ |  |  |  |
-| Antivirus One | App Store | ✓ |  |  |  |  |  |
-| Art of Manliness |  | ✓ |  |  |  |  |  |
 | Bartender 5 |  |  |  |  | ✓ | Active | Menu bar arrangement |
 | Bartender 6 |  | ✓ |  | ✓ |  | Active | Menu bar arrangement |
-| BBBox 2 Lite |  | ✓ |  |  |  |  |  |
-| BBBox Lite |  | ✓ |  |  |  |  |  |
 | BBEdit |  | ✓ |  | ✓ | ✓ | Active | Full-featured text editor |
-| BBMR |  | ✓ |  |  |  |  |  |
 | BetterZip |  | ✓ |  |  |  |  |  |
 | BibDesk |  | ✓ |  | ✓ | ✓ |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Bike |  | ✓ |  |  |  |  |  |
-| Blink Charging |  | ✓ |  |  |  |  |  |
-| Blinq |  | ✓ |  |  |  |  |  |
 | Blu-ray Ripper |  | ✓ |  |  |  |  |  |
 | Box |  | ✓ |  |  | ✓ |  |  |
-| C&MA Events |  | ✓ |  |  |  |  |  |
 | calibre |  | ✓ |  |  |  |  |  |
-| California Pizza Kitchen (CPK) |  | ✓ |  |  |  |  |  |
 | Camera Settings |  |  |  |  | ✓ |  |  |
-| Capital One Shopping | App Store | ✓ |  | ✓ | ✓ |  |  |
-| CARR |  | ✓ |  |  |  |  |  |
-| CAVA |  | ✓ |  |  |  |  |  |
-| ChargeHub EV Map |  | ✓ |  |  |  |  |  |
+| Capital One Shopping | App Store |  |  | ✓ | ✓ |  |  |
 | Chatbot App - AI Chatbot |  | ✓ |  |  |  |  |  |
 | ChatGPT |  | ✓ |  | ✓ | ✓ |  |  |
 | ChatGPT Atlas |  | ✓ |  | ✓ |  |  |  |
-| ChowNow |  | ✓ |  |  |  |  |  |
-| CNET Shopping | App Store | ✓ |  |  |  |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Comet |  | ✓ |  |  |  |  |  |
 | CotEditor | App Store | ✓ |  |  |  |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
-| CouponCabin | App Store | ✓ |  |  | ✓ |  |  |
+| CouponCabin | App Store |  |  |  | ✓ |  |  |
 | Cowbell |  | ✓ |  |  |  |  |  |
-| CSC Go |  | ✓ |  |  |  |  |  |
-| Curb |  | ✓ |  |  |  |  |  |
 | DaisyDisk |  | ✓ |  |  |  |  |  |
 | Default Folder X |  | ✓ |  | ✓ | ✓ |  |  |
-| Delta Dental Mobile App |  | ✓ |  |  |  |  |  |
-| Din Tai Fung Waitlist |  | ✓ |  |  |  |  |  |
 | DiskWarrior |  |  |  |  | ✓ |  |  |
 | Docker |  | ✓ |  |  |  |  |  |
 | Downie 4 |  | ✓ |  |  |  |  |  |
@@ -70,20 +47,14 @@ Usage categories:
 | Dropbox Capture |  |  |  |  | ✓ |  |  |
 | Dropbox Dash |  | ✓ |  |  |  |  |  |
 | Fantastical | App Store | ✓ |  | ✓ | ✓ |  |  |
-| Feit Electric |  | ✓ |  |  |  |  |  |
 | Firefox |  | ✓ |  |  |  |  |  |
-| Fivestars |  | ✓ |  |  |  |  |  |
-| Flighty | App Store | ✓ |  |  | ✓ |  |  |
-| Fly Delta |  | ✓ |  |  |  |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
-| Franz |  | ✓ |  |  |  |  |  |
+| Flighty | App Store |  |  |  | ✓ |  |  |
 | GarageBand | App Store | ✓ |  | ✓ | ✓ |  |  |
-| Geekbench 5 |  | ✓ |  |  |  |  |  |
 | Geekbench 6 |  | ✓ |  |  |  |  |  |
 | GitHub Desktop |  | ✓ |  |  |  |  |  |
 | GitKraken |  | ✓ |  | ✓ | ✓ |  |  |
 | Good Stopwatch | App Store |  |  |  | ✓ |  |  |
-| Goodnotes | App Store | ✓ |  |  |  |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | GoodTask | App Store | ✓ |  |  |  |  |  |
 | Google Chrome |  | ✓ |  | ✓ | ✓ |  |  |
 | Google Docs |  | ✓ |  | ✓ | ✓ |  |  |
@@ -91,40 +62,24 @@ Usage categories:
 | Google Sheets |  | ✓ |  | ✓ | ✓ |  |  |
 | Google Slides |  | ✓ |  | ✓ | ✓ |  |  |
 | GraphicConverter 12 |  | ✓ |  | ✓ | ✓ |  |  |
-| Haidilao |  | ✓ |  |  |  |  |  |
-| HealthEquity |  | ✓ |  |  |  |  |  |
 | HP Smart | App Store | ✓ |  |  |  |  |  |
 | IKEA |  | ✓ |  |  |  |  |  |
 | iMovie | App Store | ✓ |  | ✓ | ✓ |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
-| Impulse |  | ✓ |  |  |  |  |  |
-| iParkit |  | ✓ |  |  |  |  |  |
 | iStat Menus |  | ✓ |  | ✓ | ✓ |  |  |
-| iStat Menus 6 |  | ✓ |  |  |  |  |  |
-| Joy |  | ✓ |  |  |  |  |  |
 | JupyterLab |  | ✓ |  | ✓ | ✓ |  |  |
-| Kee Wah Bakery 奇華月餅 - LA |  | ✓ |  |  |  |  |  |
 | Keyboard Maestro |  |  |  |  | ✓ |  |  |
 | Keynote | App Store | ✓ |  | ✓ | ✓ |  |  |
-| Klara |  | ✓ |  |  |  |  |  |
 | Lasso |  | ✓ |  |  |  |  |  |
 | LastPass | App Store |  |  |  | ✓ |  |  |
-| LastPass for Safari | App Store | ✓ |  |  |  |  |  |
 | LaTeXiT |  | ✓ |  | ✓ | ✓ |  |  |
-| LeCab |  | ✓ |  |  |  |  |  |
-| LIFY+ |  | ✓ |  |  |  |  |  |
 | LINE | App Store |  |  |  | ✓ |  |  |
 | Logos |  | ✓ |  |  |  |  |  |
 | MacDown |  | ✓ |  | ✓ | ✓ |  |  |
-| Maggiano's |  | ✓ |  |  |  |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | MarkEdit |  | ✓ |  |  |  |  |  |
-| Marugame Udon |  |  |  |  |  |  |  |
 | MATLAB_R2025a |  | ✓ |  | ✓ | ✓ | Active | Mathematical software environment |
 | MATLAB_R2025b |  | ✓ |  | ✓ | ✓ | Active | Mathematical software environment |
-| Menya Ultra |  | ✓ |  |  |  |  |  |
 | Messenger | App Store |  |  | ✓ | ✓ |  |  |
-| Metropolis |  | ✓ |  |  |  |  |  |
 | Microsoft Edge |  | ✓ |  |  |  |  |  |
 | Microsoft Excel | App Store | ✓ |  | ✓ | ✓ |  |  |
 | Microsoft OneNote | App Store | ✓ |  |  | ✓ |  |  |
@@ -134,32 +89,25 @@ Usage categories:
 | Microsoft Teams |  | ✓ |  | ✓ | ✓ |  |  |
 | Microsoft To Do | App Store |  |  |  | ✓ |  |  |
 | Microsoft Word | App Store | ✓ |  | ✓ | ✓ |  |  |
-| MuniMobile |  | ✓ |  |  |  |  |  |
 | My Card Wallet |  | ✓ |  |  |  |  |  |
 | My Energy Center |  | ✓ |  |  |  |  |  |
-| My Firestone |  | ✓ |  |  |  |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | MyLinks |  | ✓ |  |  |  |  |  |
 | Name Mangler |  | ✓ |  | ✓ |  |  |  |
-| NTFoods |  | ✓ |  |  |  |  |  |
 | Numbers | App Store | ✓ |  | ✓ | ✓ |  |  |
 | NZeTA |  | ✓ |  |  |  |  |  |
 | NZTD |  | ✓ |  |  |  |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Obi |  | ✓ |  |  |  |  |  |
 | OneDrive | App Store | ✓ |  | ✓ | ✓ |  |  |
 | OTP Manager | App Store | ✓ |  |  | ✓ |  |  |
 | Pages | App Store | ✓ |  | ✓ | ✓ |  |  |
 | Parallels Desktop |  | ✓ |  |  | ✓ |  |  |
 | Parallels Toolbox |  |  |  |  | ✓ |  |  |
-| Pass2U Wallet |  | ✓ |  |  |  |  |  |
-| Pass4Wallet |  | ✓ |  |  |  |  |  |
 | Paste | App Store | ✓ |  |  |  |  |  |
 | Pause |  | ✓ |  |  |  |  |  |
-| PayPal Honey | App Store | ✓ |  |  |  |  |  |
 | PDFCombo | App Store |  |  |  | ✓ |  |  |
 | Perplexity | App Store | ✓ |  | ✓ | ✓ |  |  |
 | Plex Media Server |  | ✓ |  |  |  |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Poll Everywhere |  |  |  |  | ✓ |  |  |
 | Pretty Progress |  | ✓ |  | ✓ |  |  |  |
 | Quick Note | App Store |  |  |  | ✓ |  |  |
@@ -169,6 +117,7 @@ Usage categories:
 | Rocket Typist |  | ✓ |  |  |  |  |  |
 | Safari |  | ✓ |  | ✓ | ✓ |  |  |
 | SageMath-10-0 |  | ✓ |  |  |  |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Scapple |  | ✓ |  |  |  |  |  |
 | Shop |  | ✓ |  | ✓ |  |  |  |
 | Signal |  |  |  | ✓ |  |  |  |
@@ -180,7 +129,6 @@ Usage categories:
 | SplitPrint | App Store | ✓ |  |  |  |  |  |
 | Spotify |  | ✓ |  |  | ✓ |  |  |
 | SWE Events |  | ✓ |  |  |  |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Tabletop Simulator |  |  |  |  | ✓ |  |  |
 | Taio | App Store | ✓ |  |  |  |  |  |
 | Tempus Stopwatch | App Store | ✓ |  |  | ✓ |  |  |
@@ -190,6 +138,7 @@ Usage categories:
 | texstudio-4.8.9-osx-m1 |  | ✓ |  | ✓ |  |  |  |
 | texstudio-4.9.0-osx |  |  |  |  | ✓ |  |  |
 | texstudio-4.9.0-osx-m1 |  | ✓ |  | ✓ |  |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | TextSniper |  | ✓ |  |  | ✓ |  |  |
 | TickPick |  | ✓ |  |  |  |  |  |
 | Time Out Market |  | ✓ |  |  |  |  |  |
@@ -198,21 +147,19 @@ Usage categories:
 | TripSource |  | ✓ |  |  |  |  |  |
 | Twitter | App Store | ✓ |  |  | ✓ |  |  |
 | Unclutter |  | ✓ |  |  | ✓ |  |  |
-| United MileagePlus Shopping℠ | App Store | ✓ |  | ✓ | ✓ |  |  |
+| United MileagePlus Shopping℠ | App Store |  |  | ✓ | ✓ |  |  |
 | Unreached of the Day |  | ✓ |  |  |  |  |  |
 | Visual Studio Code |  | ✓ |  | ✓ | ✓ |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | VLC |  | ✓ |  |  |  |  |  |
 | Wealthfront |  | ✓ |  |  |  |  |  |
 | Webex |  | ✓ |  |  |  |  |  |
 | WeChat | App Store | ✓ |  | ✓ | ✓ |  |  |
-| Wegmans |  | ✓ |  |  |  |  |  |
-| Westfield |  | ✓ |  |  |  |  |  |
 | WhatsApp | App Store | ✓ |  | ✓ |  |  |  |
 | White Noise |  | ✓ |  |  |  |  |  |
 | Wolfram |  | ✓ |  |  |  |  |  |
 | WolframScript |  | ✓ |  |  |  |  |  |
 | Wondershare UniConverter 15 |  | ✓ |  |  |  |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Wondershare UniConverter 16 |  | ✓ |  |  |  |  |  |
 | Wondr Health |  | ✓ |  |  |  |  |  |
 | World Time | App Store | ✓ |  |  |  |  |  |
