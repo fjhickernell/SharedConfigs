@@ -1,5 +1,5 @@
 #!/bin/zsh
-# MacApps export script — v2025-11-10 (skips fancy dividers, preserves header, ✓→Yes)
+# MacApps export script — v2025-11-11 (preserves header, skips decorated dividers, ✓→Yes)
 set -euo pipefail
 
 BASE="$HOME/Documents/SharedConfigs/MacApps"
@@ -25,7 +25,7 @@ $0 ~ /^\|/ {
   # Skip pure separator rows like |-----|--------|...|
   if (line ~ /^\|[- ]+\|/) next
 
-  # Strip leading and trailing pipes for parsing
+  # Strip leading and trailing pipes
   sub(/^[[:space:]]*\|/, "", line)
   sub(/\|[[:space:]]*$/, "", line)
 
@@ -38,7 +38,7 @@ $0 ~ /^\|/ {
     gsub(/[[:space:]]+$/, "", cells[i])
   }
 
-  # Detect the TRUE header row (plain names, no dashes)
+  # Detect the TRUE header row (plain names, no decoration)
   if (!header_emitted &&
       n >= 8 &&
       cells[1] == "App" &&
@@ -50,7 +50,6 @@ $0 ~ /^\|/ {
       cells[7] == "Usage" &&
       cells[8] == "Notes") {
 
-    # Emit header as-is
     out = "\"" cells[1] "\""
     for (i = 2; i <= n; i++) {
       gsub(/"/, "\"\"", cells[i])
@@ -61,18 +60,18 @@ $0 ~ /^\|/ {
     next
   }
 
-  # Detect and skip FANCY divider header rows like:
-  # |------ App ------|- Source -|- M2 -|- M3 -|- Mini -|- Intel -|- Usage -|- Notes -|
-  # We look for names with dashes stuck to them.
+  # Detect and skip decorated divider header rows like:
+  # =====[[[App]]]======== | [[[Source]]] | [[[M2]]] | ...
+  # or any row where the header names are present but NOT plain.
   if (n >= 8 &&
-      cells[1] ~ /App/   && cells[1] ~ /-/ &&
-      cells[2] ~ /Source/&& cells[2] ~ /-/ &&
-      cells[3] ~ /M2/    && cells[3] ~ /-/ &&
-      cells[4] ~ /M3/    && cells[4] ~ /-/ &&
-      cells[5] ~ /Mini/  && cells[5] ~ /-/ &&
-      cells[6] ~ /Intel/ && cells[6] ~ /-/ &&
-      cells[7] ~ /Usage/ && cells[7] ~ /-/ &&
-      cells[8] ~ /Notes/ && cells[8] ~ /-/) {
+      cells[1] ~ /App/   && cells[1] != "App"   &&
+      cells[2] ~ /Source/&& cells[2] != "Source"&&
+      cells[3] ~ /M2/    && cells[3] != "M2"    &&
+      cells[4] ~ /M3/    && cells[4] != "M3"    &&
+      cells[5] ~ /Mini/  && cells[5] != "Mini"  &&
+      cells[6] ~ /Intel/ && cells[6] != "Intel" &&
+      cells[7] ~ /Usage/ && cells[7] != "Usage" &&
+      cells[8] ~ /Notes/ && cells[8] != "Notes") {
     next
   }
 
@@ -82,8 +81,8 @@ $0 ~ /^\|/ {
     if (cells[i] == "✓") {
       cells[i] = "Yes"
     }
-    gsub(/"/, "\"\"", cells[i])
-    cells[i] = "\"" cells[i] "\""
+    gsub(/"/, "\"\"", cells[i])   # escape internal quotes
+    cells[i] = "\"" cells[i] "\"" # wrap in double quotes
   }
 
   out = cells[1]

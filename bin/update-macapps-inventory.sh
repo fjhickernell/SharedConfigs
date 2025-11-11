@@ -134,7 +134,7 @@ if [ -f "$INVENTORY" ]; then
 
       count++
       if (count % header_repeat == 0 && i < k) {
-        print "|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|"
+        print "|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|"
       }
     }
   }' "$INVENTORY" "$APPS_LIST" "$TMP_APPS" "$APPSTORE_TMP" > "$OUT_TMP"
@@ -208,7 +208,7 @@ else
 
       count++
       if (count % header_repeat == 0 && i < k) {
-        print "|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|"
+        print "|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|"      
       }
     }
   }' "$APPS_LIST" "$TMP_APPS" "$APPSTORE_TMP" > "$OUT_TMP"

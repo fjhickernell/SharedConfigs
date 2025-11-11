@@ -29,11 +29,11 @@ Usage categories:
 | Bartender 6 |  | ✓ |  | ✓ |  | Active | Menu bar arrangement |
 | BBBox 2 Lite |  | ✓ |  |  |  |  |  |
 | BBBox Lite |  | ✓ |  |  |  |  |  |
-| BBEdit |  | ✓ |  | ✓ | ✓ |  |  |
+| BBEdit |  | ✓ |  | ✓ | ✓ | Active | Full-featured text editor |
 | BBMR |  | ✓ |  |  |  |  |  |
 | BetterZip |  | ✓ |  |  |  |  |  |
 | BibDesk |  | ✓ |  | ✓ | ✓ |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Bike |  | ✓ |  |  |  |  |  |
 | Blink Charging |  | ✓ |  |  |  |  |  |
 | Blinq |  | ✓ |  |  |  |  |  |
@@ -54,7 +54,7 @@ Usage categories:
 | CNET Shopping | App Store | ✓ |  |  |  |  |  |
 | Comet |  | ✓ |  |  |  |  |  |
 | CotEditor | App Store | ✓ |  |  |  |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | CouponCabin | App Store | ✓ |  |  | ✓ |  |  |
 | Cowbell |  | ✓ |  |  |  |  |  |
 | CSC Go |  | ✓ |  |  |  |  |  |
@@ -75,7 +75,7 @@ Usage categories:
 | Fivestars |  | ✓ |  |  |  |  |  |
 | Flighty | App Store | ✓ |  |  | ✓ |  |  |
 | Fly Delta |  | ✓ |  |  |  |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Franz |  | ✓ |  |  |  |  |  |
 | GarageBand | App Store | ✓ |  | ✓ | ✓ |  |  |
 | Geekbench 5 |  | ✓ |  |  |  |  |  |
@@ -96,7 +96,7 @@ Usage categories:
 | HP Smart | App Store | ✓ |  |  |  |  |  |
 | IKEA |  | ✓ |  |  |  |  |  |
 | iMovie | App Store | ✓ |  | ✓ | ✓ |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Impulse |  | ✓ |  |  |  |  |  |
 | iParkit |  | ✓ |  |  |  |  |  |
 | iStat Menus |  | ✓ |  | ✓ | ✓ |  |  |
@@ -117,11 +117,11 @@ Usage categories:
 | Logos |  | ✓ |  |  |  |  |  |
 | MacDown |  | ✓ |  | ✓ | ✓ |  |  |
 | Maggiano's |  | ✓ |  |  |  |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | MarkEdit |  | ✓ |  |  |  |  |  |
 | Marugame Udon |  |  |  |  |  |  |  |
-| MATLAB_R2025a |  | ✓ |  | ✓ | ✓ |  |  |
-| MATLAB_R2025b |  | ✓ |  | ✓ | ✓ |  |  |
+| MATLAB_R2025a |  | ✓ |  | ✓ | ✓ | Active | Mathematical software environment |
+| MATLAB_R2025b |  | ✓ |  | ✓ | ✓ | Active | Mathematical software environment |
 | Menya Ultra |  | ✓ |  |  |  |  |  |
 | Messenger | App Store |  |  | ✓ | ✓ |  |  |
 | Metropolis |  | ✓ |  |  |  |  |  |
@@ -138,7 +138,7 @@ Usage categories:
 | My Card Wallet |  | ✓ |  |  |  |  |  |
 | My Energy Center |  | ✓ |  |  |  |  |  |
 | My Firestone |  | ✓ |  |  |  |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | MyLinks |  | ✓ |  |  |  |  |  |
 | Name Mangler |  | ✓ |  | ✓ |  |  |  |
 | NTFoods |  | ✓ |  |  |  |  |  |
@@ -159,7 +159,7 @@ Usage categories:
 | PDFCombo | App Store |  |  |  | ✓ |  |  |
 | Perplexity | App Store | ✓ |  | ✓ | ✓ |  |  |
 | Plex Media Server |  | ✓ |  |  |  |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Poll Everywhere |  |  |  |  | ✓ |  |  |
 | Pretty Progress |  | ✓ |  | ✓ |  |  |  |
 | Quick Note | App Store |  |  |  | ✓ |  |  |
@@ -180,7 +180,7 @@ Usage categories:
 | SplitPrint | App Store | ✓ |  |  |  |  |  |
 | Spotify |  | ✓ |  |  | ✓ |  |  |
 | SWE Events |  | ✓ |  |  |  |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Tabletop Simulator |  |  |  |  | ✓ |  |  |
 | Taio | App Store | ✓ |  |  |  |  |  |
 | Tempus Stopwatch | App Store | ✓ |  |  | ✓ |  |  |
@@ -201,7 +201,7 @@ Usage categories:
 | United MileagePlus Shopping℠ | App Store | ✓ |  | ✓ | ✓ |  |  |
 | Unreached of the Day |  | ✓ |  |  |  |  |  |
 | Visual Studio Code |  | ✓ |  | ✓ | ✓ |  |  |
-|------App------|-Source-|-M2-|-M3-|-Mini-|-Intel-|-Usage-|-Notes-|
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | VLC |  | ✓ |  |  |  |  |  |
 | Wealthfront |  | ✓ |  |  |  |  |  |
 | Webex |  | ✓ |  |  |  |  |  |
