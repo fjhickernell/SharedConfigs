@@ -1,4 +1,5 @@
 #!/bin/zsh
+# MacApps inventory updater — v2025-11-10 (family-propagation, ASCII spacer rows)
 set -euo pipefail
 
 BASE="$HOME/Documents/SharedConfigs/MacApps"

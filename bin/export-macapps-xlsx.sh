@@ -1,4 +1,5 @@
 #!/bin/zsh
+# MacApps export script — v2025-11-10 (skips fancy dividers, preserves header, ✓→Yes)
 set -euo pipefail
 
 BASE="$HOME/Documents/SharedConfigs/MacApps"
