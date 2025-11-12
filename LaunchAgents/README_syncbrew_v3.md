@@ -11,18 +11,19 @@ to keep Homebrew packages synchronized across all Macs.
 The plist template uses `$HOME` instead of an absolute `/Users/...` path,  
 so it works correctly on any account.
 
+Here we
+
+- make the necessary directories, if necessary
+- Copy both scripts locally from SharedConfigs
+- Expand $HOME placeholders and install the LaunchAgent
+- Reload the LaunchAgent
+
 ```bash
 mkdir -p ~/Library/LaunchAgents ~/bin
-
-# Copy both scripts locally from SharedConfigs
 cp ~/Documents/SharedConfigs/bin/sync-brew-launchd.sh ~/bin/
 cp ~/Documents/SharedConfigs/bin/sync-brew.sh ~/bin/
 chmod +x ~/bin/sync-brew-launchd.sh ~/bin/sync-brew.sh
-
-# Expand $HOME placeholders and install the LaunchAgent
 sed "s|\$HOME|$HOME|g"   ~/Documents/SharedConfigs/LaunchAgents/com.fredhickernell.syncbrew.plist   > ~/Library/LaunchAgents/com.fredhickernell.syncbrew.plist
-
-# Reload the LaunchAgent
 launchctl unload ~/Library/LaunchAgents/com.fredhickernell.syncbrew.plist 2>/dev/null
 launchctl load  ~/Library/LaunchAgents/com.fredhickernell.syncbrew.plist
 ```
