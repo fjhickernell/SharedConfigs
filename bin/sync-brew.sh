@@ -8,7 +8,7 @@ echo "$START_TEXT"
 echo "$START_TEXT" >> "$LOGFILE"
 
 brew update && brew upgrade
-brew bundle --global || brew bundle --file="$HOME/Documents/SharedConfigs/Brewfile"
+brew bundle --file="$HOME/Documents/SharedConfigs/Brewfile"
 
 STATUS=$?
 END_TIME=$(date +%s)
