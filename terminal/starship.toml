@@ -1,0 +1,38 @@
+add_newline = true
+
+[username]
+show_always = true
+format = "[$user]($style) "
+
+[directory]
+format = "[$path]($style) "
+truncate_to_repo = true
+truncation_length = 1
+fish_style_pwd_dir_length = 1
+
+
+[python]
+disabled = true
+
+[ruby]
+disabled = true
+
+[aws]
+disabled = true
+
+[gcloud]
+disabled = true
+
+[azure]
+disabled = true
+
+[package]
+disabled = true
+
+[git_status]
+format = '[$ahead_behind]($style) '
+disabled = false
+
+[git_branch]
+format = "[$branch]($style) "
+symbol = ""

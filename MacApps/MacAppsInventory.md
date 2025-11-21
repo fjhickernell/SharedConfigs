@@ -180,3 +180,11 @@ Usage categories:
 | Xcode | App Store | ✓ |  |  |  |  |  |
 | zoom.us |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | Zotero |  |  | ✓ |  |  |  |  |
+
+
+## Fonts & UI Tweaks
+
+| Item           | Type  | M2 MBP | M3 MBP | M4 Mini | Intel MBP | Notes                         |
+|----------------|-------|:------:|:------:|:-------:|:---------:|------------------------------|
+| JetBrains Mono | Font  |      |       |    ✓    |    ✓     | Preferred coding font in IDE |
+| MarkEdit preview-light.css | Style |   ✓    |   ✓    |    ✓    |     ✓     | Light preview, dark editor  |
