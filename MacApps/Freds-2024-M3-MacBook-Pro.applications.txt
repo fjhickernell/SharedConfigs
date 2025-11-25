@@ -36,6 +36,7 @@ Keynote.app
 Klara.app
 LastPass for Safari.app
 MacDown.app
+MarkEdit.app
 Marugame Udon, USA.app
 MATLAB_R2025a.app
 MATLAB_R2025b.app
@@ -71,6 +72,7 @@ TripIt.app
 Unclutter.app
 United MileagePlus Shopping℠.app
 Visual Studio Code.app
+Warp.app
 WeChat.app
 WhatsApp.app
 Wolfram.app

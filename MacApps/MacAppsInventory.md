@@ -85,7 +85,7 @@ Usage categories:
 | LINE | App Store |  |  |  | ✓ |  |  |
 | Logos |  | ✓ |  |  |  |  |  |
 | MacDown |  | ✓ | ✓ | ✓ | ✓ | Active | Markdown editor and viewer |
-| MarkEdit |  | ✓ |  |  |  | Active | Markdown editor and viewer |
+| MarkEdit |  | ✓ | ✓ |  |  | Active | Markdown editor and viewer |
 | Marugame Udon |  |  |  |  |  |  |  |
 | MATLAB_R2025a |  | ✓ | ✓ | ✓ | ✓ | Active | Mathematical software environment |
 | MATLAB_R2025b |  | ✓ | ✓ | ✓ | ✓ | Active | Mathematical software environment |
@@ -144,7 +144,6 @@ Usage categories:
 | Spotify |  | ✓ |  |  | ✓ |  |  |
 | SWE Events |  | ✓ |  |  |  |  |  |
 | Tabletop Simulator |  |  |  |  | ✓ |  |  |
-| Taio | App Store | ✓ |  |  |  |  |  |
 | Tempus Stopwatch | App Store | ✓ |  |  | ✓ |  |  |
 | TeX Live Utility |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | TeXShop |  | ✓ | ✓ | ✓ | ✓ |  |  |
@@ -159,13 +158,14 @@ Usage categories:
 | Translator GO |  | ✓ |  |  |  |  |  |
 | TripIt | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
 | TripSource |  | ✓ |  |  |  |  |  |
-|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Twitter | App Store | ✓ |  |  | ✓ |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Unclutter |  | ✓ | ✓ |  | ✓ |  |  |
 | United MileagePlus Shopping℠ | App Store |  | ✓ | ✓ | ✓ |  |  |
 | Unreached of the Day |  | ✓ |  |  |  |  |  |
 | Visual Studio Code |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | VLC |  | ✓ |  |  |  |  |  |
+| Warp |  | ✓ | ✓ |  |  |  |  |
 | Wealthfront |  | ✓ |  |  |  |  |  |
 | Webex |  | ✓ |  |  |  |  |  |
 | WeChat | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
@@ -182,9 +182,11 @@ Usage categories:
 | Zotero |  |  | ✓ |  |  |  |  |
 
 
+<!-- BEGIN MANUAL-SECTION: Fonts-UI -->
 ## Fonts & UI Tweaks
 
 | Item           | Type  | M2 MBP | M3 MBP | M4 Mini | Intel MBP | Notes                         |
 |----------------|-------|:------:|:------:|:-------:|:---------:|------------------------------|
 | JetBrains Mono | Font  |      |       |    ✓    |    ✓     | Preferred coding font in IDE |
 | MarkEdit preview-light.css | Style |   ✓    |   ✓    |    ✓    |     ✓     | Light preview, dark editor  |
+<!-- END MANUAL-SECTION: Fonts-UI -->
