@@ -88,7 +88,6 @@ Speedtest.app
 SplitPrint.app
 Spotify.app
 SWE Events.app
-Taio.app
 Tempus Stopwatch.app
 TeX Live Utility.app
 TeXShop.app
@@ -106,6 +105,7 @@ Unclutter.app
 Unreached of the Day.app
 Visual Studio Code.app
 VLC.app
+Warp.app
 Wealthfront.app
 Webex.app
 WeChat.app

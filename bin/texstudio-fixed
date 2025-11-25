@@ -1,4 +1,18 @@
 #!/bin/zsh
+
+# Make TeXStudio use the standard macOS config location
 export XDG_CONFIG_HOME="$HOME/Library/Application Support"
-exec "/Applications/texstudio-4.8.9-osx-m1.app/Contents/MacOS/texstudio" \
+
+# Find the newest TeXStudio app bundle in /Applications
+latest_app=$(ls -1d /Applications/texstudio-*.app(N) 2>/dev/null | sort -V | tail -n 1)
+
+if [[ -z "$latest_app" ]]; then
+  echo "No TeXStudio app found in /Applications (expected texstudio-*.app)."
+  exit 1
+fi
+
+echo "Launching: $latest_app"
+
+# Exec the TeXStudio binary with your config file
+exec "$latest_app/Contents/MacOS/texstudio" \
   --ini-file="$HOME/Library/Application Support/texstudio/texstudio.ini"

@@ -33,6 +33,7 @@ brew "tree"
 brew "weasyprint"
 cask "macdown"
 cask "visual-studio-code"
+cask "warp"
 mas "Air Printer", id: 929399895
 mas "CotEditor", id: 1024640650
 mas "Fantastical", id: 975937182
