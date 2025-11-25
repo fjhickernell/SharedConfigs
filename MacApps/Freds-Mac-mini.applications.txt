@@ -9,6 +9,7 @@ ChatGPT.app
 Default Folder X.app
 Fantastical.app
 GarageBand.app
+GeminiDesk.app
 GitKraken.app
 Google Chrome.app
 Google Docs.app

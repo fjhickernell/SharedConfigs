@@ -56,6 +56,7 @@ Usage categories:
 | GarageBand | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Geekbench 6 |  | ✓ |  |  |  |  |  |
+| GeminiDesk |  |  |  | ✓ |  |  |  |
 | GitHub Desktop |  | ✓ | ✓ |  |  |  |  |
 | GitKraken |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | Good Stopwatch | App Store |  |  |  | ✓ |  |  |
@@ -74,8 +75,8 @@ Usage categories:
 | iStat Menus |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | iStat Menus 6 |  |  | ✓ |  |  |  |  |
 | iTerm |  |  |  | ✓ |  |  |  |
-| JupyterLab |  | ✓ | ✓ | ✓ | ✓ |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| JupyterLab |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | Keyboard Maestro |  |  |  |  | ✓ |  |  |
 | Keynote | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
 | Klara |  |  | ✓ |  |  |  |  |
@@ -95,8 +96,8 @@ Usage categories:
 | Microsoft Edge |  | ✓ | ✓ |  |  | Rare | Browser |
 | Microsoft Excel | App Store | ✓ | ✓ | ✓ | ✓ | Active | Spreadsheet |
 | Microsoft OneNote | App Store | ✓ | ✓ |  | ✓ | Rare | Notes |
-| Microsoft Outlook | App Store | ✓ | ✓ | ✓ | ✓ | Rare | Email + Calendar |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| Microsoft Outlook | App Store | ✓ | ✓ | ✓ | ✓ | Rare | Email + Calendar |
 | Microsoft PowerPoint | App Store | ✓ | ✓ | ✓ | ✓ | Active | Slide presenter |
 | Microsoft Remote Desktop | App Store |  |  |  | ✓ |  |  |
 | Microsoft Teams |  | ✓ | ✓ | ✓ | ✓ | Active | Collaboration |
@@ -116,8 +117,8 @@ Usage categories:
 | Parallels Desktop |  | ✓ |  |  | ✓ |  |  |
 | Parallels Toolbox |  |  |  |  | ✓ |  |  |
 | Paste | App Store | ✓ | ✓ |  |  |  |  |
-| Pause |  | ✓ |  |  |  |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| Pause |  | ✓ |  |  |  |  |  |
 | PayPal Honey | App Store |  | ✓ |  |  |  |  |
 | PDFCombo | App Store |  |  |  | ✓ |  |  |
 | Perplexity | App Store | ✓ | ✓ | ✓ | ✓ | Rare | Artificial intelligence |
@@ -137,8 +138,8 @@ Usage categories:
 | Signal |  |  | ✓ | ✓ |  |  |  |
 | Slack | App Store | ✓ | ✓ | ✓ | ✓ | Active | Collaboration |
 | Solitaire |  | ✓ |  |  |  |  |  |
-| Soulver 3 |  | ✓ |  |  |  |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| Soulver 3 |  | ✓ |  |  |  |  |  |
 | Spaces by Wix |  | ✓ |  |  |  |  |  |
 | Speedtest | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
 | SplitPrint | App Store | ✓ |  |  |  |  |  |
@@ -158,8 +159,8 @@ Usage categories:
 | Time Out Market |  | ✓ |  |  |  |  |  |
 | Translator GO |  | ✓ |  |  |  |  |  |
 | TripIt | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
-| TripSource |  | ✓ |  |  |  |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| TripSource |  | ✓ |  |  |  |  |  |
 | Twitter | App Store | ✓ |  |  | ✓ |  |  |
 | Unclutter |  | ✓ | ✓ |  | ✓ |  |  |
 | United MileagePlus Shopping℠ | App Store |  | ✓ | ✓ | ✓ |  |  |
@@ -179,8 +180,8 @@ Usage categories:
 | Wondr Health |  | ✓ |  |  |  |  |  |
 | World Time | App Store | ✓ |  |  |  |  |  |
 | Xcode | App Store | ✓ |  |  |  |  |  |
-| zoom.us |  | ✓ | ✓ | ✓ | ✓ |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| zoom.us |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | Zotero |  |  | ✓ |  |  |  |  |
 
 <!-- BEGIN MANUAL-SECTION: Fonts-UI -->
