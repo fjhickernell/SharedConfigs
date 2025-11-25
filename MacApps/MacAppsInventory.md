@@ -73,9 +73,10 @@ Usage categories:
 | iParkit |  |  | ✓ |  |  |  |  |
 | iStat Menus |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | iStat Menus 6 |  |  | ✓ |  |  |  |  |
+| iTerm |  |  |  | ✓ |  |  |  |
 | JupyterLab |  | ✓ | ✓ | ✓ | ✓ |  |  |
-| Keyboard Maestro |  |  |  |  | ✓ |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| Keyboard Maestro |  |  |  |  | ✓ |  |  |
 | Keynote | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
 | Klara |  |  | ✓ |  |  |  |  |
 | Lasso |  | ✓ |  |  |  |  |  |
@@ -85,7 +86,7 @@ Usage categories:
 | LINE | App Store |  |  |  | ✓ |  |  |
 | Logos |  | ✓ |  |  |  |  |  |
 | MacDown |  | ✓ | ✓ | ✓ | ✓ | Active | Markdown editor and viewer |
-| MarkEdit |  | ✓ | ✓ |  |  | Active | Markdown editor and viewer |
+| MarkEdit |  | ✓ | ✓ | ✓ |  | Active | Markdown editor and viewer |
 | Marugame Udon |  |  |  |  |  |  |  |
 | MATLAB_R2025a |  | ✓ | ✓ | ✓ | ✓ | Active | Mathematical software environment |
 | MATLAB_R2025b |  | ✓ | ✓ | ✓ | ✓ | Active | Mathematical software environment |
@@ -95,8 +96,8 @@ Usage categories:
 | Microsoft Excel | App Store | ✓ | ✓ | ✓ | ✓ | Active | Spreadsheet |
 | Microsoft OneNote | App Store | ✓ | ✓ |  | ✓ | Rare | Notes |
 | Microsoft Outlook | App Store | ✓ | ✓ | ✓ | ✓ | Rare | Email + Calendar |
-| Microsoft PowerPoint | App Store | ✓ | ✓ | ✓ | ✓ | Active | Slide presenter |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| Microsoft PowerPoint | App Store | ✓ | ✓ | ✓ | ✓ | Active | Slide presenter |
 | Microsoft Remote Desktop | App Store |  |  |  | ✓ |  |  |
 | Microsoft Teams |  | ✓ | ✓ | ✓ | ✓ | Active | Collaboration |
 | Microsoft To Do | App Store |  |  |  | ✓ |  |  |
@@ -116,8 +117,8 @@ Usage categories:
 | Parallels Toolbox |  |  |  |  | ✓ |  |  |
 | Paste | App Store | ✓ | ✓ |  |  |  |  |
 | Pause |  | ✓ |  |  |  |  |  |
-| PayPal Honey | App Store |  | ✓ |  |  |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| PayPal Honey | App Store |  | ✓ |  |  |  |  |
 | PDFCombo | App Store |  |  |  | ✓ |  |  |
 | Perplexity | App Store | ✓ | ✓ | ✓ | ✓ | Rare | Artificial intelligence |
 | Plex Media Server |  | ✓ |  |  |  |  |  |
@@ -137,8 +138,8 @@ Usage categories:
 | Slack | App Store | ✓ | ✓ | ✓ | ✓ | Active | Collaboration |
 | Solitaire |  | ✓ |  |  |  |  |  |
 | Soulver 3 |  | ✓ |  |  |  |  |  |
-| Spaces by Wix |  | ✓ |  |  |  |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| Spaces by Wix |  | ✓ |  |  |  |  |  |
 | Speedtest | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
 | SplitPrint | App Store | ✓ |  |  |  |  |  |
 | Spotify |  | ✓ |  |  | ✓ |  |  |
@@ -158,14 +159,14 @@ Usage categories:
 | Translator GO |  | ✓ |  |  |  |  |  |
 | TripIt | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
 | TripSource |  | ✓ |  |  |  |  |  |
-| Twitter | App Store | ✓ |  |  | ✓ |  |  |
 |========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
+| Twitter | App Store | ✓ |  |  | ✓ |  |  |
 | Unclutter |  | ✓ | ✓ |  | ✓ |  |  |
 | United MileagePlus Shopping℠ | App Store |  | ✓ | ✓ | ✓ |  |  |
 | Unreached of the Day |  | ✓ |  |  |  |  |  |
 | Visual Studio Code |  | ✓ | ✓ | ✓ | ✓ |  |  |
 | VLC |  | ✓ |  |  |  |  |  |
-| Warp |  | ✓ | ✓ |  |  |  |  |
+| Warp |  | ✓ | ✓ | ✓ |  |  |  |
 | Wealthfront |  | ✓ |  |  |  |  |  |
 | Webex |  | ✓ |  |  |  |  |  |
 | WeChat | App Store | ✓ | ✓ | ✓ | ✓ |  |  |
@@ -179,8 +180,8 @@ Usage categories:
 | World Time | App Store | ✓ |  |  |  |  |  |
 | Xcode | App Store | ✓ |  |  |  |  |  |
 | zoom.us |  | ✓ | ✓ | ✓ | ✓ |  |  |
+|========[[[App]]]========|[[[Source]]]|[[[M2]]]|[[[M3]]]|[[[Mini]]]|[[[Intel]]]|[[[Usage]]]|[[[[Notes]]]|
 | Zotero |  |  | ✓ |  |  |  |  |
-
 
 <!-- BEGIN MANUAL-SECTION: Fonts-UI -->
 ## Fonts & UI Tweaks

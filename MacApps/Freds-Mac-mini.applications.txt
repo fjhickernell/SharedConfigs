@@ -18,10 +18,12 @@ Google Slides.app
 GraphicConverter 12.app
 iMovie.app
 iStat Menus.app
+iTerm.app
 JupyterLab.app
 Keynote.app
 LaTeXiT.app
 MacDown.app
+MarkEdit.app
 MATLAB_R2025a.app
 MATLAB_R2025b.app
 Messenger.app
@@ -50,6 +52,7 @@ texstudio-4.9.0-osx-m1.app
 TripIt.app
 United MileagePlus Shopping℠.app
 Visual Studio Code.app
+Warp.app
 WeChat.app
 WhatsApp.app
 zoom.us.app
