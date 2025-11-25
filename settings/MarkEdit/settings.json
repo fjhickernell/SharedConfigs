@@ -1,0 +1,24 @@
+{
+  "editor.autoCharacterPairs": true,
+  "editor.indentBehavior": "never",
+  "general.checksForUpdates": true,
+  "general.mainWindowHotKey": {
+    "key": "M",
+    "modifiers": [
+      "Shift",
+      "Command",
+      "Option"
+    ]
+  },
+  "extension.markeditPreview": {
+    "autoUpdate": true,
+    "syncScroll": true,
+    "changeMode": {
+      "modes": ["side-by-side", "preview"],
+      "hotKey": {
+        "key": "V",
+        "modifiers": ["Command"]
+      }
+    }
+  }
+}
