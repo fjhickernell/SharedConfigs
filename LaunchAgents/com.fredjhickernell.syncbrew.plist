@@ -8,7 +8,7 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/fredhickernell/bin/sync-brew-launchd.sh</string>
+    <string>/Users/fredjhickernell/bin/sync-brew-launchd.sh</string>
   </array>
   
   <!-- Run once at load and then every 24 hours -->
@@ -23,8 +23,8 @@
   </dict>
 
   <key>StandardOutPath</key>
-  <string>/Users/fredhickernell/Library/Logs/syncbrew.log</string>
+  <string>/Users/fredjhickernell/Library/Logs/syncbrew.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/fredhickernell/Library/Logs/syncbrew.log</string>
+  <string>/Users/fredjhickernell/Library/Logs/syncbrew.log</string>
 </dict>
 </plist>

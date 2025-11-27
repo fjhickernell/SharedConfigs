@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Product</key>
+	<string>HoudahSpot 6</string>
+	<key>Name</key>
+	<string>Frederick Hickernell</string>
+	<key>Email</key>
+	<string>fjhickernell@gmail.com</string>
+	<key>License</key>
+	<string>Single User</string>
+	<key>Activation</key>
+	<string>HSP6UCL13154995E648379A9</string>
+	<key>Timestamp</key>
+	<string>2025-11-26T04:21:09+00:00</string>
+	<key>Signature</key>
+	<data>SKSwu7JKkuuNpkEW/kEAIa4+Xy+/Bu9660p1gggEoDbxyPtDsEfk9ZVBSf3v9NeHUoMXt00l9O29
+IHdKoYv8kbheG5F2sd66umPv1cgxG2KfQirVWifxdqoNH2JEdNuOQvj3fRX25qmi1/QKLFlYEXiA
+iJk/k3rn4EUF61ROc10=
+</data>
+</dict>
+</plist>
