@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOGFILE="$HOME/Library/Logs/syncbrew.log"
+LOGFILE="$HOME/Library/Logs/sync-brew.log"
 
 echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew job started. =====" >> "$LOGFILE"
 

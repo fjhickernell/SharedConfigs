@@ -23,8 +23,8 @@
   </dict>
 
   <key>StandardOutPath</key>
-  <string>/Users/fredhickernell/Library/Logs/syncbrew.log</string>
+  <string>/Users/fredhickernell/Library/Logs/sync-brew.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/fredhickernell/Library/Logs/syncbrew.log</string>
+  <string>/Users/fredhickernell/Library/Logs/sync-brew.log</string>
 </dict>
 </plist>

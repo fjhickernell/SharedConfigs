@@ -11,7 +11,6 @@ brew "gcc"
 brew "ghostscript"
 brew "git"
 brew "git-lfs"
-brew "readline"
 brew "jq"
 brew "libffi"
 brew "libyaml"
@@ -32,14 +31,16 @@ brew "tldr"
 brew "tree"
 brew "weasyprint"
 cask "macdown"
+cask "quarto"
 cask "visual-studio-code"
 cask "warp"
 mas "Air Printer", id: 929399895
+mas "Capital One Shopping", id: 1477110326
 mas "CotEditor", id: 1024640650
 mas "Fantastical", id: 975937182
 mas "GarageBand", id: 682658836
 mas "GoodTask", id: 1143437985
-mas "HP Smart", id: 1474276998
+mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
@@ -60,11 +61,13 @@ mas "SplitPrint", id: 412574988
 mas "Tempus Stopwatch", id: 1491326665
 mas "TripIt", id: 1475712010
 mas "Twitter", id: 1482454543
+mas "United MileagePlus Shopping℠", id: 6471036405
 mas "WeChat", id: 836500024
 mas "WhatsApp", id: 310633997
 mas "World Time", id: 912698955
 mas "Xcode", id: 497799835
 vscode "alefragnani.bookmarks"
+vscode "bierner.markdown-mermaid"
 vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
@@ -96,6 +99,7 @@ vscode "ms-vscode-remote.remote-containers"
 vscode "ms-vscode.makefile-tools"
 vscode "mxschmitt.postscript"
 vscode "openai.chatgpt"
+vscode "quarto.quarto"
 vscode "redhat.vscode-yaml"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "tomoki1207.pdf"

@@ -1,28 +1,45 @@
-#!/bin/bash
+#!/bin/zsh
+set -euo pipefail
 
-LOGFILE="$HOME/Library/Logs/syncbrew.log"
-START_TIME=$(date +%s)
-START_TEXT="===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run started. ====="
+LOGDIR="$HOME/Library/Logs"
+LOGFILE="$LOGDIR/sync-brew.log"
 
-echo "$START_TEXT"
-echo "$START_TEXT" >> "$LOGFILE"
+mkdir -p "$LOGDIR"
 
-brew update && brew upgrade
-brew bundle --file="$HOME/Documents/SharedConfigs/Brewfile"
-
-STATUS=$?
-END_TIME=$(date +%s)
-ELAPSED=$((END_TIME - START_TIME))
-
-if [ $STATUS -eq 0 ]; then
-  RESULT="✓  syncbrew manual run finished successfully. Elapsed time: ${ELAPSED}s."
+if [ -t 1 ]; then
+  MODE="manual"
 else
-  RESULT="✗  syncbrew manual run exited with status $STATUS. Elapsed time: ${ELAPSED}s."
+  MODE="launchd"
 fi
 
-echo "$RESULT"
-echo "$RESULT" >> "$LOGFILE"
+run_syncbrew() {
+  echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew ${MODE} run started. ====="
 
-END_TEXT="===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run done. ====="
-echo "$END_TEXT"
-echo "$END_TEXT" >> "$LOGFILE"
+  if command -v brew >/dev/null 2>&1; then
+    brew update
+    brew bundle --global
+    brew upgrade
+    brew cleanup
+  else
+    echo "brew not found on PATH; skipping Homebrew tasks."
+  fi
+
+  if command -v mas >/dev/null 2>&1; then
+    if [ "$MODE" = "manual" ]; then
+      echo "Running mas upgrade in manual (interactive) mode."
+      mas upgrade || echo "mas upgrade encountered errors; see above."
+    else
+      echo "Skipping mas upgrade in launchd (non-interactive) mode."
+    fi
+  else
+    echo "mas not found on PATH; skipping Mac App Store tasks."
+  fi
+
+  echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew ${MODE} run finished. ====="
+}
+
+if [ "$MODE" = "manual" ]; then
+  run_syncbrew | tee -a "$LOGFILE"
+else
+  run_syncbrew >> "$LOGFILE" 2>&1
+fi
