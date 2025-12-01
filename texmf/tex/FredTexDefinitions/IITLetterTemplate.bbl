@@ -1,0 +1,98 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\preamble{%
+\def\Ignore#1{}%
+\def\notesupp#1{}%
+\providecommand{\HickernellFJ}{Hickernell\xspace}%
+\def\Ignore#1{}%
+\def\notesupp#1{}%
+\providecommand{\HickernellFJ}{Hickernell\xspace}%
+}
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{Hic97a}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=9e34980b83061f7bc3173c7a144cc4b3}{%
+           family={\HickernellFJ},
+           familyi={\bibinitperiod},
+           given={F.\bibnamedelimi J.},
+           giveni={F\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \strng{namehash}{9e34980b83061f7bc3173c7a144cc4b3}
+      \strng{fullhash}{9e34980b83061f7bc3173c7a144cc4b3}
+      \strng{fullhashraw}{9e34980b83061f7bc3173c7a144cc4b3}
+      \strng{bibnamehash}{9e34980b83061f7bc3173c7a144cc4b3}
+      \strng{authorbibnamehash}{9e34980b83061f7bc3173c7a144cc4b3}
+      \strng{authornamehash}{9e34980b83061f7bc3173c7a144cc4b3}
+      \strng{authorfullhash}{9e34980b83061f7bc3173c7a144cc4b3}
+      \strng{authorfullhashraw}{9e34980b83061f7bc3173c7a144cc4b3}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Math.\ Comp.}
+      \field{title}{A Generalized Discrepancy and Quadrature Error Bound}
+      \field{volume}{67}
+      \field{year}{1998}
+      \field{pages}{299\bibrangedash 322}
+      \range{pages}{24}
+      \verb{doi}
+      \verb 10.1090/S0025-5718-98-00894-1
+      \endverb
+    \endentry
+    \entry{Nie92}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=6c2c86289792881ce9f9a36f0026aeee}{%
+           family={Niederreiter},
+           familyi={N\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Philadelphia}%
+      }
+      \list{publisher}{1}{%
+        {SIAM}%
+      }
+      \strng{namehash}{6c2c86289792881ce9f9a36f0026aeee}
+      \strng{fullhash}{6c2c86289792881ce9f9a36f0026aeee}
+      \strng{fullhashraw}{6c2c86289792881ce9f9a36f0026aeee}
+      \strng{bibnamehash}{6c2c86289792881ce9f9a36f0026aeee}
+      \strng{authorbibnamehash}{6c2c86289792881ce9f9a36f0026aeee}
+      \strng{authornamehash}{6c2c86289792881ce9f9a36f0026aeee}
+      \strng{authorfullhash}{6c2c86289792881ce9f9a36f0026aeee}
+      \strng{authorfullhashraw}{6c2c86289792881ce9f9a36f0026aeee}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{series}{CBMS-NSF Regional Conference Series in Applied Mathematics}
+      \field{title}{Random Number Generation and Quasi-{M}onte {C}arlo Methods}
+      \field{year}{1992}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
