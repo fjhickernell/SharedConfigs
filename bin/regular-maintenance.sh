@@ -9,30 +9,18 @@ log() {
   echo "[$ts] $message"
 }
 
-notify() {
-  local message="$1"
-  local title="${2:-Regular Maintenance}"
-  if ! osascript -e "display notification \"${message}\" with title \"${title}\"" >/dev/null 2>&1; then
-    log "Notification failed (osascript). Message was: ${message}"
-  fi
-}
-
 run_step() {
   local name="$1"
   local cmd="$2"
 
   log "Starting: ${name}"
-  notify "Starting ${name}…" "Regular Maintenance"
-
   eval "${cmd}"
   local exit_code=$?
 
   if [[ ${exit_code} -eq 0 ]]; then
     log "Finished: ${name} (ok)"
-    notify "${name} finished successfully." "Regular Maintenance"
   else
     log "FAILED: ${name} (exit ${exit_code})"
-    notify "${name} failed (exit ${exit_code}). Check Terminal." "Regular Maintenance"
   fi
 
   return ${exit_code}
@@ -40,7 +28,6 @@ run_step() {
 
 BASE="$HOME/Documents/SharedConfigs/bin"
 
-notify "Maintenance run started." "Regular Maintenance"
 log "===== Regular maintenance run started. ====="
 
 run_step "sync-brew" "${BASE}/sync-brew.sh"
@@ -48,4 +35,3 @@ run_step "sync-qmcpy-env" "${BASE}/sync-qmcpy-env.sh"
 run_step "sharedconfigs-save" "${BASE}/sharedconfigs-save.sh"
 
 log "===== Regular maintenance run finished. ====="
-notify "Maintenance run finished. Check Terminal for details." "Regular Maintenance"
