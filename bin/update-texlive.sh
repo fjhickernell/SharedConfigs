@@ -15,9 +15,7 @@ LOG_FILE="$LOG_DIR/update-texlive.log"
     exit 1
   fi
 
-  sudo -v
-
-  sudo tlmgr update --self --all --reinstall-forcibly-removed
+  tlmgr update --self --all --reinstall-forcibly-removed
 
   echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') TeX Live update finished. ====="
 } | tee -a "$LOG_FILE"
