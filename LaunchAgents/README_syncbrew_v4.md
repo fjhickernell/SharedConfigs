@@ -69,13 +69,13 @@ You can edit either plist template if you want another time.
 Check recent runs:
 
 ```bash
-tail -100 ~/Library/Logs/syncbrew.log
+tail -100 ~/Library/Logs/sync-brew.log
 ```
 
 Watch live:
 
 ```bash
-tail -f ~/Library/Logs/syncbrew.log
+tail -f ~/Library/Logs/sync-brew.log
 ```
 
 ---
