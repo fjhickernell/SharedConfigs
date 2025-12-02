@@ -1,11 +1,10 @@
 # SharedConfigs
 
-This repository contains personal configuration files synchronized via iCloud and GitHub across all of my Macs.
+This repository contains personal configuration files synchronized via iCloud and GitHub across all of my Macs.  It is constantly under development.
 
 ## Contents
 - `Brewfile`: Homebrew package list for system parity
 - `texmf/`: Local LaTeX styles and macros
-- `Karabiner/`: Keyboard mappings
 - `LaTeXiT/`, `BibDesk/`, etc.
 - `bin/`: Utility scripts (e.g., `sync-brew.sh`)
 
