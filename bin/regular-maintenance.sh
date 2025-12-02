@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-set -u
+set -euo pipefail
 
 log() {
   local message="$1"
@@ -30,8 +30,11 @@ BASE="$HOME/Documents/SharedConfigs/bin"
 
 log "===== Regular maintenance run started. ====="
 
-run_step "sync-brew" "${BASE}/sync-brew.sh"
-run_step "sync-qmcpy-env" "${BASE}/sync-qmcpy-env.sh"
+sudo -v
+
+run_step "sync-brew"         "${BASE}/sync-brew.sh"
+run_step "sync-qmcpy-env"    "${BASE}/sync-qmcpy-env.sh"
+run_step "update-texlive"    "${BASE}/update-texlive.sh"
 run_step "sharedconfigs-save" "${BASE}/sharedconfigs-save.sh"
 
 log "===== Regular maintenance run finished. ====="
