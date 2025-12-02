@@ -2,17 +2,19 @@
 
 set -u
 
-notify() {
-  local message="$1"
-  local title="${2:-Regular Maintenance}"
-  osascript -e "display notification \"${message}\" with title \"${title}\"" >/dev/null 2>&1
-}
-
 log() {
   local message="$1"
   local ts
   ts=$(date '+%Y-%m-%d %H:%M:%S')
   echo "[$ts] $message"
+}
+
+notify() {
+  local message="$1"
+  local title="${2:-Regular Maintenance}"
+  if ! osascript -e "display notification \"${message}\" with title \"${title}\"" >/dev/null 2>&1; then
+    log "Notification failed (osascript). Message was: ${message}"
+  fi
 }
 
 run_step() {
