@@ -23,17 +23,17 @@ run_step() {
   notify "Starting ${name}…" "Regular Maintenance"
 
   eval "${cmd}"
-  local status=$?
+  local exit_code=$?
 
-  if [[ ${status} -eq 0 ]]; then
+  if [[ ${exit_code} -eq 0 ]]; then
     log "Finished: ${name} (ok)"
     notify "${name} finished successfully." "Regular Maintenance"
   else
-    log "FAILED: ${name} (exit ${status})"
-    notify "${name} failed (exit ${status}). Check Terminal." "Regular Maintenance"
+    log "FAILED: ${name} (exit ${exit_code})"
+    notify "${name} failed (exit ${exit_code}). Check Terminal." "Regular Maintenance"
   fi
 
-  return ${status}
+  return ${exit_code}
 }
 
 BASE="$HOME/Documents/SharedConfigs/bin"
