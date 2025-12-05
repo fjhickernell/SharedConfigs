@@ -1,7 +1,7 @@
-# SharedConfigs `bin/` – Script Guide (v1.2)
+# SharedConfigs `bin/` – Script Guide (v1.3)
 
 This README provides a complete reference to all scripts in  
-`~/Documents/SharedConfigs/bin`, describing what each script does, when to run it, and why it exists.
+`~/Documents/SharedConfigs/bin`, describing what each script does, when to run it, and how these scripts fit into your multi-Mac workflow.
 
 ---
 
@@ -9,42 +9,50 @@ This README provides a complete reference to all scripts in
 
 Your `SharedConfigs` folder lives in **iCloud Drive**, which means:
 
-- **All edits propagate across all Macs automatically** within seconds.
-- Day‑to‑day syncing happens via **iCloud**, not Git.
-- **Git is used only for periodic snapshots**, not continuous syncing.
+- **All edits propagate across all Macs automatically** within seconds.  
+- Daily syncing of scripts happens via **iCloud**, not Git.  
+- **Git is only for periodic snapshots** and version history.
 
-Use Git (`sharedconfigs-save.sh`) for:
-- Major configuration milestones  
-- Before/after travel  
-- Before making risky edits  
-- Occasional archival checkpoints  
+Use Git via `sharedconfigs-save.sh` when:
 
-This hybrid model uses:
-- **iCloud** → fast, seamless, automatic sync  
-- **Git** → backup, history, and version recovery  
+- You reach a stable configuration point  
+- Before travel or major system upgrades  
+- After adding new scripts or modifying existing ones  
+- You want a reproducible configuration checkpoint  
+
+This hybrid approach gives:
+
+- **iCloud** → instant cross-Mac updates  
+- **Git** → safety, history, and rollback  
 
 ---
 
 ## LaunchAgent Path Requirements
 
-Because `launchd` does **not** load your shell environment or PATH, it cannot see:
+`launchd` does **not** load your shell environment. It cannot see:
 
 ```
 ~/Documents/SharedConfigs/bin
 ```
 
-Therefore, *any script invoked by a LaunchAgent must live in*:
+Therefore any script run by a LaunchAgent must be placed in:
 
 ```
 ~/bin
 ```
 
-Currently those are:
+As of v1.3, only these scripts must reside in `~/bin`:
 
 - `sync-brew.sh`
-- `sync-brew-launchd.sh`
+- `regular-maintenance.sh` (if you ever choose to automate it—currently **manual only**)  
 
-All other scripts run directly from SharedConfigs because `SharedConfigs/bin` is added to your PATH via `.zshrc`.
+The older `sync-brew-launchd.sh` has been **retired**.
+
+All other scripts stay in SharedConfigs because your `.zshrc` adds:
+
+```
+export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
+```
 
 ---
 
@@ -52,71 +60,105 @@ All other scripts run directly from SharedConfigs because `SharedConfigs/bin` is
 
 | Script | Category | Purpose |
 |--------|----------|---------|
-| `brew-publish` | Homebrew | Publish/update the canonical Brewfile in SharedConfigs. |
-| `dump-mac-apps.sh` | Mac App Inventory | Dump installed apps/casks/App Store apps. |
-| `export-macapps-xlsx.sh` | Mac App Inventory | Export the App Inventory to Excel. |
-| `link_sharedconfigs_minimal.sh` | Mac Setup | Initial linking/copying of SharedConfigs items on a new Mac. |
-| `prep_description_summary.sh` | Teaching | Create project description/summary templates. |
+| `brew-publish` | Homebrew | Publish/update canonical Brewfile in SharedConfigs. |
+| `dump-mac-apps.sh` | Mac App Inventory | Dump installed apps/casks/MAS apps. |
+| `export-macapps-xlsx.sh` | Mac App Inventory | Export inventory to Excel. |
+| `link_sharedconfigs_minimal.sh` | Mac Setup | Bring a new Mac online with baseline links. |
+| `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
+| `regular-maintenance.sh` | System Maintenance | Run sync-brew, update-texlive, qmcpy sync, etc. |
 | `README_bin.md` | Documentation | This file. |
-| `setup-starship.sh` | Shell | Install starship + link shared `starship.toml`. |
-| `sharedconfigs-save.sh` | Git | Stage, commit, and push SharedConfigs changes. |
+| `setup-starship.sh` | Shell | Install and link shared starship config. |
+| `sharedconfigs-save.sh` | Git | Commit and push SharedConfigs snapshots. |
 | `setup_matlab_toolboxes.sh` | MATLAB | Install or sync MATLAB toolboxes. |
-| `setup-nbstripout.sh` | Jupyter | Configure `nbstripout` for reproducible notebooks. |
-| `sync-brew.sh` | Homebrew | Sync Homebrew using the shared Brewfile. |
-| `sync-brew-launchd.sh` | LaunchAgents | Wrapper script used by LaunchAgent for sync-brew. |
-| `sync-qmcpy-env.sh` | Conda | Sync or upgrade the `qmcpy` environment. |
-| `syncbrew-install.sh` | LaunchAgents | Install the sync-brew LaunchAgent. |
-| `texstudio-fixed` | TeX | Launch TeXstudio with correct config path. |
-| `update-macapps-inventory.sh` | Mac App Inventory | Rebuild the Inventory Markdown file. |
+| `sync-brew.sh` | Homebrew | Sync Homebrew formulae/casks using Brewfile. |
+| `sync-qmcpy-env.sh` | Conda | Sync or upgrade the `qmcpy` conda environment. |
+| `syncbrew-install.sh` | LaunchAgents | (Legacy) Install sync-brew LaunchAgent — now unused. |
+| `texstudio-fixed` | TeX | Launch TeXstudio with stable preference paths. |
+| `update-macapps-inventory.sh` | Mac App Inventory | Regenerate `MacAppsInventory.md`. |
+| `update-texlive.sh` | TeX | Update TeX Live via tlmgr. |
 
 ---
 
 # Detailed Script Descriptions
 
-## Homebrew / Mac Maintenance
+---
+
+## System Maintenance
+
+### `regular-maintenance.sh`
+Your consolidated maintenance driver script.
+
+It currently runs:
+
+- `sync-brew.sh`
+- `update-texlive.sh`  
+- `sync-qmcpy-env.sh` (optional and commented in/out by you)  
+
+Workflow:
+
+1. **Run manually** (no LaunchAgent):
+   ```
+   regular-maintenance.sh
+   ```
+2. It does `sudo -v` and keeps sudo warm.  
+3. You will still be prompted by:
+   - `tlmgr` (always requires separate authentication)
+   - Homebrew (for privileged installs)
+
+This script is now your *primary unified maintenance workflow*.
+
+---
+
+## Homebrew
 
 ### `sync-brew.sh`
-Synchronizes Homebrew formulae and casks using your canonical Brewfile.  
-Shows `Using ...` vs `Installing ...`.  
-Runs correctly under `launchd` when copied into `~/bin`.
+Synchronizes all Homebrew formulae and casks using your canonical Brewfile.
 
-### `sync-brew-launchd.sh`
-Wrapper executed by LaunchAgent (`com.fredhickernell.syncbrew.plist`).  
-Adds timestamps, logging, and safety for unattended runs.  
-Must live in `~/bin`.
+Shows `Using …` versus `Installing …` for clarity.
 
-### `syncbrew-install.sh`
-Installs or refreshes the LaunchAgent that runs sync-brew automatically at login and every 24 hours.
+Resides in `~/bin` so it can be used in LaunchAgents should you ever re-enable automation.
 
 ### `brew-publish`
-Creates/updates the canonical Brewfile in SharedConfigs from a reference Mac.  
-Used when defining the “gold standard” Homebrew configuration.
+Creates or updates your “gold standard” Brewfile in SharedConfigs.
+
+Use when:
+
+- Installing or removing software  
+- Cleaning up configuration  
+- Standardizing all Macs  
 
 ---
 
 ## SharedConfigs / Git Utilities
 
 ### `sharedconfigs-save.sh`
-Your one‑step commit‑and‑push tool for SharedConfigs.  
-Stages all changes, uses a timestamped machine-tagged commit message, and pushes to GitHub.
+Commit-and-push tool for SharedConfigs:
+
+- Stages all changes  
+- Adds timestamp + hostname  
+- Pushes to GitHub  
+- Does **not** pull first (safer with iCloud)  
 
 ### `link_sharedconfigs_minimal.sh`
-Initial “bring this Mac online” script.  
-Sets up `~/bin`, links key SharedConfigs files, and establishes basic environment consistency.
+Initial linking + setup step for a newly configured Mac:
+
+- Ensures `~/bin` exists  
+- Adds SharedConfigs/bin to PATH  
+- Links starship config and other essentials  
+
+Use once when onboarding a new machine.
 
 ---
 
 ## Shell / Terminal
 
 ### `setup-starship.sh`
-Ensures consistent starship prompt across all Macs:
+Ensures consistent and shared starship setup:
 
-- Creates `~/.config`
-- Symlinks shared `starship.toml`
-- Installs starship via Homebrew if missing
-- Inserts `eval "$(starship init zsh)"` into `.zshrc`
-
-Once set up, editing the shared `starship.toml` updates all machines instantly via iCloud.
+- Installs starship via Homebrew  
+- Creates `~/.config`  
+- Symlinks shared `starship.toml`  
+- Ensures `.zshrc` has `eval "$(starship init zsh)"`  
 
 ---
 
@@ -125,35 +167,21 @@ Once set up, editing the shared `starship.toml` updates all machines instantly v
 ### `dump-mac-apps.sh`
 Collects:
 
-- Applications folder contents  
+- Finder apps  
 - Homebrew casks  
-- Mac App Store apps (via `mas list`)  
+- MAS apps  
 
-Outputs per‑Mac text files used to generate the inventory.
+Outputs per-Mac lists used to build the inventory.
 
 ### `update-macapps-inventory.sh`
-Aggregates per‑Mac dumps and regenerates `MacAppsInventory.md` with checkmarks across Macs.
+Aggregates all dumps and rebuilds:
+
+```
+MacAppsInventory.md
+```
 
 ### `export-macapps-xlsx.sh`
-Produces an Excel version of the App Inventory for easier filtering and review.
-
----
-
-## Jupyter / Teaching
-
-### `setup-nbstripout.sh`
-Configures `nbstripout` so that Jupyter notebook outputs do not appear in Git commits.  
-Supports your MATH 565 notebook‑checking workflow.
-
-### `prep_description_summary.sh`
-Generates boilerplate templates for student project summaries and descriptions.
-
----
-
-## MATLAB
-
-### `setup_matlab_toolboxes.sh`
-Automates MATLAB toolbox installation or synchronization across Macs.
+Creates an Excel version of the inventory for filtering and comparison.
 
 ---
 
@@ -161,33 +189,72 @@ Automates MATLAB toolbox installation or synchronization across Macs.
 
 ### `sync-qmcpy-env.sh`
 
-Normal sync:
+Your environment consistency tool for MATH 565 and QMCSoftware work.
+
+#### **Normal sync (fast):**
 
 ```
 sync-qmcpy-env.sh
 ```
 
-Upgrade packages:
+This:
+
+1. Activates the `qmcpy` environment  
+2. Pulls updates from QMCSoftware `develop`  
+3. Reinstalls via editable mode (`pip install -e ".[dev]"`)  
+4. Leaves package versions unchanged  
+5. Ensures all Macs run the same codebase  
+
+#### **Upgrade sync (scheduled: Dec / May / Aug):**
 
 ```
 sync-qmcpy-env.sh --upgrade
 ```
 
-Synchronizes the `qmcpy` Conda environment following your maintenance schedule (Dec / May / Aug).
+This performs:
+
+- Everything in normal sync  
+- **Plus**: upgrades all pip packages according to dependency resolution  
+- May remove unused packages if they are no longer required by QMCSoftware or your environment  
+
+**Recommendation:**  
+Only use `--upgrade` after testing on one Mac (usually M3 or M2), then roll out to others.
 
 ---
 
-## TeX / TeXstudio
+## TeX / TeX Live / TeXstudio
+
+### `update-texlive.sh`
+Runs TeX Live package updates:
+
+```
+update-texlive.sh
+```
+
+Notes:
+
+- Always prompts for the TeX Live password  
+- No safe way to suppress this  
+- Called automatically inside `regular-maintenance.sh`
 
 ### `texstudio-fixed`
 A wrapper that:
 
-- Detects the newest `/Applications/texstudio-*.app`
-- Launches it with a fixed configuration path:
-  `~/Library/Application Support/texstudio/texstudio.ini`
-- Prevents TeXstudio from losing preferences
+- Detects latest `/Applications/texstudio-*.app`  
+- Launches it with fixed config path  
+  `~/Library/Application Support/texstudio/texstudio.ini`  
+- Prevents loss of preferences  
 
-Your Dock icon should point to this script, not directly to TeXstudio.
+Add this script to your Dock instead of TeXstudio.
+
+---
+
+## Teaching Tools
+
+### `prep_description_summary.sh`
+Generates boilerplate templates for student project summaries and descriptions.
+
+(Previously `setup-nbstripout.sh` existed, but nbstripout is currently **not used** due to issues and has been removed from the README.)
 
 ---
 
@@ -196,8 +263,7 @@ Your Dock icon should point to this script, not directly to TeXstudio.
 Whenever you add or modify a script:
 
 1. Update the **Quick Reference Table**  
-2. Update the **Detailed Description**  
-3. Save the README and run `sharedconfigs-save.sh` when you want a Git snapshot  
+2. Update the **Detailed Descriptions**  
+3. Save the README, then run `sharedconfigs-save.sh` if you want a Git snapshot  
 
-This keeps your scripting environment clear, documented, and future‑proof.
-
+This keeps your scripting environment clear, documented, and future-proof.

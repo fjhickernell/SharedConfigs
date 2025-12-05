@@ -15,17 +15,26 @@ if [[ "$DO_CONDA_UPGRADE" == "1" ]]; then
     conda update --all -y
 fi
 
-cd "$HOME/SoftwareRepositories/QMCSoftware"
-git fetch origin develop --quiet
-git checkout develop --quiet
-git pull --rebase origin develop --quiet
+QMCPY_BRANCH="${QMCPY_BRANCH:-develop}"
 
-pip install -e ".[dev]" -q
-pip install $UPGRADE_FLAG -r "$HOME/Documents/SharedConfigs/python/requirements-qmcpy-fred.txt" -q
-pip install $UPGRADE_FLAG -r "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt" -q
+cd "$HOME/SoftwareRepositories/QMCSoftware"
+git fetch origin "$QMCPY_BRANCH" --quiet
+git checkout "$QMCPY_BRANCH" --quiet
+git pull --rebase origin "$QMCPY_BRANCH" --quiet
+pip install -e ".[dev,class]"
 
 cd "$HOME/SoftwareRepositories/HickernellClassLib"
 git pull --quiet
-pip install -e . -q
+pip install -e . 
+
+cd "$HOME/Documents/SharedConfigs/python"
+if [[ -f "$HOME/Documents/SharedConfigs/python/requirements-qmcpy-extras-fred.txt" ]]; then
+    pip install $UPGRADE_FLAG -r "$HOME/Documents/SharedConfigs/python/requirements-qmcpy-extras-fred.txt"
+fi
+
+if [[ -f "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt" ]]; then
+    cd "$HOME/SoftwareRepositories/MATH565Fall2025"
+    pip install $UPGRADE_FLAG -r "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt"
+fi
 
 echo "✓ qmcpy environment synced successfully"

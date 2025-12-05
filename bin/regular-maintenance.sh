@@ -33,7 +33,6 @@ log "===== Regular maintenance run started. ====="
 sudo -v
 
 run_step "sync-brew"          "${BASE}/sync-brew.sh"
-run_step "sync-qmcpy-env"     "${BASE}/sync-qmcpy-env.sh"
 run_step "update-texlive"     sudo "${BASE}/update-texlive.sh"
 run_step "sharedconfigs-save" "${BASE}/sharedconfigs-save.sh"
 

@@ -1,25 +1,44 @@
-%% fh-exam.sty 2025/11/01) — adds mathtools
-% ------------------------------------------------------------------------------
-% fh-exam.sty v3.17a (2025/11/07)
-% ------------------------------------------------------------------------------
-% • Added optional second argument to \examstatsstemleaf for custom header titles.
-% • Fixed decimal leakage bug when input scores included fractional values
-%   (e.g., 98.68, 92.09).  Now handled safely by rounding inside \sl_add_int:n.
-% • Retains one-decimal precision for summary statistics (mean, SD, quartiles),
-%   but all stem-and-leaf calculations now use rounded integer scores.
-% • Removed redundant sequence-level rounding block from \examstatsstemleaf.
-%
-% Compatible with fh-exam v3.16d and earlier exam documents.
-% ------------------------------------------------------------------------------
-% fh-exam.sty — slim exam scaffolding (v3.15.2)
-% v3.16c (2025/10/23) — auto-appends Academic Integrity statement after instructions and header.
-% v3.15.2 fixed spacing in instructions.
-%  v3.15b takes away IQR and just gives quartiles
-% v3.15: Wrap whole file in \makeatletter...\makeatother to avoid '@' catcode issues in real docs.
-%        Keep robust SD/Median/Q1/Q3 (IQR), forced-space labels, geometry guard, header fix.
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesExplPackage{fh-exam}{2025/11/07}{v3.17a}{Slim exam scaffolding}
+%% ------------------------------------------------------------------------------
+%% fh-exam.sty — Slim exam scaffolding
+%%
+%% Changelog
+%%
+%% v3.18  (2025/12/04)
+%%   • Added take-home exam mode:
+%%       - New \examstyle{takehome} switch.
+%%       - Automatically replaces standard instructions with a take-home–specific block.
+%%       - Added support for instructor email in upright roman inside instructions.
+%%   • Refactored instruction system:
+%%       - Introduced \setexamfullinstructions for full block replacement.
+%%       - Preserved backward compatibility with legacy instruction knobs
+%%         (\examtimeallowed, \examnotesheets, \examdevices, etc.).
+%%   • Cleaned up package structure:
+%%       - Removed stray nested \makeatletter/\makeatother that caused compilation issues.
+%%       - Ensured all user-facing macros remain override-safe.
+%%
+%% v3.17a (2025/11/07)
+%%   • Added optional second argument to \examstatsstemleaf for custom header titles.
+%%   • Fixed decimal-leakage bug for fractional input scores.
+%%   • Consolidated rounding behavior across statistical summaries.
+%%   • Compatible with v3.16d and earlier exam documents.
+%%
+%% v3.16c (2025/10/23)
+%%   • Automatically appends Academic Integrity statement after instructions.
+%%
+%% v3.15b–v3.15.2
+%%   • Removed IQR from summary statistics, retaining quartiles.
+%%   • Fixed spacing in instructions block.
+%%
+%% v3.15  (2025)
+%%   • Wrapped entire file in \makeatletter...\makeatother for robust @-macro handling.
+%%   • Added geometry guards, header fixes, and stable SD / median / quartile computation.
+%%
+%% ------------------------------------------------------------------------------
 
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesExplPackage{fh-exam}{2025/12/04}{v3.18}{Slim exam scaffolding}
+
+\RequirePackage{xstring}
 \makeatletter
 
 % Add this once, near the top (after \makeatletter is fine)
@@ -43,6 +62,7 @@
 \RequirePackage{environ}
 \RequirePackage{fmtcount} % for word forms like \NUMBERstringnum
 \RequirePackage{xcolor}
+
 
 % put this once in fh-exam.sty (near other helpers)
 \ExplSyntaxOn
@@ -218,7 +238,6 @@
 }{}
 
 % --- Academic Integrity Signature (Signature + Date; labels underneath) ------
-\makeatletter
 \@ifundefined{examhonorstatement}{%
 	\newcommand{\examhonorstatement}{%
 		%\vspace{1\baselineskip}% space above
@@ -232,7 +251,6 @@
 		\vspace{1\baselineskip}% space below
 	}%
 }{}
-\makeatother
 
 % ---------- exam header ----------
 \newcommand{\SubjectCode}{}\newcommand{\SubjectTitle}{}\newcommand{\TestDate}{}\newcommand{\Instructor}{}\newcommand{\TestName}{Test}
@@ -250,37 +268,99 @@
 	\examhonorstatement
 }
 
-% --- Instructions block (customizable first item only) ---
-% Defaults you can tweak later (global)
+% --- Instructions block (refactored; adds full override + take-home mode) ---
+
+% -------------------
+% User-facing knobs (legacy)
+% -------------------
 \newcommand{\examtimeallowed}{\forcespaces{75 minutes}}
 \newcommand{\examnotesheets}{4}
 \newcommand{\examnotesdesc}{\forcespaces{double-sided letter-size sheets of notes}}
-\newcommand{\examdevices}{\forcespaces{No calculators or other devices are allowed. Phones must be placed in your bags under your desks or face down on your desks.  Hands mut be on top of your desks.}}
+\newcommand{\examdevices}{\forcespaces{No calculators or other devices are allowed. Phones must be placed in your bags under your desks or face down on your desks. Hands must be on top of your desks.}}
 \newcommand{\examsigfigs}{three} % word form
 \newcommand{\examinstructorcontact}{\forcespaces{Off-site students may contact the instructor as directed by your syllabus.}}
 
-% First instruction (per-exam overrideable)
+% First line (legacy override)
 \newcommand{\examfirstinstructiondefault}{%
-	\forcespaces{This test has \textbf{\examnumproblemsWORD} questions.%
-	\space Attempt them all.%
-	\space The maximum number of points is \textbf{\examtotalpointsref}.}%
+	\forcespaces{This test has \textbf{\examnumproblemsWORD} question(s).%
+		\space Attempt all.%
+		\space The maximum number of points is \textbf{\examtotalpointsref}.}%
 }
 \newcommand{\examfirstinstruction}{\examfirstinstructiondefault}
-\NewDocumentCommand{\setexamfirstinstruction}{m}{\renewcommand{\examfirstinstruction}{#1}}
+\NewDocumentCommand{\setexamfirstinstruction}{m}{%
+	\renewcommand{\examfirstinstruction}{#1}%
+}
 
-% Print the instructions. Optional arg overrides the first item *for this call*.
-\NewDocumentCommand{\printexaminstructions}{o}{%
+% ============================================================
+% NEW: Full instructions block (default = legacy 7-item list)
+% ============================================================
+
+\newcommand{\examfullinstructionsdefault}{%
+	\begin{enumerate}[label=\roman*., leftmargin=*, itemsep=2pt, topsep=2pt]
+		\item \examfirstinstruction
+		\item \forcespaces{The time allowed is \examtimeallowed.}
+		\item \forcespaces{This test is closed book, but you may use \textbf{\examnotesheets} \examnotesdesc.}
+		\item \examdevices
+		\item \forcespaces{Keep at least \emph{\examsigfigs} significant digits in your intermediate calculations and final answers.}
+		\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
+		\item \examinstructorcontact
+	\end{enumerate}
+}
+
+% User override hook:
+\newcommand{\examfullinstructions}{\examfullinstructionsdefault}
+\NewDocumentCommand{\setexamfullinstructions}{m}{%
+	\renewcommand{\examfullinstructions}{#1}%
+}
+
+% ============================================================
+% NEW: Take-home preset (easy switch)
+% ============================================================
+
+\newif\ifexam@takehome
+\exam@takehomefalse
+
+% Call: \examstyle{takehome}    or \examstyle{inclass}
+\NewDocumentCommand{\examstyle}{m}{%
+	\edef\temp{#1}%
+	\IfStrEq{\temp}{takehome}{%
+		\exam@takehometrue
+	}{%
+		\exam@takehomefalse
+	}%
+}
+
+% When take-home mode is active, replace the instructions block
+\AtBeginDocument{%
+	\ifexam@takehome
+	\setexamfullinstructions{%
+		\begin{enumerate}[label=\roman*., leftmargin=*, itemsep=2pt, topsep=2pt]
+			\item \forcespaces{This is a \textbf{take-home} exam with
+				\textbf{\examnumproblemsWORD} question(s). Attempt all.
+				The maximum number of points is \textbf{\examtotalpointsref}.}
+			\item \forcespaces{This take-home exam is due at the time listed above. 
+				There is no time limit other than the due date.}
+			\item\forcespaces{You must turn in your files via Canvas and hard copies to the instructor.}
+			\item \forcespaces{You may use AI tools (e.g., ChatGPT) and other inanimate 
+				resources. You may \textbf{not} get help from any human (classmates, tutors, 
+				friends, family, or online responders). All solutions must be your own work, 
+				and you are responsible for checking that AI-generated content is correct.}
+			\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
+			\item \forcespaces{If you have clarification questions,
+				email the instructor at \texttt{\upshape hickernell@illinoistech.edu}. Mathematical help will not be given.}
+		\end{enumerate}
+	}%
+	\fi
+}
+
+% ============================================================
+% Printer
+% ============================================================
+
+\NewDocumentCommand{\printexaminstructions}{}{%
 	{\small\em
 		\noindent Instructions:
-		\begin{enumerate}[label=\roman*., leftmargin=*, itemsep=2pt, topsep=2pt]
-			\item \IfNoValueTF{#1}{\examfirstinstruction}{#1}
-			\item \forcespaces{The time allowed is \examtimeallowed.}
-			\item \forcespaces{This test is closed book, but you may use \textbf{\examnotesheets} \examnotesdesc.}
-			\item \examdevices
-			\item \forcespaces{Keep at least \emph{\examsigfigs} significant digits in your intermediate calculations and final answers.}
-			\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
-			\item \examinstructorcontact
-		\end{enumerate}
+		\examfullinstructions
 	}%
 }
 % ---- Stem-and-leaf (expl3), descending stems, auto min–max + stats ----
