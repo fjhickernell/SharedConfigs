@@ -1,3 +1,4 @@
 macdown
+quarto
 visual-studio-code
 warp

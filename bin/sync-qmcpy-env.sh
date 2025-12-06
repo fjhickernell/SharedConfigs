@@ -21,20 +21,27 @@ cd "$HOME/SoftwareRepositories/QMCSoftware"
 git fetch origin "$QMCPY_BRANCH" --quiet
 git checkout "$QMCPY_BRANCH" --quiet
 git pull --rebase origin "$QMCPY_BRANCH" --quiet
-pip install -e ".[dev,class]"
+
+ARCH=$(uname -m)
+EXTRAS="dev,class"
+if [[ "$ARCH" == "x86_64" ]]; then
+    EXTRAS="class"
+fi
+
+python -m pip install $UPGRADE_FLAG -e ".[${EXTRAS}]"
 
 cd "$HOME/SoftwareRepositories/HickernellClassLib"
 git pull --quiet
-pip install -e . 
+python -m pip install $UPGRADE_FLAG -e .
 
 cd "$HOME/Documents/SharedConfigs/python"
 if [[ -f "$HOME/Documents/SharedConfigs/python/requirements-qmcpy-extras-fred.txt" ]]; then
-    pip install $UPGRADE_FLAG -r "$HOME/Documents/SharedConfigs/python/requirements-qmcpy-extras-fred.txt"
+    python -m pip install $UPGRADE_FLAG -r "$HOME/Documents/SharedConfigs/python/requirements-qmcpy-extras-fred.txt"
 fi
 
 if [[ -f "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt" ]]; then
     cd "$HOME/SoftwareRepositories/MATH565Fall2025"
-    pip install $UPGRADE_FLAG -r "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt"
+    python -m pip install $UPGRADE_FLAG -r "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt"
 fi
 
 echo "✓ qmcpy environment synced successfully"

@@ -1,3 +1,4 @@
+Air Printer.app
 Amazon Kindle.app
 Anaconda-Navigator.app
 Bartender 6.app
@@ -6,17 +7,24 @@ BibDesk.app
 Capital One Shopping.app
 ChatGPT Atlas.app
 ChatGPT.app
+Claude.app
+CotEditor.app
 Default Folder X.app
 Fantastical.app
+Firefox.app
+ForkLift.app
 GarageBand.app
 GeminiDesk.app
 GitKraken.app
+GoodTask.app
 Google Chrome.app
 Google Docs.app
 Google Drive.app
 Google Sheets.app
 Google Slides.app
 GraphicConverter 12.app
+HoudahSpot.app
+HP.app
 iMovie.app
 iStat Menus.app
 iTerm.app
@@ -36,9 +44,12 @@ Microsoft Word.app
 Name Mangler.app
 Numbers.app
 OneDrive.app
+OTP Manager.app
 Pages.app
+Paste.app
 Perplexity.app
 Pretty Progress.app
+Rakuten Cash Back.app
 Rectangle Pro.app
 Rectangle.app
 Safari.app
@@ -46,14 +57,20 @@ Shop.app
 Signal.app
 Slack.app
 Speedtest.app
+SplitPrint.app
+Tempus Stopwatch.app
 TeX Live Utility.app
 TeXShop.app
 texstudio-4.8.9-osx-m1.app
 texstudio-4.9.0-osx-m1.app
 TripIt.app
+Twitter.app
+Unclutter.app
 United MileagePlus Shopping℠.app
 Visual Studio Code.app
 Warp.app
 WeChat.app
 WhatsApp.app
+World Time.app
+Xcode.app
 zoom.us.app
