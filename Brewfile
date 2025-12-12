@@ -52,7 +52,6 @@ mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
-mas "Paste", id: 967805235
 mas "Perplexity", id: 6714467650
 mas "Rakuten Cash Back", id: 1451893560
 mas "Slack", id: 803453959
