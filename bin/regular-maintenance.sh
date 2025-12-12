@@ -36,4 +36,9 @@ run_step "sync-brew"          "${BASE}/sync-brew.sh"
 run_step "update-texlive"     sudo "${BASE}/update-texlive.sh"
 run_step "sharedconfigs-save" "${BASE}/sharedconfigs-save.sh"
 
+if [ -x "${BASE}/update-class-submodules.sh" ]; then
+  run_step "update-class-submodules" "${BASE}/update-class-submodules.sh" || \
+    log "update-class-submodules failed (non-fatal; continuing)."
+fi
+
 log "===== Regular maintenance run finished. ====="

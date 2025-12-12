@@ -1,4 +1,3 @@
----
 
 ### 🔍 Checking When Apps Were Last Updated
 

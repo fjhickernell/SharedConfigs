@@ -1,0 +1,256 @@
+{
+  "main": {
+    "id": "b9e6024065d1c1d8",
+    "type": "split",
+    "children": [
+      {
+        "id": "2f01db7cb5191934",
+        "type": "tabs",
+        "dimension": 51.26903553299492,
+        "children": [
+          {
+            "id": "b85865996df3019a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Perplexity comparison of AIs"
+            }
+          }
+        ]
+      },
+      {
+        "id": "aedd853b77373462",
+        "type": "tabs",
+        "dimension": 48.73096446700508,
+        "children": [
+          {
+            "id": "9ff83e3f0533e17d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Perplexity comparison of AIs"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "9d601f6c819d7959",
+    "type": "split",
+    "children": [
+      {
+        "id": "46052a339e005bf3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a7e048caa312799a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "da3cfb26f59bfe79",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "395e033675e36621",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "2b27a274c4e0034b",
+    "type": "split",
+    "children": [
+      {
+        "id": "33131f49d3c140e7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "82fb561c5b15ca84",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Perplexity comparison of AIs"
+            }
+          },
+          {
+            "id": "df880a2ebb98c1cc",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Perplexity comparison of AIs"
+            }
+          },
+          {
+            "id": "245cf3d9f19a042f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "5b78b0bc129b8ee8",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "d23bb5214928d90e",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Perplexity comparison of AIs"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "9ff83e3f0533e17d",
+  "lastOpenFiles": [
+    "Software/classlib/bin/update-submodules.sh",
+    "Software/classlib/bin",
+    "Reference/Quarto Workflow.md",
+    "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+    "Reference/ArtificialIntelligence/ChatGPT_AI_Decision_Guide.md",
+    "MasterLists/Lessons Learned.md",
+    "Reference/ArtificialIntelligence/Which AI is best.txt",
+    "Reference/ArtificialIntelligence/Claude-ai-comparison-table.md",
+    "Reference/ArtificialIntelligence",
+    "Reference/check_app_update_dates.md",
+    "MasterLists/Mac App Inventory (index).md",
+    "Reference/README_bin.md",
+    "Reference/SharedConfigs-README.md",
+    "Reference/Chinese Names.md",
+    "Reference/QMC Environment Notes.md",
+    "Reference/fh-exam Baseline.md.md",
+    "Home.md",
+    "Reference",
+    "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/LICENSE",
+    "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.ttf",
+    "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.woff",
+    "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.eot",
+    "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.css",
+    "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.woff",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Stacked/White/SigOpt-Stacked-White.svg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Icon/Blue/SigOpt-Icon-Blue.svg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Icon/Blue/SigOpt-Icon-Blue.jpg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Icon/White/SigOpt-Icon-White.svg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Icon/White/SigOpt-Icon-White.jpg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Horz/White/SigoOpt-Horz-White.svg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Stacked/Blue/SigOpt-Stacked-Blue.svg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Stacked/Blue/SigOpt-Stacked-Blue.jpg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Horz/Blue/SigoOpt-Horz-Blue.svg",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Horz/Blue/SigoOpt-Horz-Blue.jpg",
+    "Teaching/MATH476Spring2026/qmcsoftware/demos/talk_paper_demos/Parslfest_2025/README.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/qmcpy/discrete_distribution/_c_lib/README.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/kernels.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/util.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/stopping_criteria.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/true_measures.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/fast_transforms.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/integrands.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/discrete_distributions.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/demos/GBM/README.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/test/booktests/READEME.md",
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/components.md"
+  ]
+}
