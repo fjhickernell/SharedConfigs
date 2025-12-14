@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+                "file": "Teaching/MATH476Fall2025.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Perplexity comparison of AIs"
+              "title": "MATH476Fall2025"
             }
           }
         ]
@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
-                "mode": "preview",
+                "file": "Home.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Perplexity comparison of AIs"
+              "title": "Home"
             }
           }
         ]
@@ -100,7 +100,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 213.5
   },
   "right": {
     "id": "2b27a274c4e0034b",
@@ -116,7 +116,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+                "file": "Home.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,7 +126,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Perplexity comparison of AIs"
+              "title": "Backlinks for Home"
             }
           },
           {
@@ -191,7 +191,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -206,12 +207,21 @@
   },
   "active": "9ff83e3f0533e17d",
   "lastOpenFiles": [
+    "Teaching/MATH476Spring2026 1.md",
+    "Home.md",
+    "Teaching/MATH476Spring2026.md",
+    "Teaching/MATH476Spring2026/classlib/README.md",
+    "Teaching/MATH476Fall2025.md",
+    "Teaching/MATH565Fall2025.md",
+    "MasterLists/Lessons Learned.md",
+    "Teaching/Lessons-Learned-Quarto-RevealJS.md",
+    "MasterLists/LessonsLearned.md",
+    "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
+    "Teaching/Quarto Website + RevealJS Slides (with Submodules).md.md",
     "Software/classlib/bin/update-submodules.sh",
     "Software/classlib/bin",
     "Reference/Quarto Workflow.md",
-    "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
     "Reference/ArtificialIntelligence/ChatGPT_AI_Decision_Guide.md",
-    "MasterLists/Lessons Learned.md",
     "Reference/ArtificialIntelligence/Which AI is best.txt",
     "Reference/ArtificialIntelligence/Claude-ai-comparison-table.md",
     "Reference/ArtificialIntelligence",
@@ -222,14 +232,12 @@
     "Reference/Chinese Names.md",
     "Reference/QMC Environment Notes.md",
     "Reference/fh-exam Baseline.md.md",
-    "Home.md",
     "Reference",
     "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/LICENSE",
     "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.ttf",
     "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.woff",
     "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.eot",
     "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.css",
-    "Teaching/MATH476Spring2026/docs/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.woff",
     "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Stacked/White/SigOpt-Stacked-White.svg",
     "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Icon/Blue/SigOpt-Icon-Blue.svg",
     "Teaching/MATH476Spring2026/qmcsoftware/docs/assets/logos/SigOpt_Logo_Files/Icon/Blue/SigOpt-Icon-Blue.jpg",
@@ -244,13 +252,6 @@
     "Teaching/MATH476Spring2026/qmcsoftware/qmcpy/discrete_distribution/_c_lib/README.md",
     "Teaching/MATH476Spring2026/qmcsoftware/docs/api/kernels.md",
     "Teaching/MATH476Spring2026/qmcsoftware/docs/api/util.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/stopping_criteria.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/true_measures.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/fast_transforms.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/integrands.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/discrete_distributions.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/demos/GBM/README.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/test/booktests/READEME.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/docs/components.md"
+    "Teaching/MATH476Spring2026/qmcsoftware/docs/api/stopping_criteria.md"
   ]
 }
