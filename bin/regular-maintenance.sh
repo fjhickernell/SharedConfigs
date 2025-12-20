@@ -14,8 +14,10 @@ run_step() {
   shift
 
   log "Starting: ${name}"
+  set +e
   "$@"
   local exit_code=$?
+  set -e
 
   if [[ ${exit_code} -eq 0 ]]; then
     log "Finished: ${name} (ok)"
@@ -23,7 +25,26 @@ run_step() {
     log "FAILED: ${name} (exit ${exit_code})"
   fi
 
-  return ${exit_code}
+  return 0
+}
+
+run_step_fatal() {
+  local name="$1"
+  shift
+
+  log "Starting: ${name}"
+  set +e
+  "$@"
+  local exit_code=$?
+  set -e
+
+  if [[ ${exit_code} -eq 0 ]]; then
+    log "Finished: ${name} (ok)"
+    return 0
+  else
+    log "FAILED: ${name} (exit ${exit_code})"
+    return ${exit_code}
+  fi
 }
 
 BASE="$HOME/Documents/SharedConfigs/bin"
