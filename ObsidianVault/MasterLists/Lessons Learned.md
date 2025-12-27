@@ -38,6 +38,7 @@ This document collects workflow insights, best practices, and cross-project beha
 ## 2. Teaching, Class Repos & Course Development
 
 ### Submodules workflow (classlib + qmcsoftware)
+- See [[class_repo_submodule_workflow]]
 - Always track QMCSoftware using the **develop** branch.
 - Use update-submodules.sh in each course repo for consistent pulls.
 - Avoid manual edits inside submodules — always change upstream.

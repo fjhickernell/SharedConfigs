@@ -18,8 +18,10 @@ Use the sections below to jump directly into your core areas of work.
 
 ## 🎓 Teaching
 
-- [[Teaching/MATH476Spring2026/|MATH476 — Spring 2026]]
-- - [[Teaching/MATH565Fall2025|MATH 565 — Fall 2025]]
+- [[Teaching/MATH476Spring2026/index.md|MATH476 — Spring 2026]]
+- [[Teaching/MATH565Fall2025|MATH 565 — Fall 2025]]
+- [[ClassRepo_Submodule_Workflow]]
+- 
 
 (You can add: MATH 476 Spring 2026, MATH 563 Spring 2026, and others as needed.)
 

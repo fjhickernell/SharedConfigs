@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "usage: $0 slides/<file>.qmd" >&2
+  exit 2
+fi
+
+SLIDE="$1"
+if [ ! -f "$SLIDE" ]; then
+  echo "not found: $SLIDE" >&2
+  exit 2
+fi
+
+DEVYML="slides/hickernell-slides-dev.yml"
+if [ ! -f "$DEVYML" ]; then
+  echo "missing $DEVYML (run the cp/sed step once in this repo)" >&2
+  exit 2
+fi
+
+WRAP="slides/_dev-preview.qmd"
+
+MACROS="$HOME/SoftwareRepositories/HickernellClassLib/classlib/quarto/slides/hickernell-latex-macros.js"
+if [ ! -f "$MACROS" ]; then
+  echo "macros not found: $MACROS" >&2
+  exit 2
+fi
+
+cat > "$WRAP" <<EOF2
+---
+format: revealjs
+metadata-files:
+  - hickernell-slides-dev.yml
+include-in-header:
+  - $MACROS
+---
+
+{{< include ${SLIDE#slides/} >}}
+EOF2
+
+TMPDIR="/tmp" quarto preview "$WRAP"
