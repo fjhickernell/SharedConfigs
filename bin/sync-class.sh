@@ -55,10 +55,11 @@ sync_standalone_repo() {
   )
 }
 
-sync_class_repo_latest_submodules() {
+sync_class_repo() {
   local repo="$1"
-  local do_commit="$2"
-  local do_push="$3"
+  local do_promote="$2"
+  local do_commit="$3"
+  local do_push="$4"
 
   log "Class repo: ${repo}"
   if [[ ! -d "${repo}/.git" ]]; then
@@ -77,18 +78,22 @@ sync_class_repo_latest_submodules() {
 
     pull_ff_only
 
-    if [[ -x "./classlib/bin/update-submodules.sh" ]]; then
-      ./classlib/bin/update-submodules.sh || true
+    if [[ "${do_promote}" -eq 1 ]]; then
+      if [[ -x "./classlib/bin/update-submodules.sh" ]]; then
+        ./classlib/bin/update-submodules.sh || true
+      else
+        log "SKIP: missing ./classlib/bin/update-submodules.sh in ${repo}"
+        return 0
+      fi
     else
-      log "SKIP: missing ./classlib/bin/update-submodules.sh in ${repo}"
-      return 0
+      /usr/bin/git submodule update --init --recursive
     fi
 
     /usr/bin/git submodule status
     /usr/bin/git status --short
 
     if ! is_clean; then
-      if [[ "${do_commit}" -eq 1 || "${do_push}" -eq 1 ]]; then
+      if [[ "${do_commit}" -eq 1 ]]; then
         if only_submodule_pointers_dirty; then
           /usr/bin/git add classlib qmcsoftware
           /usr/bin/git commit -m "Update submodule pointers"
@@ -103,30 +108,66 @@ sync_class_repo_latest_submodules() {
         log "git status --short:"
         /usr/bin/git status --short
         log ""
-        log "Run: sync-class.sh --commit   (then optionally --push)"
+        log "Run: sync-class.sh --commit   (or --push)"
         return 0
       fi
     fi
 
     if [[ "${do_push}" -eq 1 ]]; then
-      /usr/bin/git push
-    fi
+      if /usr/bin/git rev-parse --quiet --verify '@{u}' >/dev/null 2>&1; then
+        local ahead_count
+        ahead_count=$(/usr/bin/git rev-list --count '@{u}..HEAD')
+        if [[ "${ahead_count}" -gt 0 ]]; then
+          /usr/bin/git push
+        else
+          log "No commits to push; skipping git push."
+        fi
+      else
+        /usr/bin/git push
+      fi
+    fi  
   )
 }
 
+usage() {
+  cat <<'EOF'
+sync-class.sh
+
+Default (no flags):
+  - Pull standalone repos
+  - Pull class repos
+  - Update submodules to pinned SHAs (git submodule update --init --recursive)
+  - No commits, no pushes
+
+Flags:
+  --promote   Advance submodules to tip (runs ./classlib/bin/update-submodules.sh)
+  --commit    If submodule pointers changed, commit them in each class repo
+  --push      Implies --commit and --promote; push the pointer commits
+EOF
+}
+
+do_promote=0
 do_commit=0
 do_push=0
 
 for arg in "$@"; do
   case "${arg}" in
+    --promote) do_promote=1 ;;
     --commit) do_commit=1 ;;
     --push) do_push=1 ;;
+    --help|-h) usage; exit 0 ;;
     *)
       log "ERROR: unknown argument: ${arg}"
+      usage
       exit 2
       ;;
   esac
 done
+
+if [[ "${do_push}" -eq 1 ]]; then
+  do_commit=1
+  do_promote=1
+fi
 
 STANDALONE_REPOS=(
   "$HOME/SoftwareRepositories/HickernellClassLib:main"
@@ -138,7 +179,11 @@ CLASS_REPOS=(
   "$HOME/SoftwareRepositories/MATH476Spring2026"
 )
 
-log "===== Sync class started (absolute latest submodules) ====="
+if [[ "${do_promote}" -eq 1 ]]; then
+  log "===== Sync class started (PROMOTE: advance submodules to tip) ====="
+else
+  log "===== Sync class started (PINNED: match class repo submodule SHAs) ====="
+fi
 
 for spec in "${STANDALONE_REPOS[@]}"; do
   repo="${spec%%:*}"
@@ -147,7 +192,7 @@ for spec in "${STANDALONE_REPOS[@]}"; do
 done
 
 for repo in "${CLASS_REPOS[@]}"; do
-  sync_class_repo_latest_submodules "${repo}" "${do_commit}" "${do_push}"
+  sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"
 done
 
 log "===== Sync class finished ====="
