@@ -11,14 +11,10 @@
             "id": "a7d1684cde36dc45",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "SharedConfigs-Notes/class_repo_submodule_workflow.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "class_repo_submodule_workflow"
+              "title": "New tab"
             }
           }
         ]
@@ -33,7 +29,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "SharedConfigs-Notes/class_repo_submodule_workflow.md",
+                "file": "class_repo_submodule_workflow.md",
                 "mode": "source",
                 "source": false
               },
@@ -114,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "SharedConfigs-Notes/class_repo_submodule_workflow.md",
+                "file": "class_repo_submodule_workflow.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -204,6 +200,8 @@
   },
   "active": "f013b83b767dc5e2",
   "lastOpenFiles": [
+    "MasterLists/Lessons Learned.md",
+    "class_repo_submodule_workflow.md",
     "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-3-3.png",
     "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-1-1.png",
     "Teaching/MATH476Spring2026/slides/intro-01_files/mediabag",
@@ -225,7 +223,6 @@
     "Teaching/MATH476Spring2026/_site/slides/Template_files/figure-revealjs/unnamed-chunk-1-1.png",
     "Teaching/MATH476Spring2026/slides/Template_files/figure-revealjs/unnamed-chunk-4-3.png",
     "Teaching/MATH476Spring2026/slides/intro-01.knit.md",
-    "MasterLists/Lessons Learned.md",
     "Untitled.canvas",
     "SharedConfigs-Notes/class_repo_submodule_workflow.md",
     "SharedConfigs-Notes/ClassRepo_Submodule_Workflow.md",

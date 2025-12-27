@@ -8,7 +8,7 @@ log() {
 }
 
 is_clean() {
-  [[ -z "$(git status --porcelain)" ]]
+  [[ -z "$(/usr/bin/git status --porcelain)" ]]
 }
 
 only_submodule_pointers_dirty() {
@@ -27,7 +27,7 @@ only_submodule_pointers_dirty() {
 }
 
 pull_ff_only() {
-  git pull --ff-only
+  /usr/bin/git pull --ff-only
 }
 
 sync_standalone_repo() {
@@ -40,21 +40,25 @@ sync_standalone_repo() {
     return 0
   fi
 
-  cd "${repo}"
+  (
+    cd "${repo}"
 
-  if ! is_clean; then
-    log "SKIP: dirty working tree in ${repo}"
-    git status --short
-    return 0
-  fi
+    if ! is_clean; then
+      log "SKIP: dirty working tree in ${repo}"
+      /usr/bin/git status --short
+      return 0
+    fi
 
-  git fetch origin || true
-  git checkout "${branch}"
-  pull_ff_only
+    /usr/bin/git fetch origin || true
+    /usr/bin/git checkout "${branch}"
+    pull_ff_only
+  )
 }
 
 sync_class_repo_latest_submodules() {
   local repo="$1"
+  local do_commit="$2"
+  local do_push="$3"
 
   log "Class repo: ${repo}"
   if [[ ! -d "${repo}/.git" ]]; then
@@ -62,26 +66,67 @@ sync_class_repo_latest_submodules() {
     return 0
   fi
 
-  cd "${repo}"
+  (
+    cd "${repo}"
 
-  if ! only_submodule_pointers_dirty; then
-    log "SKIP: dirty working tree (non-submodule changes) in ${repo}"
-    git status --short
-    return 0
-  fi
+    if ! only_submodule_pointers_dirty; then
+      log "SKIP: dirty working tree (non-submodule changes) in ${repo}"
+      /usr/bin/git status --short
+      return 0
+    fi
 
-  pull_ff_only
+    pull_ff_only
 
-  if [[ -x "./classlib/bin/update-submodules.sh" ]]; then
-    ./classlib/bin/update-submodules.sh
-  else
-    log "SKIP: missing ./classlib/bin/update-submodules.sh in ${repo}"
-    return 0
-  fi
+    if [[ -x "./classlib/bin/update-submodules.sh" ]]; then
+      ./classlib/bin/update-submodules.sh || true
+    else
+      log "SKIP: missing ./classlib/bin/update-submodules.sh in ${repo}"
+      return 0
+    fi
 
-  git submodule status
-  git status --short
+    /usr/bin/git submodule status
+    /usr/bin/git status --short
+
+    if ! is_clean; then
+      if [[ "${do_commit}" -eq 1 || "${do_push}" -eq 1 ]]; then
+        if only_submodule_pointers_dirty; then
+          /usr/bin/git add classlib qmcsoftware
+          /usr/bin/git commit -m "Update submodule pointers"
+        else
+          log "SKIP: changes present but not only submodule pointers; not committing"
+          /usr/bin/git status --short
+          return 0
+        fi
+      else
+        log "Uncommitted submodule pointer changes detected."
+        log ""
+        log "git status --short:"
+        /usr/bin/git status --short
+        log ""
+        log "Run: sync-class.sh --commit   (then optionally --push)"
+        return 0
+      fi
+    fi
+
+    if [[ "${do_push}" -eq 1 ]]; then
+      /usr/bin/git push
+    fi
+  )
 }
+
+do_commit=0
+do_push=0
+
+for arg in "$@"; do
+  case "${arg}" in
+    --commit) do_commit=1 ;;
+    --push) do_push=1 ;;
+    *)
+      log "ERROR: unknown argument: ${arg}"
+      exit 2
+      ;;
+  esac
+done
 
 STANDALONE_REPOS=(
   "$HOME/SoftwareRepositories/HickernellClassLib:main"
@@ -102,7 +147,7 @@ for spec in "${STANDALONE_REPOS[@]}"; do
 done
 
 for repo in "${CLASS_REPOS[@]}"; do
-  sync_class_repo_latest_submodules "${repo}"
+  sync_class_repo_latest_submodules "${repo}" "${do_commit}" "${do_push}"
 done
 
 log "===== Sync class finished ====="
