@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CLASSLIB_SUBMODULE="classlib"
+QMCSOFTWARE_SUBMODULE="qmcsoftware"
+
+CLASSLIB_CANONICAL="$HOME/SoftwareRepositories/HickernellClassLib"
+QMCSOFTWARE_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
+
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+YELLOW="\033[0;33m"
+RESET="\033[0m"
+
+print_missing() {
+  echo -e "${RED}$1${RESET}"
+  exit 1
+}
+
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || print_missing "Not inside a git repository."
+
+have_submodule() {
+  [[ -d "$1" ]] && git -C "$1" rev-parse --git-dir >/dev/null 2>&1
+}
+
+sha_head() {
+  git -C "$1" rev-parse HEAD
+}
+
+advice_block() {
+  local ws
+  ws="$(git status --porcelain)"
+
+  cat <<'EOF'
+
+What to do next:
+
+Promote to latest shared code (advance pointers + commit/push):
+  sync-class.sh --push
+
+EOF
+
+  if [[ -n "$ws" ]]; then
+    cat <<'EOF'
+Before promoting, make sure the superproject is clean:
+  git status --short
+
+If you see unrelated changes, commit/stash them first.
+
+EOF
+  fi
+
+  cat <<'EOF'
+If the repo is dirty because you edited inside a submodule by mistake:
+  git -C classlib status --short
+  git -C qmcsoftware status --short
+
+EOF
+}
+
+mismatch=0
+details=()
+
+have_submodule "$CLASSLIB_SUBMODULE" || print_missing "No '$CLASSLIB_SUBMODULE' submodule found in this repo."
+have_submodule "$QMCSOFTWARE_SUBMODULE" || print_missing "No '$QMCSOFTWARE_SUBMODULE' submodule found in this repo."
+
+[[ -d "$CLASSLIB_CANONICAL/.git" ]] || print_missing "Canonical repo missing: $CLASSLIB_CANONICAL"
+[[ -d "$QMCSOFTWARE_CANONICAL/.git" ]] || print_missing "Canonical repo missing: $QMCSOFTWARE_CANONICAL"
+
+sub_classlib="$(sha_head "$CLASSLIB_SUBMODULE")"
+can_classlib="$(sha_head "$CLASSLIB_CANONICAL")"
+sub_qmc="$(sha_head "$QMCSOFTWARE_SUBMODULE")"
+can_qmc="$(sha_head "$QMCSOFTWARE_CANONICAL")"
+
+if [[ "$sub_classlib" != "$can_classlib" ]]; then
+  mismatch=1
+  details+=("classlib submodule:   $sub_classlib
+classlib canonical:   $can_classlib")
+fi
+
+if [[ "$sub_qmc" != "$can_qmc" ]]; then
+  mismatch=1
+  details+=("qmcsoftware submodule: $sub_qmc
+qmcsoftware canonical: $can_qmc")
+fi
+
+if [[ "$mismatch" -eq 0 ]]; then
+  echo -e "${GREEN}Submodules Match!${RESET}  (classlib + qmcsoftware)"
+  exit 0
+fi
+
+echo -e "${RED}Submodules Don't Match!${RESET}"
+echo
+for d in "${details[@]}"; do
+  echo "$d"
+  echo
+done
+
+ws="$(git status --porcelain)"
+if [[ -n "$ws" ]]; then
+  echo -e "${YELLOW}Note:${RESET} Superproject has uncommitted changes:"
+  echo "$ws"
+  echo
+fi
+
+advice_block
+echo -e "${YELLOW}Tip:${RESET} run subs-match after sync-class.sh --push for the all-green check."
+exit 1
