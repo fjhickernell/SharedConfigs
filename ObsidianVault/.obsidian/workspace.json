@@ -198,8 +198,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "f013b83b767dc5e2",
+  "active": "a7e048caa312799a",
   "lastOpenFiles": [
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v2.md",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing.md",
     "MasterLists/Lessons Learned.md",
     "class_repo_submodule_workflow.md",
     "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-3-3.png",
@@ -244,8 +246,6 @@
     "Teaching/MATH476Spring2026/qmcsoftware/demos/GBM/gbm_todo.md",
     "Teaching/MATH565Fall2025/qmcsoftware/demos/GBM/gbm_todo.md",
     "Teaching/MATH476Fall2025.md",
-    "MasterLists/LessonsLearned.md",
-    "Reference/ArtificialIntelligence/Perplexity comparison of AIs.md",
-    "Teaching/Quarto Website + RevealJS Slides (with Submodules).md.md"
+    "MasterLists/LessonsLearned.md"
   ]
 }

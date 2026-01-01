@@ -27,7 +27,8 @@ only_submodule_pointers_dirty() {
 }
 
 pull_ff_only() {
-  /usr/bin/git pull --ff-only
+  /usr/bin/git fetch origin
+  /usr/bin/git merge --ff-only '@{u}'
 }
 
 sync_standalone_repo() {
@@ -49,10 +50,23 @@ sync_standalone_repo() {
       return 0
     fi
 
-    /usr/bin/git fetch origin || true
     /usr/bin/git checkout "${branch}"
     pull_ff_only
   )
+}
+
+push_if_ahead() {
+  if /usr/bin/git rev-parse --quiet --verify '@{u}' >/dev/null 2>&1; then
+    local ahead_count
+    ahead_count=$(/usr/bin/git rev-list --count '@{u}..HEAD')
+    if [[ "${ahead_count}" -gt 0 ]]; then
+      /usr/bin/git push
+    else
+      log "No commits to push; skipping git push."
+    fi
+  else
+    /usr/bin/git push
+  fi
 }
 
 sync_class_repo() {
@@ -79,10 +93,10 @@ sync_class_repo() {
     pull_ff_only
 
     if [[ "${do_promote}" -eq 1 ]]; then
-      if [[ -x "./classlib/bin/update-submodules.sh" ]]; then
-        ./classlib/bin/update-submodules.sh || true
+      if command -v update-submodules.sh >/dev/null 2>&1; then
+        update-submodules.sh || true
       else
-        log "SKIP: missing ./classlib/bin/update-submodules.sh in ${repo}"
+        log "SKIP: missing update-submodules.sh on PATH in ${repo}"
         return 0
       fi
     else
@@ -95,8 +109,24 @@ sync_class_repo() {
     if ! is_clean; then
       if [[ "${do_commit}" -eq 1 ]]; then
         if only_submodule_pointers_dirty; then
+          local msg cls_sha qmc_sha
+          cls_sha=""
+          qmc_sha=""
+
+          if [[ -d "classlib/.git" || -f "classlib/.git" ]]; then
+            cls_sha=$(/usr/bin/git -C classlib rev-parse --short=12 HEAD 2>/dev/null || true)
+          fi
+          if [[ -d "qmcsoftware/.git" || -f "qmcsoftware/.git" ]]; then
+            qmc_sha=$(/usr/bin/git -C qmcsoftware rev-parse --short=12 HEAD 2>/dev/null || true)
+          fi
+
+          msg="Update submodule pointers"
+          if [[ -n "${cls_sha}" || -n "${qmc_sha}" ]]; then
+            msg="${msg} (classlib ${cls_sha:-na}, qmcsoftware ${qmc_sha:-na})"
+          fi
+
           /usr/bin/git add classlib qmcsoftware
-          /usr/bin/git commit -m "Update submodule pointers"
+          /usr/bin/git commit -m "${msg}"
         else
           log "SKIP: changes present but not only submodule pointers; not committing"
           /usr/bin/git status --short
@@ -114,18 +144,8 @@ sync_class_repo() {
     fi
 
     if [[ "${do_push}" -eq 1 ]]; then
-      if /usr/bin/git rev-parse --quiet --verify '@{u}' >/dev/null 2>&1; then
-        local ahead_count
-        ahead_count=$(/usr/bin/git rev-list --count '@{u}..HEAD')
-        if [[ "${ahead_count}" -gt 0 ]]; then
-          /usr/bin/git push
-        else
-          log "No commits to push; skipping git push."
-        fi
-      else
-        /usr/bin/git push
-      fi
-    fi  
+      push_if_ahead
+    fi
   )
 }
 
@@ -140,7 +160,7 @@ Default (no flags):
   - No commits, no pushes
 
 Flags:
-  --promote   Advance submodules to tip (runs ./classlib/bin/update-submodules.sh)
+  --promote   Advance submodules to tip (runs update-submodules.sh from PATH)
   --commit    If submodule pointers changed, commit them in each class repo
   --push      Implies --commit and --promote; push the pointer commits
 EOF
@@ -177,6 +197,8 @@ STANDALONE_REPOS=(
 CLASS_REPOS=(
   "$HOME/SoftwareRepositories/MATH565Fall2025"
   "$HOME/SoftwareRepositories/MATH476Spring2026"
+  "$HOME/SoftwareRepositories/MATH563Spring2026"
+  "$HOME/SoftwareRepositories/SIAMUQ26"
 )
 
 if [[ "${do_promote}" -eq 1 ]]; then
