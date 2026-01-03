@@ -149,6 +149,35 @@ sync_class_repo() {
   )
 }
 
+health_summary() {
+  local repo repo_name line
+  log "===== Repo health summary ====="
+
+  if ! command -v repo-health >/dev/null 2>&1; then
+    echo "NOPE  repo-health  not on PATH"
+    return 0
+  fi
+
+  for repo in "${CLASS_REPOS[@]}"; do
+    repo_name="${repo##*/}"
+    if [[ -d "${repo}/.git" ]]; then
+      (
+        cd "${repo}"
+        line="$(repo-health --short 2>&1 || true)"
+        if [[ -z "${line}" ]]; then
+          echo "NOPE  ${repo_name}  repo-health produced no output"
+        else
+          echo "${line}"
+        fi
+      )
+    else
+      echo "NOPE  ${repo_name}  missing repo"
+    fi
+  done
+}
+
+
+
 usage() {
   cat <<'EOF'
 sync-class.sh
@@ -216,5 +245,7 @@ done
 for repo in "${CLASS_REPOS[@]}"; do
   sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"
 done
+
+health_summary
 
 log "===== Sync class finished ====="

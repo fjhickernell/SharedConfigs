@@ -1,0 +1,244 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SHORT=0
+if [[ "${1:-}" == "--short" ]]; then
+  SHORT=1
+  shift
+fi
+
+CLASSLIB_SUBMODULE="classlib"
+QMCSOFTWARE_SUBMODULE="qmcsoftware"
+
+CLASSLIB_CANONICAL="$HOME/SoftwareRepositories/HickernellClassLib"
+QMCSOFTWARE_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
+
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+YELLOW="\033[0;33m"
+BLUE="\033[0;34m"
+RESET="\033[0m"
+
+ok()   { echo -e "${GREEN}OK${RESET}  $*"; }
+warn() { echo -e "${YELLOW}WARN${RESET}  $*"; }
+bad()  { echo -e "${RED}NOPE${RESET}  $*"; }
+info() { echo -e "${BLUE}INFO${RESET}  $*"; }
+
+die() { bad "$*"; exit 1; }
+
+in_git_repo() {
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1
+}
+
+have_dir_git() {
+  [[ -d "$1" ]] && git -C "$1" rev-parse --git-dir >/dev/null 2>&1
+}
+
+sha_head() {
+  git -C "$1" rev-parse HEAD 2>/dev/null
+}
+
+porcelain() {
+  git -C "$1" status --porcelain 2>/dev/null || true
+}
+
+branch_upstream_status() {
+  local b up ahead behind
+  b="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  if [[ -z "$b" ]]; then
+    echo "DETACHED"
+    return 0
+  fi
+  up="$(git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>/dev/null || true)"
+  if [[ -z "$up" ]]; then
+    echo "NO-UPSTREAM"
+    return 0
+  fi
+  ahead="$(git rev-list --count "${up}..HEAD" 2>/dev/null || echo 0)"
+  behind="$(git rev-list --count "HEAD..${up}" 2>/dev/null || echo 0)"
+  echo "${b} ${up} ${ahead} ${behind}"
+}
+
+tip_clean_superproject() {
+  cat <<EOF
+Tips:
+  git status --short
+  git add -A && git commit -m "..."
+  git restore --staged --worktree .
+  git stash -u
+EOF
+}
+
+tip_clean_submodule() {
+  local name="$1"
+  cat <<EOF
+Tips (inside ${name}):
+  git -C ${name} status --short
+  git -C ${name} restore --staged --worktree .
+  git -C ${name} stash -u
+EOF
+}
+
+tip_align_submodules() {
+  cat <<EOF
+Tips (align class repo pins to latest shared code):
+  sync-class.sh --push
+
+Tips (just update working tree to pinned SHAs):
+  git submodule update --init --recursive
+EOF
+}
+
+main() {
+  in_git_repo || die "Not inside a git repository."
+
+  local top
+  top="$(git rev-parse --show-toplevel)"
+  info "Repo: ${top}"
+
+  local bs
+  bs="$(branch_upstream_status)"
+  if [[ "$bs" == "DETACHED" ]]; then
+    warn "HEAD is detached (not on a branch)."
+  elif [[ "$bs" == "NO-UPSTREAM" ]]; then
+    warn "No upstream tracking branch set."
+  else
+    local b up ahead behind
+    read -r b up ahead behind <<<"$bs"
+    ok "Branch: ${b} (upstream: ${up}, ahead: ${ahead}, behind: ${behind})"
+    if [[ "${behind}" -ne 0 ]]; then
+      warn "You are behind upstream by ${behind} commit(s)."
+      info "Tip: git pull --ff-only"
+    fi
+    if [[ "${ahead}" -ne 0 ]]; then
+      warn "You are ahead of upstream by ${ahead} commit(s)."
+      info "Tip: git push"
+    fi
+  fi
+
+  local ws
+  ws="$(porcelain ".")"
+  if [[ -z "$ws" ]]; then
+    ok "Superproject working tree clean."
+  else
+    bad "Superproject has uncommitted changes:"
+    echo "$ws"
+    tip_clean_superproject
+  fi
+
+  local have_any_sub=0
+  if have_dir_git "$CLASSLIB_SUBMODULE"; then
+    ok "Found submodule: ${CLASSLIB_SUBMODULE}"
+    have_any_sub=1
+  else
+    warn "Missing/uninitialized submodule: ${CLASSLIB_SUBMODULE}"
+  fi
+
+  if have_dir_git "$QMCSOFTWARE_SUBMODULE"; then
+    ok "Found submodule: ${QMCSOFTWARE_SUBMODULE}"
+    have_any_sub=1
+  else
+    warn "Missing/uninitialized submodule: ${QMCSOFTWARE_SUBMODULE}"
+  fi
+
+  if [[ "$have_any_sub" -eq 0 ]]; then
+    warn "No recognized submodules found; skipping submodule checks."
+  else
+    info "Submodule cleanliness:"
+    if have_dir_git "$CLASSLIB_SUBMODULE"; then
+      local s
+      s="$(porcelain "$CLASSLIB_SUBMODULE")"
+      if [[ -z "$s" ]]; then
+        ok "classlib clean."
+      else
+        bad "classlib has uncommitted changes:"
+        echo "$s"
+        tip_clean_submodule "classlib"
+      fi
+    fi
+
+    if have_dir_git "$QMCSOFTWARE_SUBMODULE"; then
+      local s
+      s="$(porcelain "$QMCSOFTWARE_SUBMODULE")"
+      if [[ -z "$s" ]]; then
+        ok "qmcsoftware clean."
+      else
+        bad "qmcsoftware has uncommitted changes:"
+        echo "$s"
+        tip_clean_submodule "qmcsoftware"
+      fi
+    fi
+
+    info "Submodule SHA alignment vs canonical repos:"
+    local mismatch=0
+
+    if [[ -d "$CLASSLIB_CANONICAL/.git" ]]; then
+      if have_dir_git "$CLASSLIB_SUBMODULE"; then
+        local sub can
+        sub="$(sha_head "$CLASSLIB_SUBMODULE")"
+        can="$(sha_head "$CLASSLIB_CANONICAL")"
+        if [[ -n "$sub" && -n "$can" && "$sub" == "$can" ]]; then
+          ok "classlib matches canonical (${sub})."
+        else
+          bad "classlib does not match canonical."
+          echo "  submodule:  ${sub:-<unknown>}"
+          echo "  canonical:  ${can:-<unknown>}"
+          mismatch=1
+        fi
+      else
+        warn "Skipping classlib SHA check (submodule missing)."
+      fi
+    else
+      warn "Canonical repo missing: ${CLASSLIB_CANONICAL}"
+    fi
+
+    if [[ -d "$QMCSOFTWARE_CANONICAL/.git" ]]; then
+      if have_dir_git "$QMCSOFTWARE_SUBMODULE"; then
+        local sub can
+        sub="$(sha_head "$QMCSOFTWARE_SUBMODULE")"
+        can="$(sha_head "$QMCSOFTWARE_CANONICAL")"
+        if [[ -n "$sub" && -n "$can" && "$sub" == "$can" ]]; then
+          ok "qmcsoftware matches canonical (${sub})."
+        else
+          bad "qmcsoftware does not match canonical."
+          echo "  submodule:  ${sub:-<unknown>}"
+          echo "  canonical:  ${can:-<unknown>}"
+          mismatch=1
+        fi
+      else
+        warn "Skipping qmcsoftware SHA check (submodule missing)."
+      fi
+    else
+      warn "Canonical repo missing: ${QMCSOFTWARE_CANONICAL}"
+    fi
+
+    if [[ "$mismatch" -ne 0 ]]; then
+      tip_align_submodules
+    fi
+  fi
+
+  echo
+  if [[ -z "$(porcelain ".")" ]]; then
+    ok "Repo health check complete."
+    exit 0
+  else
+    warn "Repo health check complete (issues above)."
+    exit 1
+  fi
+}
+
+if [[ "$SHORT" -eq 1 ]]; then
+  repo="$(basename "$(git rev-parse --show-toplevel 2>/dev/null || echo ".")")"
+  out="$(mktemp)"
+  if ( main "$@" ) >"$out" 2>&1; then
+    echo -e "${GREEN}OK${RESET}    ${repo}  clean, aligned"
+    rm -f "$out"
+    exit 0
+  else
+    echo -e "${RED}NOPE${RESET}  ${repo}  run repo-health for details"
+    rm -f "$out"
+    exit 1
+  fi
+fi
+
+main "$@"
