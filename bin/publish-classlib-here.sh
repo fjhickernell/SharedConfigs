@@ -1,61 +1,74 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-msg_classlib="${1:-}"
-msg_repo="${2:-Update classlib submodule}"
+log() {
+  /bin/date '+[%Y-%m-%d %H:%M:%S]'" $*"
+}
 
-if [[ -z "$msg_classlib" ]]; then
-  echo 'Usage: publish-classlib-here.sh "classlib commit message" ["repo commit message"]'
-  exit 2
+die() {
+  log "ERROR: $*"
+  exit 1
+}
+
+is_git_repo() {
+  /usr/bin/git rev-parse --is-inside-work-tree >/dev/null 2>&1
+}
+
+require_clean_superproject_except_classlib() {
+  local ws line path
+  ws="$(/usr/bin/git status --porcelain)"
+  [[ -z "${ws}" ]] && return 0
+  while IFS= read -r line; do
+    path="${line##* }"
+    if [[ "${path}" != "classlib" ]]; then
+      die "Superproject dirty outside 'classlib'. Commit/stash those changes first."
+    fi
+  done <<< "${ws}"
+}
+
+MSG="${1:-}"
+[[ -n "${MSG}" ]] || die "Usage: publish-classlib-here.sh \"commit message\""
+
+is_git_repo || die "Run this from inside a class repo (superproject)."
+[[ -d "classlib" ]] || die "Missing submodule directory: classlib"
+[[ -d "classlib/.git" || -f "classlib/.git" ]] || die "classlib does not look like a git checkout."
+
+require_clean_superproject_except_classlib
+
+log "Publishing classlib changes (if any) and updating submodule pointer..."
+
+/usr/bin/git -C classlib fetch origin
+if [[ -z "$(/usr/bin/git -C classlib symbolic-ref -q --short HEAD || true)" ]]; then
+  /usr/bin/git -C classlib checkout main
 fi
+/usr/bin/git -C classlib checkout main
+/usr/bin/git -C classlib pull --ff-only
 
-top="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-if [[ -z "$top" ]]; then
-  echo "ERROR: not inside a git repo"
-  exit 2
-fi
-
-cd "$top"
-
-if [[ ! -e classlib ]]; then
-  echo "ERROR: no ./classlib submodule found in $top"
-  exit 2
-fi
-
-if git status --porcelain | grep -v '^ M classlib$' | grep -q .; then
-  echo "ERROR: superproject has uncommitted changes (outside classlib); commit or stash them first"
-  exit 2
-fi
-
-cd "$top/classlib"
-branch="$(git rev-parse --abbrev-ref HEAD)"
-if [[ "$branch" != "main" ]]; then
-  echo "ERROR: classlib submodule is on branch '$branch' (expected 'main')"
-  exit 2
-fi
-
-if [[ -z "$(git status --porcelain)" ]]; then
-  echo "No changes in classlib submodule."
+if [[ -n "$(/usr/bin/git -C classlib status --porcelain)" ]]; then
+  /usr/bin/git -C classlib add -A
+  /usr/bin/git -C classlib commit -m "${MSG}"
+  /usr/bin/git -C classlib push
 else
-  git add -A
-  git commit -m "$msg_classlib"
-  git push
-
-  CANON="$HOME/SoftwareRepositories/HickernellClassLib"
-  if [[ -d "$CANON/.git" ]]; then
-    git -C "$CANON" fetch
-    git -C "$CANON" checkout main
-    git -C "$CANON" pull --ff-only
-  fi
+  log "No classlib working-tree changes to commit."
 fi
 
-cd "$top"
-git submodule update --checkout classlib
-git add classlib
+/usr/bin/git -C classlib fetch origin
+/usr/bin/git -C classlib checkout main
+/usr/bin/git -C classlib pull --ff-only
 
-if git diff --cached --quiet; then
-  echo "No submodule pointer change to commit."
-else
-  git commit -m "$msg_repo"
-  git push
+NEW_SHA="$(/usr/bin/git -C classlib rev-parse HEAD)"
+
+log "Ensuring submodule checkout is at ${NEW_SHA}..."
+/usr/bin/git -C classlib checkout main
+/usr/bin/git -C classlib reset --hard "${NEW_SHA}"
+
+if /usr/bin/git diff --quiet --submodule classlib; then
+  log "No submodule pointer change to commit."
+  exit 0
 fi
+
+/usr/bin/git add classlib
+/usr/bin/git commit -m "Bump classlib submodule: ${MSG}"
+/usr/bin/git push
+
+log "Done."

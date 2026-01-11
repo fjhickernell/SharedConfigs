@@ -1,5 +1,7 @@
 add_newline = true
 
+format = "$time$username$directory$conda$git_branch$git_status$character"
+
 [username]
 show_always = true
 format = "[$user]($style) "
@@ -12,7 +14,14 @@ fish_style_pwd_dir_length = 1
 
 
 [python]
-disabled = true
+disabled = false
+format = "[$virtualenv]($style) "
+
+[conda]
+disabled = false
+ignore_base = false
+symbol = ""
+format = "[$environment]($style) "
 
 [ruby]
 disabled = true
@@ -36,3 +45,8 @@ disabled = false
 [git_branch]
 format = "[$branch]($style) "
 symbol = ""
+
+[time]
+disabled = false
+format = "[$time]($style) "
+time_format = "%Y-%m-%d %H:%M:%S"

@@ -31,6 +31,38 @@ pull_ff_only() {
   /usr/bin/git merge --ff-only '@{u}'
 }
 
+ensure_qmcsoftware_fetch_policy() {
+  local repo="$1"
+
+  if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
+    return 0
+  fi
+
+  (
+    cd "${repo}"
+
+    if ! /usr/bin/git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      return 0
+    fi
+
+    if /usr/bin/git remote get-url origin >/dev/null 2>&1; then
+      /usr/bin/git config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
+      /usr/bin/git config --add remote.origin.fetch "+refs/heads/develop:refs/remotes/origin/develop"
+      /usr/bin/git config --add remote.origin.fetch "+refs/tags/*:refs/tags/*"
+
+      /usr/bin/git fetch --prune origin >/dev/null 2>&1 || true
+
+      if /usr/bin/git show-ref --verify --quiet refs/heads/develop; then
+        /usr/bin/git checkout develop >/dev/null 2>&1 || true
+      else
+        /usr/bin/git checkout -b develop --track origin/develop >/dev/null 2>&1 || true
+      fi
+
+      /usr/bin/git branch --set-upstream-to=origin/develop develop >/dev/null 2>&1 || true
+    fi
+  )
+}
+
 sync_standalone_repo() {
   local repo="$1"
   local branch="$2"
@@ -48,6 +80,10 @@ sync_standalone_repo() {
       log "SKIP: dirty working tree in ${repo}"
       /usr/bin/git status --short
       return 0
+    fi
+
+    if [[ "${repo##*/}" == "QMCSoftware" ]]; then
+      ensure_qmcsoftware_fetch_policy "${repo}"
     fi
 
     /usr/bin/git checkout "${branch}"
@@ -101,6 +137,10 @@ sync_class_repo() {
       fi
     else
       /usr/bin/git submodule update --init --recursive
+    fi
+
+    if [[ -d "qmcsoftware" ]]; then
+      ensure_qmcsoftware_fetch_policy "${repo}/qmcsoftware"
     fi
 
     /usr/bin/git submodule status
@@ -175,8 +215,6 @@ health_summary() {
     fi
   done
 }
-
-
 
 usage() {
   cat <<'EOF'

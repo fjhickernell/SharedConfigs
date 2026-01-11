@@ -13,6 +13,9 @@ QMCSOFTWARE_SUBMODULE="qmcsoftware"
 CLASSLIB_CANONICAL="$HOME/SoftwareRepositories/HickernellClassLib"
 QMCSOFTWARE_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
 
+CLASSLIB_CANONICAL_REF="origin/main"
+QMCSOFTWARE_CANONICAL_REF="origin/develop"
+
 GREEN="\033[0;32m"
 RED="\033[0;31m"
 YELLOW="\033[0;33m"
@@ -34,12 +37,23 @@ have_dir_git() {
   [[ -d "$1" ]] && git -C "$1" rev-parse --git-dir >/dev/null 2>&1
 }
 
+sha_ref() {
+  git -C "$1" rev-parse "$2" 2>/dev/null || true
+}
+
 sha_head() {
-  git -C "$1" rev-parse HEAD 2>/dev/null
+  git -C "$1" rev-parse HEAD 2>/dev/null || true
 }
 
 porcelain() {
   git -C "$1" status --porcelain 2>/dev/null || true
+}
+
+fetch_if_possible() {
+  local repo="$1"
+  if have_dir_git "$repo"; then
+    git -C "$repo" fetch origin >/dev/null 2>&1 || true
+  fi
 }
 
 branch_upstream_status() {
@@ -60,33 +74,33 @@ branch_upstream_status() {
 }
 
 tip_clean_superproject() {
-  cat <<EOF
+  cat <<EOF2
 Tips:
   git status --short
   git add -A && git commit -m "..."
   git restore --staged --worktree .
   git stash -u
-EOF
+EOF2
 }
 
 tip_clean_submodule() {
   local name="$1"
-  cat <<EOF
+  cat <<EOF2
 Tips (inside ${name}):
   git -C ${name} status --short
   git -C ${name} restore --staged --worktree .
   git -C ${name} stash -u
-EOF
+EOF2
 }
 
 tip_align_submodules() {
-  cat <<EOF
+  cat <<EOF2
 Tips (align class repo pins to latest shared code):
   sync-class.sh --push
 
 Tips (just update working tree to pinned SHAs):
   git submodule update --init --recursive
-EOF
+EOF2
 }
 
 main() {
@@ -172,44 +186,47 @@ main() {
     info "Submodule SHA alignment vs canonical repos:"
     local mismatch=0
 
-    if [[ -d "$CLASSLIB_CANONICAL/.git" ]]; then
+    fetch_if_possible "$CLASSLIB_CANONICAL"
+    fetch_if_possible "$QMCSOFTWARE_CANONICAL"
+
+    if have_dir_git "$CLASSLIB_CANONICAL"; then
       if have_dir_git "$CLASSLIB_SUBMODULE"; then
         local sub can
         sub="$(sha_head "$CLASSLIB_SUBMODULE")"
-        can="$(sha_head "$CLASSLIB_CANONICAL")"
+        can="$(sha_ref "$CLASSLIB_CANONICAL" "$CLASSLIB_CANONICAL_REF")"
         if [[ -n "$sub" && -n "$can" && "$sub" == "$can" ]]; then
           ok "classlib matches canonical (${sub})."
         else
           bad "classlib does not match canonical."
           echo "  submodule:  ${sub:-<unknown>}"
-          echo "  canonical:  ${can:-<unknown>}"
+          echo "  canonical:  ${can:-<unknown>} (${CLASSLIB_CANONICAL_REF})"
           mismatch=1
         fi
       else
         warn "Skipping classlib SHA check (submodule missing)."
       fi
     else
-      warn "Canonical repo missing: ${CLASSLIB_CANONICAL}"
+      warn "Canonical repo missing/unavailable: ${CLASSLIB_CANONICAL}"
     fi
 
-    if [[ -d "$QMCSOFTWARE_CANONICAL/.git" ]]; then
+    if have_dir_git "$QMCSOFTWARE_CANONICAL"; then
       if have_dir_git "$QMCSOFTWARE_SUBMODULE"; then
         local sub can
         sub="$(sha_head "$QMCSOFTWARE_SUBMODULE")"
-        can="$(sha_head "$QMCSOFTWARE_CANONICAL")"
+        can="$(sha_ref "$QMCSOFTWARE_CANONICAL" "$QMCSOFTWARE_CANONICAL_REF")"
         if [[ -n "$sub" && -n "$can" && "$sub" == "$can" ]]; then
           ok "qmcsoftware matches canonical (${sub})."
         else
           bad "qmcsoftware does not match canonical."
           echo "  submodule:  ${sub:-<unknown>}"
-          echo "  canonical:  ${can:-<unknown>}"
+          echo "  canonical:  ${can:-<unknown>} (${QMCSOFTWARE_CANONICAL_REF})"
           mismatch=1
         fi
       else
         warn "Skipping qmcsoftware SHA check (submodule missing)."
       fi
     else
-      warn "Canonical repo missing: ${QMCSOFTWARE_CANONICAL}"
+      warn "Canonical repo missing/unavailable: ${QMCSOFTWARE_CANONICAL}"
     fi
 
     if [[ "$mismatch" -ne 0 ]]; then

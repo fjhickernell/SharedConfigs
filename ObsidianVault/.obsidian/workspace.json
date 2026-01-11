@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v4.md",
+                "file": "Software/classlib.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "class-repos-submodules-quarto-publishing-v4"
+              "title": "classlib"
             }
           }
         ]
@@ -114,7 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v4.md",
+                "file": "Software/classlib.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -124,7 +124,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for class-repos-submodules-quarto-publishing-v4"
+              "title": "Backlinks for classlib"
             }
           },
           {
@@ -204,22 +204,36 @@
   },
   "active": "a7d1684cde36dc45",
   "lastOpenFiles": [
-    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v2.md",
+    "Teaching/SIAMUQ26/qmcsoftware/test/booktests/tb_portfolio_allocation_demo.py",
+    "Teaching/SIAMUQ26/classlib/classlib/quarto/slides/title-course-website.html",
+    "Teaching/MATH563Spring2026/qmcsoftware/test/booktests/tb_portfolio_allocation_demo.py",
+    "Teaching/MATH563Spring2026/classlib/classlib/quarto/slides/title-course-website.html",
+    "Home.md",
+    "Software/classlib.md",
+    "MacApps/MacApps_README.md",
+    "MacApps/MacAppsInventory.md",
+    "MacApps/MacAppsInventory.csv",
+    "MacApps/Freds-Mac-mini.brew-casks.txt",
+    "MacApps/Freds-Mac-mini.appstore.txt",
+    "MacApps/Freds-Mac-mini.applications.txt",
+    "MacApps/Freds-2024-M3-MacBook-Pro.brew-casks.txt",
+    "MacApps/Freds-2024-M3-MacBook-Pro.appstore.txt",
+    "MacApps/Freds-2024-M3-MacBook-Pro.applications.txt",
+    "SharedConfigs-Notes/jekyll-to-quarto-migration-notes.md",
+    "SharedConfigs-Notes/index.md",
+    "SharedConfigs-Notes/class_repo_submodule_workflow.md",
     "SharedConfigs-Notes/class-repos-submodules-quarto-publishing.md",
-    "MasterLists/Lessons Learned.md",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v4.md",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v3.md",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v2.md",
+    "SharedConfigs-Notes/check_app_update_dates.md",
+    "SharedConfigs-Notes/ClassRepo_Submodule_Workflow.md",
+    "Reference/obsidian_wiring.md",
+    "Reference/Chinese Names.md",
     "class_repo_submodule_workflow.md",
+    "MasterLists/Lessons Learned.md",
     "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-3-3.png",
     "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-1-1.png",
-    "Teaching/MATH476Spring2026/slides/intro-01_files/mediabag",
-    "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs",
-    "Teaching/MATH476Spring2026/slides/intro-01_files",
-    "Teaching/MATH476Spring2026/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro.css",
-    "Teaching/MATH476Spring2026/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.woff",
-    "Teaching/MATH476Spring2026/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.ttf",
-    "Teaching/MATH476Spring2026/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.eot",
-    "Teaching/MATH476Spring2026/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibold.woff",
-    "Teaching/MATH476Spring2026/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibold.ttf",
-    "Teaching/MATH476Spring2026/site_libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibold.eot",
     "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-4-3.png",
     "Teaching/MATH476Spring2026/_site/docs/classlib/classlib/quarto/assets/images/normal-scatter.png",
     "Teaching/MATH476Spring2026/_site/classlib/classlib/quarto/assets/images/normal-scatter.png",
@@ -230,26 +244,12 @@
     "Teaching/MATH476Spring2026/slides/Template_files/figure-revealjs/unnamed-chunk-4-3.png",
     "Teaching/MATH476Spring2026/slides/intro-01.knit.md",
     "Untitled.canvas",
-    "SharedConfigs-Notes/class_repo_submodule_workflow.md",
-    "SharedConfigs-Notes/ClassRepo_Submodule_Workflow.md",
     "Teaching/Lessons-Learned-Quarto-RevealJS.md",
     "SharedConfigs-Notes/ClassRepo_Submodule_Workflow_2025-12-26.md",
-    "Home.md",
     "Teaching/MATH476Spring2026/index.md",
     "Teaching/MATH476Spring2026/# MATH 476 — Spring 2026.md",
     "Teaching/MATH476Spring2026.md",
     "Teaching/MATH476Spring2026 1.md",
-    "Teaching/MATH476Spring2026 2.md",
-    "Teaching/MATH476Spring2026 3.md",
-    "Teaching/MATH565Fall2025.md",
-    "Teaching/MATH476Spring2026/AUTHOR_WORKFLOW.md",
-    "Reference/SharedConfigs-README.md",
-    "Teaching/MATH476Spring2026/classlib/SharedConfigs-Notes/check_app_update_dates.md",
-    "Teaching/MATH476Spring2026/classlib/SharedConfigs-Notes/ClassRepo_Submodule_Workflow.md",
-    "Untitled.md",
-    "Teaching/MATH476Spring2026/qmcsoftware/demos/GBM/gbm_todo.md",
-    "Teaching/MATH565Fall2025/qmcsoftware/demos/GBM/gbm_todo.md",
-    "Teaching/MATH476Fall2025.md",
-    "MasterLists/LessonsLearned.md"
+    "Teaching/MATH476Spring2026 2.md"
   ]
 }
