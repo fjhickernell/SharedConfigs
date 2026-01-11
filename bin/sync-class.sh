@@ -27,7 +27,7 @@ only_submodule_pointers_dirty() {
 }
 
 pull_ff_only() {
-  /usr/bin/git fetch origin
+  /usr/bin/git -c fetch.recurseSubmodules=no fetch origin
   /usr/bin/git merge --ff-only '@{u}'
 }
 
