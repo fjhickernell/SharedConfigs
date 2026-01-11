@@ -31,6 +31,7 @@ pull_ff_only() {
   /usr/bin/git merge --ff-only '@{u}'
 }
 
+# Restrict fetch policy ONLY; never move HEAD in submodule clones
 ensure_qmcsoftware_fetch_policy() {
   local repo="$1"
 
@@ -49,16 +50,7 @@ ensure_qmcsoftware_fetch_policy() {
       /usr/bin/git config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
       /usr/bin/git config --add remote.origin.fetch "+refs/heads/develop:refs/remotes/origin/develop"
       /usr/bin/git config --add remote.origin.fetch "+refs/tags/*:refs/tags/*"
-
       /usr/bin/git fetch --prune origin >/dev/null 2>&1 || true
-
-      if /usr/bin/git show-ref --verify --quiet refs/heads/develop; then
-        /usr/bin/git checkout develop >/dev/null 2>&1 || true
-      else
-        /usr/bin/git checkout -b develop --track origin/develop >/dev/null 2>&1 || true
-      fi
-
-      /usr/bin/git branch --set-upstream-to=origin/develop develop >/dev/null 2>&1 || true
     fi
   )
 }
@@ -136,7 +128,8 @@ sync_class_repo() {
         return 0
       fi
     else
-      /usr/bin/git submodule update --init --recursive
+      # CRITICAL FIX: enforce pinned SHAs
+      /usr/bin/git submodule update --init --recursive --checkout
     fi
 
     if [[ -d "qmcsoftware" ]]; then
@@ -223,7 +216,7 @@ sync-class.sh
 Default (no flags):
   - Pull standalone repos
   - Pull class repos
-  - Update submodules to pinned SHAs (git submodule update --init --recursive)
+  - Enforce pinned submodule SHAs (--checkout)
   - No commits, no pushes
 
 Flags:
