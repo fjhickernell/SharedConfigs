@@ -86,6 +86,12 @@ run_step "sync-brew"          "${BASE}/sync-brew.sh"
 run_step "update-texlive"     sudo "${BASE}/update-texlive.sh"
 run_step "sharedconfigs-save" "${BASE}/sharedconfigs-save.sh"
 
+if [[ -x "${BASE}/sync-dev.sh" ]]; then
+  run_step "sync-dev (pull-only)" "${BASE}/sync-dev.sh"
+else
+  log "sync-dev.sh not found at ${BASE}/sync-dev.sh; skipping dev sync."
+fi
+
 if command -v sync-class.sh >/dev/null 2>&1; then
   log "Starting: sync-class (no-push)"
   set +e
