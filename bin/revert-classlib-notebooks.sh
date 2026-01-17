@@ -13,6 +13,6 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 1
 fi
 
-git checkout -- '*.ipynb'
+git restore --source=HEAD --staged --worktree classlib/notebooks
 
-echo "Reverted all notebook changes in classlib/"
+echo "Reverted notebooks in classlib/ (figures left as-is)"
