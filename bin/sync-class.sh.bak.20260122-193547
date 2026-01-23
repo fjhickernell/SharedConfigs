@@ -1,45 +1,10 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# ---- color + emphasis -------------------------------------------------
-# Enable colors only if stdout is a TTY (so logs in files/CI stay clean)
-if [[ -t 1 ]]; then
-  BOLD=$'\e[1m'
-  DIM=$'\e[2m'
-  RED=$'\e[31m'
-  YELLOW=$'\e[33m'
-  GREEN=$'\e[32m'
-  CYAN=$'\e[36m'
-  RESET=$'\e[0m'
-else
-  BOLD=''
-  DIM=''
-  RED=''
-  YELLOW=''
-  GREEN=''
-  CYAN=''
-  RESET=''
-fi
-
-SKIP_COUNT=0
-
 log() {
   local ts
   ts=$(/bin/date '+%Y-%m-%d %H:%M:%S')
   echo "[$ts] $*"
-}
-
-log_skip() {
-  SKIP_COUNT=$((SKIP_COUNT + 1))
-  log "${BOLD}${RED}$*${RESET}"
-}
-
-log_warn() {
-  log "${BOLD}${YELLOW}$*${RESET}"
-}
-
-log_ok() {
-  log "${GREEN}$*${RESET}"
 }
 
 is_clean() {
@@ -66,6 +31,7 @@ pull_ff_only() {
   /usr/bin/git merge --ff-only '@{u}'
 }
 
+# Restrict fetch policy ONLY; never move HEAD in submodule clones
 ensure_qmcsoftware_fetch_policy() {
   local repo="$1"
 
@@ -95,7 +61,7 @@ sync_standalone_repo() {
 
   log "Standalone repo: ${repo} (${branch})"
   if [[ ! -d "${repo}/.git" ]]; then
-    log_skip "SKIP: not a git repo: ${repo}"
+    log "SKIP: not a git repo: ${repo}"
     return 0
   fi
 
@@ -103,7 +69,7 @@ sync_standalone_repo() {
     cd "${repo}"
 
     if ! is_clean; then
-      log_skip "SKIP: dirty working tree in ${repo}"
+      log "SKIP: dirty working tree in ${repo}"
       /usr/bin/git status --short
       return 0
     fi
@@ -139,7 +105,7 @@ sync_class_repo() {
 
   log "Class repo: ${repo}"
   if [[ ! -d "${repo}/.git" ]]; then
-    log_skip "SKIP: not a git repo: ${repo}"
+    log "SKIP: not a git repo: ${repo}"
     return 0
   fi
 
@@ -147,7 +113,7 @@ sync_class_repo() {
     cd "${repo}"
 
     if ! only_submodule_pointers_dirty; then
-      log_skip "SKIP: dirty working tree (non-submodule changes) in ${repo}"
+      log "SKIP: dirty working tree (non-submodule changes) in ${repo}"
       /usr/bin/git status --short
       return 0
     fi
@@ -158,10 +124,11 @@ sync_class_repo() {
       if command -v update-submodules.sh >/dev/null 2>&1; then
         update-submodules.sh || true
       else
-        log_skip "SKIP: missing update-submodules.sh on PATH in ${repo}"
+        log "SKIP: missing update-submodules.sh on PATH in ${repo}"
         return 0
       fi
     else
+      # CRITICAL FIX: enforce pinned SHAs
       /usr/bin/git submodule update --init --recursive --checkout
     fi
 
@@ -194,12 +161,12 @@ sync_class_repo() {
           /usr/bin/git add classlib qmcsoftware
           /usr/bin/git commit -m "${msg}"
         else
-          log_skip "SKIP: changes present but not only submodule pointers; not committing"
+          log "SKIP: changes present but not only submodule pointers; not committing"
           /usr/bin/git status --short
           return 0
         fi
       else
-        log_warn "Uncommitted submodule pointer changes detected."
+        log "Uncommitted submodule pointer changes detected."
         log ""
         log "git status --short:"
         /usr/bin/git status --short
@@ -220,7 +187,7 @@ health_summary() {
   log "===== Repo health summary ====="
 
   if ! command -v repo-health >/dev/null 2>&1; then
-    log_warn "NOPE  repo-health  not on PATH"
+    echo "NOPE  repo-health  not on PATH"
     return 0
   fi
 
@@ -231,37 +198,24 @@ health_summary() {
         cd "${repo}"
         line="$(repo-health --short 2>&1 || true)"
         if [[ -z "${line}" ]]; then
-          log_warn "NOPE  ${repo_name}  repo-health produced no output"
+          echo "NOPE  ${repo_name}  repo-health produced no output"
         else
           echo "${line}"
         fi
       )
     else
-      log_warn "NOPE  ${repo_name}  missing repo"
+      echo "NOPE  ${repo_name}  missing repo"
     fi
   done
 }
 
 pins_consistency_check() {
   local repo repo_name
-  local ref_repo ref_classlib ref_qmc
+  local ref_classlib ref_qmc
+  local c q
   local mismatch=0
 
   typeset -A classlib_sha qmc_sha
-
-  is_full_sha() {
-    local v="$1"
-    [[ "${v}" =~ '^[0-9A-Fa-f]{40}$' ]]
-  }
-
-  short_sha() {
-    local v="$1"
-    if is_full_sha "${v}"; then
-      echo "${v[1,12]}"
-    else
-      echo "${v}"
-    fi
-  }
 
   for repo in "${CLASS_REPOS[@]}"; do
     repo_name="${repo##*/}"
@@ -276,32 +230,8 @@ pins_consistency_check() {
     qmc_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse :qmcsoftware 2>/dev/null || echo "MISSING")
   done
 
-  ref_repo=""
-  ref_classlib=""
-  ref_qmc=""
-
-  for repo in "${CLASS_REPOS[@]}"; do
-    repo_name="${repo##*/}"
-    if is_full_sha "${classlib_sha[$repo_name]}" && is_full_sha "${qmc_sha[$repo_name]}"; then
-      ref_repo="${repo_name}"
-      ref_classlib="${classlib_sha[$repo_name]}"
-      ref_qmc="${qmc_sha[$repo_name]}"
-      break
-    fi
-  done
-
-  if [[ -z "${ref_repo}" ]]; then
-    log_warn "===== WARNING: cannot determine reference submodule pins ====="
-    printf "%-20s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware"
-    for repo in "${CLASS_REPOS[@]}"; do
-      repo_name="${repo##*/}"
-      printf "%-20s  %-12s  %-12s\n" \
-        "${repo_name}" \
-        "$(short_sha "${classlib_sha[$repo_name]}")" \
-        "$(short_sha "${qmc_sha[$repo_name]}")"
-    done
-    return 0
-  fi
+  ref_classlib="${classlib_sha[${CLASS_REPOS[1]##*/}]}"
+  ref_qmc="${qmc_sha[${CLASS_REPOS[1]##*/}]}"
 
   for repo in "${CLASS_REPOS[@]}"; do
     repo_name="${repo##*/}"
@@ -310,26 +240,15 @@ pins_consistency_check() {
   done
 
   if (( mismatch )); then
-    log_warn "===== WARNING: submodule pins differ across class repos ====="
+    log "===== WARNING: submodule pins differ across class repos ====="
     printf "%-20s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware"
     for repo in "${CLASS_REPOS[@]}"; do
       repo_name="${repo##*/}"
-      printf "%-20s  %-12s  %-12s\n" \
-        "${repo_name}" \
-        "$(short_sha "${classlib_sha[$repo_name]}")" \
-        "$(short_sha "${qmc_sha[$repo_name]}")"
+      c="${classlib_sha[$repo_name]}"
+      q="${qmc_sha[$repo_name]}"
+      printf "%-20s  %-12s  %-12s\n" "${repo_name}" "${c[1,12]}" "${q[1,12]}"
     done
-    log_warn "Reference: ${ref_repo} (classlib $(short_sha "${ref_classlib}"), qmcsoftware $(short_sha "${ref_qmc}"))"
-  else
-    log_ok "===== OK: submodule pins consistent across class repos (classlib $(short_sha "${ref_classlib}"), qmcsoftware $(short_sha "${ref_qmc}")) ====="
-  fi
-}
-
-final_verdict() {
-  if [[ "${SKIP_COUNT}" -gt 0 ]]; then
-    log_skip "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) encountered (see red SKIP lines above) ====="
-  else
-    log_ok "===== CLEAN DEPARTURE: no SKIP conditions encountered ====="
+    log "Reference: ${CLASS_REPOS[1]##*/} (classlib ${ref_classlib[1,12]}, qmcsoftware ${ref_qmc[1,12]})"
   fi
 }
 
@@ -361,7 +280,7 @@ for arg in "$@"; do
     --push) do_push=1 ;;
     --help|-h) usage; exit 0 ;;
     *)
-      log_warn "ERROR: unknown argument: ${arg}"
+      log "ERROR: unknown argument: ${arg}"
       usage
       exit 2
       ;;
@@ -403,6 +322,5 @@ done
 
 pins_consistency_check
 health_summary
-final_verdict
 
 log "===== Sync class finished ====="

@@ -21,6 +21,40 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   exit 0
 fi
 
+# ---- color + emphasis -------------------------------------------------
+if [[ -t 1 ]]; then
+  BOLD=$'\e[1m'
+  RED=$'\e[31m'
+  GREEN=$'\e[32m'
+  YELLOW=$'\e[33m'
+  RESET=$'\e[0m'
+else
+  BOLD=''
+  RED=''
+  GREEN=''
+  YELLOW=''
+  RESET=''
+fi
+
+SKIP_COUNT=0
+
+say_skip() {
+  SKIP_COUNT=$((SKIP_COUNT + 1))
+  echo "${BOLD}${RED}$*${RESET}"
+}
+
+say_err() {
+  echo "${BOLD}${RED}$*${RESET}" >&2
+}
+
+say_warn() {
+  echo "${BOLD}${YELLOW}$*${RESET}"
+}
+
+say_ok() {
+  echo "${GREEN}$*${RESET}"
+}
+
 HCL="$HOME/SoftwareRepositories/HickernellClassLib"
 QMC="$HOME/SoftwareRepositories/QMCSoftware"
 
@@ -37,12 +71,12 @@ sync_repo() {
   echo "===== $name ($branch) ====="
 
   if [[ ! -d "$repo/.git" ]]; then
-    echo "ERROR: $name is not a git repo: $repo" >&2
+    say_err "ERROR: $name is not a git repo: $repo"
     return 2
   fi
 
   if ! is_clean_repo "$repo"; then
-    echo "SKIP: $name has uncommitted changes: $repo"
+    say_skip "SKIP: $name has uncommitted changes: $repo"
     git -C "$repo" status -sb
     echo
     return 0
@@ -56,7 +90,17 @@ sync_repo() {
   echo
 }
 
+final_verdict() {
+  if [[ "$SKIP_COUNT" -gt 0 ]]; then
+    say_skip "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) encountered (see red SKIP lines above) ====="
+  else
+    say_ok "===== CLEAN: no SKIP conditions encountered ====="
+  fi
+}
+
 rc=0
 sync_repo "$HCL" "HickernellClassLib" "main" || rc=$?
 sync_repo "$QMC" "QMCSoftware" "develop" || rc=$?
+
+final_verdict
 exit "$rc"
