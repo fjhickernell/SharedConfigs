@@ -26,6 +26,48 @@ require_clean_superproject_except_classlib() {
   done <<< "${ws}"
 }
 
+ensure_classlib_on_main() {
+  local cur head_short tmp
+
+  /usr/bin/git -C classlib fetch origin main
+
+  cur="$(/usr/bin/git -C classlib symbolic-ref -q --short HEAD || true)"
+
+  if [[ -z "${cur}" ]]; then
+    head_short="$(/usr/bin/git -C classlib rev-parse --short=12 HEAD)"
+    tmp="wip-classlib-${head_short}"
+
+    /usr/bin/git -C classlib switch -c "${tmp}"
+
+    if [[ -n "$(/usr/bin/git -C classlib status --porcelain)" ]]; then
+      /usr/bin/git -C classlib add -A
+      /usr/bin/git -C classlib commit -m "${MSG}"
+    fi
+
+    /usr/bin/git -C classlib switch main
+    /usr/bin/git -C classlib pull --ff-only origin main
+    /usr/bin/git -C classlib merge --ff-only "${tmp}" || /usr/bin/git -C classlib merge "${tmp}"
+    /usr/bin/git -C classlib branch -d "${tmp}" || true
+    return 0
+  fi
+
+  if [[ "${cur}" == "main" ]]; then
+    /usr/bin/git -C classlib pull --ff-only origin main
+    return 0
+  fi
+
+  if [[ "${cur}" == wip-classlib-* ]]; then
+    tmp="${cur}"
+    /usr/bin/git -C classlib switch main
+    /usr/bin/git -C classlib pull --ff-only origin main
+    /usr/bin/git -C classlib merge --ff-only "${tmp}" || /usr/bin/git -C classlib merge "${tmp}"
+    /usr/bin/git -C classlib branch -d "${tmp}" || true
+    return 0
+  fi
+
+  die "classlib is on branch '${cur}' (expected 'main' or 'wip-classlib-*')."
+}
+
 MSG="${1:-}"
 [[ -n "${MSG}" ]] || die "Usage: publish-classlib-here.sh \"commit message\""
 
@@ -37,29 +79,21 @@ require_clean_superproject_except_classlib
 
 log "Publishing classlib changes (if any) and updating submodule pointer..."
 
-/usr/bin/git -C classlib fetch origin
-if [[ -z "$(/usr/bin/git -C classlib symbolic-ref -q --short HEAD || true)" ]]; then
-  /usr/bin/git -C classlib checkout main
-fi
-/usr/bin/git -C classlib checkout main
-/usr/bin/git -C classlib pull --ff-only
+ensure_classlib_on_main
 
 if [[ -n "$(/usr/bin/git -C classlib status --porcelain)" ]]; then
   /usr/bin/git -C classlib add -A
   /usr/bin/git -C classlib commit -m "${MSG}"
-  /usr/bin/git -C classlib push
+  /usr/bin/git -C classlib push origin main
 else
   log "No classlib working-tree changes to commit."
 fi
 
-/usr/bin/git -C classlib fetch origin
-/usr/bin/git -C classlib checkout main
-/usr/bin/git -C classlib pull --ff-only
+ensure_classlib_on_main
 
 NEW_SHA="$(/usr/bin/git -C classlib rev-parse HEAD)"
 
 log "Ensuring submodule checkout is at ${NEW_SHA}..."
-/usr/bin/git -C classlib checkout main
 /usr/bin/git -C classlib reset --hard "${NEW_SHA}"
 
 if /usr/bin/git diff --quiet --submodule classlib; then
@@ -72,3 +106,4 @@ fi
 /usr/bin/git push
 
 log "Done."
+

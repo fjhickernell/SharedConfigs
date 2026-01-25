@@ -98,9 +98,16 @@ final_verdict() {
   fi
 }
 
+log() {
+  local ts
+  ts=$(/bin/date '+%Y-%m-%d %H:%M:%S')
+  echo "[$ts] $*"
+}
+
 rc=0
 sync_repo "$HCL" "HickernellClassLib" "main" || rc=$?
 sync_repo "$QMC" "QMCSoftware" "develop" || rc=$?
 
 final_verdict
+log "===== Sync dev finished ====="
 exit "$rc"
