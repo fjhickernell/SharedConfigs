@@ -80,6 +80,7 @@ require_clean_superproject_except_classlib
 log "Publishing classlib changes (if any) and updating submodule pointer..."
 
 ensure_classlib_on_main
+/usr/bin/git -C classlib push origin main
 
 if [[ -n "$(/usr/bin/git -C classlib status --porcelain)" ]]; then
   /usr/bin/git -C classlib add -A
