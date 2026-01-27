@@ -26,24 +26,33 @@ require_clean_superproject_except_classlib() {
   done <<< "${ws}"
 }
 
-ensure_classlib_on_main() {
+classlib_head_ref() {
+  /usr/bin/git -C classlib symbolic-ref -q --short HEAD 2>/dev/null || true
+}
+
+ensure_classlib_main_ready() {
   local cur head_short tmp
 
   /usr/bin/git -C classlib fetch origin main
 
-  cur="$(/usr/bin/git -C classlib symbolic-ref -q --short HEAD || true)"
+  cur="$(classlib_head_ref)"
 
   if [[ -z "${cur}" ]]; then
     head_short="$(/usr/bin/git -C classlib rev-parse --short=12 HEAD)"
     tmp="wip-classlib-${head_short}"
 
+    log "classlib is detached at ${head_short}; creating temporary branch ${tmp}..."
     /usr/bin/git -C classlib switch -c "${tmp}"
 
     if [[ -n "$(/usr/bin/git -C classlib status --porcelain)" ]]; then
+      log "Committing classlib working-tree changes on ${tmp}..."
       /usr/bin/git -C classlib add -A
       /usr/bin/git -C classlib commit -m "${MSG}"
+    else
+      log "No classlib working-tree changes to commit on ${tmp}."
     fi
 
+    log "Switching classlib to main and integrating ${tmp}..."
     /usr/bin/git -C classlib switch main
     /usr/bin/git -C classlib pull --ff-only origin main
     /usr/bin/git -C classlib merge --ff-only "${tmp}" || /usr/bin/git -C classlib merge "${tmp}"
@@ -58,6 +67,7 @@ ensure_classlib_on_main() {
 
   if [[ "${cur}" == wip-classlib-* ]]; then
     tmp="${cur}"
+    log "classlib is on ${tmp}; integrating into main..."
     /usr/bin/git -C classlib switch main
     /usr/bin/git -C classlib pull --ff-only origin main
     /usr/bin/git -C classlib merge --ff-only "${tmp}" || /usr/bin/git -C classlib merge "${tmp}"
@@ -79,18 +89,20 @@ require_clean_superproject_except_classlib
 
 log "Publishing classlib changes (if any) and updating submodule pointer..."
 
-ensure_classlib_on_main
-/usr/bin/git -C classlib push origin main
+ensure_classlib_main_ready
 
 if [[ -n "$(/usr/bin/git -C classlib status --porcelain)" ]]; then
+  log "Committing classlib working-tree changes on main..."
   /usr/bin/git -C classlib add -A
   /usr/bin/git -C classlib commit -m "${MSG}"
-  /usr/bin/git -C classlib push origin main
 else
   log "No classlib working-tree changes to commit."
 fi
 
-ensure_classlib_on_main
+log "Pushing classlib main..."
+/usr/bin/git -C classlib push origin main
+
+ensure_classlib_main_ready
 
 NEW_SHA="$(/usr/bin/git -C classlib rev-parse HEAD)"
 
@@ -107,4 +119,3 @@ fi
 /usr/bin/git push
 
 log "Done."
-

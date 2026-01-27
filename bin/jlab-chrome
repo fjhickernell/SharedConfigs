@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+LOG=/tmp/jupyterlab.log
+
+jupyter lab --no-browser > "$LOG" 2>&1 &
+
+# Wait for the tokenized URL
+for i in {1..20}; do
+  URL=$(grep -Eo 'http://(localhost|127\.0\.0\.1):[0-9]+/lab\?token=[0-9a-f]+' "$LOG" | head -n1 || true)
+  if [[ -n "$URL" ]]; then
+    BASE=${URL%/lab\?token=*}
+    TOKEN=${URL##*token=}
+    open -a "Google Chrome" \
+      "${BASE}/lab/workspaces/teaching/tree/classlib/classlib/notebooks?token=${TOKEN}"
+    exit 0
+  fi
+  sleep 0.5
+done
+
+echo "JupyterLab URL not found; check $LOG" >&2
+exit 1
