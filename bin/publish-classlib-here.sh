@@ -48,6 +48,12 @@ require_superproject_main() {
   [[ "${b}" == "main" ]] || die "Superproject is on '${b:-DETACHED}'. Expected 'main' for bump commit/push."
 }
 
+require_superproject_not_ahead() {
+  local ahead
+  ahead="$(/usr/bin/git rev-list --count @{u}..HEAD 2>/dev/null || echo 0)"
+  [[ "${ahead}" == "0" ]] || die "Superproject has ${ahead} unpushed commit(s). Push/stash before publishing classlib."
+}
+
 require_clean_superproject_except_classlib() {
   local ws line path
   ws="$(/usr/bin/git status --porcelain)"
@@ -71,6 +77,8 @@ verify_classlib_tracking() {
   [[ "${head}" == "${remote}" ]] || die "classlib HEAD != origin/main after push/pull. Something is off."
   ok "classlib main matches origin/main (${head:0:12})"
 }
+
+ALLOW_MERGE=0
 
 ensure_classlib_main_ready() {
   local cur head_short tmp
@@ -101,8 +109,11 @@ ensure_classlib_main_ready() {
     if /usr/bin/git -C classlib merge --ff-only "${tmp}"; then
       ok "Integrated ${tmp} into classlib/main via fast-forward."
     else
+      if [[ "${ALLOW_MERGE}" -eq 0 ]]; then
+        die "Non-fast-forward integration needed for ${tmp} -> main. Re-run with --allow-merge if you really want a merge commit."
+      fi
       warn "${RED}Non-fast-forward merge needed to integrate ${tmp} into classlib/main.${RESET}"
-      warn "${RED}Allowed, but this means history diverged; a merge commit may be created.${RESET}"
+      warn "${RED}Proceeding because --allow-merge was provided.${RESET}"
       /usr/bin/git -C classlib merge "${tmp}"
     fi
 
@@ -124,8 +135,11 @@ ensure_classlib_main_ready() {
     if /usr/bin/git -C classlib merge --ff-only "${tmp}"; then
       ok "Integrated ${tmp} into classlib/main via fast-forward."
     else
+      if [[ "${ALLOW_MERGE}" -eq 0 ]]; then
+        die "Non-fast-forward integration needed for ${tmp} -> main. Re-run with --allow-merge if you really want a merge commit."
+      fi
       warn "${RED}Non-fast-forward merge needed to integrate ${tmp} into classlib/main.${RESET}"
-      warn "${RED}Allowed, but this means history diverged; a merge commit may be created.${RESET}"
+      warn "${RED}Proceeding because --allow-merge was provided.${RESET}"
       /usr/bin/git -C classlib merge "${tmp}"
     fi
 
@@ -136,8 +150,14 @@ ensure_classlib_main_ready() {
   die "classlib is on branch '${cur}' (expected 'main' or 'wip-classlib-*')."
 }
 
+MSG=""
+if [[ "${1:-}" == "--allow-merge" ]]; then
+  ALLOW_MERGE=1
+  shift
+fi
+
 MSG="${1:-}"
-[[ -n "${MSG}" ]] || die "Usage: publish-classlib-here.sh \"commit message\""
+[[ -n "${MSG}" ]] || die "Usage: publish-classlib-here.sh [--allow-merge] \"commit message\""
 
 is_git_repo || die "Run this from inside a class repo (superproject)."
 [[ -d "classlib" ]] || die "Missing submodule directory: classlib"
@@ -145,6 +165,7 @@ is_git_repo || die "Run this from inside a class repo (superproject)."
 
 require_attached_head_superproject
 require_superproject_main
+require_superproject_not_ahead
 require_clean_superproject_except_classlib
 
 log "Publishing classlib changes (if any) and updating submodule pointer..."
@@ -164,14 +185,18 @@ log "Pushing classlib main..."
 
 verify_classlib_tracking
 
-ensure_classlib_main_ready
-
 NEW_SHA="$(/usr/bin/git -C classlib rev-parse HEAD)"
 
 log "Ensuring submodule checkout is at ${NEW_SHA}..."
 /usr/bin/git -C classlib reset --hard "${NEW_SHA}"
 
-if /usr/bin/git diff --quiet --submodule classlib; then
+if [[ -n "$(/usr/bin/git -C classlib status --porcelain)" ]]; then
+  die "classlib still dirty after reset --hard ${NEW_SHA}. Aborting."
+fi
+
+RECORDED_SHA="$(/usr/bin/git ls-tree -d HEAD classlib | awk '{print $3}')"
+
+if [[ "${RECORDED_SHA}" == "${NEW_SHA}" ]]; then
   log "No submodule pointer change to commit."
   exit 0
 fi

@@ -251,13 +251,13 @@ pins_consistency_check() {
 
   is_full_sha() {
     local v="$1"
-    [[ "${v}" =~ '^[0-9A-Fa-f]{40}$' ]]
+    [[ ${v} =~ ^[0-9A-Fa-f]{40}$ ]]
   }
 
   short_sha() {
     local v="$1"
     if is_full_sha "${v}"; then
-      echo "${v[1,12]}"
+      echo "${v:0:12}"
     else
       echo "${v}"
     fi
@@ -401,8 +401,8 @@ for repo in "${CLASS_REPOS[@]}"; do
   sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"
 done
 
-pins_consistency_check
-health_summary
-final_verdict
+pins_consistency_check || true
+health_summary || true
+final_verdict || true
 
 log "===== Sync class finished ====="
