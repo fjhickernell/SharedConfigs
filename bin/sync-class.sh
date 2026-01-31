@@ -53,7 +53,7 @@ only_submodule_pointers_dirty() {
 
   while IFS= read -r line; do
     path="${line##* }"
-    if [[ "${path}" != "classlib" && "${path}" != "qmcsoftware" ]]; then
+    if [[ "${path}" != "classlib" && "${path}" != "qmcsoftware" && "${path}" != "assets/tests/archive" && "${path}" != ".gitmodules" ]]; then
       return 1
     fi
   done <<< "${ws}"
@@ -131,6 +131,15 @@ push_if_ahead() {
   fi
 }
 
+promote_optional_test_archive() {
+  if [[ -d "assets/tests/archive" ]]; then
+    /usr/bin/git submodule update --init assets/tests/archive
+    /usr/bin/git -C assets/tests/archive fetch origin main
+    /usr/bin/git -C assets/tests/archive checkout main
+    /usr/bin/git -C assets/tests/archive pull --ff-only origin main
+  fi
+}
+
 sync_class_repo() {
   local repo="$1"
   local do_promote="$2"
@@ -161,6 +170,7 @@ sync_class_repo() {
         log_skip "SKIP: missing update-submodules.sh on PATH in ${repo}"
         return 0
       fi
+      promote_optional_test_archive
     else
       /usr/bin/git submodule update --init --recursive --checkout
     fi
@@ -175,9 +185,10 @@ sync_class_repo() {
     if ! is_clean; then
       if [[ "${do_commit}" -eq 1 ]]; then
         if only_submodule_pointers_dirty; then
-          local msg cls_sha qmc_sha
+          local msg cls_sha qmc_sha tst_sha
           cls_sha=""
           qmc_sha=""
+          tst_sha=""
 
           if [[ -d "classlib/.git" || -f "classlib/.git" ]]; then
             cls_sha=$(/usr/bin/git -C classlib rev-parse --short=12 HEAD 2>/dev/null || true)
@@ -185,13 +196,13 @@ sync_class_repo() {
           if [[ -d "qmcsoftware/.git" || -f "qmcsoftware/.git" ]]; then
             qmc_sha=$(/usr/bin/git -C qmcsoftware rev-parse --short=12 HEAD 2>/dev/null || true)
           fi
-
-          msg="Update submodule pointers"
-          if [[ -n "${cls_sha}" || -n "${qmc_sha}" ]]; then
-            msg="${msg} (classlib ${cls_sha:-na}, qmcsoftware ${qmc_sha:-na})"
+          if [[ -d "assets/tests/archive/.git" || -f "assets/tests/archive/.git" ]]; then
+            tst_sha=$(/usr/bin/git -C assets/tests/archive rev-parse --short=12 HEAD 2>/dev/null || true)
           fi
 
-          /usr/bin/git add classlib qmcsoftware
+          msg="Update submodule pointers (classlib ${cls_sha:-na}, qmcsoftware ${qmc_sha:-na}, tests ${tst_sha:-na})"
+
+          /usr/bin/git add classlib qmcsoftware assets/tests/archive .gitmodules
           /usr/bin/git commit -m "${msg}"
         else
           log_skip "SKIP: changes present but not only submodule pointers; not committing"
