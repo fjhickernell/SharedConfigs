@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ "$#" -lt 1 ]; then
+  echo "usage: quarto-preview-slides-watch path/to/deck.qmd [extra quarto preview args...]" >&2
+  exit 2
+fi
+
+target="$1"
+shift || true
+
+if [ ! -f "$target" ]; then
+  echo "error: not a file: $target" >&2
+  exit 2
+fi
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -z "$repo_root" ]; then
+  echo "error: not inside a git repo" >&2
+  exit 2
+fi
+
+cd "$repo_root"
+
+# Normalize to repo-relative (best-effort)
+case "$target" in
+  /*) ;;
+  *) target="${target#./}" ;;
+esac
+
+target_dir="$(dirname "$target")"
+target_base="$(basename "$target" .qmd)"
+
+# Quarto outputs (in your case) land in the same dir as the qmd
+generated_html="${target_dir}/${target_base}.html"
+generated_files_dir="${target_dir}/${target_base}_files"
+
+watch_paths=()
+add_watch () { [ -d "$1" ] && watch_paths+=("$1") || true; }
+
+add_watch "slides"
+add_watch "pages"
+add_watch "assets"
+add_watch "classlib/classlib/quarto/slides"
+add_watch "classlib/classlib/quarto/website"
+add_watch "classlib/classlib/quarto/assets"
+add_watch "classlib/classlib/quarto/js"
+add_watch "classlib/classlib/quarto/css"
+
+cleanup () {
+  [ -n "${preview_pid:-}" ] && kill "$preview_pid" >/dev/null 2>&1 || true
+  [ -n "${fswatch_pid:-}" ] && kill "$fswatch_pid" >/dev/null 2>&1 || true
+}
+trap cleanup INT TERM EXIT
+
+echo "[preview] starting"
+quarto preview "$target" --no-watch-inputs "$@" &
+preview_pid=$!
+
+echo "[watch] watching ${#watch_paths[@]} paths"
+echo "[watch] ignoring: $generated_html"
+echo "[watch] ignoring: $generated_files_dir/"
+
+fswatch -0 -r -l 0.3 \
+  -e '.*/_site($|/)' \
+  -e '.*/_freeze($|/)' \
+  -e '.*/\.quarto($|/)' \
+  -e '.*/\.git($|/)' \
+  -e '.*/[^/]+_files($|/)' \
+  -e '.*\.ipynb$' \
+  -e '.*\.quarto_ipynb$' \
+  -i '.*\.(qmd|yml|yaml|scss|css|js|png|jpg|jpeg|svg|html)$' \
+  "${watch_paths[@]}" |
+while IFS= read -r -d '' path; do
+  case "$path" in
+    */_site/*|*/_freeze/*|*/.quarto/*|*/.git/*) continue ;;
+    *"_files/"*|*"_files") continue ;;
+  esac
+
+  # Ignore THIS deck's generated artifacts (absolute paths will match too)
+  case "$path" in
+    *"/${generated_html}"|*"/${generated_files_dir}"|*"/${generated_files_dir}/"* )
+      continue
+      ;;
+  esac
+
+  echo "[watch] $(date '+%H:%M:%S') $path"
+  sleep 0.20
+  echo "[render] $(date '+%H:%M:%S')"
+  quarto render "$target" || true
+done &
+fswatch_pid=$!
+
+wait "$preview_pid"
+
