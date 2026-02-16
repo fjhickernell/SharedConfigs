@@ -22,7 +22,6 @@ fi
 
 cd "$repo_root"
 
-# Normalize to repo-relative (best-effort)
 case "$target" in
   /*) ;;
   *) target="${target#./}" ;;
@@ -31,7 +30,6 @@ esac
 target_dir="$(dirname "$target")"
 target_base="$(basename "$target" .qmd)"
 
-# Quarto outputs (in your case) land in the same dir as the qmd
 generated_html="${target_dir}/${target_base}.html"
 generated_files_dir="${target_dir}/${target_base}_files"
 
@@ -47,49 +45,91 @@ add_watch "classlib/classlib/quarto/assets"
 add_watch "classlib/classlib/quarto/js"
 add_watch "classlib/classlib/quarto/css"
 
+ring () { printf '\a' >&2; }
+die_loud () {
+  ring
+  echo "============================================================" >&2
+  echo "ERROR: $*" >&2
+  echo "============================================================" >&2
+}
+
 cleanup () {
+  [ -n "${supervisor_pid:-}" ] && kill "$supervisor_pid" >/dev/null 2>&1 || true
   [ -n "${preview_pid:-}" ] && kill "$preview_pid" >/dev/null 2>&1 || true
-  [ -n "${fswatch_pid:-}" ] && kill "$fswatch_pid" >/dev/null 2>&1 || true
+  [ -n "${watch_pid:-}" ] && kill "$watch_pid" >/dev/null 2>&1 || true
 }
 trap cleanup INT TERM EXIT
 
+log_dir="$repo_root/.quarto-watch-logs"
+mkdir -p "$log_dir"
+render_log="$log_dir/${target_base}.render.log"
+
 echo "[preview] starting"
-quarto preview "$target" --no-watch-inputs "$@" &
+quarto preview "$target" --no-watch-inputs "$@" >/dev/null 2>&1 &
 preview_pid=$!
 
 echo "[watch] watching ${#watch_paths[@]} paths"
 echo "[watch] ignoring: $generated_html"
 echo "[watch] ignoring: $generated_files_dir/"
 
-fswatch -0 -r -l 0.3 \
-  -e '.*/_site($|/)' \
-  -e '.*/_freeze($|/)' \
-  -e '.*/\.quarto($|/)' \
-  -e '.*/\.git($|/)' \
-  -e '.*/[^/]+_files($|/)' \
-  -e '.*\.ipynb$' \
-  -e '.*\.quarto_ipynb$' \
-  -i '.*\.(qmd|yml|yaml|scss|css|js|png|jpg|jpeg|svg|html)$' \
-  "${watch_paths[@]}" |
-while IFS= read -r -d '' path; do
-  case "$path" in
-    */_site/*|*/_freeze/*|*/.quarto/*|*/.git/*) continue ;;
-    *"_files/"*|*"_files") continue ;;
-  esac
+watch_pipeline () {
+  fswatch -0 -r -l 0.3 \
+    -e '.*/_site($|/)' \
+    -e '.*/_freeze($|/)' \
+    -e '.*/\.quarto($|/)' \
+    -e '.*/\.git($|/)' \
+    -e '.*/[^/]+_files($|/)' \
+    -e '.*\.ipynb$' \
+    -e '.*\.quarto_ipynb$' \
+    -e "(.*/)?${target_base}\.html$" \
+    -e "(.*/)?${target_base}_files($|/)" \
+    -i '.*\.(qmd|yml|yaml|scss|css|js|png|jpg|jpeg|svg|html)$' \
+    "${watch_paths[@]}" |
+  while IFS= read -r -d '' path; do
+    case "$path" in
+      */_site/*|*/_freeze/*|*/.quarto/*|*/.git/*) continue ;;
+      *"_files/"*|*"_files") continue ;;
+    esac
 
-  # Ignore THIS deck's generated artifacts (absolute paths will match too)
-  case "$path" in
-    *"/${generated_html}"|*"/${generated_files_dir}"|*"/${generated_files_dir}/"* )
-      continue
-      ;;
-  esac
+    case "$path" in
+      *"/${generated_html}"|*"${generated_html}"|*"/${generated_files_dir}"|*"${generated_files_dir}"|*"/${generated_files_dir}/"*|*"${generated_files_dir}/"*)
+        continue
+        ;;
+    esac
 
-  echo "[watch] $(date '+%H:%M:%S') $path"
-  sleep 0.20
-  echo "[render] $(date '+%H:%M:%S')"
-  quarto render "$target" || true
-done &
-fswatch_pid=$!
+    printf '[render] %s\n' "$(date '+%H:%M:%S')"
+
+    if quarto render "$target" >"$render_log" 2>&1; then
+      printf '[render] ok\n'
+      rm -rf "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+      mkdir -p "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+      rsync -a --delete "$repo_root/classlib/" "$repo_root/slides/_site/classlib/" >/dev/null 2>&1 || true
+      printf '[stage] ok\n'
+    else
+      die_loud "quarto render failed (see $render_log)"
+      tail -n 25 "$render_log" >&2
+    fi
+  done
+}
+
+watch_pipeline &
+watch_pid=$!
+
+supervise () {
+  while :; do
+    if ! kill -0 "$watch_pid" >/dev/null 2>&1; then
+      die_loud "watcher stopped (fswatch/pipeline exited). Killing preview."
+      kill "$preview_pid" >/dev/null 2>&1 || true
+      exit 1
+    fi
+    if ! kill -0 "$preview_pid" >/dev/null 2>&1; then
+      exit 0
+    fi
+    sleep 0.5
+  done
+}
+
+supervise &
+supervisor_pid=$!
 
 wait "$preview_pid"
-

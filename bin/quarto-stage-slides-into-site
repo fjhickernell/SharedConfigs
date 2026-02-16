@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -z "$repo_root" ]; then
+  echo "error: not inside a git repo" >&2
+  exit 2
+fi
+
+cd "$repo_root"
+
+if [ ! -d slides/_site ]; then
+  echo "error: slides/_site not found (render slides first)" >&2
+  exit 2
+fi
+
+rm -rf _site/slides
+mkdir -p _site/slides
+rsync -a --delete slides/_site/ _site/slides/
+printf "OK: staged slides/_site -> _site/slides\n"
