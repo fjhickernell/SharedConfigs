@@ -73,6 +73,10 @@ echo "[watch] ignoring: $generated_html"
 echo "[watch] ignoring: $generated_files_dir/"
 
 watch_pipeline () {
+  local lock="$log_dir/${target_base}.render.lock"
+  local dirty="$log_dir/${target_base}.render.dirty"
+  local debounce_seconds="0.9"
+
   fswatch -0 -r -l 0.3 \
     -e '.*/_site($|/)' \
     -e '.*/_freeze($|/)' \
@@ -97,18 +101,43 @@ watch_pipeline () {
         ;;
     esac
 
-    printf '[render] %s\n' "$(date '+%H:%M:%S')"
+    : >"$dirty"
 
-    if quarto render "$target" >"$render_log" 2>&1; then
-      printf '[render] ok\n'
-      rm -rf "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
-      mkdir -p "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
-      rsync -a --delete "$repo_root/classlib/" "$repo_root/slides/_site/classlib/" >/dev/null 2>&1 || true
-      printf '[stage] ok\n'
-    else
-      die_loud "quarto render failed (see $render_log)"
-      tail -n 25 "$render_log" >&2
+    if [ -e "$lock" ]; then
+      continue
     fi
+
+    (
+      set -euo pipefail
+      : >"$lock"
+      trap 'rm -f "$lock"' EXIT
+
+      while :; do
+        rm -f "$dirty" >/dev/null 2>&1 || true
+        sleep "$debounce_seconds"
+        if [ -e "$dirty" ]; then
+          continue
+        fi
+
+        printf '[render] %s\n' "$(date '+%H:%M:%S')"
+
+        if quarto render "$target" >"$render_log" 2>&1; then
+          printf '[render] ok\n'
+          rm -rf "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+          mkdir -p "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+          rsync -a --delete "$repo_root/classlib/" "$repo_root/slides/_site/classlib/" >/dev/null 2>&1 || true
+          printf '[stage] ok\n'
+        else
+          die_loud "quarto render failed (see $render_log)"
+          tail -n 25 "$render_log" >&2
+        fi
+
+        if [ -e "$dirty" ]; then
+          continue
+        fi
+        break
+      done
+    ) &
   done
 }
 
@@ -133,3 +162,4 @@ supervise &
 supervisor_pid=$!
 
 wait "$preview_pid"
+
