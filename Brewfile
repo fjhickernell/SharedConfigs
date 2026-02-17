@@ -27,6 +27,7 @@ brew "mas"
 brew "open-mpi"
 brew "opencl-headers"
 brew "pandoc"
+brew "poppler"
 brew "pdf2svg"
 brew "pdfgrep"
 brew "pdftk-java"
@@ -44,18 +45,25 @@ cask "macdown"
 cask "obsidian"
 cask "quarto"
 cask "rstudio"
+cask "texstudio"
 cask "visual-studio-code"
 cask "warp"
 mas "Air Printer", id: 929399895
 mas "Capital One Shopping", id: 1477110326
+mas "CNET Shopping", id: 1628869139
 mas "CotEditor", id: 1024640650
+mas "CouponCabin", id: 1484917734
 mas "Fantastical", id: 975937182
+mas "Flighty", id: 1358823008
 mas "GarageBand", id: 682658836
+mas "Goodnotes", id: 1444383602
 mas "GoodTask", id: 1143437985
-mas "HP", id: 1474276998
+mas "HP Smart", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
+mas "LastPass for Safari", id: 6504626762
+mas "Messenger", id: 1480068668
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
@@ -64,7 +72,10 @@ mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
+mas "Paste", id: 967805235
+mas "PayPal Honey", id: 1472777122
 mas "Perplexity", id: 6714467650
+mas "Prime Video", id: 545519333
 mas "Rakuten Cash Back", id: 1451893560
 mas "Slack", id: 803453959
 mas "Speedtest", id: 1153157709
