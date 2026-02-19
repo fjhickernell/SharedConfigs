@@ -3,11 +3,6 @@
 %%
 %% Changelog
 %%
-%% v3.19  (2026/02/18)
-%%   • Updated instructions wording (take-home block).
-%%   • itemize level-1 bullets default to an en-dash (–) instead of discs.
-%%     Opt-out: \setexamitemizebullet{disc}
-%%
 %% v3.18  (2025/12/04)
 %%   • Added take-home exam mode:
 %%       - New \examstyle{takehome} switch.
@@ -41,18 +36,23 @@
 %% ------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesExplPackage{fh-exam}{2026/02/18}{3.19}{Slim exam scaffolding}
+\ProvidesExplPackage{fh-exam}{2025/12/04}{v3.18}{Slim exam scaffolding}
 
 \RequirePackage{xstring}
 \makeatletter
 
+% Add this once, near the top (after \makeatletter is fine)
 \newwrite\fhx@tot@stream
 
 % ---------- deps ----------
+% Default geometry option if user doesn't specify any
 \PassOptionsToPackage{margin=1in}{geometry}
+
+% Forward any unknown fh-exam package options to geometry
 \DeclareOption*{\PassOptionsToPackage{\CurrentOption}{geometry}}
 \ProcessOptions\relax
 
+% Load geometry only if not already loaded
 \@ifpackageloaded{geometry}{}{%
 	\RequirePackage{geometry}%
 }
@@ -60,35 +60,26 @@
 \RequirePackage{mathtools}
 \RequirePackage{enumitem}
 \RequirePackage{environ}
-\RequirePackage{fmtcount}
+\RequirePackage{fmtcount} % for word forms like \NUMBERstringnum
 \RequirePackage{xcolor}
 
+
+% put this once in fh-exam.sty (near other helpers)
 \ExplSyntaxOn
 \NewDocumentCommand{\forcespaces}{m}{
 	\tl_set:Nn \l_tmpa_tl { #1 }
+	% replace runs of spaces with \space
 	\regex_replace_all:nnN { \s+ } { \c{space} } \l_tmpa_tl
 	\tl_use:N \l_tmpa_tl
 }
 \ExplSyntaxOff
 
-% ---------- itemize bullets (v3.19) ----------
-\newcommand{\fhx@itemize@label}{\textendash}
-\NewDocumentCommand{\setexamitemizebullet}{m}{%
-	\edef\fhx@tmp{#1}%
-	\IfStrEq{\fhx@tmp}{disc}{%
-		\renewcommand{\fhx@itemize@label}{\textbullet}%
-	}{%
-		\renewcommand{\fhx@itemize@label}{\textendash}%
-	}%
-}
-\AtBeginDocument{%
-	\setlist[itemize,1]{label=\fhx@itemize@label}%
-}
-
 % ---------- user toggles ----------
 \newif\ifshowanswers
-\showanswersfalse
+\showanswersfalse     % default: hide Answer blocks
+% In your .tex, write \showanswerstrue to reveal answers.
 
+% toggle visibility for instructor comments (default: hide)
 \newif\ifshowcomments
 \showcommentsfalse
 
@@ -111,23 +102,28 @@
 \newcounter{examnumproblems}
 \newcommand{\fhx@pointword}[1]{\ifnum#1=1 point\else points\fi}
 
+% Live total printer (for end-of-document use, if desired)
 \newcommand{\printtotalpoints}{%
 	\textbf{Total: \arabic{fhx@totalpoints} \fhx@pointword{\value{fhx@totalpoints}}}%
 }
 
 % ---------- persisted refs for total & count (sidecar file) ----------
+% Defaults before file exists:
 \newcommand{\fhxTotalFromFile}{0}
 \newcommand{\fhxNumFromFile}{0}
 
+% Load sidecar if present at begin document
 \AtBeginDocument{%
 	\IfFileExists{\jobname.fhxtot}{\input{\jobname.fhxtot}}{}%
 }
 
-\newcommand{\examtotalpointsref}{\fhxTotalFromFile}
-\newcommand{\examnumproblemsref}{\fhxNumFromFile}
+% Numbers you can embed anywhere (near header, sentences, etc.)
+\newcommand{\examtotalpointsref}{\fhxTotalFromFile}   % just the number
+\newcommand{\examnumproblemsref}{\fhxNumFromFile}     % just the number
 \newcommand{\examnumproblemsword}{\numberstringnum{\examnumproblemsref}}
 \newcommand{\examnumproblemsWORD}{\NUMBERstringnum{\examnumproblemsref}}
 
+% Optional formatted version (if you like the bold label)
 \newcommand{\printtotalpointsref}{%
 	\textbf{Total: \examtotalpointsref\space points}%
 }
@@ -137,22 +133,27 @@
 \setlist[problemlist]{label=\arabic*., leftmargin=7mm,
 	itemsep=.5\baselineskip, topsep=.5\baselineskip, align=left}
 
+% Helper for per-problem subtotal label (no @)
 \newcommand{\fhxplabel}{fhxP\arabic{problemlisti}pts}
 
 % ---------- problems environment ----------
+% Opens the list; on close, writes total & count to aux + sidecar for next run.
 \NewDocumentEnvironment{problems}{}{%
 	\begin{problemlist}%
 	}{%
 	\end{problemlist}%
+	% Persist totals for next run
 	\begingroup
 	\edef\fhxTotal{\number\value{fhx@totalpoints}}%
 	\edef\fhxNum{\number\value{examnumproblems}}%
+	% Write to .aux (harmless)
 	\protected@write\@auxout{}{%
 		\string\newlabel{fhxTotalPoints}{{\fhxTotal}{}}%
 	}%
 	\protected@write\@auxout{}{%
 		\string\newlabel{fhxNumProblems}{{\fhxNum}{}}%
 	}%
+	% Write to sidecar .fhxtot
 	\immediate\openout\fhx@tot@stream=\jobname.fhxtot
 	\immediate\write\fhx@tot@stream{\string\gdef\string\fhxTotalFromFile{\fhxTotal}}%
 	\immediate\write\fhx@tot@stream{\string\gdef\string\fhxNumFromFile{\fhxNum}}%
@@ -161,6 +162,9 @@
 }
 
 % ---------- \problem ----------
+% \problem{<points>}{<text>}
+% If <points> > 0: print & count immediately.
+% If <points> = 0: parent → subtotal from subproblems shown next run (via label).
 \NewDocumentCommand{\problem}{m m}{%
 	\ProblemSep
 	\setcounter{fhx@problempoints}{0}%
@@ -170,6 +174,7 @@
 	\addtocounter{fhx@totalpoints}{#1}%
 	\points{#1}\space #2%
 	\else
+	% Try to show previous-run subtotal if available
 	\begingroup
 	\edef\fhxrkey{r@\fhxplabel}%
 	\expandafter\ifcsname\fhxrkey\endcsname
@@ -187,6 +192,7 @@
 	\begin{enumerate}[label=\alph*., leftmargin=*, itemsep=.25\baselineskip, topsep=.25\baselineskip]%
 	}{%
 	\end{enumerate}%
+	% Save subtotal & add to total
 	\begingroup
 	\edef\fhxpts{\number\value{fhx@problempoints}}%
 	\addtocounter{fhx@totalpoints}{\value{fhx@problempoints}}%
@@ -196,12 +202,13 @@
 	\endgroup
 }
 
+% \subproblem{<points>}{<text>}
 \NewDocumentCommand{\subproblem}{m m}{%
 	\item \addtocounter{fhx@problempoints}{#1}\points{#1}\space #2%
 }
 
-% ---------- Answer blocks ----------
-\newcommand{\AnswerLabel}{Answer:\ }
+% ---------- Answer blocks (shown only if \showanswerstrue) ----------
+\newcommand{\AnswerLabel}{Answer:\ } % customize if you like
 
 \NewEnviron{Answer}{%
 	\ifshowanswers
@@ -215,7 +222,7 @@
 	\fi
 }
 
-% ---------- instructor comments ----------
+% ---------- instructor comments (hidden unless \showcommentstrue) ----------
 \newcommand{\commenttext}[1]{%
 	\ifshowcomments
 	{\large\textcolor{magenta}{#1}}%
@@ -230,16 +237,18 @@
 	\fi
 }{}
 
-% --- Academic Integrity Signature ------
+% --- Academic Integrity Signature (Signature + Date; labels underneath) ------
 \@ifundefined{examhonorstatement}{%
 	\newcommand{\examhonorstatement}{%
+		%\vspace{1\baselineskip}% space above
 		\emph{I understand these instructions and have not relied on any help for this
 			exam beyond what is allowed, nor provided any help to anyone else beyond what
 			is allowed.}\\[2\baselineskip]
+		% Signature and Date lines side-by-side, labels below
 		\noindent
 		\makebox[3.5in]{\hrulefill}\hspace{2em}\makebox[2in]{\hrulefill}\\[-0.3\baselineskip]
 		\makebox[3.5in][c]{\textit{Signature}}\hspace{2em}\makebox[2in][c]{\textit{Date}}%
-		\vspace{1\baselineskip}%
+		\vspace{1\baselineskip}% space below
 	}%
 }{}
 
@@ -259,22 +268,19 @@
 	\examhonorstatement
 }
 
-% --- Instructions block ---
+% --- Instructions block (refactored; adds full override + take-home mode) ---
 
+% -------------------
+% User-facing knobs (legacy)
+% -------------------
 \newcommand{\examtimeallowed}{\forcespaces{75 minutes}}
 \newcommand{\examnotesheets}{4}
 \newcommand{\examnotesdesc}{\forcespaces{double-sided letter-size sheets of notes}}
-\newcommand{\examdevices}{\forcespaces{No calculators or other electronic devices are allowed. Phones must be placed in your bags under your desks or at the front of the room. Hands must be on top of your desks.}}
-\newcommand{\examsigfigs}{three}
+\newcommand{\examdevices}{\forcespaces{No calculators or other devices are allowed. Phones must be placed in your bags under your desks or at the front of the room. Hands must be on top of your desks.}}
+\newcommand{\examsigfigs}{three} % word form
 \newcommand{\examinstructorcontact}{\forcespaces{Off-site students may contact the instructor as directed by your syllabus.}}
 
-\newif\ifexamcriticallevel
-\examcriticallevelfalse
-
-\newcommand{\examcriticalleveltext}{%
-	\forcespaces{You will be provided all of the critical values that you need.}
-}
-
+% First line (legacy override)
 \newcommand{\examfirstinstructiondefault}{%
 	\forcespaces{This test has \textbf{\examnumproblemsWORD} question(s).%
 		\space Attempt all.%
@@ -285,29 +291,36 @@
 	\renewcommand{\examfirstinstruction}{#1}%
 }
 
+% ============================================================
+% NEW: Full instructions block (default = legacy 7-item list)
+% ============================================================
+
 \newcommand{\examfullinstructionsdefault}{%
 	\begin{enumerate}[label=\roman*., leftmargin=*, itemsep=2pt, topsep=2pt]
 		\item \examfirstinstruction
 		\item \forcespaces{The time allowed is \examtimeallowed.}
 		\item \forcespaces{This test is closed book, but you may use \textbf{\examnotesheets} \examnotesdesc.}
 		\item \examdevices
-		\item \forcespaces{You are expected to simplify any expressions that can be simplified as whole numbers, e.g., $36/15 = 12/5$, but you may leave other expressions as is, e.g., $\sqrt{47}$ or $18/29$.}
-		\ifexamcriticallevel
-		\item \examcriticalleveltext
-		\fi
+		\item \forcespaces{Keep at least \emph{\examsigfigs} significant digits in your intermediate calculations and final answers.}
 		\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
 		\item \examinstructorcontact
 	\end{enumerate}
 }
 
+% User override hook:
 \newcommand{\examfullinstructions}{\examfullinstructionsdefault}
 \NewDocumentCommand{\setexamfullinstructions}{m}{%
 	\renewcommand{\examfullinstructions}{#1}%
 }
 
+% ============================================================
+% NEW: Take-home preset (easy switch)
+% ============================================================
+
 \newif\ifexam@takehome
 \exam@takehomefalse
 
+% Call: \examstyle{takehome}    or \examstyle{inclass}
 \NewDocumentCommand{\examstyle}{m}{%
 	\edef\temp{#1}%
 	\IfStrEq{\temp}{takehome}{%
@@ -317,6 +330,7 @@
 	}%
 }
 
+% When take-home mode is active, replace the instructions block
 \AtBeginDocument{%
 	\ifexam@takehome
 	\setexamfullinstructions{%
@@ -324,12 +338,12 @@
 			\item \forcespaces{This is a \textbf{take-home} exam with
 				\textbf{\examnumproblemsWORD} question(s). Attempt all.
 				The maximum number of points is \textbf{\examtotalpointsref}.}
-			\item \forcespaces{This take-home exam is due at the time listed above.
+			\item \forcespaces{This take-home exam is due at the time listed above. 
 				There is no time limit other than the due date.}
-			\item \forcespaces{You must turn in your files via Canvas and hard copies to the instructor.}
-			\item \forcespaces{You may use AI tools (e.g., ChatGPT) and other inanimate
-				resources. You may \textbf{not} get help from any human (classmates, tutors,
-				friends, family, or online responders). All solutions must be your own work,
+			\item\forcespaces{You must turn in your files via Canvas and hard copies to the instructor.}
+			\item \forcespaces{You may use AI tools (e.g., ChatGPT) and other inanimate 
+				resources. You may \textbf{not} get help from any human (classmates, tutors, 
+				friends, family, or online responders). All solutions must be your own work, 
 				and you are responsible for checking that AI-generated content is correct.}
 			\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
 			\item \forcespaces{If you have clarification questions,
@@ -339,16 +353,20 @@
 	\fi
 }
 
+% ============================================================
+% Printer
+% ============================================================
+
 \NewDocumentCommand{\printexaminstructions}{}{%
 	{\small\em
 		\noindent Instructions:
 		\examfullinstructions
 	}%
 }
-
 % ---- Stem-and-leaf (expl3), descending stems, auto min–max + stats ----
 \ExplSyntaxOn
 
+% ---------- Options ----------
 \int_new:N \l__sl_width_int
 \int_new:N \l__sl_user_minstem_int
 \int_new:N \l__sl_user_maxstem_int
@@ -362,6 +380,7 @@
 	maxstem .initial:n = -2147483647
 }
 
+% ---------- State ----------
 \int_new:N \l__sl_minstem_int
 \int_new:N \l__sl_maxstem_int
 \int_new:N \l__sl_a_int
@@ -374,13 +393,15 @@
 \clist_new:N \l__sl_work_clist
 \prop_new:N \l__sl_bins_prop
 
+% ---------- Stats ----------
 \seq_new:N  \l__sl_vals_seq
 \int_new:N  \l__sl_n_int
 \int_new:N  \l__sl_sum_int
 \int_new:N  \l__sl_minval_int
 \int_new:N  \l__sl_maxval_int
-\int_new:N  \l__sl_sumsq_int
+\int_new:N  \l__sl_sumsq_int   % sum of squares for SD
 
+% --- extra state for quartiles/indices ---
 \int_new:N \l__sl_Llo_int
 \int_new:N \l__sl_Lhi_int
 \int_new:N \l__sl_Hlo_int
@@ -389,10 +410,14 @@
 \int_new:N \l__sl_idxA_int
 \int_new:N \l__sl_idxB_int
 
+% ---------- Add one integer ----------
 \cs_new_protected:Npn \sl_add_int:n #1
 {
+	% Allow decimals: round to nearest integer first to avoid leaving
+	% fractional tokens (.68, .09, etc.) in the input stream.
 	\int_set:Nn \l__sl_a_int { \fp_to_int:n { round(#1,0) } }
 	
+	% stats (store expanded number)
 	\seq_put_right:Nx \l__sl_vals_seq { \int_to_arabic:n { \l__sl_a_int } }
 	\int_incr:N \l__sl_n_int
 	\int_add:Nn \l__sl_sum_int  { \l__sl_a_int }
@@ -409,24 +434,29 @@
 		{ \int_set_eq:NN \l__sl_maxval_int \l__sl_a_int }
 	}
 	
+	% stem/leaf for current width
 	\int_set:Nn \l__sl_b_int
-	{ \int_div_truncate:nn { \l__sl_a_int } { \l__sl_width_int } }
+	{ \int_div_truncate:nn { \l__sl_a_int } { \l__sl_width_int } } % stem
 	\int_set:Nn \l__sl_c_int
-	{ \l__sl_a_int - \l__sl_width_int * \l__sl_b_int }
+	{ \l__sl_a_int - \l__sl_width_int * \l__sl_b_int }             % leaf
 	
+	% update auto window
 	\int_compare:nNnT { \l__sl_minstem_int } > { \l__sl_b_int }
 	{ \int_set_eq:NN \l__sl_minstem_int \l__sl_b_int }
 	\int_compare:nNnT { \l__sl_maxstem_int } < { \l__sl_b_int }
 	{ \int_set_eq:NN \l__sl_maxstem_int \l__sl_b_int }
 	
+	% key is the expanded stem number
 	\tl_set:Nx \l__sl_key_tl { \int_to_arabic:n { \l__sl_b_int } }
 	
+	% append leaf as a clist string
 	\prop_get:NVNTF \l__sl_bins_prop \l__sl_key_tl \l__sl_val_tl
 	{ \tl_put_right:Nx \l__sl_val_tl { , \int_to_arabic:n { \l__sl_c_int } } }
 	{ \tl_set:Nx       \l__sl_val_tl   {   \int_to_arabic:n { \l__sl_c_int } } }
 	\prop_put:NVV \l__sl_bins_prop \l__sl_key_tl \l__sl_val_tl
 }
 
+% ---------- Parse CSV of integers ----------
 \cs_new_protected:Npn \sl_parse_values:n #1
 {
 	\prop_clear:N \l__sl_bins_prop
@@ -436,7 +466,7 @@
 	\int_zero:N   \l__sl_sumsq_int
 	\int_set:Nn \l__sl_minstem_int {  2147483647 }
 	\int_set:Nn \l__sl_maxstem_int { -2147483647 }
-	
+
 	\clist_set:Nn \l__sl_tmp_clist { #1 }
 	\clist_map_inline:Nn \l__sl_tmp_clist
 	{
@@ -448,11 +478,12 @@
 	}
 }
 
+% ---------- Typeset (descending stems) ----------
 \cs_new_protected:Npn \sl_typeset:
 {
 	\int_compare:nNnT { \l__sl_maxstem_int } < { \l__sl_minstem_int }
 	{ \int_set:Nn \l__sl_minstem_int {0} \int_set:Nn \l__sl_maxstem_int {0} }
-	
+
 	\par\smallskip
 	\begingroup
 	\ttfamily \parindent=0pt \parskip=0pt
@@ -473,18 +504,21 @@
 	\smallskip
 }
 
+% ---------- Helper: print median of subrange [lo..hi] ----------
 \cs_new_protected:Npn \__sl_print_submedian:nn #1#2
 {
-	\int_set:Nn \l__sl_c_int { #2 - #1 + 1 }
+	\int_set:Nn \l__sl_c_int { #2 - #1 + 1 } % length
 	\int_compare:nNnTF { \l__sl_c_int } < { 1 }
 	{ 0 }
 	{
 		\int_if_odd:nTF { \l__sl_c_int }
 		{
+			% odd length: index = #1 + (c-1)/2
 			\int_set:Nn \l__sl_idx_int { #1 + ( \l__sl_c_int - 1 ) / 2 }
 			\seq_item:Nn \l__sl_vals_seq { \l__sl_idx_int }
 		}
 		{
+			% even length: average the two middle items
 			\int_set:Nn \l__sl_idxA_int { #1 + \l__sl_c_int/2 - 1 }
 			\int_set:Nn \l__sl_idxB_int { #1 + \l__sl_c_int/2     }
 			\fp_eval:n { round(
@@ -494,6 +528,8 @@
 	}
 }
 
+% ---------- Public ----------
+% \stemleaf[width=10, minstem=..., maxstem=...]{values}
 \NewDocumentCommand \stemleaf { O{width=10} m }
 {
 	\keys_set:nn { sl } { #1 }
@@ -505,23 +541,27 @@
 	\sl_typeset:
 }
 
+% \examstatsstemleaf[width=10][Exam Scores Summary]{values}
 \NewDocumentCommand \examstatsstemleaf { O{width=10} O{Exam Scores Summary} m }
 {
 	\keys_set:nn { sl } { #1 }
 	\sl_parse_values:n { #3 }
 	
+	% Sort once for order stats (on the rounded integer values)
 	\seq_sort:Nn \l__sl_vals_seq
 	{ \int_compare:nNnTF {##1} < {##2} { \sort_return_same: } { \sort_return_swapped: } }
 	
-	\int_set:Nn \l__sl_a_int { \seq_count:N \l__sl_vals_seq }
-	\int_set:Nn \l__sl_b_int { \int_div_truncate:nn { \l__sl_a_int } { 2 } }
+	\int_set:Nn \l__sl_a_int { \seq_count:N \l__sl_vals_seq } % n
+	\int_set:Nn \l__sl_b_int { \int_div_truncate:nn { \l__sl_a_int } { 2 } } % floor(n/2)
 	
+	% Prepare quartile ranges
 	\int_set:Nn \l__sl_Llo_int { 1 }
 	\int_set:Nn \l__sl_Lhi_int { \l__sl_b_int }
 	\int_set:Nn \l__sl_Hlo_int
 	{ \int_if_odd:nTF { \l__sl_a_int } { \l__sl_b_int + 2 } { \l__sl_b_int + 1 } }
 	\int_set:Nn \l__sl_Hhi_int { \l__sl_a_int }
 	
+	% Summary lines (keep one decimal place in stats)
 	\par\smallskip
 	\noindent\textbf{#2}\\
 	\noindent Number\ of\ Students:\ \int_to_arabic:n { \l__sl_a_int },\ %
@@ -544,16 +584,17 @@
 
 \ExplSyntaxOff
 
-% ---------- page numbering ----------
+% ---------- page numbering: "Page N of M" ----------
 \RequirePackage{lastpage,fancyhdr}
 
 \fancypagestyle{fhxexam}{%
-	\fancyhf{}%
-	\fancyfoot[C]{\thepage\ of \pageref*{LastPage}}%
-	\renewcommand{\headrulewidth}{0pt}%
-	\renewcommand{\footrulewidth}{0pt}%
+	\fancyhf{}% clear all header/footer fields
+	\fancyfoot[C]{\thepage\ of \pageref*{LastPage}}
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footrulewidth}{0pt}
 }
 
+% default to this style unless user overrides later
 \pagestyle{fhxexam}
 
 \makeatother
