@@ -24,6 +24,7 @@ brew "libxml2"
 brew "libyaml"
 brew "make"
 brew "mas"
+brew "node"
 brew "open-mpi"
 brew "opencl-headers"
 brew "pandoc"
@@ -40,6 +41,7 @@ brew "ruby-install"
 brew "starship"
 brew "tldr"
 brew "tree"
+brew "watchexec"
 brew "weasyprint"
 cask "macdown"
 cask "obsidian"
@@ -58,12 +60,11 @@ mas "Flighty", id: 1358823008
 mas "GarageBand", id: 682658836
 mas "Goodnotes", id: 1444383602
 mas "GoodTask", id: 1143437985
-mas "HP Smart", id: 1474276998
+mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
 mas "LastPass for Safari", id: 6504626762
-mas "Messenger", id: 1480068668
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
