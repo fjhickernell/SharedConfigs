@@ -110,4 +110,14 @@ else
   log "sync-class.sh not found on PATH; skipping class sync."
 fi
 
+if command -v npm >/dev/null 2>&1; then
+  if [[ -x "${BASE}/npm-globals-sync.sh" ]]; then
+    run_step "npm-globals-sync" "${BASE}/npm-globals-sync.sh"
+  else
+    log "npm-globals-sync.sh not found or not executable at ${BASE}/npm-globals-sync.sh; skipping npm globals."
+  fi
+else
+  log "npm not found on PATH; skipping npm globals."
+fi
+
 log "===== Regular maintenance run finished. ====="
