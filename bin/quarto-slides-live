@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -u
+set -o pipefail
+
+FAST=0
+if [ "${1:-}" = "--fast" ]; then
+  FAST=1
+  shift
+fi
+
+if [ $# -ne 1 ]; then
+  echo "Usage: quarto-slides-live [--fast] slides/XX-deck.qmd"
+  exit 2
+fi
+
+target="$1"
+repo_root="$(pwd)"
+target_base="$(basename "$target" .qmd)"
+
+logs_dir="$repo_root/.quarto-watch-logs"
+mkdir -p "$logs_dir"
+log="$logs_dir/${target_base}.render.log"
+
+port="${QUARTO_LIVE_PORT:-4321}"
+
+need_cmd () { command -v "$1" >/dev/null 2>&1 || { echo "Missing $1"; exit 2; }; }
+need_cmd watchexec
+need_cmd browser-sync
+need_cmd quarto
+need_cmd rsync
+need_cmd open
+
+runner="$logs_dir/${target_base}.render-runner.sh"
+
+if [ "$FAST" -eq 1 ]; then
+  render_flags=""
+else
+  render_flags="--no-cache"
+fi
+
+cat > "$runner" <<RUNEOF
+#!/usr/bin/env bash
+set -u
+set -o pipefail
+
+repo_root="$repo_root"
+target="$target"
+target_base="$target_base"
+log="$log"
+FAST="$FAST"
+render_flags="$render_flags"
+
+if [ "\$FAST" -eq 0 ]; then
+  rm -rf "\$repo_root/slides/_freeze" >/dev/null 2>&1 || true
+else
+  rm -rf "\$repo_root/slides/_freeze/\$target_base"* >/dev/null 2>&1 || true
+fi
+
+quarto render "\$repo_root/\$target" \$render_flags >"\$log" 2>&1
+rc=\$?
+
+if [ \$rc -ne 0 ]; then
+  echo "============================================================"
+  echo "WARNING: quarto render failed (watch continues)"
+  echo "log: \$log"
+  echo "------------------------------------------------------------"
+  tail -n 50 "\$log" 2>/dev/null || true
+  echo "============================================================"
+  exit 0
+fi
+
+rm -rf "\$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+mkdir -p "\$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+rsync -a --delete "\$repo_root/classlib/" "\$repo_root/slides/_site/classlib/" >/dev/null 2>&1 || true
+
+echo "[ok] \$(date '+%H:%M:%S')"
+exit 0
+RUNEOF
+
+chmod +x "$runner"
+
+"$runner"
+
+cd "$repo_root/slides/_site" || exit 2
+browser-sync start --server --files "**/*" --port "$port" --no-open >/dev/null 2>&1 &
+bs_pid="$!"
+
+cleanup () { kill "$bs_pid" >/dev/null 2>&1 || true; }
+trap cleanup EXIT
+
+url="http://localhost:${port}/${target_base}.html"
+echo "Live: $url"
+open "$url"
+
+cd "$repo_root" || exit 2
+
+watchexec -r \
+  -w "$repo_root/slides" -w "$repo_root/classlib" \
+  --ignore "$repo_root/slides/_site/**" \
+  --ignore "$repo_root/slides/_freeze/**" \
+  --ignore "$repo_root/**/.quarto/**" \
+  --ignore "$repo_root/**/.git/**" \
+  --ignore "$repo_root/**/*_files/**" \
+  -e qmd,yml,yaml,scss,css,js,png,jpg,jpeg,svg \
+  -- "$runner"

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -u  # no set -e (we don't want to die on errors)
+
+if [ $# -ne 1 ]; then
+  echo "Usage: quarto-watch-deck slides/XX-name.qmd"
+  exit 1
+fi
+
+target="$1"
+repo_root="$(pwd)"
+
+log="$repo_root/.quarto-watch-logs/$(basename "$target" .qmd).watch.log"
+mkdir -p "$repo_root/.quarto-watch-logs"
+
+render_and_stage () {
+
+  rm -rf "$repo_root/slides/_freeze" >/dev/null 2>&1 || true
+
+  quarto render "$target" >"$log" 2>&1
+  status=$?
+
+  if [ $status -ne 0 ]; then
+    echo "============================================================"
+    echo "Render failed (watcher continues)."
+    echo "Log: $log"
+    tail -n 30 "$log"
+    echo "============================================================"
+    return 0
+  fi
+
+  rm -rf "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+  mkdir -p "$repo_root/slides/_site/classlib" >/dev/null 2>&1 || true
+  rsync -a --delete "$repo_root/classlib/" "$repo_root/slides/_site/classlib/" >/dev/null 2>&1 || true
+
+  echo "[ok] $(date '+%H:%M:%S')"
+}
+
+watchexec -r \
+  -w slides -w classlib \
+  --ignore 'slides/_site/**' \
+  --ignore 'slides/_freeze/**' \
+  --ignore '**/.quarto/**' \
+  --ignore '**/.git/**' \
+  --ignore '**/*_files/**' \
+  -e qmd,yml,yaml,scss,css,js,png,jpg,jpeg,svg \
+  -- bash -c 'render_and_stage' \
+  --env render_and_stage="$(declare -f render_and_stage); render_and_stage"
