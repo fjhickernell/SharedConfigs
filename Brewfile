@@ -73,7 +73,6 @@ mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
-mas "Paste", id: 967805235
 mas "PayPal Honey", id: 1472777122
 mas "Perplexity", id: 6714467650
 mas "Prime Video", id: 545519333
