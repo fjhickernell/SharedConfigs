@@ -1,0 +1,4 @@
+/opt/homebrew/lib
+├── browser-sync@3.0.4
+└── npm@11.9.0
+
