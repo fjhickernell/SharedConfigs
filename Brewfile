@@ -12,6 +12,7 @@ brew "fd"
 brew "fribidi"
 brew "fswatch"
 brew "fzf"
+brew "gmp"
 brew "gcc"
 brew "gh"
 brew "ghostscript"
@@ -43,7 +44,7 @@ brew "tldr"
 brew "tree"
 brew "watchexec"
 brew "weasyprint"
-cask "macdown"
+brew "zlib"
 cask "obsidian"
 cask "quarto"
 cask "rstudio"
@@ -58,24 +59,35 @@ mas "CouponCabin", id: 1484917734
 mas "Fantastical", id: 975937182
 mas "Flighty", id: 1358823008
 mas "GarageBand", id: 682658836
+mas "Good Stopwatch", id: 1268456701
 mas "Goodnotes", id: 1444383602
 mas "GoodTask", id: 1143437985
 mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
+mas "LastPass", id: 926036361
 mas "LastPass for Safari", id: 6504626762
+mas "LINE", id: 539883307
+mas "Mailbutler Installer", id: 1313355438
+mas "Messenger", id: 1480068668
 mas "Microsoft Excel", id: 462058435
+mas "Microsoft OneNote", id: 784801555
 mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
+mas "Microsoft Remote Desktop", id: 715768417
+mas "Microsoft To Do", id: 1274495053
 mas "Microsoft Word", id: 462054704
 mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
+mas "Paste", id: 967805235
 mas "PayPal Honey", id: 1472777122
+mas "PDFCombo", id: 1030461463
 mas "Perplexity", id: 6714467650
 mas "Prime Video", id: 545519333
+mas "Quick Note", id: 1472935217
 mas "Rakuten Cash Back", id: 1451893560
 mas "Slack", id: 803453959
 mas "Speedtest", id: 1153157709
@@ -90,10 +102,13 @@ mas "World Time", id: 912698955
 mas "Xcode", id: 497799835
 vscode "alefragnani.bookmarks"
 vscode "bierner.markdown-mermaid"
+vscode "cssho.vscode-svgviewer"
 vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
 vscode "github.copilot-chat"
+vscode "github.vscode-github-actions"
+vscode "github.vscode-pull-request-github"
 vscode "google.geminicodeassist"
 vscode "googlecloudtools.cloudcode"
 vscode "jithurjacob.nbpreviewer"
@@ -104,6 +119,7 @@ vscode "ms-azuretools.vscode-containers"
 vscode "ms-azuretools.vscode-docker"
 vscode "ms-dynamics-smb.al"
 vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
+vscode "ms-python.anaconda-extension-pack"
 vscode "ms-python.debugpy"
 vscode "ms-python.isort"
 vscode "ms-python.python"
