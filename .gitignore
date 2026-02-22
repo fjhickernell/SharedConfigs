@@ -28,3 +28,5 @@ texmf/bibtex/.DS_Store
 texmf/bibtex/bib/.DS_Store
 texmf/tex/.DS_Store
 texmf/tex/FredTexDefinitions/.DS_Store
+
+settings/zsh/*.bak.*
