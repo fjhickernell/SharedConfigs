@@ -268,8 +268,8 @@
 \newcommand{\examsigfigs}{three}
 \newcommand{\examinstructorcontact}{\forcespaces{Off-site students may contact the instructor as directed by your syllabus.}}
 
-\newif\ifexamcriticallevel
-\examcriticallevelfalse
+\newif\ifprovidecriticallevel
+\providecriticallevelfalse
 
 \newcommand{\examcriticalleveltext}{%
 	\forcespaces{You will be provided all of the critical values that you need.}
@@ -292,7 +292,7 @@
 		\item \forcespaces{This test is closed book, but you may use \textbf{\examnotesheets} \examnotesdesc.}
 		\item \examdevices
 		\item \forcespaces{You are expected to simplify any expressions that can be simplified as whole numbers, e.g., $36/15 = 12/5$, but you may leave other expressions as is, e.g., $\sqrt{47}$ or $18/29$.}
-		\ifexamcriticallevel
+		\ifprovidecriticallevel
 		\item \examcriticalleveltext
 		\fi
 		\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
