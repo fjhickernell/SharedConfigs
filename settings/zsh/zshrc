@@ -3,9 +3,7 @@
 # ===============================
 
 _CONDA_CANDIDATES=(
-  "$HOME/miniconda3"
   "/opt/miniconda3"
-  "/opt/anaconda3"
 )
 
 for _c in "${_CONDA_CANDIDATES[@]}"; do
@@ -122,4 +120,5 @@ if command -v conda >/dev/null 2>&1; then
   fi
 fi
 
-
+path=(${path:#$HOME/miniconda3/bin})
+typeset -U path

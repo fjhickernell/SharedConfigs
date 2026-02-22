@@ -9,11 +9,25 @@ if [ "${1:-}" = "--fast" ]; then
 fi
 
 if [ $# -ne 1 ]; then
-  echo "Usage: quarto-slides-live [--fast] slides/XX-deck.qmd"
+  echo "Usage: quarto-slides-live [--fast] <deck>"
+  echo "  Examples:"
+  echo "    quarto-slides-live 03-hypothesis"
+  echo "    quarto-slides-live 03-hypothesis.qmd"
+  echo "    quarto-slides-live slides/03-hypothesis.qmd"
   exit 2
 fi
 
-target="$1"
+arg="$1"
+
+if [[ "$arg" == */* ]]; then
+  target="$arg"
+else
+  case "$arg" in
+    *.qmd) target="slides/$arg" ;;
+    *)     target="slides/${arg}.qmd" ;;
+  esac
+fi
+
 repo_root="$(pwd)"
 target_base="$(basename "$target" .qmd)"
 
@@ -29,6 +43,7 @@ need_cmd browser-sync
 need_cmd quarto
 need_cmd rsync
 need_cmd open
+need_cmd curl
 
 runner="$logs_dir/${target_base}.render-runner.sh"
 
@@ -90,6 +105,14 @@ trap cleanup EXIT
 
 url="http://localhost:${port}/${target_base}.html"
 echo "Live: $url"
+
+for _ in $(seq 1 50); do
+  if curl -fsS "$url" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.1
+done
+
 open "$url"
 
 cd "$repo_root" || exit 2
