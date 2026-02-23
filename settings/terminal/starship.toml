@@ -4,8 +4,7 @@ format = "$time$username$directory$conda$git_branch$git_status$character"
 
 
 [username]
-show_always = true
-format = "[$user]($style) "
+disabled = true
 
 [directory]
 format = "[$path]($style) "
