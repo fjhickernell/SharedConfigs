@@ -70,12 +70,10 @@ mas "LastPass", id: 926036361
 mas "LastPass for Safari", id: 6504626762
 mas "LINE", id: 539883307
 mas "Mailbutler Installer", id: 1313355438
-mas "Messenger", id: 1480068668
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft OneNote", id: 784801555
 mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
-mas "Microsoft Remote Desktop", id: 715768417
 mas "Microsoft To Do", id: 1274495053
 mas "Microsoft Word", id: 462054704
 mas "Numbers", id: 409203825
