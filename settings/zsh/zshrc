@@ -2,6 +2,8 @@
 # Unified conda initialization
 # ===============================
 
+export CONDA_CHANGEPS1=false
+
 _CONDA_CANDIDATES=(
   "/opt/miniconda3"
 )
@@ -113,6 +115,7 @@ depart() {
 # ===============================
 # Default conda environment
 # ===============================
+
 
 if command -v conda >/dev/null 2>&1; then
   if [ "${CONDA_DEFAULT_ENV-}" != "qmcpy" ]; then
