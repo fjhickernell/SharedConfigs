@@ -1,0 +1,68 @@
+#!/bin/zsh
+set -euo pipefail
+
+REPO_DIR="$HOME/Documents/SharedConfigs"
+BREWFILE="$REPO_DIR/Brewfile"
+SYNC="$REPO_DIR/bin/sync-brew.sh"
+
+STABLE_SLEEP_SEC=2
+POST_WRITE_GRACE_SEC=5
+
+hash_file() {
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" | awk '{print $1}'
+  else
+    openssl dgst -sha256 "$1" | awk '{print $2}'
+  fi
+}
+
+wait_for_stable() {
+  local f="$1"
+  local h1 h2
+  h1=$(hash_file "$f")
+  sleep "$STABLE_SLEEP_SEC"
+  h2=$(hash_file "$f")
+  if [[ "$h1" != "$h2" ]]; then
+    echo "Brewfile is changing right now; try again shortly." >&2
+    exit 1
+  fi
+}
+
+if [[ ! -d "$REPO_DIR" ]]; then
+  echo "SharedConfigs not found at: $REPO_DIR" >&2
+  exit 1
+fi
+
+if [[ -f "$BREWFILE" ]]; then
+  wait_for_stable "$BREWFILE"
+fi
+
+if [[ -x "$SYNC" ]]; then
+  echo "Running sync-brew.sh in metadata-only mode (no dump, no apply)…"
+  SKIP_APPLY=1 DO_BREW_DUMP=0 /bin/zsh "$SYNC"
+else
+  echo "Warning: $SYNC not found or not executable; continuing without pull."
+fi
+
+cd "$REPO_DIR"
+
+before=$(git status --porcelain -- Brewfile | wc -l | tr -d ' ')
+
+echo "Dumping current Homebrew state to $BREWFILE …"
+brew bundle dump --force
+
+sleep "$POST_WRITE_GRACE_SEC"
+wait_for_stable "$BREWFILE"
+
+after=$(git status --porcelain -- Brewfile | wc -l | tr -d ' ')
+
+COUNT=$(grep -E '^(brew|cask|mas|vscode) ' "$BREWFILE" | wc -l | tr -d ' ')
+
+if [[ "$after" -eq 0 ]]; then
+  echo "✅ Brewfile unchanged. ($COUNT entries)"
+else
+  echo "✅ Brewfile updated. ($COUNT entries)"
+fi
+
+echo "brewfile-refresh: done on $(hostname -s) at $(date)"
+

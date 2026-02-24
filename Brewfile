@@ -45,6 +45,7 @@ brew "tree"
 brew "watchexec"
 brew "weasyprint"
 brew "zlib"
+cask "macdown"
 cask "obsidian"
 cask "quarto"
 cask "rstudio"
@@ -66,7 +67,6 @@ mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
-mas "LastPass", id: 926036361
 mas "LastPass for Safari", id: 6504626762
 mas "LINE", id: 539883307
 mas "Mailbutler Installer", id: 1313355438
@@ -80,7 +80,6 @@ mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
-mas "Paste", id: 967805235
 mas "PayPal Honey", id: 1472777122
 mas "PDFCombo", id: 1030461463
 mas "Perplexity", id: 6714467650
@@ -100,7 +99,6 @@ mas "World Time", id: 912698955
 mas "Xcode", id: 497799835
 vscode "alefragnani.bookmarks"
 vscode "bierner.markdown-mermaid"
-vscode "cssho.vscode-svgviewer"
 vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
@@ -110,6 +108,7 @@ vscode "github.vscode-pull-request-github"
 vscode "google.geminicodeassist"
 vscode "googlecloudtools.cloudcode"
 vscode "jithurjacob.nbpreviewer"
+vscode "jock.svg"
 vscode "mechatroner.rainbow-csv"
 vscode "mhutchie.git-graph"
 vscode "mkvoya.eps-preview"
@@ -117,7 +116,6 @@ vscode "ms-azuretools.vscode-containers"
 vscode "ms-azuretools.vscode-docker"
 vscode "ms-dynamics-smb.al"
 vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
-vscode "ms-python.anaconda-extension-pack"
 vscode "ms-python.debugpy"
 vscode "ms-python.isort"
 vscode "ms-python.python"

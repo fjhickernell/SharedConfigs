@@ -17,17 +17,17 @@ Use this file for:
 | Task                                | Intel MBP 2019 | M2 MBP | M3 MBP | M4 Mini | Notes                                                             |
 | ----------------------------------- | -------------- | ------ | ------ | ------- | ----------------------------------------------------------------- |
 | 🔁 Run `arrive` | — | — | — | — | Ritual reminder only |
-| Run `regular-maintenance.sh`        | ☐              | ☐      | ☐      | ☐       | Removes Messenger & MS Remote Desktop                             |
-| Confirm Messenger removed           | ☐              | ☐      | ☐      | ☐       | `brew list --cask`                                                |
-| Confirm MS Remote Desktop removed   | ☐              | ☐      | ☐      | ☐       |                                                                   |
-| Confirm conda at `/opt/miniconda3`  | ☐              | ☐      | ☐      | ☐       | `command -v conda`                                                |
-| Confirm auto-activate `qmcpy`       | ☐              | ☐      | ☐      | ☐       | `echo $CONDA_DEFAULT_ENV`                                         |
-| Confirm Python path in qmcpy        | ☐              | ☐      | ☐      | ☐       | `/opt/miniconda3/envs/qmcpy/bin/python`                           |
-| Confirm qmcpy Jupyter kernel exists | ☐              | ☐      | ☐      | ☐       | `jupyter kernelspec list`                                         |
-| Confirm Starship hides username     | ☐              | ☐      | ☐      | ☐       |                                                                   |
-| Confirm Warp = Shell Prompt mode    | ☐              | ☐      | ☐      | ✅       |                                                                   |
+| Run `regular-maintenance.sh`   | — | — | — | — | Ritual reminder only                             |
+| Confirm Messenger removed           | ☐              | ✅       | ✅      | ☐       | `brew list --cask`                                                |
+| Confirm MS Remote Desktop removed   | ☐              | ✅       | ✅      | ☐       |                                                                   |
+| Confirm conda at `/opt/miniconda3`  | ☐              | ☐      | ✅      | ☐       | `command -v conda`                                                |
+| Confirm auto-activate `qmcpy`       | ☐              | ☐      | ✅       | ☐       | `echo $CONDA_DEFAULT_ENV`                                         |
+| Confirm Python path in qmcpy        | ☐              | ☐      | ✅       | ☐       | `/opt/miniconda3/envs/qmcpy/bin/python`                           |
+| Confirm qmcpy Jupyter kernel exists | ☐              | ☐      | ✅      | ☐       | `jupyter kernelspec list`                                         |
+| Confirm Starship hides username     | ☐              | ☐      | ✅       | ☐       |                                                                   |
+| Confirm Warp = Shell Prompt mode    | ☐              | ☐      | ✅       | ✅       |                                                                   |
 | Confirm SharedConfigs clean         | ☐              | ☐      | ☐      | ☐       | `git status` clean                                                |
-| Install & configure Obsidian        | ☐              | ☐      | ☐      | ☐       | Install app + open correct vault                                  |
+| Install & configure Obsidian        | ☐              | ☐      | ✅       | ☐       | Install app + open correct vault                                  |
 | 🔁 Run `depart` | — | — | — | — | Ritual reminder only |                                                                   |
 
 
