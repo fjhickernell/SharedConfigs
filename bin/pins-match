@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repos=(
+  "$HOME/SoftwareRepositories/MATH565Fall2025"
+  "$HOME/SoftwareRepositories/MATH476Spring2026"
+  "$HOME/SoftwareRepositories/MATH563Spring2026"
+  "$HOME/SoftwareRepositories/SIAMUQ26"
+)
+
+is_full_sha() {
+  [[ "${1}" =~ ^[0-9A-Fa-f]{40}$ ]]
+}
+
+short12() {
+  local v="$1"
+  if is_full_sha "$v"; then
+    printf "%s" "${v:0:12}"
+  else
+    printf "%s" "$v"
+  fi
+}
+
+get_pin() {
+  local repo="$1"
+  local path="$2"
+  if [[ ! -d "$repo/.git" && ! -f "$repo/.git" ]]; then
+    printf "%s" "NO_REPO"
+    return 0
+  fi
+  /usr/bin/git -C "$repo" rev-parse ":$path" 2>/dev/null || printf "%s" "MISSING"
+}
+
+names=()
+cls_pins=()
+qmc_pins=()
+
+for r in "${repos[@]}"; do
+  names+=( "${r##*/}" )
+  cls_pins+=( "$(get_pin "$r" classlib)" )
+  qmc_pins+=( "$(get_pin "$r" qmcsoftware)" )
+done
+
+ref_cls=""
+ref_qmc=""
+for i in "${!repos[@]}"; do
+  c="${cls_pins[$i]}"
+  q="${qmc_pins[$i]}"
+  if is_full_sha "$c" && is_full_sha "$q"; then
+    ref_cls="$c"
+    ref_qmc="$q"
+    break
+  fi
+done
+
+printf "%-20s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware"
+mismatch=0
+for i in "${!repos[@]}"; do
+  printf "%-20s  %-12s  %-12s\n" "${names[$i]}" "$(short12 "${cls_pins[$i]}")" "$(short12 "${qmc_pins[$i]}")"
+done
+
+if [[ -z "$ref_cls" || -z "$ref_qmc" ]]; then
+  echo "ERROR: cannot determine reference pins (no repo had both submodules present)"
+  exit 2
+fi
+
+for i in "${!repos[@]}"; do
+  [[ "${cls_pins[$i]}" != "$ref_cls" ]] && mismatch=1
+  [[ "${qmc_pins[$i]}" != "$ref_qmc" ]] && mismatch=1
+done
+
+if [[ "$mismatch" -ne 0 ]]; then
+  echo "MISMATCH: submodule pins differ across repos"
+  exit 1
+fi
+
+echo "OK: all repos share identical submodule pins"
+exit 0

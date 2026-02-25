@@ -3,25 +3,29 @@ set -euo pipefail
 
 usage() {
   cat << 'USAGE'
-Usage: sync-dev.sh
+Usage: sync-dev.sh [--quiet|--verbose]
 
-Pull-only sync for standalone dev repos:
-  - ~/SoftwareRepositories/HickernellClassLib (main)
-  - ~/SoftwareRepositories/QMCSoftware       (develop)
+Default:
+  - Prints one summary line per repo (UPDATED/OK/SKIP/ERROR)
 
-Behavior:
-  - Clean repo: fetch + fast-forward pull to the target branch.
-  - Dirty repo: SKIP (do not abort).
-  - Hard errors only for missing/non-git repos.
+Flags:
+  --quiet     Print only SKIP/ERROR and the final verdict
+  --verbose   Print extra git status details
 USAGE
 }
 
-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  usage
-  exit 0
-fi
+QUIET=0
+VERBOSE=0
 
-# ---- color + emphasis -------------------------------------------------
+for arg in "$@"; do
+  case "$arg" in
+    --quiet) QUIET=1 ;;
+    --verbose) VERBOSE=1 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "ERROR: unknown argument: $arg" >&2; usage; exit 2 ;;
+  esac
+done
+
 if [[ -t 1 ]]; then
   BOLD=$'\e[1m'
   RED=$'\e[31m'
@@ -29,38 +33,34 @@ if [[ -t 1 ]]; then
   YELLOW=$'\e[33m'
   RESET=$'\e[0m'
 else
-  BOLD=''
-  RED=''
-  GREEN=''
-  YELLOW=''
-  RESET=''
+  BOLD=''; RED=''; GREEN=''; YELLOW=''; RESET=''
 fi
 
 SKIP_COUNT=0
+UPDATE_COUNT=0
+ERROR_COUNT=0
 
-say_skip() {
-  SKIP_COUNT=$((SKIP_COUNT + 1))
-  echo "${BOLD}${RED}$*${RESET}"
+say() { echo "$*"; }
+info() { [[ "$QUIET" -eq 0 ]] && say "$*"; }
+ok() { info "${GREEN}$*${RESET}"; }
+warn() { [[ "$QUIET" -eq 0 ]] && say "${BOLD}${YELLOW}$*${RESET}"; }
+err() { say "${BOLD}${RED}$*${RESET}" >&2; }
+
+shortsha() {
+  local s="$1"
+  echo "${s:0:12}"
 }
-
-say_err() {
-  echo "${BOLD}${RED}$*${RESET}" >&2
-}
-
-say_warn() {
-  echo "${BOLD}${YELLOW}$*${RESET}"
-}
-
-say_ok() {
-  echo "${GREEN}$*${RESET}"
-}
-
-HCL="$HOME/SoftwareRepositories/HickernellClassLib"
-QMC="$HOME/SoftwareRepositories/QMCSoftware"
 
 is_clean_repo() {
   local repo="$1"
   [[ -z "$(git -C "$repo" status --porcelain)" ]]
+}
+
+verbose_status() {
+  local repo="$1"
+  if [[ "$VERBOSE" -eq 1 && "$QUIET" -eq 0 ]]; then
+    git -C "$repo" status -sb || true
+  fi
 }
 
 sync_repo() {
@@ -68,46 +68,75 @@ sync_repo() {
   local name="$2"
   local branch="$3"
 
-  echo "===== $name ($branch) ====="
-
-  if [[ ! -d "$repo/.git" ]]; then
-    say_err "ERROR: $name is not a git repo: $repo"
-    return 2
-  fi
-
-  if ! is_clean_repo "$repo"; then
-    say_skip "SKIP: $name has uncommitted changes: $repo"
-    git -C "$repo" status -sb
-    echo
+  if [[ ! -d "$repo/.git" && ! -f "$repo/.git" ]]; then
+    ERROR_COUNT=$((ERROR_COUNT + 1))
+    err "ERROR  ${name}: not a git repo: ${repo}"
     return 0
   fi
 
-  git -C "$repo" fetch --prune origin
-  git -C "$repo" checkout "$branch" >/dev/null 2>&1 || git -C "$repo" switch "$branch"
-  git -C "$repo" pull --ff-only origin "$branch"
-  git -C "$repo" status -sb
-  git -C "$repo" rev-parse HEAD
-  echo
-}
-
-final_verdict() {
-  if [[ "$SKIP_COUNT" -gt 0 ]]; then
-    say_skip "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) encountered (see red SKIP lines above) ====="
-  else
-    say_ok "===== CLEAN: no SKIP conditions encountered ====="
+  if ! is_clean_repo "$repo"; then
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+    warn "SKIP   ${name}: dirty working tree"
+    verbose_status "$repo"
+    return 0
   fi
+
+  local old new count
+  old="$(git -C "$repo" rev-parse HEAD)"
+
+  if ! git -C "$repo" fetch --prune origin >/dev/null 2>&1; then
+    ERROR_COUNT=$((ERROR_COUNT + 1))
+    err "ERROR  ${name}: fetch failed"
+    return 0
+  fi
+
+  if ! git -C "$repo" checkout "$branch" >/dev/null 2>&1; then
+    if ! git -C "$repo" switch "$branch" >/dev/null 2>&1; then
+      ERROR_COUNT=$((ERROR_COUNT + 1))
+      err "ERROR  ${name}: cannot switch to ${branch}"
+      return 0
+    fi
+  fi
+
+  if ! git -C "$repo" pull --ff-only origin "$branch" >/dev/null 2>&1; then
+    ERROR_COUNT=$((ERROR_COUNT + 1))
+    err "ERROR  ${name}: pull --ff-only failed"
+    return 0
+  fi
+
+  new="$(git -C "$repo" rev-parse HEAD)"
+
+  if [[ "$old" != "$new" ]]; then
+    count="$(git -C "$repo" rev-list --count "${old}..${new}" 2>/dev/null || echo "?")"
+    UPDATE_COUNT=$((UPDATE_COUNT + 1))
+    ok "UPDATED ${name} (${branch}) +${count} -> $(shortsha "$new")"
+  else
+    info "OK     ${name} (${branch}) @ $(shortsha "$new")"
+  fi
+
+  verbose_status "$repo"
 }
 
-log() {
-  local ts
-  ts=$(/bin/date '+%Y-%m-%d %H:%M:%S')
-  echo "[$ts] $*"
-}
+HCL="$HOME/SoftwareRepositories/HickernellClassLib"
+QMC="$HOME/SoftwareRepositories/QMCSoftware"
 
-rc=0
-sync_repo "$HCL" "HickernellClassLib" "main" || rc=$?
-sync_repo "$QMC" "QMCSoftware" "develop" || rc=$?
+sync_repo "$HCL" "HickernellClassLib" "main"
+sync_repo "$QMC" "QMCSoftware" "develop"
 
-final_verdict
-log "===== Sync dev finished ====="
-exit "$rc"
+if [[ "$ERROR_COUNT" -gt 0 ]]; then
+  err "===== FAILED: ${ERROR_COUNT} error(s) ====="
+  exit 1
+fi
+
+if [[ "$SKIP_COUNT" -gt 0 ]]; then
+  warn "===== INCOMPLETE: ${SKIP_COUNT} skip(s) ====="
+  exit 0
+fi
+
+if [[ "$UPDATE_COUNT" -gt 0 ]]; then
+  ok "===== CLEAN: ${UPDATE_COUNT} repo(s) updated ====="
+  exit 0
+fi
+
+ok "===== CLEAN: no updates needed ====="
+exit 0

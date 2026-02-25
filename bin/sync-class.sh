@@ -1,27 +1,47 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# ---- color + emphasis -------------------------------------------------
-# Enable colors only if stdout is a TTY (so logs in files/CI stay clean)
+usage() {
+  cat <<'EOF'
+sync-class.sh [--promote] [--commit] [--push] [--quiet|--verbose] [--health]
+
+Default (no flags):
+  - Pull standalone repos
+  - Pull class repos
+  - Enforce pinned submodule SHAs (--checkout)
+  - No commits, no pushes
+  - Concise output (one line per repo)
+
+Flags:
+  --promote   Advance submodules to tip (runs update-submodules.sh from PATH)
+  --commit    If submodule pointers changed, commit them in each class repo
+  --push      Implies --commit and --promote; push the pointer commits
+  --quiet     Print only SKIP/WARN/ERROR and final verdict
+  --verbose   Print extra details (git status, pin OK line, etc.)
+  --health    Run repo-health summary (also enabled by --verbose)
+EOF
+}
+
 if [[ -t 1 ]]; then
   BOLD=$'\e[1m'
-  DIM=$'\e[2m'
   RED=$'\e[31m'
   YELLOW=$'\e[33m'
   GREEN=$'\e[32m'
-  CYAN=$'\e[36m'
   RESET=$'\e[0m'
 else
-  BOLD=''
-  DIM=''
-  RED=''
-  YELLOW=''
-  GREEN=''
-  CYAN=''
-  RESET=''
+  BOLD=''; RED=''; YELLOW=''; GREEN=''; RESET=''
 fi
 
 SKIP_COUNT=0
+UPDATE_COUNT=0
+ERROR_COUNT=0
+
+QUIET=0
+VERBOSE=0
+DO_HEALTH=0
+do_promote=0
+do_commit=0
+do_push=0
 
 log() {
   local ts
@@ -29,21 +49,38 @@ log() {
   echo "[$ts] $*"
 }
 
-log_skip() {
-  SKIP_COUNT=$((SKIP_COUNT + 1))
-  log "${BOLD}${RED}$*${RESET}"
+info() { [[ "${QUIET}" -eq 0 ]] && log "$*"; }
+vinfo() { [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]] && log "$*"; }
+ok() { [[ "${QUIET}" -eq 0 ]] && log "${GREEN}$*${RESET}"; }
+warn() { log "${BOLD}${YELLOW}$*${RESET}"; }
+skip() { SKIP_COUNT=$((SKIP_COUNT + 1)); log "${BOLD}${RED}$*${RESET}"; }
+err() { ERROR_COUNT=$((ERROR_COUNT + 1)); log "${BOLD}${RED}$*${RESET}" >&2; }
+
+shortsha() {
+  local s="$1"
+  echo "${s:0:12}"
 }
 
-log_warn() {
-  log "${BOLD}${YELLOW}$*${RESET}"
+verbose_git_status_sb() {
+  if [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]]; then
+    /usr/bin/git status -sb || true
+  fi
+  return 0
 }
 
-log_ok() {
-  log "${GREEN}$*${RESET}"
+verbose_git_status_short() {
+  if [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]]; then
+    /usr/bin/git status --short || true
+  fi
+  return 0
 }
 
 is_clean() {
   [[ -z "$(/usr/bin/git status --porcelain)" ]]
+}
+
+has_upstream() {
+  /usr/bin/git rev-parse --quiet --verify '@{u}' >/dev/null 2>&1
 }
 
 path_is_tracked() {
@@ -76,8 +113,21 @@ only_submodule_pointers_dirty() {
 }
 
 pull_ff_only() {
-  /usr/bin/git -c fetch.recurseSubmodules=no fetch origin
-  /usr/bin/git merge --ff-only '@{u}'
+  /usr/bin/git -c fetch.recurseSubmodules=no fetch origin >/dev/null 2>&1 || {
+    warn "WARNING fetch failed (non-fatal)"
+    return 0
+  }
+
+  if has_upstream; then
+    /usr/bin/git merge --ff-only '@{u}' >/dev/null 2>&1 || {
+      warn "WARNING ff-only merge failed (non-fatal)"
+      return 0
+    }
+  else
+    warn "WARNING no upstream configured (skipping ff-only merge)"
+  fi
+
+  return 0
 }
 
 ensure_qmcsoftware_fetch_policy() {
@@ -106,10 +156,10 @@ ensure_qmcsoftware_fetch_policy() {
 sync_standalone_repo() {
   local repo="$1"
   local branch="$2"
+  local name="${repo##*/}"
 
-  log "Standalone repo: ${repo} (${branch})"
-  if [[ ! -d "${repo}/.git" ]]; then
-    log_skip "SKIP: not a git repo: ${repo}"
+  if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
+    skip "SKIP   ${name}: not a git repo"
     return 0
   fi
 
@@ -117,41 +167,74 @@ sync_standalone_repo() {
     cd "${repo}"
 
     if ! is_clean; then
-      log_skip "SKIP: dirty working tree in ${repo}"
-      /usr/bin/git status --short
+      skip "SKIP   ${name}: dirty working tree"
+      verbose_git_status_sb
       return 0
     fi
 
-    if [[ "${repo##*/}" == "QMCSoftware" ]]; then
+    if [[ "${name}" == "QMCSoftware" ]]; then
       ensure_qmcsoftware_fetch_policy "${repo}"
     fi
 
-    /usr/bin/git checkout "${branch}"
+    local old new count
+    old=$(/usr/bin/git rev-parse HEAD)
+
+    /usr/bin/git checkout "${branch}" >/dev/null 2>&1 || /usr/bin/git switch "${branch}" >/dev/null 2>&1 || {
+      err "ERROR  ${name}: cannot switch to ${branch}"
+      return 1
+    }
+
     pull_ff_only
+
+    new=$(/usr/bin/git rev-parse HEAD)
+
+    if [[ "${old}" != "${new}" ]]; then
+      count=$(/usr/bin/git rev-list --count "${old}..${new}" 2>/dev/null || echo "?")
+      UPDATE_COUNT=$((UPDATE_COUNT + 1))
+      ok "UPDATED ${name} (${branch}) +${count} -> $(shortsha "${new}")"
+    else
+      info "OK     ${name} (${branch}) @ $(shortsha "${new}")"
+    fi
+
+    verbose_git_status_sb
+    return 0
   )
 }
 
 push_if_ahead() {
-  if /usr/bin/git rev-parse --quiet --verify '@{u}' >/dev/null 2>&1; then
+  if has_upstream; then
     local ahead_count
-    ahead_count=$(/usr/bin/git rev-list --count '@{u}..HEAD')
+    ahead_count=$(/usr/bin/git rev-list --count '@{u}..HEAD' 2>/dev/null || echo 0)
     if [[ "${ahead_count}" -gt 0 ]]; then
-      /usr/bin/git push
-    else
-      log "No commits to push; skipping git push."
+      /usr/bin/git push >/dev/null 2>&1 || {
+        err "ERROR  push failed"
+        echo "FAILED"
+        return 0
+      }
+      echo "PUSHED"
+      return 0
     fi
-  else
-    /usr/bin/git push
+    echo "NOOP"
+    return 0
   fi
+
+  /usr/bin/git push >/dev/null 2>&1 || {
+    err "ERROR  push failed (no upstream configured)"
+    echo "FAILED"
+    return 0
+  }
+  echo "PUSHED"
+  return 0
 }
 
 promote_optional_test_archive() {
   if [[ -d "assets/tests/archive" ]]; then
-    /usr/bin/git submodule update --init assets/tests/archive
-    /usr/bin/git -C assets/tests/archive fetch origin main
-    /usr/bin/git -C assets/tests/archive checkout main
-    /usr/bin/git -C assets/tests/archive pull --ff-only origin main
+    /usr/bin/git submodule update --init assets/tests/archive >/dev/null 2>&1 || warn "WARNING tests archive: submodule init failed"
+    /usr/bin/git -C assets/tests/archive fetch origin main >/dev/null 2>&1 || warn "WARNING tests archive: fetch failed"
+    /usr/bin/git -C assets/tests/archive checkout main >/dev/null 2>&1 || warn "WARNING tests archive: checkout failed"
+    /usr/bin/git -C assets/tests/archive pull --ff-only origin main >/dev/null 2>&1 || warn "WARNING tests archive: pull failed"
   fi
+  return 0
 }
 
 sync_class_repo() {
@@ -159,10 +242,10 @@ sync_class_repo() {
   local do_promote="$2"
   local do_commit="$3"
   local do_push="$4"
+  local name="${repo##*/}"
 
-  log "Class repo: ${repo}"
-  if [[ ! -d "${repo}/.git" ]]; then
-    log_skip "SKIP: not a git repo: ${repo}"
+  if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
+    skip "SKIP   ${name}: missing repo"
     return 0
   fi
 
@@ -170,36 +253,50 @@ sync_class_repo() {
     cd "${repo}"
 
     if ! only_submodule_pointers_dirty; then
-      log_skip "SKIP: dirty working tree (non-submodule changes) in ${repo}"
-      /usr/bin/git status --short
+      skip "SKIP   ${name}: dirty (non-submodule changes)"
+      verbose_git_status_short
       return 0
     fi
 
+    local old new count
+    old=$(/usr/bin/git rev-parse HEAD)
     pull_ff_only
+    new=$(/usr/bin/git rev-parse HEAD)
+
+    if [[ "${old}" != "${new}" ]]; then
+      count=$(/usr/bin/git rev-list --count "${old}..${new}" 2>/dev/null || echo "?")
+      UPDATE_COUNT=$((UPDATE_COUNT + 1))
+      ok "UPDATED ${name}: pulled +${count} -> $(shortsha "${new}")"
+    else
+      info "OK     ${name}: up-to-date @ $(shortsha "${new}")"
+    fi
 
     if [[ "${do_promote}" -eq 1 ]]; then
       if command -v update-submodules.sh >/dev/null 2>&1; then
-        update-submodules.sh || true
+        if ! update-submodules.sh >/dev/null 2>&1; then
+          err "ERROR  ${name}: update-submodules.sh failed"
+          return 1
+        fi
       else
-        log_skip "SKIP: missing update-submodules.sh on PATH in ${repo}"
+        skip "SKIP   ${name}: missing update-submodules.sh on PATH"
         return 0
       fi
       promote_optional_test_archive
     else
-      /usr/bin/git submodule update --init --recursive --checkout
+      /usr/bin/git submodule update --init --recursive --checkout >/dev/null 2>&1 || {
+        err "ERROR  ${name}: submodule update failed"
+        return 1
+      }
     fi
 
     if [[ -d "qmcsoftware" ]]; then
       ensure_qmcsoftware_fetch_policy "${repo}/qmcsoftware"
     fi
 
-    /usr/bin/git submodule status
-    /usr/bin/git status --short
-
     if ! is_clean; then
       if [[ "${do_commit}" -eq 1 ]]; then
         if only_submodule_pointers_dirty; then
-          local msg cls_sha qmc_sha tst_sha have_tests tests_clause
+          local cls_sha qmc_sha tst_sha have_tests tests_clause msg
           cls_sha=""
           qmc_sha=""
           tst_sha=""
@@ -212,7 +309,6 @@ sync_class_repo() {
           if [[ -d "qmcsoftware/.git" || -f "qmcsoftware/.git" ]]; then
             qmc_sha=$(/usr/bin/git -C qmcsoftware rev-parse --short=12 HEAD 2>/dev/null || true)
           fi
-
           if path_is_tracked "assets/tests/archive"; then
             have_tests=1
             if [[ -d "assets/tests/archive/.git" || -f "assets/tests/archive/.git" ]]; then
@@ -223,58 +319,46 @@ sync_class_repo() {
 
           msg="Update submodule pointers (classlib ${cls_sha:-na}, qmcsoftware ${qmc_sha:-na}${tests_clause})"
 
-          /usr/bin/git add classlib qmcsoftware .gitmodules
+          /usr/bin/git add classlib qmcsoftware .gitmodules >/dev/null 2>&1 || {
+            err "ERROR  ${name}: git add failed"
+            return 1
+          }
           if [[ "${have_tests}" -eq 1 ]]; then
-            /usr/bin/git add assets/tests/archive
+            /usr/bin/git add assets/tests/archive >/dev/null 2>&1 || true
           fi
-          /usr/bin/git commit -m "${msg}"
+          /usr/bin/git commit -m "${msg}" >/dev/null 2>&1 || {
+            err "ERROR  ${name}: git commit failed"
+            return 1
+          }
+          UPDATE_COUNT=$((UPDATE_COUNT + 1))
+          ok "UPDATED ${name}: committed pointer update"
         else
-          log_skip "SKIP: changes present but not only submodule pointers; not committing"
-          /usr/bin/git status --short
+          warn "WARNING ${name}: changes not limited to submodule pointers (not committing)"
+          /usr/bin/git status --short || true
           return 0
         fi
       else
-        log_warn "Uncommitted submodule pointer changes detected."
-        log ""
-        log "git status --short:"
-        /usr/bin/git status --short
-        log ""
-        log "Run: sync-class.sh --commit   (or --push)"
+        warn "WARNING ${name}: uncommitted submodule pointer changes (run --commit or --push)"
+        /usr/bin/git status --short || true
         return 0
       fi
     fi
 
     if [[ "${do_push}" -eq 1 ]]; then
-      push_if_ahead
+      local result
+      result="$(push_if_ahead)"
+      if [[ "${result}" == "PUSHED" ]]; then
+        ok "UPDATED ${name}: pushed"
+      elif [[ "${result}" == "FAILED" ]]; then
+        return 1
+      else
+        vinfo "OK     ${name}: nothing to push"
+      fi
     fi
-  )
-}
 
-health_summary() {
-  local repo repo_name line
-  log "===== Repo health summary ====="
-
-  if ! command -v repo-health >/dev/null 2>&1; then
-    log_warn "NOPE  repo-health  not on PATH"
+    verbose_git_status_sb
     return 0
-  fi
-
-  for repo in "${CLASS_REPOS[@]}"; do
-    repo_name="${repo##*/}"
-    if [[ -d "${repo}/.git" ]]; then
-      (
-        cd "${repo}"
-        line="$(repo-health --short 2>&1 || true)"
-        if [[ -z "${line}" ]]; then
-          log_warn "NOPE  ${repo_name}  repo-health produced no output"
-        else
-          echo "${line}"
-        fi
-      )
-    else
-      log_warn "NOPE  ${repo_name}  missing repo"
-    fi
-  done
+  )
 }
 
 pins_consistency_check() {
@@ -289,7 +373,7 @@ pins_consistency_check() {
     [[ ${v} =~ ^[0-9A-Fa-f]{40}$ ]]
   }
 
-  short_sha() {
+  short_or_tag() {
     local v="$1"
     if is_full_sha "${v}"; then
       echo "${v:0:12}"
@@ -300,13 +384,11 @@ pins_consistency_check() {
 
   for repo in "${CLASS_REPOS[@]}"; do
     repo_name="${repo##*/}"
-
-    if [[ ! -d "${repo}/.git" ]]; then
+    if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
       classlib_sha[$repo_name]="NO_REPO"
       qmc_sha[$repo_name]="NO_REPO"
       continue
     fi
-
     classlib_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse :classlib 2>/dev/null || echo "MISSING")
     qmc_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse :qmcsoftware 2>/dev/null || echo "MISSING")
   done
@@ -326,15 +408,7 @@ pins_consistency_check() {
   done
 
   if [[ -z "${ref_repo}" ]]; then
-    log_warn "===== WARNING: cannot determine reference submodule pins ====="
-    printf "%-20s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware"
-    for repo in "${CLASS_REPOS[@]}"; do
-      repo_name="${repo##*/}"
-      printf "%-20s  %-12s  %-12s\n" \
-        "${repo_name}" \
-        "$(short_sha "${classlib_sha[$repo_name]}")" \
-        "$(short_sha "${qmc_sha[$repo_name]}")"
-    done
+    warn "WARNING: cannot determine reference submodule pins"
     return 0
   fi
 
@@ -345,58 +419,75 @@ pins_consistency_check() {
   done
 
   if (( mismatch )); then
-    log_warn "===== WARNING: submodule pins differ across class repos ====="
+    warn "WARNING: submodule pins differ across class repos"
     printf "%-20s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware"
     for repo in "${CLASS_REPOS[@]}"; do
       repo_name="${repo##*/}"
       printf "%-20s  %-12s  %-12s\n" \
         "${repo_name}" \
-        "$(short_sha "${classlib_sha[$repo_name]}")" \
-        "$(short_sha "${qmc_sha[$repo_name]}")"
+        "$(short_or_tag "${classlib_sha[$repo_name]}")" \
+        "$(short_or_tag "${qmc_sha[$repo_name]}")"
     done
-    log_warn "Reference: ${ref_repo} (classlib $(short_sha "${ref_classlib}"), qmcsoftware $(short_sha "${ref_qmc}"))"
+    warn "Reference: ${ref_repo} (classlib ${ref_classlib:0:12}, qmcsoftware ${ref_qmc:0:12})"
   else
-    log_ok "===== OK: submodule pins consistent across class repos (classlib $(short_sha "${ref_classlib}"), qmcsoftware $(short_sha "${ref_qmc}")) ====="
+    vinfo "OK pins: classlib ${ref_classlib:0:12}, qmcsoftware ${ref_qmc:0:12}"
   fi
+}
+
+health_summary() {
+  local repo repo_name line
+  if [[ "${DO_HEALTH}" -ne 1 && "${VERBOSE}" -ne 1 ]]; then
+    return 0
+  fi
+
+  if ! command -v repo-health >/dev/null 2>&1; then
+    warn "NOPE  repo-health not on PATH"
+    return 0
+  fi
+
+  info "===== Repo health summary ====="
+  for repo in "${CLASS_REPOS[@]}"; do
+    repo_name="${repo##*/}"
+    if [[ -d "${repo}/.git" || -f "${repo}/.git" ]]; then
+      (
+        cd "${repo}"
+        line="$(repo-health --short 2>&1 || true)"
+        [[ -n "${line}" ]] && echo "${line}" || warn "NOPE  ${repo_name}  repo-health produced no output"
+      )
+    else
+      warn "NOPE  ${repo_name}  missing repo"
+    fi
+  done
 }
 
 final_verdict() {
-  if [[ "${SKIP_COUNT}" -gt 0 ]]; then
-    log_skip "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) encountered (see red SKIP lines above) ====="
-  else
-    log_ok "===== CLEAN DEPARTURE: no SKIP conditions encountered ====="
+  if [[ "${ERROR_COUNT}" -gt 0 ]]; then
+    err "===== FAILED: ${ERROR_COUNT} error(s) ====="
+    return 1
   fi
+  if [[ "${SKIP_COUNT}" -gt 0 ]]; then
+    skip "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) ====="
+    return 1
+  fi
+  if [[ "${UPDATE_COUNT}" -gt 0 ]]; then
+    ok "===== CLEAN: ${UPDATE_COUNT} update(s) applied ====="
+    return 0
+  fi
+  ok "===== CLEAN: no updates needed ====="
+  return 0
 }
-
-usage() {
-  cat <<'EOF'
-sync-class.sh
-
-Default (no flags):
-  - Pull standalone repos
-  - Pull class repos
-  - Enforce pinned submodule SHAs (--checkout)
-  - No commits, no pushes
-
-Flags:
-  --promote   Advance submodules to tip (runs update-submodules.sh from PATH)
-  --commit    If submodule pointers changed, commit them in each class repo
-  --push      Implies --commit and --promote; push the pointer commits
-EOF
-}
-
-do_promote=0
-do_commit=0
-do_push=0
 
 for arg in "$@"; do
   case "${arg}" in
     --promote) do_promote=1 ;;
     --commit) do_commit=1 ;;
     --push) do_push=1 ;;
+    --quiet) QUIET=1 ;;
+    --verbose) VERBOSE=1 ;;
+    --health) DO_HEALTH=1 ;;
     --help|-h) usage; exit 0 ;;
     *)
-      log_warn "ERROR: unknown argument: ${arg}"
+      err "ERROR: unknown argument: ${arg}"
       usage
       exit 2
       ;;
@@ -421,23 +512,34 @@ CLASS_REPOS=(
 )
 
 if [[ "${do_promote}" -eq 1 ]]; then
-  log "===== Sync class started (PROMOTE: advance submodules to tip) ====="
+  info "===== Sync class started (PROMOTE) ====="
 else
-  log "===== Sync class started (PINNED: match class repo submodule SHAs) ====="
+  info "===== Sync class started (PINNED) ====="
 fi
 
 for spec in "${STANDALONE_REPOS[@]}"; do
   repo="${spec%%:*}"
   branch="${spec##*:}"
-  sync_standalone_repo "${repo}" "${branch}"
+  if ! sync_standalone_repo "${repo}" "${branch}"; then
+    info "===== Sync class finished ====="
+    exit 1
+  fi
 done
 
 for repo in "${CLASS_REPOS[@]}"; do
-  sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"
+  if ! sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"; then
+    info "===== Sync class finished ====="
+    exit 1
+  fi
 done
 
 pins_consistency_check || true
 health_summary || true
-final_verdict || true
 
-log "===== Sync class finished ====="
+if final_verdict; then
+  info "===== Sync class finished ====="
+  exit 0
+else
+  info "===== Sync class finished ====="
+  exit 1
+fi
