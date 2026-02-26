@@ -134,8 +134,11 @@
 
 % ---------- problem list ----------
 \newlist{problemlist}{enumerate}{1}
-\setlist[problemlist]{label=\arabic*., leftmargin=7mm,
-	itemsep=.5\baselineskip, topsep=.5\baselineskip, align=left}
+\setlist[problemlist]{
+	label=\arabic*., leftmargin=*,
+	widest*=99,
+	itemsep=.5\baselineskip, topsep=.5\baselineskip, align=left
+}
 
 \newcommand{\fhxplabel}{fhxP\arabic{problemlisti}pts}
 
