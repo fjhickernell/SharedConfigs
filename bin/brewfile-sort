@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import sys
+from pathlib import Path
+
+
+HEADER_SECTION_MAP = [
+    (re.compile(r"^#\s*----\s*Brew formulae\b", re.IGNORECASE), "brew"),
+    (re.compile(r"^#\s*----\s*Casks\b", re.IGNORECASE), "cask"),
+    (re.compile(r"^#\s*----\s*Mac App Store\b", re.IGNORECASE), "mas"),
+    (re.compile(r"^#\s*----\s*VSCode\b", re.IGNORECASE), "vscode"),
+]
+
+PREFIX_SECTION_MAP = [
+    (re.compile(r"^brew\s+"), "brew"),
+    (re.compile(r"^cask\s+"), "cask"),
+    (re.compile(r"^mas\s+"), "mas"),
+    (re.compile(r"^vscode\s+"), "vscode"),
+]
+
+
+def detect_section_by_header(line: str) -> str | None:
+    for pat, name in HEADER_SECTION_MAP:
+        if pat.match(line):
+            return name
+    return None
+
+
+def detect_section_by_prefix(line: str) -> str | None:
+    for pat, name in PREFIX_SECTION_MAP:
+        if pat.match(line):
+            return name
+    return None
+
+
+def sort_brewfile_lines(lines: list[str]) -> list[str]:
+    out: list[str] = []
+    current_section: str | None = None
+    buf: list[str] = []
+
+    def flush_buf() -> None:
+        nonlocal buf
+        if not buf:
+            return
+        buf_sorted = sorted(buf, key=lambda s: s.casefold())
+        out.extend(buf_sorted)
+        buf = []
+
+    for line in lines:
+        header_section = detect_section_by_header(line)
+        if header_section is not None:
+            flush_buf()
+            out.append(line)
+            current_section = header_section
+            continue
+
+        prefix_section = detect_section_by_prefix(line)
+
+        if prefix_section is not None:
+            if current_section is None:
+                current_section = prefix_section
+            if prefix_section != current_section:
+                flush_buf()
+                current_section = prefix_section
+            buf.append(line)
+            continue
+
+        flush_buf()
+        current_section = None
+        out.append(line)
+
+    flush_buf()
+    return out
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(prog="brewfile-sort")
+    ap.add_argument("brewfile", nargs="?", default=os.path.expanduser("~/Documents/SharedConfigs/Brewfile"))
+    ap.add_argument("--check", action="store_true", help="exit nonzero if changes would be made")
+    args = ap.parse_args()
+
+    path = Path(args.brewfile).expanduser()
+    if not path.is_file():
+        print(f"File not found: {path}", file=sys.stderr)
+        return 2
+
+    original = path.read_text(encoding="utf-8", errors="strict").splitlines(keepends=True)
+    sorted_lines = sort_brewfile_lines(original)
+
+    def ensure_trailing_newline(txt: str) -> str:
+        if not txt.endswith("\n"):
+            txt += "\n"
+        if not txt.endswith("\n\n"):
+            txt += "\n"
+        return txt
+
+    original_txt = ensure_trailing_newline("".join(original))
+    sorted_txt = ensure_trailing_newline("".join(sorted_lines))
+
+    if args.check:
+        if original_txt != sorted_txt:
+            print("Brewfile is not sorted.")
+            return 1
+        print("Brewfile is sorted.")
+        return 0
+
+    if original_txt == sorted_txt:
+        print(f"Sorted: {path} (no changes)")
+        return 0
+
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(sorted_txt, encoding="utf-8")
+    tmp.replace(path)
+    print(f"Sorted: {path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

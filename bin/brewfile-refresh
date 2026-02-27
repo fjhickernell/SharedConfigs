@@ -4,6 +4,7 @@ set -euo pipefail
 REPO_DIR="$HOME/Documents/SharedConfigs"
 BREWFILE="$REPO_DIR/Brewfile"
 SYNC="$REPO_DIR/bin/sync-brew.sh"
+SORTER="$REPO_DIR/bin/brewfile-sort"
 
 STABLE_SLEEP_SEC=2
 POST_WRITE_GRACE_SEC=5
@@ -54,6 +55,13 @@ brew bundle dump --force
 sleep "$POST_WRITE_GRACE_SEC"
 wait_for_stable "$BREWFILE"
 
+if [[ -x "$SORTER" ]]; then
+  "$SORTER" "$BREWFILE" >/dev/null
+  wait_for_stable "$BREWFILE"
+else
+  echo "Warning: $SORTER not found or not executable; skipping sort."
+fi
+
 after=$(git status --porcelain -- Brewfile | wc -l | tr -d ' ')
 
 COUNT=$(grep -E '^(brew|cask|mas|vscode) ' "$BREWFILE" | wc -l | tr -d ' ')
@@ -65,4 +73,3 @@ else
 fi
 
 echo "brewfile-refresh: done on $(hostname -s) at $(date)"
-
