@@ -1,30 +1,4 @@
-# ===============================
-# Unified conda initialization
-# ===============================
 
-export CONDA_CHANGEPS1=false
-
-_CONDA_CANDIDATES=(
-  "/opt/miniconda3"
-)
-
-for _c in "${_CONDA_CANDIDATES[@]}"; do
-  if [ -x "$_c/bin/conda" ]; then
-    __conda_setup="$("$_c/bin/conda" 'shell.zsh' 'hook' 2>/dev/null)"
-    if [ $? -eq 0 ]; then
-      eval "$__conda_setup"
-    else
-      if [ -f "$_c/etc/profile.d/conda.sh" ]; then
-# . "$_c/etc/profile.d/conda.sh"  # commented out by conda initialize
-      else
-        export PATH="$_c/bin:$PATH"
-      fi
-    fi
-    unset __conda_setup
-    break
-  fi
-done
-unset _CONDA_CANDIDATES _c
 
 
 # ===============================
@@ -112,19 +86,6 @@ depart() {
 }
 
 
-# ===============================
-# Default conda environment
-# ===============================
-
-
-if command -v conda >/dev/null 2>&1; then
-  if [ "${CONDA_DEFAULT_ENV-}" != "qmcpy" ]; then
-    conda activate qmcpy >/dev/null 2>&1 || true
-  fi
-fi
-
-path=(${path:#$HOME/miniconda3/bin})
-typeset -U path
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -141,3 +102,8 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+
+
+if [[ $- == *i* ]]; then
+  conda activate qmcpy >/dev/null 2>&1 || true
+fi
