@@ -1,8 +1,7 @@
+export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python
 #!/usr/bin/env bash
 set -u
 set -o pipefail
-
-export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python
 
 FAST=0
 if [ "${1:-}" = "--fast" ]; then
@@ -40,6 +39,7 @@ log="$logs_dir/${target_base}.render.log"
 port="${QUARTO_LIVE_PORT:-4321}"
 
 existing_pids="$(lsof -tiTCP:${port} -sTCP:LISTEN 2>/dev/null || true)"
+
 if [ -n "$existing_pids" ]; then
   echo "Port ${port} in use — killing existing watcher(s): $existing_pids"
   kill $existing_pids >/dev/null 2>&1 || true
@@ -67,7 +67,12 @@ cat > "$runner" <<RUNEOF
 set -u
 set -o pipefail
 
-export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python
+if [ -z "${QUARTO_PYTHON:-}" ]; then export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python; fi
+
+export PYTHONPATH="$repo_root/classlib${PYTHONPATH:+:$PYTHONPATH}"
+
+echo "QUARTO_PYTHON=$(printenv QUARTO_PYTHON)"
+echo "PYTHONPATH=$(printenv PYTHONPATH)"
 
 repo_root="$repo_root"
 target="$target"
@@ -76,18 +81,13 @@ log="$log"
 FAST="$FAST"
 render_flags="$render_flags"
 
-export PYTHONPATH="\$repo_root/classlib\${PYTHONPATH:+:\$PYTHONPATH}"
-
-echo "QUARTO_PYTHON=\$QUARTO_PYTHON"
-echo "PYTHONPATH=\$PYTHONPATH"
-
 if [ "\$FAST" -eq 0 ]; then
   rm -rf "\$repo_root/slides/_freeze" >/dev/null 2>&1 || true
 else
   rm -rf "\$repo_root/slides/_freeze/\$target_base"* >/dev/null 2>&1 || true
 fi
 
-( cd "\$repo_root/slides" && quarto render "\${target#slides/}" \$render_flags ) >"\$log" 2>&1
+( cd "$repo_root/slides" && quarto render "${target#slides/}" $render_flags ) >"$log" 2>&1
 rc=\$?
 
 if [ \$rc -ne 0 ]; then
