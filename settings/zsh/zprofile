@@ -5,3 +5,7 @@ elif [ -x /usr/local/bin/brew ]; then
 fi
 
 if [ -f "$HOME/.zprofile.local" ]; then . "$HOME/.zprofile.local"; fi
+
+if [ -f /opt/miniconda3/etc/profile.d/conda.sh ]; then
+  . /opt/miniconda3/etc/profile.d/conda.sh
+fi

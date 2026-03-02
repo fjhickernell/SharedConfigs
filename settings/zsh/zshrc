@@ -104,6 +104,11 @@ unset __conda_setup
 
 
 
+
 if [[ $- == *i* ]]; then
-  conda activate qmcpy >/dev/null 2>&1 || true
+  if command -v conda >/dev/null 2>&1; then
+    if [ -z "${CONDA_PREFIX:-}" ]; then
+      conda activate qmcpy >/dev/null 2>&1 || true
+    fi
+  fi
 fi

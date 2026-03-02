@@ -1,3 +1,4 @@
+export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python
 #!/usr/bin/env bash
 set -u
 set -o pipefail
@@ -66,6 +67,10 @@ cat > "$runner" <<RUNEOF
 set -u
 set -o pipefail
 
+if [ -z "${QUARTO_PYTHON:-}" ]; then export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python; fi
+
+echo "QUARTO_PYTHON=$(printenv QUARTO_PYTHON)"
+
 repo_root="$repo_root"
 target="$target"
 target_base="$target_base"
@@ -79,7 +84,7 @@ else
   rm -rf "\$repo_root/slides/_freeze/\$target_base"* >/dev/null 2>&1 || true
 fi
 
-quarto render "\$repo_root/\$target" \$render_flags >"\$log" 2>&1
+( cd "$repo_root/slides" && quarto render "${target#slides/}" $render_flags ) >"$log" 2>&1
 rc=\$?
 
 if [ \$rc -ne 0 ]; then
