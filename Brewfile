@@ -1,22 +1,23 @@
-# ---- Brew formulae (alphabetical) ----
+brew "xz"
 brew "automake"
+brew "openssl@3"
 brew "bat"
+brew "freetype"
+brew "harfbuzz"
 brew "bfg"
 brew "bison"
 brew "chruby"
 brew "curl"
 brew "fd"
-brew "freetype"
 brew "fribidi"
 brew "fswatch"
 brew "fzf"
+brew "gmp"
 brew "gcc"
 brew "gh"
 brew "ghostscript"
 brew "git"
 brew "git-lfs"
-brew "gmp"
-brew "harfbuzz"
 brew "jq"
 brew "libffi"
 brew "libomp"
@@ -27,13 +28,12 @@ brew "mas"
 brew "node"
 brew "open-mpi"
 brew "opencl-headers"
-brew "openssl@3"
 brew "pandoc"
+brew "poppler"
 brew "pdf2svg"
 brew "pdfgrep"
 brew "pdftk-java"
 brew "pkgconf"
-brew "poppler"
 brew "pygments"
 brew "r"
 brew "ripgrep"
@@ -44,19 +44,13 @@ brew "tldr"
 brew "tree"
 brew "watchexec"
 brew "weasyprint"
-brew "xz"
 brew "zlib"
-
-# ---- Casks (alphabetical) ----
-cask "macdown"
 cask "obsidian"
 cask "quarto"
 cask "rstudio"
 cask "texstudio"
 cask "visual-studio-code"
 cask "warp"
-
-# ---- Mac App Store apps (alphabetical by name) ----
 mas "Air Printer", id: 929399895
 mas "Capital One Shopping", id: 1477110326
 mas "CNET Shopping", id: 1628869139
@@ -68,7 +62,7 @@ mas "GarageBand", id: 682658836
 mas "Good Stopwatch", id: 1268456701
 mas "Goodnotes", id: 1444383602
 mas "GoodTask", id: 1143437985
-mas "HP", id: 1474276998
+mas "HP Smart", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
@@ -85,6 +79,7 @@ mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
+mas "Paste", id: 967805235
 mas "PayPal Honey", id: 1472777122
 mas "PDFCombo", id: 1030461463
 mas "Perplexity", id: 6714467650
@@ -102,8 +97,6 @@ mas "WeChat", id: 836500024
 mas "WhatsApp", id: 310633997
 mas "World Time", id: 912698955
 mas "Xcode", id: 497799835
-
-# ---- VSCode extensions (alphabetical) ----
 vscode "alefragnani.bookmarks"
 vscode "bierner.markdown-mermaid"
 vscode "davidanson.vscode-markdownlint"
@@ -145,4 +138,3 @@ vscode "reditorsupport.r"
 vscode "reditorsupport.r-syntax"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "tomoki1207.pdf"
-
