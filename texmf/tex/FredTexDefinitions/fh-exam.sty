@@ -3,6 +3,11 @@
 %%
 %% Changelog
 %%
+%% v3.20  (2026/03/02)
+%%   • Added “Print your name clearly on each answer sheet” to instructions.
+%%   • Prevented problems from breaking immediately after they begin
+%%     by integrating needspace into \problem.
+%%
 %% v3.19  (2026/02/18)
 %%   • Updated instructions wording (take-home block).
 %%   • itemize level-1 bullets default to an en-dash (–) instead of discs.
@@ -41,7 +46,7 @@
 %% ------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesExplPackage{fh-exam}{2026/02/18}{3.19}{Slim exam scaffolding}
+\ProvidesExplPackage{fh-exam}{2026/03/02}{3.20}{Slim exam scaffolding}
 
 \RequirePackage{xstring}
 \makeatletter
@@ -62,6 +67,7 @@
 \RequirePackage{environ}
 \RequirePackage{fmtcount}
 \RequirePackage{xcolor}
+\RequirePackage{needspace}
 
 \ExplSyntaxOn
 \NewDocumentCommand{\forcespaces}{m}{
@@ -103,6 +109,12 @@
 \newcommand{\vertspc}[1]{\vspace*{#1\unitvsp}}
 \newcommand{\ProblemSep}{\vertspc{2}}
 \newcommand{\SubProblemSep}{\vertspc{0}}
+
+% ---------- prevent early page breaks in problems (v3.20) ----------
+\newcommand{\fhx@problemneedspace}{12\baselineskip}
+\NewDocumentCommand{\setexamproblemneedspace}{m}{%
+	\renewcommand{\fhx@problemneedspace}{#1}%
+}
 
 % ---------- points / totals ----------
 \DeclareRobustCommand{\points}[1]{(#1 points)}
@@ -165,6 +177,7 @@
 
 % ---------- \problem ----------
 \NewDocumentCommand{\problem}{m m}{%
+	\Needspace{\fhx@problemneedspace}%
 	\ProblemSep
 	\setcounter{fhx@problempoints}{0}%
 	\stepcounter{examnumproblems}%
@@ -236,13 +249,17 @@
 % --- Academic Integrity Signature ------
 \@ifundefined{examhonorstatement}{%
 	\newcommand{\examhonorstatement}{%
-		\emph{I understand these instructions and have not relied on any help for this
-			exam beyond what is allowed, nor provided any help to anyone else beyond what
-			is allowed.}\\[2\baselineskip]
-		\noindent
-		\makebox[3.5in]{\hrulefill}\hspace{2em}\makebox[2in]{\hrulefill}\\[-0.3\baselineskip]
-		\makebox[3.5in][c]{\textit{Signature}}\hspace{2em}\makebox[2in][c]{\textit{Date}}%
-		\vspace{1\baselineskip}%
+		{\small
+			\emph{I understand these instructions and have not relied on any help for this
+				exam beyond what is allowed, nor provided any help to anyone else beyond what
+				is allowed.}\\[2\baselineskip]
+			\noindent
+			\makebox[3.5in]{\hrulefill}\hspace{2em}\makebox[2in]{\hrulefill}\\[-0.3\baselineskip]
+			\makebox[3.5in][c]{\textit{Signature}}\hspace{2em}\makebox[2in][c]{\textit{Date}}\\[1.2\baselineskip]
+			\makebox[3.5in]{\hrulefill}\\[-0.3\baselineskip]
+			\makebox[3.5in][c]{\textit{Printed Name}}%
+			\vspace{1\baselineskip}
+		}%
 	}%
 }{}
 
@@ -299,6 +316,7 @@
 		\item \examcriticalleveltext
 		\fi
 		\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
+		\item \forcespaces{Print your name clearly on each answer sheet.}
 		\item \examinstructorcontact
 	\end{enumerate}
 }
@@ -335,6 +353,7 @@
 				friends, family, or online responders). All solutions must be your own work,
 				and you are responsible for checking that AI-generated content is correct.}
 			\item \forcespaces{Show all your work to justify your answers. Answers without adequate justification will not receive credit.}
+			\item \forcespaces{Print your name clearly on each answer sheet.}
 			\item \forcespaces{If you have clarification questions,
 				email the instructor at \texttt{\upshape hickernell@illinoistech.edu}. Mathematical help will not be given.}
 		\end{enumerate}
@@ -560,4 +579,3 @@
 \pagestyle{fhxexam}
 
 \makeatother
-
