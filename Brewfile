@@ -138,4 +138,3 @@ vscode "reditorsupport.r"
 vscode "reditorsupport.r-syntax"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "tomoki1207.pdf"
-
