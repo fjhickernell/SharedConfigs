@@ -68,6 +68,7 @@ mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
 mas "LastPass for Safari", id: 6504626762
+mas "LastPass", id: 926036361
 mas "LINE", id: 539883307
 mas "Mailbutler Installer", id: 1313355438
 mas "Microsoft Excel", id: 462058435
@@ -100,6 +101,7 @@ mas "World Time", id: 912698955
 mas "Xcode", id: 497799835
 vscode "alefragnani.bookmarks"
 vscode "bierner.markdown-mermaid"
+vscode "cssho.vscode-svgviewer"
 vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
@@ -117,6 +119,7 @@ vscode "ms-azuretools.vscode-containers"
 vscode "ms-azuretools.vscode-docker"
 vscode "ms-dynamics-smb.al"
 vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
+vscode "ms-python.anaconda-extension-pack"
 vscode "ms-python.debugpy"
 vscode "ms-python.isort"
 vscode "ms-python.python"

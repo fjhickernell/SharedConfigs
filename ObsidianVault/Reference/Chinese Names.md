@@ -10,6 +10,8 @@ This note records your family names in Traditional Chinese along with glosses.
 - **Elaine** — 朱憶令  
 - **John** — 葉基恩  
 - **Christine** — 葉天寧  
+- **Caitlin** —  王恺灵
+- **Nayman** —  梁恂
 
 ---
 
@@ -29,8 +31,18 @@ This note records your family names in Traditional Chinese along with glosses.
 - **天** — heaven  
 - **寧** — peaceful, serene, still  
 
+- **王** — king; ruler  
+
+- 恺 / 愷 — joyful, kind, gentle; pleasant in spirit  
+- 灵 / 靈 — spirit, soul; clever, spiritually responsive  
+
+- **梁** — beam; bridge; something that supports or connects  
+
+- **恂** — sincere; trustworthy; respectful in conduct  
+
 ---
 
 ## Related
 
 - [[MasterLists/Lessons Learned]]
+

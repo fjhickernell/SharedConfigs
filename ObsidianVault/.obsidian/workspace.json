@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MasterLists/Semester Architecture Policy 2026.md",
+                "file": "Reference/Chinese Names.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Semester Architecture Policy 2026"
+              "title": "Chinese Names"
             }
           }
         ],
@@ -109,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MasterLists/Semester Architecture Policy 2026.md",
+                "file": "Reference/Chinese Names.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Semester Architecture Policy 2026"
+              "title": "Backlinks for Chinese Names"
             }
           },
           {
@@ -199,6 +199,10 @@
   },
   "active": "23326b84f8c55c35",
   "lastOpenFiles": [
+    "Workflows/Class_Workflow_Terse.md",
+    "Workflows/brew-app-workflow.md",
+    "Workflows",
+    "MasterLists/Semester Architecture Policy 2026.md",
     "Teaching/SIAMUQ26/classlib/classlib/quarto/slides/shared/statistics/matched_pairs_sleep_study.qmd",
     "Teaching/SIAMUQ26/classlib/classlib/notebooks/matched_pairs_sleep_study.ipynb",
     "Teaching/MATH563Spring2026/classlib/classlib/quarto/slides/shared/statistics/matched_pairs_sleep_study.qmd",
@@ -208,8 +212,6 @@
     "Software/classlib/classlib/quarto/slides/shared/statistics/hypothesis/likelihoodratio.qmd",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/shared/statistics/hypothesis/hypothesis-examples.qmd",
     "Teaching/MATH565Fall2025/classlib/classlib/quarto/slides/shared/statistics/hypothesis/hypothesis-examples.qmd",
-    "Software/classlib/classlib/quarto/slides/shared/statistics/hypothesis/hypothesis-examples.qmd",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/shared/statistics/estimation/sufficiency_completeness_information.qmd",
     "Software/classlib.md",
     "Home.md",
     "MacApps/MacApps_README.md",
@@ -243,8 +245,6 @@
     "SharedConfigs-Notes/ClassRepo_Submodule_Workflow_2025-12-26.md",
     "Teaching/MATH476Spring2026/index.md",
     "Teaching/MATH476Spring2026/# MATH 476 — Spring 2026.md",
-    "Teaching/MATH476Spring2026.md",
-    "Teaching/MATH476Spring2026 1.md",
-    "Teaching/MATH476Spring2026 2.md"
+    "Teaching/MATH476Spring2026.md"
   ]
 }

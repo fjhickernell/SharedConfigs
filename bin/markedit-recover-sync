@@ -1,0 +1,17 @@
+#!/bin/zsh
+set -euo pipefail
+
+BASE="$HOME/Library/Containers/app.cyan.markedit/Data/Documents"
+SRC="$HOME/Documents/SharedConfigs/settings/MarkEdit"
+
+mkdir -p "$BASE/scripts" "$BASE/styles"
+
+rm -f "$BASE/scripts/markedit-preview.js"
+rm -f "$BASE/styles/preview-light.css"
+rm -f "$BASE/settings.json"
+
+ln -s "$SRC/scripts/markedit-preview.js" "$BASE/scripts/markedit-preview.js"
+ln -s "$SRC/styles/preview-light.css" "$BASE/styles/preview-light.css"
+ln -s "$SRC/settings.json" "$BASE/settings.json"
+
+echo "MarkEdit symlinks restored."
