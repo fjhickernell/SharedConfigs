@@ -134,11 +134,13 @@ open "$url"
 cd "$repo_root" || exit 2
 
 watchexec -r \
-  -w "$repo_root/slides" -w "$repo_root/classlib" \
-  --ignore "$repo_root/slides/_site/**" \
-  --ignore "$repo_root/slides/_freeze/**" \
-  --ignore "$repo_root/**/.quarto/**" \
-  --ignore "$repo_root/**/.git/**" \
-  --ignore "$repo_root/**/*_files/**" \
+  -w "$repo_root/slides" \
+  -w "$repo_root/classlib" \
+  --ignore 'slides/_site/**' \
+  --ignore 'slides/_freeze/**' \
+  --ignore 'slides/.quarto/**' \
+  --ignore 'slides/**/*_files/**' \
+  --ignore '.git/**' \
+  --ignore '.quarto/**' \
   -e qmd,yml,yaml,scss,css,js,png,jpg,jpeg,svg \
   -- "$runner"
