@@ -48,9 +48,21 @@
               "icon": "lucide-file",
               "title": "Class & Talk Workflow"
             }
+          },
+          {
+            "id": "f707d8f6826b4e31",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.12.4"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.12.4"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -123,7 +135,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Workflows/Class & Talk Workflow.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -133,7 +144,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Class & Talk Workflow"
+              "title": "Backlinks"
             }
           },
           {
@@ -211,25 +222,29 @@
       "bases:Create new base": false
     }
   },
-  "active": "2438f540ba4ba08e",
+  "active": "f707d8f6826b4e31",
   "lastOpenFiles": [
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-title.scss",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides.yml",
+    "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
+    "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
+    "Teaching/MATH476Spring2026/assets/tests/archive/563/MATH563Test1Spring2026Answers.pdf",
+    "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
+    "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
+    "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
+    "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides.scss.backup",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides.scss",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides.css",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides-test.scss.backup",
+    "Teaching/MATH565Fall2025/classlib/classlib/quarto/slides/research/research-slides.scss.backup",
+    "Teaching/MATH565Fall2025/classlib/classlib/quarto/slides/research/research-slides-test.scss.backup",
+    "Software/classlib/classlib/quarto/slides/research/research-slides.scss.backup",
+    "Software/classlib/classlib/quarto/slides/research/research-slides-test.scss.backup",
+    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides.css",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides-test.scss",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
+    "Teaching/MATH565Fall2025/classlib/classlib/quarto/slides/research/research-slides.css",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus",
-    "Teaching/MATH476Spring2026/assets/tests/archive/476/MATH476Test1Spring2026Answers.pdf",
-    "Teaching/MATH476Spring2026/assets/tests/archive/476/MATH476Test1MakeUpSpring2026Answers.pdf",
+    "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
     "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
     "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg",
     "Software/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
-    "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg",
     "Workflows/Class & Talk Workflow.md",
     "Workflows/brew-app-workflow.md",
     "MasterLists/Semester Architecture Policy 2026.md",
@@ -250,10 +265,6 @@
     "Reference/Chinese Names.md",
     "class_repo_submodule_workflow.md",
     "MasterLists/Lessons Learned.md",
-    "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-3-3.png",
-    "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-1-1.png",
-    "Teaching/MATH476Spring2026/slides/intro-01_files/figure-revealjs/unnamed-chunk-4-3.png",
-    "Teaching/MATH476Spring2026/_site/docs/classlib/classlib/quarto/assets/images/normal-scatter.png",
     "Teaching/MATH476Spring2026/slides/intro-01.knit.md",
     "Untitled.canvas",
     "Teaching/Lessons-Learned-Quarto-RevealJS.md",

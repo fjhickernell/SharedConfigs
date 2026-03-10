@@ -363,10 +363,10 @@ sync_class_repo() {
 
 pins_consistency_check() {
   local repo repo_name
-  local ref_repo ref_classlib ref_qmc
+  local ref_repo ref_classlib ref_qmc ref_tests
   local mismatch=0
 
-  typeset -A classlib_sha qmc_sha
+  typeset -A classlib_sha qmc_sha tests_sha
 
   is_full_sha() {
     local v="$1"
@@ -375,10 +375,12 @@ pins_consistency_check() {
 
   short_or_tag() {
     local v="$1"
-    if is_full_sha "${v}"; then
+    if [[ -z "$v" ]]; then
+      echo "-"
+    elif is_full_sha "$v"; then
       echo "${v:0:12}"
     else
-      echo "${v}"
+      echo "$v"
     fi
   }
 
@@ -387,15 +389,24 @@ pins_consistency_check() {
     if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
       classlib_sha[$repo_name]="NO_REPO"
       qmc_sha[$repo_name]="NO_REPO"
+      tests_sha[$repo_name]="NO_REPO"
       continue
     fi
-    classlib_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse :classlib 2>/dev/null || echo "MISSING")
-    qmc_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse :qmcsoftware 2>/dev/null || echo "MISSING")
+
+    classlib_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse HEAD:classlib 2>/dev/null || echo "MISSING")
+    qmc_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse HEAD:qmcsoftware 2>/dev/null || echo "MISSING")
+
+    if /usr/bin/git -C "${repo}" ls-files --stage -- assets/tests/archive 2>/dev/null | awk '{print $1}' | grep -qx '160000'; then
+      tests_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse HEAD:assets/tests/archive 2>/dev/null || echo "MISSING")
+    else
+      tests_sha[$repo_name]="-"
+    fi  
   done
 
   ref_repo=""
   ref_classlib=""
   ref_qmc=""
+  ref_tests=""
 
   for repo in "${CLASS_REPOS[@]}"; do
     repo_name="${repo##*/}"
@@ -403,6 +414,9 @@ pins_consistency_check() {
       ref_repo="${repo_name}"
       ref_classlib="${classlib_sha[$repo_name]}"
       ref_qmc="${qmc_sha[$repo_name]}"
+      if is_full_sha "${tests_sha[$repo_name]}"; then
+        ref_tests="${tests_sha[$repo_name]}"
+      fi
       break
     fi
   done
@@ -414,23 +428,41 @@ pins_consistency_check() {
 
   for repo in "${CLASS_REPOS[@]}"; do
     repo_name="${repo##*/}"
+
     [[ "${classlib_sha[$repo_name]}" != "${ref_classlib}" ]] && mismatch=1
     [[ "${qmc_sha[$repo_name]}" != "${ref_qmc}" ]] && mismatch=1
+
+    if [[ -n "${ref_tests}" ]]; then
+      if [[ "${tests_sha[$repo_name]}" != "-" && "${tests_sha[$repo_name]}" != "NO_REPO" && "${tests_sha[$repo_name]}" != "MISSING" ]]; then
+        [[ "${tests_sha[$repo_name]}" != "${ref_tests}" ]] && mismatch=1
+      fi
+    fi
+  done
+
+  printf "%-20s  %-12s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware" "tests-archive"
+  for repo in "${CLASS_REPOS[@]}"; do
+    repo_name="${repo##*/}"
+
+    test_display="$(short_or_tag "${tests_sha[$repo_name]}")"
+    [[ -z "${test_display}" ]] && test_display="-"
+
+    printf "%-20s  %-12s  %-12s  %-12s\n" \
+      "${repo_name}" \
+      "$(short_or_tag "${classlib_sha[$repo_name]}")" \
+      "$(short_or_tag "${qmc_sha[$repo_name]}")" \
+      "${test_display}"
   done
 
   if (( mismatch )); then
     warn "WARNING: submodule pins differ across class repos"
-    printf "%-20s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware"
-    for repo in "${CLASS_REPOS[@]}"; do
-      repo_name="${repo##*/}"
-      printf "%-20s  %-12s  %-12s\n" \
-        "${repo_name}" \
-        "$(short_or_tag "${classlib_sha[$repo_name]}")" \
-        "$(short_or_tag "${qmc_sha[$repo_name]}")"
-    done
-    warn "Reference: ${ref_repo} (classlib ${ref_classlib:0:12}, qmcsoftware ${ref_qmc:0:12})"
+    warn "Reference: ${ref_repo} (classlib ${ref_classlib:0:12}, qmcsoftware ${ref_qmc:0:12}${ref_tests:+, tests ${ref_tests:0:12}})"
   else
-    vinfo "OK pins: classlib ${ref_classlib:0:12}, qmcsoftware ${ref_qmc:0:12}"
+    info "OK: classlib and qmcsoftware pins match across all repos"
+    if [[ -n "${ref_tests}" ]]; then
+      info "OK: tests archive pins match across repos that contain it"
+    else
+      info "OK: tests archive not present in reference repo (skipping check)"
+    fi
   fi
 }
 

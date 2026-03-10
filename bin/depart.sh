@@ -7,10 +7,7 @@ rc_dev=$?
 sync-class.sh --push
 rc_class=$?
 
-pins-match
-rc_pins=$?
-
-if [[ $rc_dev -ne 0 || $rc_class -ne 0 || $rc_pins -ne 0 ]]; then
+if [[ $rc_dev -ne 0 || $rc_class -ne 0 ]]; then
   echo "depart failed (sync-dev=$rc_dev, sync-class=$rc_class, pins-match=$rc_pins)"
   exit 1
 fi
