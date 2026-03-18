@@ -42,7 +42,7 @@
               "type": "markdown",
               "state": {
                 "file": "Workflows/Class & Talk Workflow.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -62,7 +62,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -135,6 +135,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Workflows/Class & Talk Workflow.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -144,7 +145,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for Class & Talk Workflow"
             }
           },
           {
@@ -222,8 +223,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "f707d8f6826b4e31",
+  "active": "2438f540ba4ba08e",
   "lastOpenFiles": [
+    "Workflows/brew-app-workflow.md",
+    "Workflows/Class & Talk Workflow.md",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
     "Teaching/MATH476Spring2026/assets/tests/archive/563/MATH563Test1Spring2026Answers.pdf",
@@ -244,9 +247,6 @@
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
     "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
     "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg",
-    "Software/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
-    "Workflows/Class & Talk Workflow.md",
-    "Workflows/brew-app-workflow.md",
     "MasterLists/Semester Architecture Policy 2026.md",
     "Software/classlib.md",
     "Home.md",

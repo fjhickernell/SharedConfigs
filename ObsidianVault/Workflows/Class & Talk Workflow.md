@@ -17,10 +17,15 @@
 ### `push` changes to course/talk repos 
 * Normally via VS code or GitKraken
 * Before publishing `classlib` edits
-### `publish-classlib-here "commit message"` to publish changes to `HickernellClassLib` 
+### `publish-classlib-here "commit message"` 
+* To publish changes to `HickernellClassLib` 
 * Only after pushing changes to local repos
+### If you **accidentally** edit in two or more copies of `classlib` or `HickernellClasslib` in different places
+* Commit and push each of the changes to Git
+* `arrive` to update your local copy of `HickernellClassLib`
+* `depart` to update all submodule pointers
 ### Other submodules
-* Commit and push changes to `HickernellTestsArchive` directly
+* Commit and push changes to `HickernellTestsAallrchive` directly
 * Because `QMCSoftware` is maintained by a team, changes to develop require pull requests
 ### `depart` to propagate edits to Git and to other repos 
 * Ensures that Git repository has an updated copy of all repos and will run Git Actions to produce updated pages and slides
