@@ -1,0 +1,16 @@
+{
+  "Reference item": {
+    "scope": "markdown,quarto",
+    "prefix": "qref",
+    "body": [
+      "[{{< meta papers.${1:hick...}.cite >}}]{.ref-label}",
+      "{{< meta papers.${1:hick...}.full >}}",
+      "[DOI]({{< meta papers.${1:hick...}.doi_url >}})",
+      "[arXiv]({{< meta papers.${1:hick...}.arxiv_url >}})",
+      "[publisher]({{< meta papers.${1:hick...}.publisher_url >}})",
+      "[project]({{< meta papers.${1:hick...}.project_url >}})",
+      ""
+    ],
+    "description": "Insert one reference item"
+  }
+}

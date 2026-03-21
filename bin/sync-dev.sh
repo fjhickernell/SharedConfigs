@@ -134,9 +134,9 @@ if [[ "$SKIP_COUNT" -gt 0 ]]; then
 fi
 
 if [[ "$UPDATE_COUNT" -gt 0 ]]; then
-  ok "===== CLEAN: ${UPDATE_COUNT} repo(s) updated ====="
+  ok "===== SUCCESS: ${UPDATE_COUNT} standalone repo(s) updated ====="
   exit 0
 fi
 
-ok "===== CLEAN: no updates needed ====="
+ok "===== SUCCESS: standalone repos already up to date ====="
 exit 0

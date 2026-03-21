@@ -41,24 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Workflows/Class & Talk Workflow.md",
-                "mode": "preview",
+                "file": "SharedConfigs-Notes/ClassRepo_Submodule_Workflow.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Class & Talk Workflow"
-            }
-          },
-          {
-            "id": "f707d8f6826b4e31",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.12.4"
-              },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.12.4"
+              "title": "ClassRepo_Submodule_Workflow"
             }
           }
         ],
@@ -135,7 +123,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Workflows/Class & Talk Workflow.md",
+                "file": "SharedConfigs-Notes/ClassRepo_Submodule_Workflow.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -145,7 +133,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Class & Talk Workflow"
+              "title": "Backlinks for ClassRepo_Submodule_Workflow"
             }
           },
           {
@@ -225,51 +213,52 @@
   },
   "active": "2438f540ba4ba08e",
   "lastOpenFiles": [
-    "Workflows/brew-app-workflow.md",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026.html",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.woff",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.ttf",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.eot",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.css",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/league-gothic/LICENSE",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro.css",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.woff",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.ttf",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.eot",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibold.woff",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/figure-revealjs/cell-4-output-1.png",
+    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/figure-revealjs/cell-3-output-1.png",
+    "Teaching/SIAMUQ26/slides/_site/classlib/classlib/quarto/slides/shared/statistics/hypothesis/LRT_476_shared_deck_condensed.md",
+    "Teaching/SIAMUQ26/slides/_site/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
+    "Teaching/SIAMUQ26/slides/_site/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v4.md",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v3.md",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v2.md",
+    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing.md",
+    "SharedConfigs-Notes/class_repo_submodule_workflow.md",
+    "SharedConfigs-Notes/check_app_update_dates.md",
+    "Teaching/Lessons-Learned-Quarto-RevealJS.md",
+    "Teaching/MATH563Spring2026.md",
+    "Teaching/SIAMUQ26/README.md",
+    "Teaching/SIAMUQ26.md",
+    "Teaching/MATH565Fall2025.md",
+    "Teaching/MATH476Spring2026 3.md",
+    "Teaching/MATH476Spring2026 2.md",
+    "Teaching/MATH476Spring2026 1.md",
+    "Teaching/MATH476Spring2026.md",
+    "Workflows/SageMath Maitenance.md",
     "Workflows/Class & Talk Workflow.md",
+    "Workflows/brew-app-workflow.md",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
     "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
-    "Teaching/MATH476Spring2026/assets/tests/archive/563/MATH563Test1Spring2026Answers.pdf",
     "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
     "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
     "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
     "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides.scss.backup",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides-test.scss.backup",
-    "Teaching/MATH565Fall2025/classlib/classlib/quarto/slides/research/research-slides.scss.backup",
-    "Teaching/MATH565Fall2025/classlib/classlib/quarto/slides/research/research-slides-test.scss.backup",
-    "Software/classlib/classlib/quarto/slides/research/research-slides.scss.backup",
-    "Software/classlib/classlib/quarto/slides/research/research-slides-test.scss.backup",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides.css",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/slides/research/research-slides-test.scss",
-    "Teaching/MATH565Fall2025/classlib/classlib/quarto/slides/research/research-slides.css",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg",
-    "Teaching/MATH476Spring2026/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
-    "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/The McCormick Tribune Campus Center - MTCC.jpg",
-    "Teaching/MATH565Fall2025/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg",
     "MasterLists/Semester Architecture Policy 2026.md",
     "Software/classlib.md",
     "Home.md",
     "MacApps/MacApps_README.md",
     "MacApps/MacAppsInventory.md",
     "SharedConfigs-Notes/jekyll-to-quarto-migration-notes.md",
-    "SharedConfigs-Notes/index.md",
-    "SharedConfigs-Notes/class_repo_submodule_workflow.md",
-    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing.md",
-    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v4.md",
-    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v3.md",
-    "SharedConfigs-Notes/class-repos-submodules-quarto-publishing-v2.md",
-    "SharedConfigs-Notes/check_app_update_dates.md",
-    "SharedConfigs-Notes/ClassRepo_Submodule_Workflow.md",
-    "Reference/obsidian_wiring.md",
-    "Reference/Chinese Names.md",
-    "class_repo_submodule_workflow.md",
-    "MasterLists/Lessons Learned.md",
-    "Teaching/MATH476Spring2026/slides/intro-01.knit.md",
-    "Untitled.canvas",
-    "Teaching/Lessons-Learned-Quarto-RevealJS.md",
-    "SharedConfigs-Notes/ClassRepo_Submodule_Workflow_2025-12-26.md",
-    "Teaching/MATH476Spring2026/index.md",
-    "Teaching/MATH476Spring2026/# MATH 476 — Spring 2026.md"
+    "Untitled.canvas"
   ]
 }

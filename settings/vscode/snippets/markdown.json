@@ -1,0 +1,16 @@
+{
+  "Reference entry": {
+    "prefix": "qref",
+    "body": [
+      "::: {.refs}",
+      "[{{< meta papers.${1:key}.cite >}}]{.ref-label}",
+      "{{< meta papers.${1:key}.full >}}",
+      "[DOI]({{< meta papers.${1:key}.doi_url >}})",
+      "[arXiv]({{< meta papers.${1:key}.arxiv_url >}})",
+      "[publisher]({{< meta papers.${1:key}.publisher_url >}})",
+      "[project]({{< meta papers.${1:key}.project_url >}})",
+      ":::"
+    ],
+    "description": "Insert reference block"
+  }
+}

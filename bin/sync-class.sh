@@ -268,7 +268,11 @@ sync_class_repo() {
       UPDATE_COUNT=$((UPDATE_COUNT + 1))
       ok "UPDATED ${name}: pulled +${count} -> $(shortsha "${new}")"
     else
-      info "OK     ${name}: up-to-date @ $(shortsha "${new}")"
+      if [[ "${do_promote}" -eq 1 ]]; then
+        info "OK     ${name}: superproject already up to date @ $(shortsha "${new}")"
+      else
+        info "OK     ${name}: already up to date @ $(shortsha "${new}")"
+      fi
     fi
 
     if [[ "${do_promote}" -eq 1 ]]; then
@@ -400,7 +404,7 @@ pins_consistency_check() {
       tests_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse HEAD:assets/tests/archive 2>/dev/null || echo "MISSING")
     else
       tests_sha[$repo_name]="-"
-    fi  
+    fi
   done
 
   ref_repo=""
@@ -502,10 +506,10 @@ final_verdict() {
     return 1
   fi
   if [[ "${UPDATE_COUNT}" -gt 0 ]]; then
-    ok "===== CLEAN: ${UPDATE_COUNT} update(s) applied ====="
+    ok "===== SUCCESS: ${UPDATE_COUNT} update(s) applied ====="
     return 0
   fi
-  ok "===== CLEAN: no updates needed ====="
+  ok "===== SUCCESS: all repos already in sync ====="
   return 0
 }
 
@@ -536,10 +540,12 @@ STANDALONE_REPOS=(
   "$HOME/SoftwareRepositories/QMCSoftware:develop"
 )
 
+# Order matters for pins_consistency_check:
+# prefer a repo that includes assets/tests/archive so that submodule can be checked too.
 CLASS_REPOS=(
-  "$HOME/SoftwareRepositories/MATH565Fall2025"
   "$HOME/SoftwareRepositories/MATH476Spring2026"
   "$HOME/SoftwareRepositories/MATH563Spring2026"
+  "$HOME/SoftwareRepositories/MATH565Fall2025"
   "$HOME/SoftwareRepositories/SIAMUQ26"
 )
 
