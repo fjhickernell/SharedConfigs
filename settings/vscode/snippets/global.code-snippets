@@ -12,5 +12,14 @@
       ""
     ],
     "description": "Insert one reference item"
+  },
+  "Inline citation (DOI)": {
+    "scope": "markdown,quarto",
+    "prefix": "qcite",
+    "body": [
+      "[{{< meta papers.${1:hick...}.short >}}]({{< meta papers.${1:hick...}.doi_url >}})"
+    ],
+    "description": "Inline citation with DOI link"
   }
 }
+
