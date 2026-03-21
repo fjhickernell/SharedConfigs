@@ -52,6 +52,7 @@ cask "texstudio"
 cask "visual-studio-code"
 cask "warp"
 mas "Air Printer", id: 929399895
+mas "Amphetamine", id: 937984704
 mas "Capital One Shopping", id: 1477110326
 mas "CNET Shopping", id: 1628869139
 mas "CotEditor", id: 1024640650
@@ -62,7 +63,7 @@ mas "GarageBand", id: 682658836
 mas "Good Stopwatch", id: 1268456701
 mas "Goodnotes", id: 1444383602
 mas "GoodTask", id: 1143437985
-mas "HP", id: 1474276998
+mas "HP Smart", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
