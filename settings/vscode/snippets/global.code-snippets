@@ -5,9 +5,9 @@
     "body": [
       "[{{< meta papers.${1:hick...}.cite >}}]{.ref-label}",
       "{{< meta papers.${1:hick...}.full >}}",
-      "[DOI]({{< meta papers.${1:hick...}.doi_url >}})",
-      "[arXiv]({{< meta papers.${1:hick...}.arxiv_url >}})",
-      "[publisher]({{< meta papers.${1:hick...}.publisher_url >}})",
+      "[DOI]({{< meta papers.${1:hick...}.doi_url >}}) · ",
+      "[arXiv]({{< meta papers.${1:hick...}.arxiv_url >}}) · ",
+      "[publisher]({{< meta papers.${1:hick...}.publisher_url >}}) · ",
       "[project]({{< meta papers.${1:hick...}.project_url >}})",
       ""
     ],
@@ -17,7 +17,7 @@
     "scope": "markdown,quarto",
     "prefix": "qcite",
     "body": [
-      "[{{< meta papers.${1:hick...}.short >}}]({{< meta papers.${1:hick...}.doi_url >}})"
+      "[{{< meta papers.${1:hick...}.cite >}}]({{< meta papers.${1:hick...}.doi_url >}})"
     ],
     "description": "Inline citation with DOI link"
   }
