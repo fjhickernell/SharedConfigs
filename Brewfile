@@ -34,7 +34,6 @@ brew "pdftk-java"
 brew "pkgconf"
 brew "poppler"
 brew "pygments"
-brew "r"
 brew "ripgrep"
 brew "ruby"
 brew "ruby-install"
@@ -47,6 +46,7 @@ brew "xz"
 brew "zlib"
 cask "obsidian"
 cask "quarto"
+cask "r-app"
 cask "rstudio"
 cask "texstudio"
 cask "visual-studio-code"
@@ -63,7 +63,7 @@ mas "GarageBand", id: 682658836
 mas "Good Stopwatch", id: 1268456701
 mas "Goodnotes", id: 1444383602
 mas "GoodTask", id: 1143437985
-mas "HP Smart", id: 1474276998
+mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
