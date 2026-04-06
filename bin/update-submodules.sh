@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # --------------------------------------------------------------------
-#   Shared submodule updater (for course repos using HickernellClassLib)
+#   Shared submodule updater for course repos
 #
 #   Usage (from course repo root):
 #       ./classlib/bin/update-submodules.sh
@@ -23,6 +23,7 @@ set -euo pipefail
 #     • Fast-forwards each submodule to its upstream branch:
 #         - classlib → main
 #         - qmcsoftware → develop
+#         - assets/tests/archive → main
 #     • Commits pointer updates if requested.
 # --------------------------------------------------------------------
 
@@ -78,10 +79,11 @@ fi
 typeset -A BRANCH_FOR
 BRANCH_FOR[classlib]=main
 BRANCH_FOR[qmcsoftware]=develop
-
+BRANCH_FOR[assets/tests/archive]=main
 SUBMODULES=(
   "classlib"
   "qmcsoftware"
+  "assets/tests/archive"
 )
 
 is_in_list() {
@@ -182,7 +184,7 @@ git status --short
 if [[ "$AUTO_COMMIT" -eq 1 ]]; then
   log "Committing updated submodule pointers..."
   git add "${SUBMODULES[@]}"
-  git commit -m "Update submodules (classlib + qmcsoftware)"
+  git commit -m "Update submodules (classlib + qmcsoftware + assets/tests/archive)"
 
   if [[ "$AUTO_PUSH" -eq 1 ]]; then
     log "Pushing commit..."

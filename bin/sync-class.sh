@@ -227,16 +227,6 @@ push_if_ahead() {
   return 0
 }
 
-promote_optional_test_archive() {
-  if [[ -d "assets/tests/archive" ]]; then
-    /usr/bin/git submodule update --init assets/tests/archive >/dev/null 2>&1 || warn "WARNING tests archive: submodule init failed"
-    /usr/bin/git -C assets/tests/archive fetch origin main >/dev/null 2>&1 || warn "WARNING tests archive: fetch failed"
-    /usr/bin/git -C assets/tests/archive checkout main >/dev/null 2>&1 || warn "WARNING tests archive: checkout failed"
-    /usr/bin/git -C assets/tests/archive pull --ff-only origin main >/dev/null 2>&1 || warn "WARNING tests archive: pull failed"
-  fi
-  return 0
-}
-
 sync_class_repo() {
   local repo="$1"
   local do_promote="$2"
@@ -285,7 +275,6 @@ sync_class_repo() {
         skip "SKIP   ${name}: missing update-submodules.sh on PATH"
         return 0
       fi
-      promote_optional_test_archive
     else
       /usr/bin/git submodule update --init --recursive --checkout >/dev/null 2>&1 || {
         err "ERROR  ${name}: submodule update failed"
@@ -538,6 +527,7 @@ fi
 STANDALONE_REPOS=(
   "$HOME/SoftwareRepositories/HickernellClassLib:main"
   "$HOME/SoftwareRepositories/QMCSoftware:develop"
+  "$HOME/SoftwareRepositories/HickernellTestArchive:main"
 )
 
 # Order matters for pins_consistency_check:

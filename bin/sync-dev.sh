@@ -119,9 +119,11 @@ sync_repo() {
 
 HCL="$HOME/SoftwareRepositories/HickernellClassLib"
 QMC="$HOME/SoftwareRepositories/QMCSoftware"
+HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
 
 sync_repo "$HCL" "HickernellClassLib" "main"
 sync_repo "$QMC" "QMCSoftware" "develop"
+sync_repo "$HTA" "HickernellTestArchive" "main"
 
 if [[ "$ERROR_COUNT" -gt 0 ]]; then
   err "===== FAILED: ${ERROR_COUNT} error(s) ====="
