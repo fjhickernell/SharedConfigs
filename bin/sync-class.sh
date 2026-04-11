@@ -536,7 +536,7 @@ CLASS_REPOS=(
   "$HOME/SoftwareRepositories/MATH476Spring2026"
   "$HOME/SoftwareRepositories/MATH563Spring2026"
   "$HOME/SoftwareRepositories/MATH565Fall2025"
-  # "$HOME/SoftwareRepositories/SIAMUQ26"
+  "$HOME/SoftwareRepositories/SIAMUQ26"
   "$HOME/SoftwareRepositories/MCQMC26"
 )
 
