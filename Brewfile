@@ -71,7 +71,6 @@ mas "GoodTask", id: 1143437985
 mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 361285480
-mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
 mas "LastPass for Safari", id: 6504626762
 mas "LINE", id: 539883307
@@ -83,7 +82,6 @@ mas "Microsoft PowerPoint", id: 462062816
 mas "Microsoft To Do", id: 1274495053
 mas "Microsoft Word", id: 462054704
 mas "Numbers", id: 361304891
-mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
