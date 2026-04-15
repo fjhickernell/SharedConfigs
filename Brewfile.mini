@@ -1,23 +1,23 @@
 brew "automake"
+brew "openssl@3"
 brew "bat"
+brew "freetype"
+brew "harfbuzz"
+brew "xz"
 brew "bfg"
 brew "bison"
 brew "chruby"
 brew "curl"
-brew "eza"
 brew "fd"
-brew "freetype"
 brew "fribidi"
 brew "fswatch"
 brew "fzf"
+brew "gmp"
 brew "gcc"
 brew "gh"
 brew "ghostscript"
 brew "git"
-brew "git-delta"
 brew "git-lfs"
-brew "gmp"
-brew "harfbuzz"
 brew "jq"
 brew "libffi"
 brew "libomp"
@@ -28,13 +28,12 @@ brew "mas"
 brew "node"
 brew "open-mpi"
 brew "opencl-headers"
-brew "openssl@3"
 brew "pandoc"
+brew "poppler"
 brew "pdf2svg"
 brew "pdfgrep"
 brew "pdftk-java"
 brew "pkgconf"
-brew "poppler"
 brew "pstree"
 brew "pygments"
 brew "r"
@@ -42,12 +41,10 @@ brew "ripgrep"
 brew "ruby"
 brew "ruby-install"
 brew "starship"
-brew "tig"
 brew "tldr"
 brew "tree"
 brew "watchexec"
 brew "weasyprint"
-brew "xz"
 brew "zlib"
 cask "obsidian"
 cask "quarto"
@@ -70,20 +67,19 @@ mas "Goodnotes", id: 1444383602
 mas "GoodTask", id: 1143437985
 mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
-mas "Keynote", id: 361285480
 mas "Keynote", id: 409183694
+mas "Keynote", id: 361285480
 mas "Kindle", id: 302584613
 mas "LastPass for Safari", id: 6504626762
 mas "LINE", id: 539883307
 mas "Mailbutler Installer", id: 1313355438
-mas "Microsoft Excel", id: 462058435
 mas "Microsoft OneNote", id: 784801555
 mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
 mas "Microsoft To Do", id: 1274495053
 mas "Microsoft Word", id: 462054704
-mas "Numbers", id: 361304891
 mas "Numbers", id: 409203825
+mas "Numbers", id: 361304891
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
@@ -145,4 +141,3 @@ vscode "reditorsupport.r"
 vscode "reditorsupport.r-syntax"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "tomoki1207.pdf"
-
