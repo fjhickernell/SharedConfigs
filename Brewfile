@@ -85,7 +85,6 @@ mas "Numbers", id: 361304891
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 409201541
-mas "PayPal Honey", id: 1472777122
 mas "PDFCombo", id: 1030461463
 mas "Perplexity", id: 6714467650
 mas "Prime Video", id: 545519333
@@ -143,4 +142,16 @@ vscode "reditorsupport.r"
 vscode "reditorsupport.r-syntax"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "tomoki1207.pdf"
+cask "bbedit"
+cask "bibdesk"
+cask "dropbox"
+cask "firefox"
+cask "github"
+cask "gitkraken"
+cask "google-chrome"
+cask "google-drive"
+cask "markedit"
+cask "texshop"
+cask "zoom"
+cask "zotero"
 
