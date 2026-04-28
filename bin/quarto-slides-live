@@ -23,11 +23,17 @@ arg="$1"
 
 if [[ "$arg" == */* ]]; then
   target="$arg"
+
+elif [[ "$arg" == *.qmd ]]; then
+  target="slides/$arg"
+
 else
-  case "$arg" in
-    *.qmd) target="slides/$arg" ;;
-    *)     target="slides/${arg}.qmd" ;;
-  esac
+  match="$(ls slides/${arg}*.qmd 2>/dev/null | head -n 1)"
+  if [ -z "$match" ]; then
+    echo "No deck found matching prefix '${arg}'"
+    exit 2
+  fi
+  target="$match"
 fi
 
 repo_root="$(pwd)"
