@@ -28,12 +28,16 @@ elif [[ "$arg" == *.qmd ]]; then
   target="slides/$arg"
 
 else
-  match="$(ls slides/${arg}*.qmd 2>/dev/null | head -n 1)"
-  if [ -z "$match" ]; then
+  matches=(slides/${arg}*.qmd)
+  if [ ! -e "${matches[0]}" ]; then
     echo "No deck found matching prefix '${arg}'"
     exit 2
+  elif [ ${#matches[@]} -gt 1 ]; then
+    echo "Multiple matches:"
+    printf '  %s\n' "${matches[@]}"
+    exit 2
   fi
-  target="$match"
+  target="${matches[0]}"
 fi
 
 repo_root="$(pwd)"
