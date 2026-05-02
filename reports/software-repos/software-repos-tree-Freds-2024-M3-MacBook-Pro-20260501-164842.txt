@@ -1,0 +1,189 @@
+/Users/fredhickernell/SoftwareRepositories
+├── Betting-Confidence-Intervals
+│   ├── Figures
+│   ├── Info from publisher
+│   ├── Old versions
+│   └── Relevant_Literature
+├── Betting-Paper-Simulations-for-QMC
+│   ├── HowBadCanCIBeFigures
+│   ├── Literature
+│   └── simulations
+├── chebfun
+│   ├── @adchebfun
+│   ├── @adchebfun2
+│   ├── @ballfun
+│   ├── @ballfunv
+│   ├── @blockCoeff
+│   ├── @blockFunction
+│   ├── @bndfun
+│   ├── @chebcolloc
+│   ├── @chebcolloc1
+│   ├── @chebcolloc2
+│   ├── @chebdouble
+│   ├── @chebfun
+│   ├── @chebfun2
+│   ├── @chebfun2v
+│   ├── @chebfun3
+│   ├── @chebfun3t
+│   ├── @chebfun3v
+│   ├── @chebfunpref
+│   ├── @chebgui
+│   ├── @chebguiController
+│   ├── @chebguiExporter
+│   ├── @chebguiExporterBVP
+│   ├── @chebguiExporterEIG
+│   ├── @chebguiExporterIVP
+│   ├── @chebguiExporterPDE
+│   ├── @chebmatrix
+│   ├── @chebop
+│   ├── @chebop2
+│   ├── @cheboppref
+│   ├── @chebpref
+│   ├── @chebtech
+│   ├── @chebtech1
+│   ├── @chebtech2
+│   ├── @classicfun
+│   ├── @coeffsDiscretization
+│   ├── @deltafun
+│   ├── @diskfun
+│   ├── @diskfunv
+│   ├── @domain
+│   ├── @expinteg
+│   ├── @fun
+│   ├── @functionalBlock
+│   ├── @imex
+│   ├── @linBlock
+│   ├── @linop
+│   ├── @linopConstraint
+│   ├── @mapping
+│   ├── @onefun
+│   ├── @opDiscretization
+│   ├── @operatorBlock
+│   ├── @separableApprox
+│   ├── @singfun
+│   ├── @smoothfun
+│   ├── @spherefun
+│   ├── @spherefunv
+│   ├── @spinop
+│   ├── @spinop2
+│   ├── @spinop3
+│   ├── @spinoperator
+│   ├── @spinopsphere
+│   ├── @spinpref
+│   ├── @spinpref2
+│   ├── @spinpref3
+│   ├── @spinpreference
+│   ├── @spinprefsphere
+│   ├── @spinscheme
+│   ├── @stringParser
+│   ├── @treeVar
+│   ├── @trigcolloc
+│   ├── @trigspec
+│   ├── @trigtech
+│   ├── @ultraS
+│   ├── @unbndfun
+│   ├── @valsDiscretization
+│   ├── +cheb
+│   ├── chebguiDemos
+│   └── tests
+├── Empirical-Bayes-versus-Cross-Validation
+│   ├── Relavent_Literature
+│   └── Relevant_Literature
+├── GAIL_Dev
+│   ├── DevelopOnly
+│   ├── GAIL_Matlab
+│   └── GAIL_R
+├── HickernellClassLib
+│   ├── classlib
+│   └── HickernellClassLib.egg-info
+├── HickernellTestArchive
+│   ├── 476
+│   ├── 563
+│   └── 565
+├── Kernel-Density-Estimation-with-Low-Discrepancy
+│   └── RelevantLiterature
+├── Kronecker-points
+│   ├── Programs
+│   └── RelevantLiterature
+├── Lattice-Sequence-Quality
+│   ├── Programs
+│   ├── relevant articles
+│   └── thesis docs
+├── Master-Project
+├── MATH476Spring2026
+│   ├── _site
+│   ├── assets
+│   ├── assignments
+│   ├── bin
+│   ├── classlib
+│   ├── pages
+│   ├── qmcsoftware
+│   └── slides
+├── MATH563Spring2026
+│   ├── _site
+│   ├── assets
+│   ├── assignments
+│   ├── classlib
+│   ├── pages
+│   ├── qmcsoftware
+│   └── slides
+├── MATH565Fall2025
+│   ├── _data
+│   ├── _layouts
+│   ├── _site
+│   ├── assets
+│   ├── assignments
+│   ├── classlib
+│   ├── classlib_local.egg-info
+│   ├── classlib.BACKUP-20251112
+│   ├── experimental
+│   ├── lectures
+│   ├── notebooks
+│   ├── Old_Stuff
+│   ├── pages
+│   ├── qmcsoftware
+│   └── utils
+├── MCQMC26
+│   ├── _site
+│   ├── assets
+│   ├── classlib
+│   ├── conference
+│   ├── index_files
+│   ├── notebooks
+│   ├── qmcsoftware
+│   └── slides
+├── QMCPy_HONets_FastKernelMethods
+│   ├── figs
+│   └── snippets
+├── QMCSoftware
+│   ├── __pycache__
+│   ├── build
+│   ├── demos
+│   ├── docs
+│   ├── opencl_qmc_generators
+│   ├── paper
+│   ├── qmcpy
+│   ├── qmcpy.egg-info
+│   ├── raw.githubusercontent.com
+│   ├── scripts
+│   ├── stats
+│   ├── test
+│   └── utils
+├── RKHS-function-measure-duality
+│   └── RKHS Dual Relevant Literature
+├── Shelf
+│   ├── Classes
+│   ├── Conference Organization
+│   ├── Explorations
+│   ├── Grants
+│   ├── Papers
+│   └── Talks
+└── SIAMUQ26
+    ├── _site
+    ├── assets
+    ├── classlib
+    ├── notebooks
+    ├── qmcsoftware
+    └── slides
+
+187 directories

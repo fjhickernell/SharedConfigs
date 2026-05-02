@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reference/Chinese Names.md",
+                "file": "Teaching/MATH563Spring2026/AUTHOR_WORKFLOW.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Chinese Names"
+              "title": "AUTHOR_WORKFLOW"
             }
           }
         ],
@@ -109,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Reference/Chinese Names.md",
+                "file": "Teaching/MATH563Spring2026/AUTHOR_WORKFLOW.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Chinese Names"
+              "title": "Backlinks for AUTHOR_WORKFLOW"
             }
           },
           {
@@ -199,6 +199,13 @@
   },
   "active": "23326b84f8c55c35",
   "lastOpenFiles": [
+    "Teaching/MATH563Spring2026/index.md",
+    "Teaching/MATH476Spring2026 1.md",
+    "Teaching/MATH476Spring2026.md",
+    "Teaching/MATH 476 + MATH 563 Statistics/MATH 476  and 563 — Next Time Improvements.md",
+    "Teaching/MATH 476 + MATH 563 Statistics",
+    "Home.md",
+    "Reference/Chinese Names.md",
     "Teaching/SIAMUQ26/slides/SIAMUQ2026.html",
     "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.woff",
     "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/league-gothic/league-gothic.ttf",
@@ -208,8 +215,6 @@
     "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro.css",
     "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.woff",
     "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.ttf",
-    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibolditalic.eot",
-    "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/libs/revealjs/dist/theme/fonts/source-sans-pro/source-sans-pro-semibold.woff",
     "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/figure-revealjs/cell-4-output-1.png",
     "Teaching/SIAMUQ26/slides/SIAMUQ2026_files/figure-revealjs/cell-3-output-1.png",
     "Teaching/SIAMUQ26/slides/_site/classlib/classlib/quarto/slides/shared/statistics/hypothesis/LRT_476_shared_deck_condensed.md",
@@ -228,8 +233,6 @@
     "Teaching/MATH565Fall2025.md",
     "Teaching/MATH476Spring2026 3.md",
     "Teaching/MATH476Spring2026 2.md",
-    "Teaching/MATH476Spring2026 1.md",
-    "Teaching/MATH476Spring2026.md",
     "Workflows/SageMath Maitenance.md",
     "Workflows/Class & Talk Workflow.md",
     "Workflows/brew-app-workflow.md",
@@ -241,10 +244,7 @@
     "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
     "MasterLists/Semester Architecture Policy 2026.md",
     "Software/classlib.md",
-    "Home.md",
     "MacApps/MacApps_README.md",
-    "MacApps/MacAppsInventory.md",
-    "SharedConfigs-Notes/jekyll-to-quarto-migration-notes.md",
     "Untitled.canvas"
   ]
 }

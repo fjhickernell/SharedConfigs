@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$HOME/SoftwareRepositories"
+out_dir="$HOME/Documents/SharedConfigs/reports/software-repos"
+stamp="$(date +%Y%m%d-%H%M%S)"
+host="$(hostname -s)"
+
+mkdir -p "$out_dir"
+
+tree -d -L 2 "$repo_root" > "$out_dir/software-repos-tree-${host}-${stamp}.txt"
+
+find "$repo_root" -mindepth 1 -maxdepth 2 -type d -name .git -prune -print \
+  | sed "s#${repo_root}/##; s#/.git##" \
+  | sort > "$out_dir/software-repos-list-${host}-${stamp}.txt"
+
+ln -sf "software-repos-tree-${host}-${stamp}.txt" "$out_dir/latest-tree-${host}.txt"
+ln -sf "software-repos-list-${host}-${stamp}.txt" "$out_dir/latest-list-${host}.txt"
+
+echo "$out_dir/latest-tree-${host}.txt"
+echo "$out_dir/latest-list-${host}.txt"
+
+find "$out_dir" -type f -name "software-repos-*.txt" -mtime +30 -delete
