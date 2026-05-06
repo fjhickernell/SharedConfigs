@@ -1,5 +1,0 @@
-[0] Config.pm:328> INFO - This is Biber 2.21
-[0] Config.pm:331> INFO - Logfile is 'fh-exam.blg'
-[23] biber-darwin:342> INFO - === Wed May  6, 2026, 12:30:34
-[117] Utils.pm:479> ERROR - Cannot find 'fh-exam.bcf'!
-[117] Biber.pm:137> INFO - ERRORS: 1
