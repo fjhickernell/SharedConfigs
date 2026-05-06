@@ -3,22 +3,6 @@
 %%
 %% Changelog
 %%
-%% v3.22c (2026/05/06)
-%%   • Fixed grading summary row vertical centering by replacing row-end
-%%     extra space with a centered cell strut.
-%%
-%% v3.22b (2026/05/06)
-%%   • Fixed grading summary alignment:
-%%       - table top-aligns with the instruction block
-%%       - Q / Total entries are vertically centered within their cells.
-%%
-%% v3.22  (2026/05/06)
-%%   • Added optional exam grading summary box with Q | Score rows and Total.
-%%
-%% v3.21  (2026/05/02)
-%%   • Added \answerblank[<width>]{<answer>} for inline fill-in blanks
-%%     that reveal answers when \showanswerstrue is active.  Added array and xspace packages.
-%%
 %% v3.20  (2026/03/02)
 %%   • Added “Print your name clearly on each answer sheet” to instructions.
 %%   • Prevented problems from breaking immediately after they begin
@@ -62,7 +46,7 @@
 %% ------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesExplPackage{fh-exam}{2026/05/06}{3.22c}{Slim exam scaffolding}
+\ProvidesExplPackage{fh-exam}{2026/03/02}{3.20}{Slim exam scaffolding}
 
 \RequirePackage{xstring}
 \makeatletter
@@ -86,8 +70,6 @@
 \RequirePackage{needspace}
 \RequirePackage{amssymb}
 \RequirePackage{bbm}
-\RequirePackage{array}
-\RequirePackage{xspace}
 \RequirePackage{booktabs}
 
 \ExplSyntaxOn
@@ -165,77 +147,6 @@
 	\textbf{Total: \examtotalpointsref\space points}%
 }
 
-% ---------- grading summary box ----------
-% Usage:
-%   \showexamgradesummarytrue   % places the box to the right of the instructions
-%   \examgradesummary           % manually prints the box
-%   \examgradesummary[8]        % manually prints an 8-question box
-\newif\ifshowexamgradesummary
-\showexamgradesummarytrue
-
-\newlength{\examgradesummaryqwidth}
-\newlength{\examgradesummaryscorewidth}
-\setlength{\examgradesummaryqwidth}{3.2em}
-\setlength{\examgradesummaryscorewidth}{4.2em}
-\newlength{\examgradesummaryrowheight}
-\setlength{\examgradesummaryrowheight}{2.8em}
-\newcommand{\examgradesummarycell}[1]{%
-	\rule[-0.35\examgradesummaryrowheight]{0pt}{\examgradesummaryrowheight}#1%
-}
-\newcommand{\examgradesummaryinstructionswidth}{0.74\textwidth}
-\newcommand{\examgradesummaryboxwidth}{0.22\textwidth}
-
-\NewDocumentCommand{\setexamgradesummaryqwidth}{m}{%
-	\setlength{\examgradesummaryqwidth}{#1}%
-}
-\NewDocumentCommand{\setexamgradesummaryscorewidth}{m}{%
-	\setlength{\examgradesummaryscorewidth}{#1}%
-}
-\NewDocumentCommand{\setexamgradesummaryrowheight}{m}{%
-	\setlength{\examgradesummaryrowheight}{#1}%
-}
-\NewDocumentCommand{\setexamgradesummarylayout}{m m}{%
-	\renewcommand{\examgradesummaryinstructionswidth}{#1}%
-	\renewcommand{\examgradesummaryboxwidth}{#2}%
-}
-
-\ExplSyntaxOn
-\cs_new_protected:Npn \fhx_gradesummary_rows:n #1
-{
-	\int_step_inline:nn { #1 }
-	{
-		\examgradesummarycell{##1} & \examgradesummarycell{} \\ \hline
-	}
-}
-\cs_new_eq:NN \fhxgradesummaryrows \fhx_gradesummary_rows:n
-\ExplSyntaxOff
-
-\NewDocumentCommand{\examgradesummary}{O{\examnumproblemsref}}{%
-	\begingroup
-	\small
-	\renewcommand{\arraystretch}{1.05}%
-	\setlength{\tabcolsep}{4pt}%
-	\begin{tabular}[t]{|>{\centering\arraybackslash}m{\examgradesummaryqwidth}|>{\centering\arraybackslash}m{\examgradesummaryscorewidth}|}
-		\hline
-		\textbf{Q} & \textbf{Score} \\ \hline
-		\fhxgradesummaryrows{#1}%
-		\examgradesummarycell{\textbf{Total}} & \examgradesummarycell{} \\ \hline
-	\end{tabular}%
-	\endgroup
-}
-
-\NewDocumentCommand{\printexaminstructionswithgradesummary}{O{\examnumproblemsref}}{%
-	\noindent
-	\begin{minipage}[t]{\examgradesummaryinstructionswidth}
-		\printexaminstructions
-	\end{minipage}%
-	\hfill
-	\begin{minipage}[t]{\examgradesummaryboxwidth}
-		\raggedleft\examgradesummary[#1]
-	\end{minipage}%
-	\par
-}
-
 % ---------- problem list ----------
 \newlist{problemlist}{enumerate}{1}
 \setlist[problemlist]{
@@ -311,25 +222,6 @@
 % ---------- Answer blocks ----------
 \newcommand{\AnswerLabel}{Answer:\ }
 
-% Inline answer blanks.
-% Usage: \answerblank[5em]{$S^2$}
-% In question mode, this prints only a fixed underline.
-% In answer mode, this prints the answer centered on the underline.
-\newlength{\answerblankwidth}
-
-\NewDocumentCommand{\answerblank}{O{5em} m}{%
-	\ifshowanswers
-	\settowidth{\answerblankwidth}{#2}%
-	\ifdim\answerblankwidth<#1\relax
-		\underline{\makebox[#1][c]{#2}}%
-	\else
-		\underline{#2}%
-	\fi
-	\else
-	\underline{\makebox[#1][c]{}}%
-	\fi
-}
-
 \NewEnviron{Answer}{%
 	\ifshowanswers
 	\par\bigskip\itshape \AnswerLabel \BODY\par\bigskip\normalfont
@@ -386,11 +278,7 @@
 		}%
 	\end{center}
 	\par
-	\ifshowexamgradesummary
-		\printexaminstructionswithgradesummary
-	\else
-		\printexaminstructions
-	\fi
+	\printexaminstructions
 	\examhonorstatement
 }
 
