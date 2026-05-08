@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+for in in "$@"; do
+  base="${in%.*}"
+  out="${base}_clean.pdf"
+  gs -o "$out" -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress "$in"
+  pdfinfo "$out" | grep Encrypted
+  ls -lh "$out"
+done
