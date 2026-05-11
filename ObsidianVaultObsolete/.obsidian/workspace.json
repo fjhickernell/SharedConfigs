@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Teaching/MATH 476 + MATH 563 Statistics/MATH 476  and 563 — Next Time Improvements.md",
+                "file": "Teaching/MATH476Spring2026.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "MATH 476  and 563 — Next Time Improvements"
+              "title": "MATH476Spring2026"
             }
           }
         ],
@@ -109,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Teaching/MATH 476 + MATH 563 Statistics/MATH 476  and 563 — Next Time Improvements.md",
+                "file": "Teaching/MATH476Spring2026.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for MATH 476  and 563 — Next Time Improvements"
+              "title": "Backlinks for MATH476Spring2026"
             }
           },
           {
@@ -199,6 +199,7 @@
   },
   "active": "23326b84f8c55c35",
   "lastOpenFiles": [
+    "Teaching/Canvas Extra Credit Weight Setup.md",
     "Teaching/MATH563Spring2026/AUTHOR_WORKFLOW.md",
     "Teaching/MATH563Spring2026/index.md",
     "Teaching/MATH476Spring2026 1.md",
@@ -244,7 +245,6 @@
     "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg",
     "Software/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_original.jpg",
     "MasterLists/Semester Architecture Policy 2026.md",
-    "Software/classlib.md",
     "Untitled.canvas"
   ]
 }
