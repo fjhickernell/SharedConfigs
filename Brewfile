@@ -61,7 +61,7 @@ cask "gitkraken"
 cask "google-chrome"
 cask "google-drive"
 cask "istat-menus"
-cask mactex
+cask "mactex"
 cask "markedit"
 cask "obsidian"
 cask "quarto"
