@@ -2,7 +2,7 @@
 set -u
 set -o pipefail
 
-export QUARTO_PYTHON="${QUARTO_PYTHON:-$(conda run -n qmcpy python -c 'import sys; print(sys.executable)')}"
+export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python
 
 FAST=0
 if [ "${1:-}" = "--fast" ]; then
@@ -77,7 +77,7 @@ cat > "$runner" <<RUNEOF
 set -u
 set -o pipefail
 
-export QUARTO_PYTHON="${QUARTO_PYTHON:-$(conda run -n qmcpy python -c 'import sys; print(sys.executable)')}"
+export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python
 
 repo_root="$repo_root"
 target="$target"
@@ -86,7 +86,7 @@ log="$log"
 FAST="$FAST"
 render_flags="$render_flags"
 
-export PYTHONPATH="\$repo_root/classlib:\$repo_root/qmcsoftware\${PYTHONPATH:+:\$PYTHONPATH}"
+export PYTHONPATH="\$repo_root/classlib\${PYTHONPATH:+:\$PYTHONPATH}"
 
 echo "QUARTO_PYTHON=\$QUARTO_PYTHON"
 echo "PYTHONPATH=\$PYTHONPATH"
