@@ -76,7 +76,7 @@ verbose_git_status_short() {
 }
 
 is_clean() {
-  [[ -z "$(/usr/bin/git status --porcelain)" ]]
+  [[ -z "$(/usr/bin/git status --porcelain --untracked-files=normal)" ]]
 }
 
 has_upstream() {
@@ -90,7 +90,7 @@ path_is_tracked() {
 
 only_submodule_pointers_dirty() {
   local ws line path allow_tests
-  ws="$(/usr/bin/git status --porcelain)"
+  ws="$(/usr/bin/git status --porcelain --untracked-files=normal)"
   [[ -z "${ws}" ]] && return 0
 
   allow_tests=0
