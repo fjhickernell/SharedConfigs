@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+BOLD_BLUE=$'\033[1;34m'
+BOLD_GREEN=$'\033[1;32m'
+BOLD_YELLOW=$'\033[1;33m'
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
 echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run started. ====="
 
 cd "$HOME/Documents/SharedConfigs"
@@ -14,20 +20,31 @@ brew upgrade
 
 echo "Ensuring Brewfile state via brew bundle..."
 bundle_failed=0
+bundle_log="$(mktemp)"
 
 if [[ -f Brewfile ]]; then
-  brew bundle --file="$HOME/Documents/SharedConfigs/Brewfile" || bundle_failed=1
+  brew bundle --file="$HOME/Documents/SharedConfigs/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
 else
-  brew bundle || bundle_failed=1
+  brew bundle 2>&1 | tee "$bundle_log" || bundle_failed=1
 fi
 
+bundle_ok_count="$(awk '/^(Using|Installing) / && $0 !~ / has failed!/ { n++ } END { print n+0 }' "$bundle_log")"
+bundle_fail_count="$(awk '/has failed|failed to install|depends on hardware architecture/ { n++ } END { print n+0 }' "$bundle_log")"
+
+echo
+echo "${BOLD_BLUE}===== brew bundle summary =====${RESET}"
+echo "${BOLD_GREEN}(Mostly) OK:${RESET} $bundle_ok_count Brewfile items were already installed or processed."
+echo "${BOLD_YELLOW}Needs attention:${RESET} $bundle_fail_count issue(s) reported."
+
 if [[ "$bundle_failed" -eq 1 ]]; then
+  grep -E "has failed|failed to install|depends on hardware architecture" "$bundle_log" || true
   echo
-  echo "WARNING: brew bundle reported one or more issues."
-  echo "This is often non-fatal (e.g., unsupported casks on Intel Macs)."
-  echo "Review the messages above for details."
-  echo
+  echo "${BOLD}Continuing because this can be expected on some Macs, e.g. ChatGPT is Apple-Silicon-only.${RESET}"
 fi
+
+echo
+
+rm -f "$bundle_log"
 
 echo "Removing unused dependencies..."
 brew autoremove
