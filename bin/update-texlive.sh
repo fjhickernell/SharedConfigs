@@ -17,5 +17,5 @@ LOG_FILE="$LOG_DIR/update-texlive.log"
 
   tlmgr update --self --all --reinstall-forcibly-removed
 
-  echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') TeX Live update finished. ====="
+  print -P "%B%F{green}===== $(date '+%Y-%m-%d %H:%M:%S %Z') TeX Live update finished. =====%f%b"
 } | tee -a "$LOG_FILE"

@@ -13,4 +13,4 @@ git pull --rebase
 
 git push
 
-echo "SharedConfigs synchronized."
+print -P "%B%F{green}SharedConfigs synchronized.%f%b"
