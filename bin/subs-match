@@ -4,7 +4,7 @@ set -euo pipefail
 CLASSLIB_SUBMODULE="classlib"
 QMCSOFTWARE_SUBMODULE="qmcsoftware"
 
-CLASSLIB_CANONICAL="$HOME/SoftwareRepositories/HickernellClassLib"
+CLASSLIB_CANONICAL="$HOME/SoftwareRepositories/HickernellAcademicLib"
 QMCSOFTWARE_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
 
 GREEN="\033[0;32m"

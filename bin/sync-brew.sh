@@ -59,4 +59,4 @@ else
   echo "mas not found; skipping Mac App Store upgrades."
 fi
 
-echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run finished. ====="
+print -P "%B%F{green}===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run finished. =====%f%b"

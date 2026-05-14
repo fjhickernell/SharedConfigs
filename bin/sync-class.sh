@@ -525,7 +525,7 @@ if [[ "${do_push}" -eq 1 ]]; then
 fi
 
 STANDALONE_REPOS=(
-  "$HOME/SoftwareRepositories/HickernellClassLib:main"
+  "$HOME/SoftwareRepositories/HickernellAcademicLib:main"
   "$HOME/SoftwareRepositories/QMCSoftware:develop"
   "$HOME/SoftwareRepositories/HickernellTestArchive:main"
 )

@@ -117,11 +117,11 @@ sync_repo() {
   verbose_status "$repo"
 }
 
-HCL="$HOME/SoftwareRepositories/HickernellClassLib"
+HCL="$HOME/SoftwareRepositories/HickernellAcademicLib"
 QMC="$HOME/SoftwareRepositories/QMCSoftware"
 HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
 
-sync_repo "$HCL" "HickernellClassLib" "main"
+sync_repo "$HCL" "HickernellAcademicLib" "main"
 sync_repo "$QMC" "QMCSoftware" "develop"
 sync_repo "$HTA" "HickernellTestArchive" "main"
 
