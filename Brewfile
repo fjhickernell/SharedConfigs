@@ -1,3 +1,9 @@
+# Do not manage these via Homebrew:
+#   - mactex (managed by tlmgr/update-texlive)
+#   - miniconda (managed manually/conda)
+#   - Xcode (Apple-managed)
+
+
 brew "automake"
 brew "bat"
 brew "bfg"
@@ -53,7 +59,6 @@ cask "bartender"
 cask "bbedit"
 cask "bibdesk"
 cask "box-drive"
-cask "chatgpt"
 cask "claude"
 cask "docker-desktop"
 cask "dropbox"
@@ -80,7 +85,6 @@ cask "texstudio"
 cask "visual-studio-code"
 cask "vlc"
 cask "warp"
-cask "webex"
 cask "wolfram-engine"
 cask "zoom"
 cask "zotero"
@@ -99,8 +103,10 @@ mas "GoodTask", id: 1143437985
 mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 361285480
+mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
 mas "LastPass for Safari", id: 6504626762
+mas "LastPass", id: 926036361
 mas "LINE", id: 539883307
 mas "Mailbutler Installer", id: 1313355438
 mas "Microsoft Excel", id: 462058435
@@ -110,10 +116,13 @@ mas "Microsoft PowerPoint", id: 462062816
 mas "Microsoft To Do", id: 1274495053
 mas "Microsoft Word", id: 462054704
 mas "Numbers", id: 361304891
+mas "Numbers", id: 409203825
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 361309726
+mas "Pages", id: 409201541
 mas "PDFCombo", id: 1030461463
+mas "Perplexity", id: 6714467650
 mas "Prime Video", id: 545519333
 mas "Quick Note", id: 1472935217
 mas "Rakuten Cash Back", id: 1451893560
@@ -121,12 +130,15 @@ mas "Slack", id: 803453959
 mas "Speedtest", id: 1153157709
 mas "SplitPrint", id: 412574988
 mas "Tempus Stopwatch", id: 1491326665
+mas "TripIt", id: 1475712010
+mas "Twitter", id: 1482454543
 mas "United MileagePlus Shopping℠", id: 6471036405
 mas "WeChat", id: 836500024
 mas "WhatsApp", id: 310633997
 mas "World Time", id: 912698955
 vscode "alefragnani.bookmarks"
 vscode "bierner.markdown-mermaid"
+vscode "cssho.vscode-svgviewer"
 vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
@@ -143,6 +155,7 @@ vscode "ms-azuretools.vscode-containers"
 vscode "ms-azuretools.vscode-docker"
 vscode "ms-dynamics-smb.al"
 vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
+vscode "ms-python.anaconda-extension-pack"
 vscode "ms-python.debugpy"
 vscode "ms-python.isort"
 vscode "ms-python.python"

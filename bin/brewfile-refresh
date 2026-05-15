@@ -1,6 +1,12 @@
 #!/bin/zsh
 set -euo pipefail
 
+BOLD=$'\033[1m'
+GREEN=$'\033[32m'
+YELLOW=$'\033[33m'
+BLUE=$'\033[34m'
+RESET=$'\033[0m'
+
 REPO_DIR="$HOME/Documents/SharedConfigs"
 BREWFILE="$REPO_DIR/Brewfile"
 SYNC="$REPO_DIR/bin/sync-brew.sh"
@@ -29,6 +35,43 @@ wait_for_stable() {
   fi
 }
 
+filter_brewfile() {
+  python3 - <<'PY'
+from pathlib import Path
+
+p = Path.home() / "Documents/SharedConfigs/Brewfile"
+lines = p.read_text().splitlines()
+
+blocked = (
+    'cask "macdown"',
+    'cask "mactex"',
+    'cask "miniconda"',
+    'cask "webex"',
+    'mas "Xcode"',
+)
+
+header = [
+    "# Do not manage these via Homebrew:",
+    "#   - mactex (managed by tlmgr/update-texlive)",
+    "#   - miniconda (managed manually/conda)",
+    "#   - Xcode (Apple-managed)",
+    "",
+]
+
+out = []
+
+for line in lines:
+    if line.strip().startswith(blocked):
+        continue
+    out.append(line)
+
+while out and out[0].startswith("# Do not manage these via Homebrew:"):
+    out = out[4:]
+
+p.write_text("\n".join(header + out) + "\n")
+PY
+}
+
 if [[ ! -d "$REPO_DIR" ]]; then
   echo "SharedConfigs not found at: $REPO_DIR" >&2
   exit 1
@@ -39,37 +82,47 @@ if [[ -f "$BREWFILE" ]]; then
 fi
 
 if [[ -x "$SYNC" ]]; then
-  echo "Running sync-brew.sh in metadata-only mode (no dump, no apply)…"
+  echo "${BOLD}${BLUE}Running sync-brew.sh in metadata-only mode (no dump, no apply)…${RESET}"
   SKIP_APPLY=1 DO_BREW_DUMP=0 /bin/zsh "$SYNC"
 else
-  echo "Warning: $SYNC not found or not executable; continuing without pull."
+  echo "${BOLD}${YELLOW}Warning:${RESET} $SYNC not found or not executable; continuing without pull."
 fi
 
 cd "$REPO_DIR"
 
 before=$(git status --porcelain -- Brewfile | wc -l | tr -d ' ')
 
-echo "Dumping current Homebrew state to $BREWFILE …"
+echo "${BOLD}${BLUE}Dumping current Homebrew state to $BREWFILE …${RESET}"
 brew bundle dump --force
 
 sleep "$POST_WRITE_GRACE_SEC"
 wait_for_stable "$BREWFILE"
 
+filter_brewfile
+wait_for_stable "$BREWFILE"
+
 if [[ -x "$SORTER" ]]; then
   "$SORTER" "$BREWFILE" >/dev/null
   wait_for_stable "$BREWFILE"
+
+  filter_brewfile
+  wait_for_stable "$BREWFILE"
 else
-  echo "Warning: $SORTER not found or not executable; skipping sort."
+  echo "${BOLD}${YELLOW}Warning:${RESET} $SORTER not found or not executable; skipping sort."
 fi
 
 after=$(git status --porcelain -- Brewfile | wc -l | tr -d ' ')
 
 COUNT=$(grep -E '^(brew|cask|mas|vscode) ' "$BREWFILE" | wc -l | tr -d ' ')
 
+echo
+echo "${BOLD}${BLUE}===== brewfile-refresh summary =====${RESET}"
+
 if [[ "$after" -eq 0 ]]; then
-  echo "✅ Brewfile unchanged. ($COUNT entries)"
+  echo "${BOLD}${GREEN}(Mostly) OK:${RESET} Brewfile unchanged. ($COUNT entries)"
 else
-  echo "✅ Brewfile updated. ($COUNT entries)"
+  echo "${BOLD}${GREEN}Updated:${RESET} Brewfile refreshed successfully. ($COUNT entries)"
 fi
 
-echo "brewfile-refresh: done on $(hostname -s) at $(date)"
+echo
+echo "${BOLD}${GREEN}===== $(date '+%Y-%m-%d %H:%M:%S %Z') brewfile-refresh finished. =====${RESET}"
