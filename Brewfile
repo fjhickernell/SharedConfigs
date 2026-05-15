@@ -68,7 +68,6 @@ cask "istat-menus"
 cask "iterm2"
 cask "markedit"
 cask "microsoft-teams"
-cask "miniconda"
 cask "obsidian"
 cask "quarto"
 cask "r-app"
@@ -126,7 +125,6 @@ mas "United MileagePlus Shopping℠", id: 6471036405
 mas "WeChat", id: 836500024
 mas "WhatsApp", id: 310633997
 mas "World Time", id: 912698955
-mas "Xcode", id: 497799835
 vscode "alefragnani.bookmarks"
 vscode "bierner.markdown-mermaid"
 vscode "davidanson.vscode-markdownlint"
