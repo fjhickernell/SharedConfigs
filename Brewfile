@@ -3,7 +3,6 @@
 #   - miniconda (managed manually/conda)
 #   - Xcode (Apple-managed)
 
-
 brew "automake"
 brew "bat"
 brew "bfg"
