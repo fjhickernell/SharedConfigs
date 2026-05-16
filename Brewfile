@@ -105,9 +105,7 @@ mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 361285480
 mas "Kindle", id: 302584613
-mas "LastPass for Safari", id: 6504626762
 mas "LINE", id: 539883307
-mas "Mailbutler Installer", id: 1313355438
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft OneNote", id: 784801555
 mas "Microsoft Outlook", id: 985367838

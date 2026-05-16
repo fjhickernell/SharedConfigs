@@ -48,12 +48,13 @@ blocked = (
     'cask "miniconda"',
     'cask "webex"',
     'mas "Xcode"',
-    'vscode "cssho.vscode-svgviewer"'
-    'vscode "ms-python.anaconda-extension-pack"'
-    'mas "Pages", id: 409201541'
-    'mas "Keynote", id: 409183694'
-    'mas "Numbers", id: 409203825'
-    'mas "LastPass for Safari", id: 6504626762'
+    'vscode "cssho.vscode-svgviewer"',
+    'vscode "ms-python.anaconda-extension-pack"',
+    'mas "Pages", id: 409201541',
+    'mas "Keynote", id: 409183694',
+    'mas "Numbers", id: 409203825',
+    'mas "LastPass for Safari", id: 6504626762',
+    'mas "Mailbutler Installer", id: 1313355438',
 )
 
 header = [
@@ -72,7 +73,7 @@ for line in lines:
     out.append(line)
 
 while out and out[0].startswith("# Do not manage these via Homebrew:"):
-    out = out[4:]
+    out = out[5:]
 
 p.write_text("\n".join(header + out) + "\n")
 PY
@@ -95,8 +96,6 @@ else
 fi
 
 cd "$REPO_DIR"
-
-before=$(git status --porcelain -- Brewfile | wc -l | tr -d ' ')
 
 echo "${BOLD}${BLUE}Dumping current Homebrew state to $BREWFILE …${RESET}"
 brew bundle dump --force
