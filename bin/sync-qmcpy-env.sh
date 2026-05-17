@@ -22,9 +22,14 @@ if [[ "${1:-}" == "--upgrade" ]]; then
 fi
 
 CONDA_EXE="/opt/miniconda3/bin/conda"
-eval "$("$CONDA_EXE" shell.zsh hook)"
-QMCPY_ENV="${QMCPY_ENV:-/opt/miniconda3/envs/qmcpy}"
-conda activate "$QMCPY_ENV"
+QMCPY_ENV="/opt/miniconda3/envs/qmcpy"
+export PATH="$QMCPY_ENV/bin:/opt/miniconda3/bin:$PATH"
+hash -r
+
+if [[ "$(python -c 'import sys; print(sys.version_info[:2])')" != "(3, 12)" ]]; then
+    echo "${BOLD}${YELLOW}ERROR: expected Python 3.12, got $(python --version 2>&1) at $(which python)${RESET}"
+    exit 1
+fi
 
 echo
 echo "${BOLD}${YELLOW}===== qmcpy environment sync started: $(date '+%Y-%m-%d %H:%M:%S %Z') =====${RESET}"
@@ -113,6 +118,14 @@ fi
 echo
 python --version
 which python
+
+mkdir -p "$HOME/Documents/SharedConfigs/reports/qmcpy-env"
+
+echo "$(hostname -s)  $(date '+%Y-%m-%d %H:%M:%S %Z')  $(python --version 2>&1)  qmcpy $(python -c 'import qmcpy; print(qmcpy.__version__)')" >> "$HOME/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-upgrade-log.txt"
+
+echo
+echo "${BOLD}${YELLOW}===== qmcpy upgrade log =====${RESET}"
+tail -n 10 "$HOME/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-upgrade-log.txt"
 
 echo
 echo "${BOLD}${GREEN}===== qmcpy environment synced successfully: $(date '+%Y-%m-%d %H:%M:%S %Z') =====${RESET}"

@@ -1,0 +1,12 @@
+Freds-Mac-mini  2026-05-16 11:25:13 CDT  Python 3.13.13
+Freds-Mac-mini  2026-05-16 11:27:33 CDT  Python 3.13.13
+Freds-Mac-mini  2026-05-16 11:28:12 CDT  Python 3.13.13
+Freds-Mac-mini  2026-05-16 11:33:54 CDT  Python 3.12.12
+Freds-Mac-mini  2026-05-16 11:38:36 CDT  Python 3.12.12
+Freds-MacBook-Pro  2026-05-16 12:00:07 CDT  Python 3.12.12
+M5-MBP  2026-05-16 12:02:17 CDT  Python 3.12.12
+Freds-M5-MBP  2026-05-16 12:03:40 CDT  Python 3.12.12
+Freds-Mac-mini  2026-05-16 17:41:37 CDT  Python 3.12.12  qmcpy 2.2.1a
+Freds-M5-MBP  2026-05-16 17:45:30 CDT  Python 3.12.12  qmcpy 2.2.1a
+Freds-M3-MBP  2026-05-16 18:00:34 CDT  Python 3.12.12  qmcpy 2.2.1a
+Freds-M3-MBP  2026-05-16 18:10:53 CDT  Python 3.12.12  qmcpy 2.2.1a
