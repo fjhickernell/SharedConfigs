@@ -11,3 +11,9 @@ Freds-M5-MBP  2026-05-16 17:45:30 CDT  Python 3.12.12  qmcpy 2.2.1a
 Freds-M3-MBP  2026-05-16 18:00:34 CDT  Python 3.12.12  qmcpy 2.2.1a
 Freds-M3-MBP  2026-05-16 18:10:53 CDT  Python 3.12.12  qmcpy 2.2.1a
 Fred-2019-August-MacBook-Pro-2  2026-05-17 07:33:26 CDT  Python 3.12.11  qmcpy 2.2.1a
+Freds-Mac-mini  2026-05-20 14:35:01 CDT  Python 3.13.13  qmcpy 2.3
+Freds-Mac-mini  2026-05-20 15:24:12 CDT  Python 3.13.13  qmcpy 2.3
+Freds-Mac-mini  2026-05-20 15:25:16 CDT  Python 3.13.13  qmcpy 2.3
+Freds-Mac-mini  2026-05-20 15:27:07 CDT  Python 3.13.13  qmcpy 2.3
+Freds-M3-MBP  2026-05-21 11:25:39 CDT  Python 3.13.13  qmcpy 2.3
+Freds-M5-MBP  2026-05-21 11:42:30 CDT  Python 3.13.13  qmcpy 2.3

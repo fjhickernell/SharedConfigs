@@ -1,11 +1,4 @@
 #!/usr/bin/env zsh
-
-# NOTE:
-# This Quarto render below is a representative smoke test for the current active
-# teaching/research stack. When this course repo becomes archival, replace
-# the path below with a newer active course/talk repo or a dedicated
-# environment smoke-test repo.
-
 set -euo pipefail
 
 BOLD=$'\033[1m'
@@ -22,19 +15,42 @@ if [[ "${1:-}" == "--upgrade" ]]; then
 fi
 
 CONDA_EXE="/opt/miniconda3/bin/conda"
-QMCPY_ENV="/opt/miniconda3/envs/qmcpy"
-export PATH="$QMCPY_ENV/bin:/opt/miniconda3/bin:$PATH"
-hash -r
+CONDA_SH="/opt/miniconda3/etc/profile.d/conda.sh"
 
-if [[ "$(python -c 'import sys; print(sys.version_info[:2])')" != "(3, 12)" ]]; then
-    echo "${BOLD}${YELLOW}ERROR: expected Python 3.12, got $(python --version 2>&1) at $(which python)${RESET}"
+if [[ ! -x "$CONDA_EXE" ]]; then
+    echo "${BOLD}${YELLOW}ERROR: conda not found at $CONDA_EXE${RESET}"
+    exit 1
+fi
+
+if [[ ! -f "$CONDA_SH" ]]; then
+    echo "${BOLD}${YELLOW}ERROR: conda shell setup not found at $CONDA_SH${RESET}"
+    exit 1
+fi
+
+source "$CONDA_SH"
+
+if ! "$CONDA_EXE" env list | awk '{print $1}' | grep -qx "qmcpy"; then
+    echo "${BOLD}${YELLOW}ERROR: qmcpy environment not found${RESET}"
+    echo "Create it first with:"
+    echo "  conda create -y -n qmcpy python=3.13"
+    exit 1
+fi
+
+conda activate qmcpy
+
+EXPECTED_PYTHON="${EXPECTED_PYTHON:-3.13}"
+ACTUAL_PYTHON="$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
+
+if [[ "$ACTUAL_PYTHON" != "$EXPECTED_PYTHON" ]]; then
+    echo "${BOLD}${YELLOW}ERROR: expected Python $EXPECTED_PYTHON, got $(python --version 2>&1) at $(which python)${RESET}"
     exit 1
 fi
 
 echo
 echo "${BOLD}${YELLOW}===== qmcpy environment sync started: $(date '+%Y-%m-%d %H:%M:%S %Z') =====${RESET}"
 
-python -m pip install --upgrade pip setuptools wheel
+python -m pip install --upgrade pip wheel
+python -m pip install "setuptools<82"
 
 if [[ "$DO_CONDA_UPGRADE" == "1" ]]; then
     conda update --all -y
@@ -48,7 +64,7 @@ git fetch origin "$QMCPY_BRANCH" --quiet
 git checkout "$QMCPY_BRANCH" --quiet
 git pull --rebase origin "$QMCPY_BRANCH" --quiet
 
-ARCH=$(uname -m)
+ARCH="$(uname -m)"
 EXTRAS="dev,class"
 
 if [[ "$ARCH" == "x86_64" ]]; then
@@ -74,6 +90,16 @@ if [[ -f "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt" ]]
 fi
 
 echo
+echo "${BOLD}${YELLOW}===== refreshing Jupyter kernel =====${RESET}"
+
+python -m ipykernel install --user --name qmcpy --display-name "qmcpy"
+
+if [[ -d "$HOME/Library/Jupyter/kernels/qmcpy-dev" ]]; then
+    echo "${BOLD}${YELLOW}WARNING: stale qmcpy-dev kernel still exists; remove with:${RESET}"
+    echo "  jupyter kernelspec remove -f qmcpy-dev"
+fi
+
+echo
 echo "${BOLD}${YELLOW}===== verifying qmcpy environment =====${RESET}"
 
 python -m pip check
@@ -84,12 +110,14 @@ import numpy
 import scipy
 import matplotlib
 import jupyterlab
+import yaml
 
 print("qmcpy: import OK")
 print("numpy:", numpy.__version__)
 print("scipy:", scipy.__version__)
 print("matplotlib:", matplotlib.__version__)
 print("jupyterlab:", jupyterlab.__version__)
+print("yaml: import OK")
 PY
 
 echo
@@ -98,12 +126,16 @@ echo "${BOLD}${YELLOW}===== checking Jupyter kernels =====${RESET}"
 jupyter kernelspec list
 
 if [[ ! -d "$HOME/Library/Jupyter/kernels/qmcpy" ]]; then
-    echo "${BOLD}${YELLOW}WARNING: qmcpy user kernel not found${RESET}"
+    echo "${BOLD}${YELLOW}ERROR: qmcpy user kernel not found${RESET}"
+    exit 1
 fi
 
-if [[ ! -d "$HOME/Library/Jupyter/kernels/qmcpy-dev" ]]; then
-    echo "${BOLD}${YELLOW}WARNING: qmcpy-dev user kernel not found${RESET}"
-fi
+echo
+echo "${BOLD}${YELLOW}===== checking Quarto Python =====${RESET}"
+
+export QUARTO_PYTHON="$(python -c 'import sys; print(sys.executable)')"
+
+echo "QUARTO_PYTHON=$QUARTO_PYTHON"
 
 echo
 echo "${BOLD}${YELLOW}===== rendering representative Quarto slide deck =====${RESET}"
@@ -125,7 +157,7 @@ echo "$(hostname -s)  $(date '+%Y-%m-%d %H:%M:%S %Z')  $(python --version 2>&1) 
 
 echo
 echo "${BOLD}${YELLOW}===== qmcpy upgrade log =====${RESET}"
-tail -n 10 "$HOME/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-upgrade-log.txt"
+tail -n 20 "$HOME/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-upgrade-log.txt"
 
 echo
 echo "${BOLD}${GREEN}===== qmcpy environment synced successfully: $(date '+%Y-%m-%d %H:%M:%S %Z') =====${RESET}"

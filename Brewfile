@@ -58,10 +58,12 @@ cask "bartender"
 cask "bbedit"
 cask "bibdesk"
 cask "box-drive"
+cask "chatgpt"
 cask "claude"
 cask "docker-desktop"
 cask "dropbox"
 cask "firefox"
+cask "font-jetbrains-mono"
 cask "forklift"
 cask "github"
 cask "gitkraken"
@@ -104,7 +106,6 @@ mas "HP", id: 1474276998
 mas "iMovie", id: 408981434
 mas "Keynote", id: 361285480
 mas "Kindle", id: 302584613
-mas "LastPass", id: 926036361
 mas "LINE", id: 539883307
 mas "Microsoft Excel", id: 462058435
 mas "Microsoft OneNote", id: 784801555
@@ -117,7 +118,6 @@ mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 361309726
 mas "PDFCombo", id: 1030461463
-mas "Perplexity", id: 6714467650
 mas "Prime Video", id: 545519333
 mas "Quick Note", id: 1472935217
 mas "Rakuten Cash Back", id: 1451893560
@@ -125,8 +125,6 @@ mas "Slack", id: 803453959
 mas "Speedtest", id: 1153157709
 mas "SplitPrint", id: 412574988
 mas "Tempus Stopwatch", id: 1491326665
-mas "TripIt", id: 1475712010
-mas "Twitter", id: 1482454543
 mas "United MileagePlus Shopping℠", id: 6471036405
 mas "WeChat", id: 836500024
 mas "WhatsApp", id: 310633997
@@ -136,7 +134,6 @@ vscode "bierner.markdown-mermaid"
 vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
-vscode "github.copilot"
 vscode "github.copilot-chat"
 vscode "github.vscode-github-actions"
 vscode "github.vscode-pull-request-github"

@@ -1,4 +1,4 @@
-#!/opt/miniconda3/envs/qmcpy/bin/python
+#!/usr/bin/env python
 
 import yaml
 from pathlib import Path

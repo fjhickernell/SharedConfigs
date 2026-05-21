@@ -12,3 +12,9 @@ if [ -f /opt/miniconda3/etc/profile.d/conda.sh ]; then
   . /opt/miniconda3/etc/profile.d/conda.sh
   conda activate qmcpy >/dev/null 2>&1 || true
 fi
+
+if [ -x /opt/miniconda3/bin/conda ]; then
+  export QUARTO_PYTHON="$(
+    /opt/miniconda3/bin/conda run -n qmcpy python -c 'import sys; print(sys.executable)' 2>/dev/null
+  )"
+fi
