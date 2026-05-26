@@ -34,6 +34,7 @@ brew "node"
 brew "open-mpi"
 brew "opencl-headers"
 brew "openssl@3"
+brew "panache"
 brew "pandoc"
 brew "pdf2svg"
 brew "pdfgrep"
@@ -77,6 +78,7 @@ cask "keycastr"
 cask "markedit"
 cask "microsoft-teams"
 cask "obsidian"
+cask "onedrive"
 cask "quarto"
 cask "r-app"
 cask "rectangle-pro"
@@ -120,7 +122,9 @@ mas "Numbers", id: 361304891
 mas "OneDrive", id: 823766827
 mas "OTP Manager", id: 928941247
 mas "Pages", id: 361309726
+mas "PayPal Honey", id: 1472777122
 mas "PDFCombo", id: 1030461463
+mas "Perplexity", id: 6714467650
 mas "Prime Video", id: 545519333
 mas "Quick Note", id: 1472935217
 mas "Rakuten Cash Back", id: 1451893560
@@ -128,6 +132,8 @@ mas "Slack", id: 803453959
 mas "Speedtest", id: 1153157709
 mas "SplitPrint", id: 412574988
 mas "Tempus Stopwatch", id: 1491326665
+mas "TripIt", id: 1475712010
+mas "Twitter", id: 1482454543
 mas "United MileagePlus Shopping℠", id: 6471036405
 mas "WeChat", id: 836500024
 mas "WhatsApp", id: 310633997
@@ -137,7 +143,6 @@ vscode "bierner.markdown-mermaid"
 vscode "davidanson.vscode-markdownlint"
 vscode "eamodio.gitlens"
 vscode "genieai.chatgpt-vscode"
-vscode "github.copilot-chat"
 vscode "github.vscode-github-actions"
 vscode "github.vscode-pull-request-github"
 vscode "google.geminicodeassist"
