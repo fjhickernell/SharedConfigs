@@ -12,13 +12,13 @@ echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run started. ====="
 
 cd "$HOME/Documents/SharedConfigs"
 
-echo "Updating Homebrew..."
+echo "${BOLD_GREEN}Updating Homebrew...$"
 brew update
 
-echo "Upgrading installed formulae and casks..."
-brew upgrade
+echo "${BOLD_GREEN}Upgrading installed formulae and casks...$"
+HOMEBREW_UPGRADE_AUTO_UPDATES_CASKS=1 brew upgrade
 
-echo "Ensuring Brewfile state via brew bundle..."
+echo "${BOLD_GREEN}Ensuring Brewfile state via brew bundle...$"
 bundle_failed=0
 bundle_log="$(mktemp)"
 

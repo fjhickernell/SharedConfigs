@@ -43,25 +43,18 @@ do_promote=0
 do_commit=0
 do_push=0
 
-timestamp_log() {
+log() {
   local ts
   ts=$(/bin/date '+%Y-%m-%d %H:%M:%S')
   echo "[$ts] $*"
 }
 
-plain_log() {
-  echo "$*"
-}
-
-info() { [[ "${QUIET}" -eq 0 ]] && plain_log "$*"; }
-vinfo() { [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]] && plain_log "$*"; }
-ok() { [[ "${QUIET}" -eq 0 ]] && plain_log "${BOLD}${GREEN}$*${RESET}"; }
-warn() { plain_log "${BOLD}${YELLOW}$*${RESET}"; }
-skip() { SKIP_COUNT=$((SKIP_COUNT + 1)); plain_log "${BOLD}${RED}$*${RESET}"; }
-err() { ERROR_COUNT=$((ERROR_COUNT + 1)); plain_log "${BOLD}${RED}$*${RESET}" >&2; }
-banner() { [[ "${QUIET}" -eq 0 ]] && timestamp_log "${BOLD}${GREEN}$*${RESET}"; }
-warn_banner() { timestamp_log "${BOLD}${YELLOW}$*${RESET}"; }
-err_banner() { timestamp_log "${BOLD}${RED}$*${RESET}" >&2; }
+info() { [[ "${QUIET}" -eq 0 ]] && log "$*"; }
+vinfo() { [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]] && log "$*"; }
+ok() { [[ "${QUIET}" -eq 0 ]] && log "${GREEN}$*${RESET}"; }
+warn() { log "${BOLD}${YELLOW}$*${RESET}"; }
+skip() { SKIP_COUNT=$((SKIP_COUNT + 1)); log "${BOLD}${RED}$*${RESET}"; }
+err() { ERROR_COUNT=$((ERROR_COUNT + 1)); log "${BOLD}${RED}$*${RESET}" >&2; }
 
 shortsha() {
   local s="$1"
@@ -477,7 +470,7 @@ health_summary() {
     return 0
   fi
 
-  banner "===== Repo health summary ====="
+  info "===== Repo health summary ====="
   for repo in "${CLASS_REPOS[@]}"; do
     repo_name="${repo##*/}"
     if [[ -d "${repo}/.git" || -f "${repo}/.git" ]]; then
@@ -494,18 +487,18 @@ health_summary() {
 
 final_verdict() {
   if [[ "${ERROR_COUNT}" -gt 0 ]]; then
-    err_banner "===== FAILED: ${ERROR_COUNT} error(s) ====="
+    err "===== FAILED: ${ERROR_COUNT} error(s) ====="
     return 1
   fi
   if [[ "${SKIP_COUNT}" -gt 0 ]]; then
-    warn_banner "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) ====="
+    skip "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) ====="
     return 1
   fi
   if [[ "${UPDATE_COUNT}" -gt 0 ]]; then
-    banner "===== SUCCESS: ${UPDATE_COUNT} update(s) applied ====="
+    ok "===== SUCCESS: ${UPDATE_COUNT} update(s) applied ====="
     return 0
   fi
-  banner "===== SUCCESS: all repos already in sync ====="
+  ok "===== SUCCESS: all repos already in sync ====="
   return 0
 }
 
@@ -548,23 +541,23 @@ CLASS_REPOS=(
 )
 
 if [[ "${do_promote}" -eq 1 ]]; then
-  banner "===== Sync class started (PROMOTE) ====="
+  info "===== Sync class started (PROMOTE) ====="
 else
-  banner "===== Sync class started (PINNED) ====="
+  info "===== Sync class started (PINNED) ====="
 fi
 
 for spec in "${STANDALONE_REPOS[@]}"; do
   repo="${spec%%:*}"
   branch="${spec##*:}"
   if ! sync_standalone_repo "${repo}" "${branch}"; then
-    err_banner "===== Sync class finished ====="
+    info "===== Sync class finished ====="
     exit 1
   fi
 done
 
 for repo in "${CLASS_REPOS[@]}"; do
   if ! sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"; then
-    err_banner "===== Sync class finished ====="
+    info "===== Sync class finished ====="
     exit 1
   fi
 done
@@ -573,8 +566,9 @@ pins_consistency_check || true
 health_summary || true
 
 if final_verdict; then
+  info "===== Sync class finished ====="
   exit 0
 else
-  err_banner "===== Sync class finished ====="
+  info "===== Sync class finished ====="
   exit 1
 fi

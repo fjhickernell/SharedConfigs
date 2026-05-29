@@ -35,15 +35,6 @@ if [[ -t 1 ]]; then
 else
   BOLD=''; RED=''; GREEN=''; YELLOW=''; RESET=''
 fi
-timestamp_log() {
-  local ts
-  ts=$(date '+%Y-%m-%d %H:%M:%S')
-  echo "[$ts] $*"
-}
-
-banner() { [[ "$QUIET" -eq 0 ]] && timestamp_log "${BOLD}${GREEN}$*${RESET}"; }
-warn_banner() { timestamp_log "${BOLD}${YELLOW}$*${RESET}"; }
-err_banner() { timestamp_log "${BOLD}${RED}$*${RESET}" >&2; }
 
 SKIP_COUNT=0
 UPDATE_COUNT=0
@@ -51,7 +42,7 @@ ERROR_COUNT=0
 
 say() { echo "$*"; }
 info() { [[ "$QUIET" -eq 0 ]] && say "$*"; }
-ok() { info "${BOLD}${GREEN}$*${RESET}"; }
+ok() { info "${GREEN}$*${RESET}"; }
 warn() { [[ "$QUIET" -eq 0 ]] && say "${BOLD}${YELLOW}$*${RESET}"; }
 err() { say "${BOLD}${RED}$*${RESET}" >&2; }
 
@@ -130,26 +121,24 @@ HCL="$HOME/SoftwareRepositories/HickernellAcademicLib"
 QMC="$HOME/SoftwareRepositories/QMCSoftware"
 HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
 
-banner "===== Sync dev started ====="
-
 sync_repo "$HCL" "HickernellAcademicLib" "main"
 sync_repo "$QMC" "QMCSoftware" "develop"
 sync_repo "$HTA" "HickernellTestArchive" "main"
 
 if [[ "$ERROR_COUNT" -gt 0 ]]; then
-  err_banner "===== FAILED: ${ERROR_COUNT} error(s) ====="
+  err "===== FAILED: ${ERROR_COUNT} error(s) ====="
   exit 1
 fi
 
 if [[ "$SKIP_COUNT" -gt 0 ]]; then
-  warn_banner "===== INCOMPLETE: ${SKIP_COUNT} skip(s) ====="
+  warn "===== INCOMPLETE: ${SKIP_COUNT} skip(s) ====="
   exit 0
 fi
 
 if [[ "$UPDATE_COUNT" -gt 0 ]]; then
-  banner "===== SUCCESS: ${UPDATE_COUNT} standalone repo(s) updated ====="
+  ok "===== SUCCESS: ${UPDATE_COUNT} standalone repo(s) updated ====="
   exit 0
 fi
 
-banner "===== SUCCESS: standalone repos already up to date ====="
+ok "===== SUCCESS: standalone repos already up to date ====="
 exit 0

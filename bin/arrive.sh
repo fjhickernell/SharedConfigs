@@ -12,3 +12,6 @@ if [[ $rc_dev -ne 0 || $rc_class -ne 0 ]]; then
   exit 1
 fi
 
+if command -v pr-status >/dev/null 2>&1; then
+  pr-status || true
+fi
