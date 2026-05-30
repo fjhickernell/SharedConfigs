@@ -8,17 +8,29 @@ BOLD_YELLOW=$'\033[1;33m'
 BOLD=$'\033[1m'
 RESET=$'\033[0m'
 
-echo "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run started. ====="
+bold_green_line() {
+  echo "${BOLD_GREEN}$1${RESET}"
+}
+
+bold_blue_line() {
+  echo "${BOLD_BLUE}$1${RESET}"
+}
+
+bold_yellow_line() {
+  echo "${BOLD_YELLOW}$1${RESET}"
+}
+
+bold_green_line "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run started. ====="
 
 cd "$HOME/Documents/SharedConfigs"
 
-echo "${BOLD_GREEN}Updating Homebrew...$"
+bold_green_line "Updating Homebrew..."
 brew update
 
-echo "${BOLD_GREEN}Upgrading installed formulae and casks...$"
+bold_green_line "Upgrading installed formulae and casks..."
 HOMEBREW_UPGRADE_AUTO_UPDATES_CASKS=1 brew upgrade
 
-echo "${BOLD_GREEN}Ensuring Brewfile state via brew bundle...$"
+bold_green_line "Ensuring Brewfile state via brew bundle..."
 bundle_failed=0
 bundle_log="$(mktemp)"
 
@@ -32,7 +44,7 @@ bundle_ok_count="$(awk '/^(Using|Installing) / && $0 !~ / has failed!/ { n++ } E
 bundle_fail_count="$(awk '/has failed|failed to install|depends on hardware architecture/ { n++ } END { print n+0 }' "$bundle_log")"
 
 echo
-echo "${BOLD_BLUE}===== brew bundle summary =====${RESET}"
+bold_blue_line "===== brew bundle summary ====="
 echo "${BOLD_GREEN}(Mostly) OK:${RESET} $bundle_ok_count Brewfile items were already installed or processed."
 echo "${BOLD_YELLOW}Needs attention:${RESET} $bundle_fail_count issue(s) reported."
 
@@ -46,17 +58,17 @@ echo
 
 rm -f "$bundle_log"
 
-echo "Removing unused dependencies..."
+bold_green_line "Removing unused dependencies..."
 brew autoremove
 
-echo "Cleaning up old versions..."
+bold_green_line "Cleaning up old versions..."
 brew cleanup
 
 if command -v mas >/dev/null 2>&1; then
-  echo "Running mas upgrade in manual (interactive) mode."
+  bold_green_line "Running mas upgrade in manual (interactive) mode."
   mas upgrade
 else
-  echo "mas not found; skipping Mac App Store upgrades."
+  bold_yellow_line "mas not found; skipping Mac App Store upgrades."
 fi
 
-print -P "%B%F{green}===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run finished. =====%f%b"
+bold_green_line "===== $(date '+%Y-%m-%d %H:%M:%S %Z') syncbrew manual run finished. ====="
