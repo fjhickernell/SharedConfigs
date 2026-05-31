@@ -2,34 +2,6 @@
 set -u
 set -o pipefail
 
-GREEN_BOLD=$'\033[1;32m'
-MAGENTA_BOLD=$'\033[1;35m'
-YELLOW_BOLD=$'\033[1;33m'
-RED_BOLD=$'\033[1;31m'
-NC=$'\033[0m'
-
-timestamp() {
-  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
-}
-
-banner() {
-  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
-}
-
-section() {
-  printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
-}
-
-warn() {
-  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
-}
-
-error() {
-  printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
-}
-
-banner "quarto-slides-live started"
-
 export QUARTO_PYTHON="${QUARTO_PYTHON:-$(conda run -n qmcpy python -c 'import sys; print(sys.executable)')}"
 export PATH="$(dirname "$QUARTO_PYTHON"):$PATH"
 
@@ -40,7 +12,6 @@ if [ "${1:-}" = "--fast" ]; then
 fi
 
 if [ $# -ne 1 ]; then
-  section "Usage"
   echo "Usage: quarto-slides-live [--fast] <deck>"
   echo "  Examples:"
   echo "    quarto-slides-live 03-hypothesis"
@@ -79,12 +50,12 @@ port="${QUARTO_LIVE_PORT:-4321}"
 
 existing_pids="$(lsof -tiTCP:${port} -sTCP:LISTEN 2>/dev/null || true)"
 if [ -n "$existing_pids" ]; then
-  warn "Port ${port} in use — killing existing watcher(s): $existing_pids"
+  echo "Port ${port} in use — killing existing watcher(s): $existing_pids"
   kill $existing_pids >/dev/null 2>&1 || true
   sleep 0.3
 fi
 
-need_cmd () { command -v "$1" >/dev/null 2>&1 || { error "Missing $1"; exit 2; }; }
+need_cmd () { command -v "$1" >/dev/null 2>&1 || { echo "Missing $1"; exit 2; }; }
 need_cmd watchexec
 need_cmd browser-sync
 need_cmd quarto
@@ -104,34 +75,6 @@ cat > "$runner" <<RUNEOF
 #!/usr/bin/env bash
 set -u
 set -o pipefail
-
-GREEN_BOLD=$'\033[1;32m'
-MAGENTA_BOLD=$'\033[1;35m'
-YELLOW_BOLD=$'\033[1;33m'
-RED_BOLD=$'\033[1;31m'
-NC=$'\033[0m'
-
-timestamp() {
-  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
-}
-
-banner() {
-  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
-}
-
-section() {
-  printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
-}
-
-warn() {
-  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
-}
-
-error() {
-  printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
-}
-
-banner "quarto-slides-live started"
 
 export QUARTO_PYTHON="${QUARTO_PYTHON}"
 export PATH="\$(dirname "\$QUARTO_PYTHON"):\$PATH"
@@ -188,7 +131,7 @@ cleanup () { kill "$bs_pid" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
 url="http://localhost:${port}/${target_base}.html"
-banner "quarto-slides-live serving $url"
+echo "Live: $url"
 
 for _ in $(seq 1 50); do
   if curl -fsS "$url" >/dev/null 2>&1; then

@@ -22,46 +22,15 @@ Flags:
 EOF
 }
 
-GREEN_BOLD=$'\033[1;32m'
-MAGENTA_BOLD=$'\033[1;35m'
-YELLOW_BOLD=$'\033[1;33m'
-RED_BOLD=$'\033[1;31m'
-NC=$'\033[0m'
-
-timestamp() {
-  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
-}
-
-banner() {
-  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
-}
-
-section() {
-  printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
-}
-
-warn() {
-  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
-}
-
-error() {
-  printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
-}
-
-timestamp_log() { printf "[%s] %s\n" "$(timestamp)" "$*"; }
-
-plain_log() { echo "$*"; }
-
-info() { [[ "${QUIET}" -eq 0 ]] && plain_log "$*"; }
-vinfo() { [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]] && plain_log "$*"; }
-ok() { [[ "${QUIET}" -eq 0 ]] && plain_log "${GREEN_BOLD}$*${NC}"; }
-warn() { plain_log "${YELLOW_BOLD}Warning:${NC} $*"; }
-skip() { SKIP_COUNT=$((SKIP_COUNT + 1)); plain_log "${RED_BOLD}$*${NC}"; }
-err() { ERROR_COUNT=$((ERROR_COUNT + 1)); plain_log "${RED_BOLD}$*${NC}" >&2; }
-banner() { [[ "${QUIET}" -eq 0 ]] && printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
-section() { [[ "${QUIET}" -eq 0 ]] && printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"; }
-warn_banner() { printf "\n${YELLOW_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
-err_banner() { printf "\n${RED_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1" >&2; }
+if [[ -t 1 ]]; then
+  BOLD=$'\e[1m'
+  RED=$'\e[31m'
+  YELLOW=$'\e[33m'
+  GREEN=$'\e[32m'
+  RESET=$'\e[0m'
+else
+  BOLD=''; RED=''; YELLOW=''; GREEN=''; RESET=''
+fi
 
 SKIP_COUNT=0
 UPDATE_COUNT=0
@@ -73,6 +42,26 @@ DO_HEALTH=0
 do_promote=0
 do_commit=0
 do_push=0
+
+timestamp_log() {
+  local ts
+  ts=$(/bin/date '+%Y-%m-%d %H:%M:%S')
+  echo "[$ts] $*"
+}
+
+plain_log() {
+  echo "$*"
+}
+
+info() { [[ "${QUIET}" -eq 0 ]] && plain_log "$*"; }
+vinfo() { [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]] && plain_log "$*"; }
+ok() { [[ "${QUIET}" -eq 0 ]] && plain_log "${BOLD}${GREEN}$*${RESET}"; }
+warn() { plain_log "${BOLD}${YELLOW}$*${RESET}"; }
+skip() { SKIP_COUNT=$((SKIP_COUNT + 1)); plain_log "${BOLD}${RED}$*${RESET}"; }
+err() { ERROR_COUNT=$((ERROR_COUNT + 1)); plain_log "${BOLD}${RED}$*${RESET}" >&2; }
+banner() { [[ "${QUIET}" -eq 0 ]] && timestamp_log "${BOLD}${GREEN}$*${RESET}"; }
+warn_banner() { timestamp_log "${BOLD}${YELLOW}$*${RESET}"; }
+err_banner() { timestamp_log "${BOLD}${RED}$*${RESET}" >&2; }
 
 shortsha() {
   local s="$1"
@@ -488,7 +477,7 @@ health_summary() {
     return 0
   fi
 
-  banner "Repo health summary"
+  banner "===== Repo health summary ====="
   for repo in "${CLASS_REPOS[@]}"; do
     repo_name="${repo##*/}"
     if [[ -d "${repo}/.git" || -f "${repo}/.git" ]]; then
@@ -505,18 +494,18 @@ health_summary() {
 
 final_verdict() {
   if [[ "${ERROR_COUNT}" -gt 0 ]]; then
-    err_banner "FAILED: ${ERROR_COUNT} error(s)"
+    err_banner "===== FAILED: ${ERROR_COUNT} error(s) ====="
     return 1
   fi
   if [[ "${SKIP_COUNT}" -gt 0 ]]; then
-    warn_banner "INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s)"
+    warn_banner "===== INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s) ====="
     return 1
   fi
   if [[ "${UPDATE_COUNT}" -gt 0 ]]; then
-    banner "SUCCESS: ${UPDATE_COUNT} update(s) applied"
+    banner "===== SUCCESS: ${UPDATE_COUNT} update(s) applied ====="
     return 0
   fi
-  banner "SUCCESS: all repos already in sync"
+  banner "===== SUCCESS: all repos already in sync ====="
   return 0
 }
 
@@ -559,23 +548,23 @@ CLASS_REPOS=(
 )
 
 if [[ "${do_promote}" -eq 1 ]]; then
-  banner "Sync class started (PROMOTE)"
+  banner "===== Sync class started (PROMOTE) ====="
 else
-  banner "Sync class started (PINNED)"
+  banner "===== Sync class started (PINNED) ====="
 fi
 
 for spec in "${STANDALONE_REPOS[@]}"; do
   repo="${spec%%:*}"
   branch="${spec##*:}"
   if ! sync_standalone_repo "${repo}" "${branch}"; then
-    err_banner "Sync class finished"
+    err_banner "===== Sync class finished ====="
     exit 1
   fi
 done
 
 for repo in "${CLASS_REPOS[@]}"; do
   if ! sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"; then
-    err_banner "Sync class finished"
+    err_banner "===== Sync class finished ====="
     exit 1
   fi
 done
@@ -586,6 +575,6 @@ health_summary || true
 if final_verdict; then
   exit 0
 else
-  err_banner "Sync class finished"
+  err_banner "===== Sync class finished ====="
   exit 1
 fi

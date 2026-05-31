@@ -1,32 +1,10 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-GREEN_BOLD=$'\033[1;32m'
-MAGENTA_BOLD=$'\033[1;35m'
-YELLOW_BOLD=$'\033[1;33m'
-RED_BOLD=$'\033[1;31m'
-NC=$'\033[0m'
-
-timestamp() {
-  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
-}
-
-banner() {
-  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
-}
-
-section() {
-  printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
-}
-
-warn() {
-  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
-}
-
-error() {
-  printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
-}
-
+BOLD=$'\033[1m'
+GREEN=$'\033[32m'
+YELLOW=$'\033[33m'
+RESET=$'\033[0m'
 
 UPGRADE_FLAG=""
 DO_CONDA_UPGRADE="0"
@@ -40,19 +18,19 @@ CONDA_EXE="/opt/miniconda3/bin/conda"
 CONDA_SH="/opt/miniconda3/etc/profile.d/conda.sh"
 
 if [[ ! -x "$CONDA_EXE" ]]; then
-    error "conda not found at $CONDA_EXE"
+    echo "${BOLD}${YELLOW}ERROR: conda not found at $CONDA_EXE${RESET}"
     exit 1
 fi
 
 if [[ ! -f "$CONDA_SH" ]]; then
-    error "conda shell setup not found at $CONDA_SH"
+    echo "${BOLD}${YELLOW}ERROR: conda shell setup not found at $CONDA_SH${RESET}"
     exit 1
 fi
 
 source "$CONDA_SH"
 
 if ! "$CONDA_EXE" env list | awk '{print $1}' | grep -qx "qmcpy"; then
-    error "qmcpy environment not found"
+    echo "${BOLD}${YELLOW}ERROR: qmcpy environment not found${RESET}"
     echo "Create it first with:"
     echo "  conda create -y -n qmcpy python=3.13"
     exit 1
@@ -64,12 +42,12 @@ EXPECTED_PYTHON="${EXPECTED_PYTHON:-3.13}"
 ACTUAL_PYTHON="$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
 
 if [[ "$ACTUAL_PYTHON" != "$EXPECTED_PYTHON" ]]; then
-    error "expected Python $EXPECTED_PYTHON, got $(python --version 2>&1) at $(which python)"
+    echo "${BOLD}${YELLOW}ERROR: expected Python $EXPECTED_PYTHON, got $(python --version 2>&1) at $(which python)${RESET}"
     exit 1
 fi
 
 echo
-banner "qmcpy environment sync started"
+echo "${BOLD}${YELLOW}===== qmcpy environment sync started: $(date '+%Y-%m-%d %H:%M:%S %Z') =====${RESET}"
 
 python -m pip install --upgrade pip wheel
 python -m pip install "setuptools<82"
@@ -112,17 +90,17 @@ if [[ -f "$HOME/SoftwareRepositories/MATH565Fall2025/requirements-course.txt" ]]
 fi
 
 echo
-section "Refreshing Jupyter kernel"
+echo "${BOLD}${YELLOW}===== refreshing Jupyter kernel =====${RESET}"
 
 python -m ipykernel install --user --name qmcpy --display-name "qmcpy"
 
 if [[ -d "$HOME/Library/Jupyter/kernels/qmcpy-dev" ]]; then
-    warn "stale qmcpy-dev kernel still exists; remove with:"
+    echo "${BOLD}${YELLOW}WARNING: stale qmcpy-dev kernel still exists; remove with:${RESET}"
     echo "  jupyter kernelspec remove -f qmcpy-dev"
 fi
 
 echo
-section "Verifying qmcpy environment"
+echo "${BOLD}${YELLOW}===== verifying qmcpy environment =====${RESET}"
 
 python -m pip check
 
@@ -143,30 +121,30 @@ print("yaml: import OK")
 PY
 
 echo
-section "Checking Jupyter kernels"
+echo "${BOLD}${YELLOW}===== checking Jupyter kernels =====${RESET}"
 
 jupyter kernelspec list
 
 if [[ ! -d "$HOME/Library/Jupyter/kernels/qmcpy" ]]; then
-    error "qmcpy user kernel not found"
+    echo "${BOLD}${YELLOW}ERROR: qmcpy user kernel not found${RESET}"
     exit 1
 fi
 
 echo
-section "Checking Quarto Python"
+echo "${BOLD}${YELLOW}===== checking Quarto Python =====${RESET}"
 
 export QUARTO_PYTHON="$(python -c 'import sys; print(sys.executable)')"
 
 echo "QUARTO_PYTHON=$QUARTO_PYTHON"
 
 echo
-section "Rendering representative Quarto slide deck"
+echo "${BOLD}${YELLOW}===== rendering representative Quarto slide deck =====${RESET}"
 
 if [[ -f "$HOME/SoftwareRepositories/MATH563Spring2026/slides/01-intro.qmd" ]]; then
     cd "$HOME/SoftwareRepositories/MATH563Spring2026"
     quarto render slides/01-intro.qmd
 else
-    warn "representative slide deck not found; skipping Quarto render test"
+    echo "${BOLD}${YELLOW}WARNING: representative slide deck not found; skipping Quarto render test${RESET}"
 fi
 
 echo
@@ -178,8 +156,8 @@ mkdir -p "$HOME/Documents/SharedConfigs/reports/qmcpy-env"
 echo "$(hostname -s)  $(date '+%Y-%m-%d %H:%M:%S %Z')  $(python --version 2>&1)  qmcpy $(python -c 'import qmcpy; print(qmcpy.__version__)')" >> "$HOME/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-upgrade-log.txt"
 
 echo
-section "qmcpy upgrade log"
+echo "${BOLD}${YELLOW}===== qmcpy upgrade log =====${RESET}"
 tail -n 20 "$HOME/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-upgrade-log.txt"
 
 echo
-banner "qmcpy environment synced successfully"
+echo "${BOLD}${GREEN}===== qmcpy environment synced successfully: $(date '+%Y-%m-%d %H:%M:%S %Z') =====${RESET}"

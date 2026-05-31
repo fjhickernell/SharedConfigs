@@ -26,38 +26,24 @@ for arg in "$@"; do
   esac
 done
 
-GREEN_BOLD=$'\033[1;32m'
-MAGENTA_BOLD=$'\033[1;35m'
-YELLOW_BOLD=$'\033[1;33m'
-RED_BOLD=$'\033[1;31m'
-NC=$'\033[0m'
-
-timestamp() {
-  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
+if [[ -t 1 ]]; then
+  BOLD=$'\e[1m'
+  RED=$'\e[31m'
+  GREEN=$'\e[32m'
+  YELLOW=$'\e[33m'
+  RESET=$'\e[0m'
+else
+  BOLD=''; RED=''; GREEN=''; YELLOW=''; RESET=''
+fi
+timestamp_log() {
+  local ts
+  ts=$(date '+%Y-%m-%d %H:%M:%S')
+  echo "[$ts] $*"
 }
 
-banner() {
-  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
-}
-
-section() {
-  printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
-}
-
-warn() {
-  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
-}
-
-error() {
-  printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
-}
-
-timestamp_log() { printf "[%s] %s\n" "$(timestamp)" "$*"; }
-
-banner() { [[ "$QUIET" -eq 0 ]] && printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
-section() { [[ "$QUIET" -eq 0 ]] && printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"; }
-warn_banner() { printf "\n${YELLOW_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
-err_banner() { printf "\n${RED_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1" >&2; }
+banner() { [[ "$QUIET" -eq 0 ]] && timestamp_log "${BOLD}${GREEN}$*${RESET}"; }
+warn_banner() { timestamp_log "${BOLD}${YELLOW}$*${RESET}"; }
+err_banner() { timestamp_log "${BOLD}${RED}$*${RESET}" >&2; }
 
 SKIP_COUNT=0
 UPDATE_COUNT=0
@@ -65,9 +51,9 @@ ERROR_COUNT=0
 
 say() { echo "$*"; }
 info() { [[ "$QUIET" -eq 0 ]] && say "$*"; }
-ok() { info "${GREEN_BOLD}$*${NC}"; }
-warn() { [[ "$QUIET" -eq 0 ]] && say "${YELLOW_BOLD}$*${NC}"; }
-err() { say "${RED_BOLD}$*${NC}" >&2; }
+ok() { info "${BOLD}${GREEN}$*${RESET}"; }
+warn() { [[ "$QUIET" -eq 0 ]] && say "${BOLD}${YELLOW}$*${RESET}"; }
+err() { say "${BOLD}${RED}$*${RESET}" >&2; }
 
 shortsha() {
   local s="$1"
@@ -144,26 +130,26 @@ HCL="$HOME/SoftwareRepositories/HickernellAcademicLib"
 QMC="$HOME/SoftwareRepositories/QMCSoftware"
 HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
 
-banner "Sync dev started"
+banner "===== Sync dev started ====="
 
 sync_repo "$HCL" "HickernellAcademicLib" "main"
 sync_repo "$QMC" "QMCSoftware" "develop"
 sync_repo "$HTA" "HickernellTestArchive" "main"
 
 if [[ "$ERROR_COUNT" -gt 0 ]]; then
-  err_banner "FAILED: ${ERROR_COUNT} error(s)"
+  err_banner "===== FAILED: ${ERROR_COUNT} error(s) ====="
   exit 1
 fi
 
 if [[ "$SKIP_COUNT" -gt 0 ]]; then
-  warn_banner "INCOMPLETE: ${SKIP_COUNT} skip(s)"
+  warn_banner "===== INCOMPLETE: ${SKIP_COUNT} skip(s) ====="
   exit 0
 fi
 
 if [[ "$UPDATE_COUNT" -gt 0 ]]; then
-  banner "SUCCESS: ${UPDATE_COUNT} standalone repo(s) updated"
+  banner "===== SUCCESS: ${UPDATE_COUNT} standalone repo(s) updated ====="
   exit 0
 fi
 
-banner "SUCCESS: standalone repos already up to date"
+banner "===== SUCCESS: standalone repos already up to date ====="
 exit 0
