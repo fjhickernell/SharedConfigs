@@ -2,3 +2,4 @@
 # (Safe, small, intentionally added; editable installs are handled separately)
 
 simple-colors
+tabulate
