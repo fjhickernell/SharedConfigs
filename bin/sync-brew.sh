@@ -35,7 +35,7 @@ section "Updating Homebrew"
 brew update
 
 section "Upgrading installed formulae and casks"
-HOMEBREW_UPGRADE_AUTO_UPDATES_CASKS=1 brew upgrade
+brew upgrade
 
 section "Ensuring Brewfile state via brew bundle"
 bundle_failed=0
