@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo "Usage: quarto-slides-pdf <deck-prefix>"
+  echo
+  echo "Examples:"
+  echo "  quarto-slides-pdf Ple"
+  echo "  quarto-slides-pdf Plenary_MCQMC2026"
+}
+
+if [ $# -ne 1 ]; then
+  usage
+  exit 2
+fi
+
+arg="$1"
+arg="${arg%.qmd}"
+
+if [ ! -d slides ]; then
+  echo "Error: run this from the repository root, where the slides/ directory lives."
+  exit 1
+fi
+
+matches=(slides/"$arg"*.qmd)
+
+if [ ! -e "${matches[0]}" ]; then
+  echo "Error: no matching slide deck found for prefix: $arg"
+  exit 1
+fi
+
+if [ "${#matches[@]}" -gt 1 ]; then
+  echo "Error: multiple matching slide decks:"
+  printf '  %s\n' "${matches[@]}"
+  echo
+  echo "Please use a longer prefix."
+  exit 1
+fi
+
+qmd="${matches[0]}"
+deck="$(basename "$qmd" .qmd)"
+port=8765
+
+echo "Rendering slides/$deck.qmd ..."
+cd slides
+quarto render "$deck.qmd"
+
+echo "Starting local server on port $port ..."
+python -m http.server "$port" -d _site >/tmp/quarto-slides-pdf.log 2>&1 &
+server_pid=$!
+
+cleanup() {
+  kill "$server_pid" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+sleep 1
+
+url="http://localhost:${port}/${deck}.html?print-pdf"
+pdf_name="${deck}.pdf"
+
+echo "Opening Chrome:"
+echo "  $url"
+
+open -a "Google Chrome" "$url"
+
+echo
+echo "Chrome is open in Reveal print-PDF mode."
+echo "Use:"
+echo "  Cmd-P → Save as PDF"
+echo "  More settings → Background graphics: checked"
+echo
+echo "Suggested filename:"
+echo "  $pdf_name"
+echo
+read -r -p "Press Enter after you have saved the PDF..."
+
+echo "Done. Local server stopped."

@@ -69,6 +69,12 @@ else
 fi
 
 repo_root="$(pwd)"
+
+if [ ! -d "$repo_root/slides" ]; then
+  error "Run quarto-slides-live from the repository root, where slides/ lives."
+  exit 2
+fi
+
 target_base="$(basename "$target" .qmd)"
 
 logs_dir="$repo_root/.quarto-watch-logs"
@@ -131,7 +137,7 @@ error() {
   printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
 }
 
-banner "quarto-slides-live started"
+banner "quarto render started"
 
 export QUARTO_PYTHON="${QUARTO_PYTHON}"
 export PATH="\$(dirname "\$QUARTO_PYTHON"):\$PATH"
