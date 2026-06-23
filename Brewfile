@@ -2,6 +2,8 @@
 #   - mactex (managed by tlmgr/update-texlive)
 #   - miniconda (managed manually/conda)
 #   - Xcode (Apple-managed)
+#   - wolfram-engine (huge; install manually only on Macs where needed)
+#   - matlab
 
 brew "automake"
 brew "bat"
@@ -92,7 +94,6 @@ cask "unclutter"
 cask "visual-studio-code"
 cask "vlc"
 cask "warp"
-cask "wolfram-engine"
 cask "zoom"
 cask "zotero"
 mas "Air Printer", id: 929399895
@@ -132,8 +133,6 @@ mas "Slack", id: 803453959
 mas "Speedtest", id: 1153157709
 mas "SplitPrint", id: 412574988
 mas "Tempus Stopwatch", id: 1491326665
-mas "TripIt", id: 1475712010
-mas "Twitter", id: 1482454543
 mas "United MileagePlus Shopping℠", id: 6471036405
 mas "WeChat", id: 836500024
 mas "WhatsApp", id: 310633997
