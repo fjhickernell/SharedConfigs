@@ -1,0 +1,173 @@
+#!/bin/zsh
+
+# make-video-qt-compatible 1.0
+#
+# Convert Google Photos VP9 MP4 videos to H.264 MP4 for QuickTime compatibility.
+#
+# Usage:
+#   make-video-qt-compatible
+#   make-video-qt-compatible DIRECTORY
+#   make-video-qt-compatible -n DIRECTORY
+#   make-video-qt-compatible -r DIRECTORY
+#   make-video-qt-compatible -f DIRECTORY
+#
+# Options:
+#   -n, --dry-run     Show what would be converted, but do not convert.
+#   -r, --recursive   Search subdirectories too.
+#   -f, --force       Recreate existing -h264.mp4 files.
+#   -h, --help        Show this help.
+#   --version         Show version.
+
+set -euo pipefail
+
+VERSION="1.0"
+
+dry_run=false
+recursive=false
+force=false
+dir="."
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -n|--dry-run)
+            dry_run=true
+            shift
+            ;;
+        -r|--recursive)
+            recursive=true
+            shift
+            ;;
+        -f|--force)
+            force=true
+            shift
+            ;;
+        -h|--help)
+            sed -n '2,22p' "$0"
+            exit 0
+            ;;
+        --version)
+            echo "make-video-qt-compatible $VERSION"
+            exit 0
+            ;;
+        *)
+            dir="$1"
+            shift
+            ;;
+    esac
+done
+
+if [[ ! -d "$dir" ]]; then
+    echo "Error: '$dir' is not a directory."
+    exit 1
+fi
+
+for cmd in ffprobe ffmpeg; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "Error: '$cmd' is not installed."
+        echo "Install with: brew install ffmpeg"
+        exit 1
+    fi
+done
+
+typeset -i converted=0
+typeset -i would_convert=0
+typeset -i already_converted=0
+typeset -i already_compatible=0
+typeset -i unknown=0
+typeset -i failed=0
+
+if $recursive; then
+    files=( "$dir"/**/*.mp4(N) )
+else
+    files=( "$dir"/*.mp4(N) )
+fi
+
+if [[ ${#files[@]} -eq 0 ]]; then
+    echo "No .mp4 files found in '$dir'."
+    exit 0
+fi
+
+for infile in "${files[@]}"; do
+    base="${infile:t}"
+
+    # Skip our own output files.
+    if [[ "$base" == *-h264.mp4 ]]; then
+        continue
+    fi
+
+    outfile="${infile:r}-h264.mp4"
+
+    if [[ -f "$outfile" && "$force" == false ]]; then
+        echo "Already converted: $base"
+        ((already_converted++))
+        continue
+    fi
+
+    codec=$(ffprobe -v error \
+        -select_streams v:0 \
+        -show_entries stream=codec_name \
+        -of default=noprint_wrappers=1:nokey=1 \
+        "$infile" || echo "unknown")
+
+    case "$codec" in
+        h264|hevc)
+            echo "Already compatible: $base ($codec)"
+            ((already_compatible++))
+            ;;
+
+        vp9)
+            if $dry_run; then
+                echo "Would convert: $base (VP9 → H.264)"
+                ((would_convert++))
+            else
+                echo "Converting: $base (VP9 → H.264)"
+
+                if ffmpeg -hide_banner -loglevel warning \
+                    -y \
+                    -i "$infile" \
+                    -c:v libx264 \
+                    -crf 18 \
+                    -preset medium \
+                    -c:a copy \
+                    "$outfile"; then
+
+                    newcodec=$(ffprobe -v error \
+                        -select_streams v:0 \
+                        -show_entries stream=codec_name \
+                        -of default=noprint_wrappers=1:nokey=1 \
+                        "$outfile" || echo "unknown")
+
+                    if [[ "$newcodec" == "h264" ]]; then
+                        touch -r "$infile" "$outfile"
+                        echo "  ✓ Created ${outfile:t}"
+                        ((converted++))
+                    else
+                        echo "  ✗ Output was created, but codec is '$newcodec', not h264."
+                        ((failed++))
+                    fi
+                else
+                    echo "  ✗ Conversion failed: $base"
+                    ((failed++))
+                fi
+            fi
+            ;;
+
+        *)
+            echo "Unknown codec, not converted: $base ($codec)"
+            ((unknown++))
+            ;;
+    esac
+done
+
+echo
+echo "Summary"
+echo "-------"
+echo "Converted            : $converted"
+echo "Would convert         : $would_convert"
+echo "Already converted     : $already_converted"
+echo "Already compatible    : $already_compatible"
+echo "Unknown / not handled : $unknown"
+echo "Failed                : $failed"
+
+$dry_run && echo
+$dry_run && echo "Dry run only; no files were changed."
