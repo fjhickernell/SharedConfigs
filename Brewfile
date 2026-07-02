@@ -125,7 +125,9 @@ mas "OTP Manager", id: 928941247
 mas "Pages", id: 361309726
 mas "PayPal Honey", id: 1472777122
 mas "PDFCombo", id: 1030461463
-mas "Perplexity", id: 6714467650
+# Perplexity Mac app is not reliably available through mas in the US store.
+# Install manually from https://www.perplexity.ai/platforms
+# mas "Perplexity", id: 6714467650
 mas "Prime Video", id: 545519333
 mas "Quick Note", id: 1472935217
 mas "Rakuten Cash Back", id: 1451893560
