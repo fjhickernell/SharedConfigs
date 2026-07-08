@@ -1,0 +1,5 @@
+---
+"editor_view:insert_newline": shift-enter
+"input:open_completion_suggestions": ctrl-space
+"editor_view:run_commands": enter
+"editor_view:insert_autosuggestion": tab
