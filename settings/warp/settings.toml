@@ -89,7 +89,7 @@ show_ignore_button = true
 enabled = false
 
 [general]
-default_session_mode = "agent"
+default_session_mode = "terminal"
 quit_on_last_window_closed = true
 
 [text_editing]
