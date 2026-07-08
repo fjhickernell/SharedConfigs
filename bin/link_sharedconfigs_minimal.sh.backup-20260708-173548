@@ -48,19 +48,6 @@ link_to() {
   echo "✓ Linked: $dst → $src"
 }
 
-link_file_to() {
-  local src="$1"
-  local dst="$2"
-  if [ ! -f "$src" ]; then
-    echo "⚠️  Skipping: source file not found → $src"
-    return 0
-  fi
-  mkdir -p "$(dirname "$dst")"
-  backup_if_needed "$dst"
-  ln -sfn "$src" "$dst"
-  echo "✓ Linked: $dst → $src"
-}
-
 echo "=== Linking SharedConfigs from iCloud ==="
 echo "Source: $ICLOUD_SC"
 echo
@@ -83,15 +70,6 @@ fi
 
 link_to "$ICLOUD_SC/BibDesk" "$HOME/Library/Application Support/BibDesk"
 
-if [ -d "$ICLOUD_SC/settings/warp" ]; then
-  mkdir -p "$HOME/.warp/tab_configs"
-  link_file_to "$ICLOUD_SC/settings/warp/settings.toml" "$HOME/.warp/settings.toml"
-  link_file_to "$ICLOUD_SC/settings/warp/keybindings.yaml" "$HOME/.warp/keybindings.yaml"
-  link_file_to "$ICLOUD_SC/settings/warp/tab_configs/startup_config.toml" "$HOME/.warp/tab_configs/startup_config.toml"
-else
-  echo "⚠️  Skipping Warp: $ICLOUD_SC/settings/warp not found"
-fi
-
 echo
 echo "All requested links processed."
 echo
@@ -100,9 +78,6 @@ ls -l ~/Library/texmf 2>/dev/null || true
 ls -l ~/.config/karabiner 2>/dev/null || true
 ls -l ~/Library/Application\ Support/LaTeXiT 2>/dev/null || true
 ls -l ~/Library/Application\ Support/BibDesk 2>/dev/null || true
-ls -l ~/.warp/settings.toml 2>/dev/null || true
-ls -l ~/.warp/keybindings.yaml 2>/dev/null || true
-ls -l ~/.warp/tab_configs/startup_config.toml 2>/dev/null || true
 echo
 echo "Expected: each line shows an arrow (→) pointing into Documents/SharedConfigs."
 echo "Once verified, this Mac is fully linked and syncing configs via iCloud."
