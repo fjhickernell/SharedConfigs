@@ -75,6 +75,7 @@ show_jump_to_bottom_of_block_button = false
 [appearance.text]
 notebook_font_size = 14.0
 font_size = 15.0
+font_name = "JetBrains Mono"
 
 [terminal]
 
