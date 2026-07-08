@@ -66,7 +66,7 @@ enabled = true
 [appearance.themes]
 selected_system_themes = { dark = "dark", light = "light" }
 system_theme = false
-theme = "light"
+theme = "dark"
 
 [appearance.blocks]
 show_block_dividers = true
