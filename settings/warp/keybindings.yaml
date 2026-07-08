@@ -1,5 +1,4 @@
 ---
-"editor_view:insert_newline": shift-enter
-"input:open_completion_suggestions": ctrl-space
-"editor_view:run_commands": enter
-"editor_view:insert_autosuggestion": tab
+"terminal:copy": cmd-c
+"terminal:select_next_block": shift-cmd-B
+"terminal:select_previous_block": none
