@@ -48,8 +48,7 @@ else
 fi
 
 bundle_ok_count="$(awk '/^(Using|Installing) / && $0 !~ / has failed!/ { n++ } END { print n+0 }' "$bundle_log")"
-bundle_fail_count="$(awk '/has failed|failed to install|depends on hardware architecture/ { n++ } END { print n+0 }' "$bundle_log")"
-
+bundle_fail_count="$(awk '/has failed|failed to install|depends on hardware architecture|dependency graph sorting failed|circular dependency/ { n++ } END { print n+0 }' "$bundle_log")"
 echo
 section "brew bundle summary"
 printf "${GREEN_BOLD}(Mostly) OK:${NC} %s Brewfile items were already installed or processed.
@@ -60,8 +59,12 @@ printf "${YELLOW_BOLD}Needs attention:${NC} %s issue(s) reported.
 if [[ "$bundle_failed" -eq 1 ]]; then
   grep -E "has failed|failed to install|depends on hardware architecture" "$bundle_log" || true
   echo
-  printf "${YELLOW_BOLD}Continuing because this can be expected on some Macs, e.g. ChatGPT is Apple-Silicon-only.${NC}
-"
+
+  if grep -Eq "dependency graph sorting failed|circular dependency" "$bundle_log"; then
+    printf "${YELLOW_BOLD}Continuing because Homebrew Bundle encountered a formula dependency-cycle sorting error. brew upgrade and brew doctor otherwise completed normally.${NC}\n"
+  else
+    printf "${YELLOW_BOLD}Continuing because some Brewfile items may be unavailable or architecture-specific on this Mac.${NC}\n"
+  fi
 fi
 
 echo
