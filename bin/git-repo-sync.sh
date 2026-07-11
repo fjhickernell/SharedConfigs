@@ -9,23 +9,22 @@ typeset -a REPOS=(
 
 log() {
   local message="$1"
-  local ts
-  ts=$(date '+%Y-%m-%d %H:%M:%S')
-  echo "[$ts] $message"
+  local timestamp
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  echo "[$timestamp] $message"
 }
 
 sync_repo() {
   local entry="$1"
   local repo="${entry%%|*}"
   local name="${entry#*|}"
-  local commit_message
   local exit_code=0
 
   echo
-  log "Starting Git synchronization: $name"
+  log "Starting: $name"
 
   if [[ ! -d "$repo" ]]; then
-    log "FAILED: folder does not exist: $repo"
+    log "FAILED: folder not found: $repo"
     return 1
   fi
 
@@ -39,11 +38,11 @@ sync_repo() {
 
     git add -A
 
-    if ! git diff --cached --quiet --exit-code; then
-      commit_message="$name snapshot on $(hostname -s) at $(date '+%Y-%m-%d %H:%M:%S')"
-      git commit -m "$commit_message" || exit 1
-    else
+    if git diff --cached --quiet --exit-code; then
       log "No local changes to commit in $name."
+    else
+      git commit -m "$name snapshot on $(hostname -s) at $(date '+%Y-%m-%d %H:%M:%S')" ||
+        exit 1
     fi
 
     git pull --rebase || exit 1
@@ -51,9 +50,9 @@ sync_repo() {
   ) || exit_code=$?
 
   if [[ $exit_code -eq 0 ]]; then
-    log "Finished Git synchronization: $name (ok)"
+    log "Finished: $name (ok)"
   else
-    log "FAILED Git synchronization: $name (exit $exit_code)"
+    log "FAILED: $name (exit $exit_code)"
   fi
 
   return $exit_code
