@@ -43,11 +43,19 @@ banner "GitHub PR responsibilities check started"
 for repo in "${repos[@]}"; do
 
   review_output=$(
-    gh pr list       -R "$repo"       --search "review-requested:$github_user"       --json number,title       --template '{{range .}}  PR #{{.number}}  {{.title}}{{"\n"}}{{end}}'
+    gh pr list \
+      -R "$repo" \
+      --search "review-requested:$github_user" \
+      --json number,title,headRefName \
+      --template '{{range .}}  PR #{{.number}}  [{{.headRefName}}]  {{.title}}{{"\n"}}{{end}}'
   )
 
   assigned_output=$(
-    gh pr list       -R "$repo"       --search "assignee:$github_user"       --json number,title       --template '{{range .}}  PR #{{.number}}  {{.title}}{{"\n"}}{{end}}'
+    gh pr list \
+      -R "$repo" \
+      --search "assignee:$github_user" \
+      --json number,title,headRefName \
+      --template '{{range .}}  PR #{{.number}}  [{{.headRefName}}]  {{.title}}{{"\n"}}{{end}}'
   )
 
   if [[ -n "$review_output" || -n "$assigned_output" ]]; then
@@ -55,15 +63,13 @@ for repo in "${repos[@]}"; do
     section "$repo"
 
     if [[ -n "$review_output" ]]; then
-      printf "${YELLOW_BOLD}Review requested:${NC}
-"
-      echo "$review_output"
+      printf "${YELLOW_BOLD}Review requested:${NC}\n"
+      printf '%s\n' "$review_output"
     fi
 
     if [[ -n "$assigned_output" ]]; then
-      printf "${YELLOW_BOLD}Assigned to me:${NC}
-"
-      echo "$assigned_output"
+      printf "${YELLOW_BOLD}Assigned to me:${NC}\n"
+      printf '%s\n' "$assigned_output"
     fi
   fi
 
