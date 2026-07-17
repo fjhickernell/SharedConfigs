@@ -2,6 +2,11 @@
 
 set -uo pipefail
 
+# Codex may run this script from a non-login shell that has not loaded the
+# Homebrew PATH. Include both Intel and Apple Silicon locations so Git hooks
+# can find git-lfs even when it is installed but absent from the caller's PATH.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 typeset -a REPOS=(
   "$HOME/Documents/SharedConfigs|SharedConfigs"
   "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault/GitTracked|GitTrackedObsidian"
