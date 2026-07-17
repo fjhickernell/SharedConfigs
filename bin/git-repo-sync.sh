@@ -19,11 +19,26 @@ log() {
   echo "[$timestamp] $message"
 }
 
+pull_rebase() {
+  local name="$1"
+
+  if git pull --rebase; then
+    return 0
+  fi
+
+  # Do not leave a repository in an interrupted rebase. This is harmless when
+  # the pull failed before starting one.
+  git rebase --abort >/dev/null 2>&1 || true
+  log "FAILED: could not rebase $name; any interrupted rebase was aborted."
+  return 1
+}
+
 sync_repo() {
   local entry="$1"
   local repo="${entry%%|*}"
   local name="${entry#*|}"
   local exit_code=0
+  local lock_dir="${TMPDIR:-/tmp}/git-repo-sync-${name}.lock"
 
   echo
   log "Starting: $name"
@@ -38,7 +53,16 @@ sync_repo() {
     return 1
   fi
 
+  # This lock is machine-local, so it prevents overlapping maintenance jobs
+  # without adding synchronization files to iCloud.
+  if ! mkdir "$lock_dir" 2>/dev/null; then
+    log "FAILED: another local sync appears to be running for $name."
+    return 1
+  fi
+
   (
+    trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
+
     cd "$repo" || exit 1
 
     git add -A
@@ -50,8 +74,15 @@ sync_repo() {
         exit 1
     fi
 
-    git pull --rebase || exit 1
-    git push || exit 1
+    pull_rebase "$name" || exit 1
+
+    if ! git push; then
+      # Another Mac may have pushed after our pull. Integrate once and retry;
+      # persistent failures still stop safely and are reported to the caller.
+      log "Push did not succeed for $name; rebasing and retrying once."
+      pull_rebase "$name" || exit 1
+      git push || exit 1
+    fi
   ) || exit_code=$?
 
   if [[ $exit_code -eq 0 ]]; then
