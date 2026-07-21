@@ -96,7 +96,7 @@ EOF2
 tip_align_submodules() {
   cat <<EOF2
 Tips (align class repo pins to latest shared code):
-  sync-class.sh --push
+  sync-active.sh --push
 
 Tips (just update working tree to pinned SHAs):
   git submodule update --init --recursive

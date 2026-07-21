@@ -92,22 +92,22 @@ else
   log "sync-dev.sh not found at ${BASE}/sync-dev.sh; skipping dev sync."
 fi
 
-if command -v sync-class.sh >/dev/null 2>&1; then
-  log "Starting: sync-class (no-push)"
+if command -v sync-active.sh >/dev/null 2>&1; then
+  log "Starting: sync-active (no-push)"
   set +e
-  sync-class.sh
+  sync-active.sh
   exit_code=$?
   set -e
 
   if [[ ${exit_code} -eq 0 ]]; then
-    log "Finished: sync-class (no-push) (ok)"
+    log "Finished: sync-active (no-push) (ok)"
   else
-    log "FAILED: sync-class (no-push) (exit ${exit_code})"
-    log "sync-class likely detected pointer changes; run sync-class.sh --push when ready."
+    log "FAILED: sync-active (no-push) (exit ${exit_code})"
+    log "sync-active likely detected pointer changes; run sync-active.sh --push when ready."
     report_dirty_class_repos
   fi
 else
-  log "sync-class.sh not found on PATH; skipping class sync."
+  log "sync-active.sh not found on PATH; skipping class sync."
 fi
 
 if command -v npm >/dev/null 2>&1; then

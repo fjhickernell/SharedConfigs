@@ -36,7 +36,7 @@ advice_block() {
 What to do next:
 
 Promote to latest shared code (advance pointers + commit/push):
-  sync-class.sh --push
+  sync-active.sh --push
 
 EOF
 
@@ -104,5 +104,5 @@ if [[ -n "$ws" ]]; then
 fi
 
 advice_block
-echo -e "${YELLOW}Tip:${RESET} run subs-match after sync-class.sh --push for the all-green check."
+echo -e "${YELLOW}Tip:${RESET} run subs-match after sync-active.sh --push for the all-green check."
 exit 1

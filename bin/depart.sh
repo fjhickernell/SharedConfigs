@@ -33,12 +33,12 @@ section "Syncing standalone development repos"
 sync-dev.sh
 rc_dev=$?
 
-section "Syncing and pushing class repos"
-sync-class.sh --push
+section "Syncing and pushing active repos"
+sync-active.sh --push
 rc_class=$?
 
 if [[ $rc_dev -ne 0 || $rc_class -ne 0 ]]; then
-  error "depart failed (sync-dev=$rc_dev, sync-class=$rc_class)"
+  error "depart failed (sync-dev=$rc_dev, sync-active=$rc_class)"
   exit 1
 fi
 

@@ -33,12 +33,12 @@ section "Syncing standalone development repos"
 sync-dev.sh
 rc_dev=$?
 
-section "Syncing class repos"
-sync-class.sh
+section "Syncing active repos"
+sync-active.sh
 rc_class=$?
 
 if [[ $rc_dev -ne 0 || $rc_class -ne 0 ]]; then
-  error "arrive failed (sync-dev=$rc_dev, sync-class=$rc_class)"
+  error "arrive failed (sync-dev=$rc_dev, sync-active=$rc_class)"
   exit 1
 fi
 
