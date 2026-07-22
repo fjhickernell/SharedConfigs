@@ -35,18 +35,6 @@ timestamp() {
   /bin/date '+%Y-%m-%d %H:%M:%S %Z'
 }
 
-banner() {
-  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
-}
-
-section() {
-  printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
-}
-
-warn() {
-  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
-}
-
 error() {
   printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
 }
