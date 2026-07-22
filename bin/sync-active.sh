@@ -10,15 +10,14 @@ Archived repositories are intentionally excluded so their
 submodule pointers remain pinned unless explicitly maintained.
 
 Default (no flags):
-  - Pull standalone repos
-  - Pull active class and talk repos
+  - Pull active project repos
   - Enforce pinned submodule SHAs (--checkout)
   - No commits, no pushes
   - Concise output (one line per repo)
 
 Flags:
   --promote   Advance submodules to tip (runs update-submodules.sh from PATH)
-  --commit    If submodule pointers changed, commit them in each class and talk repo
+  --commit    If submodule pointers changed, commit them in each project repo
   --push      Implies --commit and --promote; push the pointer commits
   --quiet     Print only SKIP/WARN/ERROR and final verdict
   --verbose   Print extra details (git status, pin OK line, etc.)
@@ -175,54 +174,6 @@ ensure_qmcsoftware_fetch_policy() {
   )
 }
 
-sync_standalone_repo() {
-  local repo="$1"
-  local branch="$2"
-  local name="${repo##*/}"
-
-  if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
-    skip "SKIP   ${name}: not a git repo"
-    return 0
-  fi
-
-  (
-    cd "${repo}"
-
-    if ! is_clean; then
-      skip "SKIP   ${name}: dirty working tree"
-      verbose_git_status_sb
-      return 0
-    fi
-
-    if [[ "${name}" == "QMCSoftware" ]]; then
-      ensure_qmcsoftware_fetch_policy "${repo}"
-    fi
-
-    local old new count
-    old=$(/usr/bin/git rev-parse HEAD)
-
-    /usr/bin/git checkout "${branch}" >/dev/null 2>&1 || /usr/bin/git switch "${branch}" >/dev/null 2>&1 || {
-      err "ERROR  ${name}: cannot switch to ${branch}"
-      return 1
-    }
-
-    pull_ff_only
-
-    new=$(/usr/bin/git rev-parse HEAD)
-
-    if [[ "${old}" != "${new}" ]]; then
-      count=$(/usr/bin/git rev-list --count "${old}..${new}" 2>/dev/null || echo "?")
-      UPDATE_COUNT=$((UPDATE_COUNT + 1))
-      ok "UPDATED ${name} (${branch}) +${count} -> $(shortsha "${new}")"
-    else
-      info "OK     ${name} (${branch}) @ $(shortsha "${new}")"
-    fi
-
-    verbose_git_status_sb
-    return 0
-  )
-}
-
 push_if_ahead() {
   if has_upstream; then
     local ahead_count
@@ -249,7 +200,7 @@ push_if_ahead() {
   return 0
 }
 
-sync_class_repo() {
+sync_project_repo() {
   local repo="$1"
   local do_promote="$2"
   local do_commit="$3"
@@ -399,7 +350,7 @@ pins_consistency_check() {
     fi
   }
 
-  for repo in "${CLASS_REPOS[@]}"; do
+  for repo in "${ACTIVE_REPOS[@]}"; do
     repo_name="${repo##*/}"
     if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
       classlib_sha[$repo_name]="NO_REPO"
@@ -423,7 +374,7 @@ pins_consistency_check() {
   ref_qmc=""
   ref_tests=""
 
-  for repo in "${CLASS_REPOS[@]}"; do
+  for repo in "${ACTIVE_REPOS[@]}"; do
     repo_name="${repo##*/}"
     if is_full_sha "${classlib_sha[$repo_name]}" && is_full_sha "${qmc_sha[$repo_name]}"; then
       ref_repo="${repo_name}"
@@ -441,7 +392,7 @@ pins_consistency_check() {
     return 0
   fi
 
-  for repo in "${CLASS_REPOS[@]}"; do
+  for repo in "${ACTIVE_REPOS[@]}"; do
     repo_name="${repo##*/}"
 
     [[ "${classlib_sha[$repo_name]}" != "${ref_classlib}" ]] && mismatch=1
@@ -455,7 +406,7 @@ pins_consistency_check() {
   done
 
   printf "%-20s  %-12s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware" "tests-archive"
-  for repo in "${CLASS_REPOS[@]}"; do
+  for repo in "${ACTIVE_REPOS[@]}"; do
     repo_name="${repo##*/}"
 
     test_display="$(short_or_tag "${tests_sha[$repo_name]}")"
@@ -469,7 +420,7 @@ pins_consistency_check() {
   done
 
   if (( mismatch )); then
-    warn "WARNING: submodule pins differ across class repos"
+    warn "WARNING: submodule pins differ across active repos"
     warn "Reference: ${ref_repo} (classlib ${ref_classlib:0:12}, qmcsoftware ${ref_qmc:0:12}${ref_tests:+, tests ${ref_tests:0:12}})"
   else
     info "OK: classlib and qmcsoftware pins match across all repos"
@@ -493,7 +444,7 @@ health_summary() {
   fi
 
   banner "Repo health summary"
-  for repo in "${CLASS_REPOS[@]}"; do
+  for repo in "${ACTIVE_REPOS[@]}"; do
     repo_name="${repo##*/}"
     if [[ -d "${repo}/.git" || -f "${repo}/.git" ]]; then
       (
@@ -546,18 +497,12 @@ if [[ "${do_push}" -eq 1 ]]; then
   do_promote=1
 fi
 
-STANDALONE_REPOS=(
-  "$HOME/SoftwareRepositories/HickernellAcademicLib:main"
-  "$HOME/SoftwareRepositories/QMCSoftware:develop"
-  "$HOME/SoftwareRepositories/HickernellTestArchive:main"
-)
-
-# Active repositories only. Completed course repositories remain pinned and
+# Active project repositories only. Completed project repositories remain pinned and
 # are maintained explicitly rather than updated by routine synchronization.
 #
 # Order matters for pins_consistency_check: when possible, place first an
 # active repo containing assets/tests/archive.
-CLASS_REPOS=(
+ACTIVE_REPOS=(
 #  "$HOME/SoftwareRepositories/MATH476Spring2026"
 #  "$HOME/SoftwareRepositories/MATH563Spring2026"
   "$HOME/SoftwareRepositories/MATH565Fall2026"
@@ -566,23 +511,14 @@ CLASS_REPOS=(
 )
 
 if [[ "${do_promote}" -eq 1 ]]; then
-  banner "Sync class started (PROMOTE)"
+  banner "Sync active repos started (PROMOTE)"
 else
-  banner "Sync class started (PINNED)"
+  banner "Sync active repos started (PINNED)"
 fi
 
-for spec in "${STANDALONE_REPOS[@]}"; do
-  repo="${spec%%:*}"
-  branch="${spec##*:}"
-  if ! sync_standalone_repo "${repo}" "${branch}"; then
-    err_banner "Sync class finished"
-    exit 1
-  fi
-done
-
-for repo in "${CLASS_REPOS[@]}"; do
-  if ! sync_class_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"; then
-    err_banner "Sync class finished"
+for repo in "${ACTIVE_REPOS[@]}"; do
+  if ! sync_project_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"; then
+    err_banner "Sync active repos finished"
     exit 1
   fi
 done
@@ -593,6 +529,6 @@ health_summary || true
 if final_verdict; then
   exit 0
 else
-  err_banner "Sync class finished"
+  err_banner "Sync active repos finished"
   exit 1
 fi

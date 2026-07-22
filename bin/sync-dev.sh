@@ -142,12 +142,14 @@ sync_repo() {
 
 HCL="$HOME/SoftwareRepositories/HickernellAcademicLib"
 QMC="$HOME/SoftwareRepositories/QMCSoftware"
+QMC_WEBSITE="$HOME/SoftwareRepositories/qmcpy-website"
 HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
 
 banner "Sync dev started"
 
 sync_repo "$HCL" "HickernellAcademicLib" "main"
 sync_repo "$QMC" "QMCSoftware" "develop"
+sync_repo "$QMC_WEBSITE" "qmcpy-website" "main"
 sync_repo "$HTA" "HickernellTestArchive" "main"
 
 if [[ "$ERROR_COUNT" -gt 0 ]]; then

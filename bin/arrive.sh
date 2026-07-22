@@ -35,10 +35,10 @@ rc_dev=$?
 
 section "Syncing active repos"
 sync-active.sh
-rc_class=$?
+rc_active=$?
 
-if [[ $rc_dev -ne 0 || $rc_class -ne 0 ]]; then
-  error "arrive failed (sync-dev=$rc_dev, sync-active=$rc_class)"
+if [[ $rc_dev -ne 0 || $rc_active -ne 0 ]]; then
+  error "arrive failed (sync-dev=$rc_dev, sync-active=$rc_active)"
   exit 1
 fi
 
