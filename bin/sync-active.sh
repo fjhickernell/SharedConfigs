@@ -6,57 +6,21 @@ usage() {
 sync-active.sh [--promote] [--commit] [--push] [--quiet|--verbose] [--health]
 
 Synchronize repositories that are under active development.
-Archived repositories are intentionally excluded so their
-submodule pointers remain pinned unless explicitly maintained.
-
-Default (no flags):
-  - Pull active project repos
-  - Enforce pinned submodule SHAs (--checkout)
-  - No commits, no pushes
-  - Concise output (one line per repo)
 
 Flags:
-  --promote   Advance submodules to tip (runs update-submodules.sh from PATH)
-  --commit    If submodule pointers changed, commit them in each project repo
-  --push      Implies --commit and --promote; push the pointer commits
+  --promote   Advance managed course submodules to their upstream tips
+  --commit    Commit recognized submodule pointer changes
+  --push      Implies --commit and --promote; push pointer commits
   --quiet     Print only SKIP/WARN/ERROR and final verdict
-  --verbose   Print extra details (git status, pin OK line, etc.)
+  --verbose   Print extra Git details
   --health    Run repo-health summary (also enabled by --verbose)
 EOF
 }
 
 GREEN_BOLD=$'\033[1;32m'
-MAGENTA_BOLD=$'\033[1;35m'
 YELLOW_BOLD=$'\033[1;33m'
 RED_BOLD=$'\033[1;31m'
 NC=$'\033[0m'
-
-timestamp() {
-  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
-}
-
-error() {
-  printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
-}
-
-timestamp_log() { printf "[%s] %s\n" "$(timestamp)" "$*"; }
-
-plain_log() { echo "$*"; }
-
-info() { [[ "${QUIET}" -eq 0 ]] && plain_log "$*"; }
-vinfo() { [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]] && plain_log "$*"; }
-ok() { [[ "${QUIET}" -eq 0 ]] && plain_log "${GREEN_BOLD}$*${NC}"; }
-warn() { plain_log "${YELLOW_BOLD}Warning:${NC} $*"; }
-skip() { SKIP_COUNT=$((SKIP_COUNT + 1)); plain_log "${RED_BOLD}$*${NC}"; }
-err() { ERROR_COUNT=$((ERROR_COUNT + 1)); plain_log "${RED_BOLD}$*${NC}" >&2; }
-banner() { [[ "${QUIET}" -eq 0 ]] && printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
-section() { [[ "${QUIET}" -eq 0 ]] && printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"; }
-warn_banner() { printf "\n${YELLOW_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
-err_banner() { printf "\n${RED_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1" >&2; }
-
-SKIP_COUNT=0
-UPDATE_COUNT=0
-ERROR_COUNT=0
 
 QUIET=0
 VERBOSE=0
@@ -64,404 +28,29 @@ DO_HEALTH=0
 do_promote=0
 do_commit=0
 do_push=0
+SKIP_COUNT=0
+UPDATE_COUNT=0
+ERROR_COUNT=0
 
-shortsha() {
-  local s="$1"
-  echo "${s:0:12}"
-}
-
-verbose_git_status_sb() {
-  if [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]]; then
-    /usr/bin/git status -sb || true
-  fi
+timestamp() { /bin/date '+%Y-%m-%d %H:%M:%S %Z'; }
+plain_log() { print -r -- "$*"; }
+info() { (( QUIET == 0 )) && plain_log "$*"; return 0; }
+vinfo() { (( VERBOSE == 1 && QUIET == 0 )) && plain_log "$*"; return 0; }
+ok() { (( QUIET == 0 )) && plain_log "${GREEN_BOLD}$*${NC}"; return 0; }
+warn() { plain_log "${YELLOW_BOLD}Warning:${NC} $*"; }
+failure() { plain_log "${RED_BOLD}$*${NC}" >&2; }
+banner() {
+  (( QUIET == 0 )) &&
+    printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
   return 0
 }
-
-verbose_git_status_short() {
-  if [[ "${VERBOSE}" -eq 1 && "${QUIET}" -eq 0 ]]; then
-    /usr/bin/git status --short || true
-  fi
-  return 0
+warn_banner() {
+  printf "\n${YELLOW_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
 }
-
-is_clean() {
-  [[ -z "$(/usr/bin/git status --porcelain --untracked-files=normal)" ]]
+err_banner() {
+  printf "\n${RED_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1" >&2
 }
-
-has_upstream() {
-  /usr/bin/git rev-parse --quiet --verify '@{u}' >/dev/null 2>&1
-}
-
-path_is_tracked() {
-  local p="$1"
-  /usr/bin/git ls-files --error-unmatch "$p" >/dev/null 2>&1
-}
-
-only_submodule_pointers_dirty() {
-  local ws line path allow_tests
-  ws="$(/usr/bin/git status --porcelain --untracked-files=normal)"
-  [[ -z "${ws}" ]] && return 0
-
-  allow_tests=0
-  if path_is_tracked "assets/tests/archive"; then
-    allow_tests=1
-  fi
-
-  while IFS= read -r line; do
-    path="${line##* }"
-    if [[ "${path}" == "classlib" || "${path}" == "qmcsoftware" || "${path}" == ".gitmodules" ]]; then
-      continue
-    fi
-    if [[ "${allow_tests}" -eq 1 && "${path}" == "assets/tests/archive" ]]; then
-      continue
-    fi
-    return 1
-  done <<< "${ws}"
-
-  return 0
-}
-
-pull_ff_only() {
-  /usr/bin/git -c fetch.recurseSubmodules=no fetch origin >/dev/null 2>&1 || {
-    warn "WARNING fetch failed (non-fatal)"
-    return 0
-  }
-
-  if has_upstream; then
-    /usr/bin/git merge --ff-only '@{u}' >/dev/null 2>&1 || {
-      warn "WARNING ff-only merge failed (non-fatal)"
-      return 0
-    }
-  else
-    warn "WARNING no upstream configured (skipping ff-only merge)"
-  fi
-
-  return 0
-}
-
-ensure_qmcsoftware_fetch_policy() {
-  local repo="$1"
-
-  if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
-    return 0
-  fi
-
-  (
-    cd "${repo}"
-
-    if ! /usr/bin/git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-      return 0
-    fi
-
-    if /usr/bin/git remote get-url origin >/dev/null 2>&1; then
-      /usr/bin/git config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
-      /usr/bin/git config --add remote.origin.fetch "+refs/heads/develop:refs/remotes/origin/develop"
-      /usr/bin/git config --add remote.origin.fetch "+refs/tags/*:refs/tags/*"
-      /usr/bin/git fetch --prune origin >/dev/null 2>&1 || true
-    fi
-  )
-}
-
-push_if_ahead() {
-  if has_upstream; then
-    local ahead_count
-    ahead_count=$(/usr/bin/git rev-list --count '@{u}..HEAD' 2>/dev/null || echo 0)
-    if [[ "${ahead_count}" -gt 0 ]]; then
-      /usr/bin/git push >/dev/null 2>&1 || {
-        err "ERROR  push failed"
-        echo "FAILED"
-        return 0
-      }
-      echo "PUSHED"
-      return 0
-    fi
-    echo "NOOP"
-    return 0
-  fi
-
-  /usr/bin/git push >/dev/null 2>&1 || {
-    err "ERROR  push failed (no upstream configured)"
-    echo "FAILED"
-    return 0
-  }
-  echo "PUSHED"
-  return 0
-}
-
-sync_project_repo() {
-  local repo="$1"
-  local do_promote="$2"
-  local do_commit="$3"
-  local do_push="$4"
-  local name="${repo##*/}"
-
-  if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
-    skip "SKIP   ${name}: missing repo"
-    return 0
-  fi
-
-  (
-    cd "${repo}"
-
-    if ! only_submodule_pointers_dirty; then
-      skip "SKIP   ${name}: dirty (non-submodule changes)"
-      verbose_git_status_short
-      return 0
-    fi
-
-    local old new count
-    old=$(/usr/bin/git rev-parse HEAD)
-    pull_ff_only
-    new=$(/usr/bin/git rev-parse HEAD)
-
-    if [[ "${old}" != "${new}" ]]; then
-      count=$(/usr/bin/git rev-list --count "${old}..${new}" 2>/dev/null || echo "?")
-      UPDATE_COUNT=$((UPDATE_COUNT + 1))
-      ok "UPDATED ${name}: pulled +${count} -> $(shortsha "${new}")"
-    else
-      if [[ "${do_promote}" -eq 1 ]]; then
-        info "OK     ${name}: superproject already up to date @ $(shortsha "${new}")"
-      else
-        info "OK     ${name}: already up to date @ $(shortsha "${new}")"
-      fi
-    fi
-
-    if [[ "${do_promote}" -eq 1 ]]; then
-      if command -v update-submodules.sh >/dev/null 2>&1; then
-        if ! update-submodules.sh >/dev/null 2>&1; then
-          err "ERROR  ${name}: update-submodules.sh failed"
-          return 1
-        fi
-      else
-        skip "SKIP   ${name}: missing update-submodules.sh on PATH"
-        return 0
-      fi
-    else
-      /usr/bin/git submodule update --init --recursive --checkout >/dev/null 2>&1 || {
-        err "ERROR  ${name}: submodule update failed"
-        return 1
-      }
-    fi
-
-    if [[ -d "qmcsoftware" ]]; then
-      ensure_qmcsoftware_fetch_policy "${repo}/qmcsoftware"
-    fi
-
-    if ! is_clean; then
-      if [[ "${do_commit}" -eq 1 ]]; then
-        if only_submodule_pointers_dirty; then
-          local cls_sha qmc_sha tst_sha have_tests tests_clause msg
-          cls_sha=""
-          qmc_sha=""
-          tst_sha=""
-          have_tests=0
-          tests_clause=""
-
-          if [[ -d "classlib/.git" || -f "classlib/.git" ]]; then
-            cls_sha=$(/usr/bin/git -C classlib rev-parse --short=12 HEAD 2>/dev/null || true)
-          fi
-          if [[ -d "qmcsoftware/.git" || -f "qmcsoftware/.git" ]]; then
-            qmc_sha=$(/usr/bin/git -C qmcsoftware rev-parse --short=12 HEAD 2>/dev/null || true)
-          fi
-          if path_is_tracked "assets/tests/archive"; then
-            have_tests=1
-            if [[ -d "assets/tests/archive/.git" || -f "assets/tests/archive/.git" ]]; then
-              tst_sha=$(/usr/bin/git -C assets/tests/archive rev-parse --short=12 HEAD 2>/dev/null || true)
-            fi
-            tests_clause=", tests ${tst_sha:-na}"
-          fi
-
-          msg="Update submodule pointers (classlib ${cls_sha:-na}, qmcsoftware ${qmc_sha:-na}${tests_clause})"
-
-          /usr/bin/git add classlib qmcsoftware .gitmodules >/dev/null 2>&1 || {
-            err "ERROR  ${name}: git add failed"
-            return 1
-          }
-          if [[ "${have_tests}" -eq 1 ]]; then
-            /usr/bin/git add assets/tests/archive >/dev/null 2>&1 || true
-          fi
-          /usr/bin/git commit -m "${msg}" >/dev/null 2>&1 || {
-            err "ERROR  ${name}: git commit failed"
-            return 1
-          }
-          UPDATE_COUNT=$((UPDATE_COUNT + 1))
-          ok "UPDATED ${name}: committed pointer update"
-        else
-          warn "WARNING ${name}: changes not limited to submodule pointers (not committing)"
-          /usr/bin/git status --short || true
-          return 0
-        fi
-      else
-        warn "WARNING ${name}: uncommitted submodule pointer changes (run --commit or --push)"
-        /usr/bin/git status --short || true
-        return 0
-      fi
-    fi
-
-    if [[ "${do_push}" -eq 1 ]]; then
-      local result
-      result="$(push_if_ahead)"
-      if [[ "${result}" == "PUSHED" ]]; then
-        ok "UPDATED ${name}: pushed"
-      elif [[ "${result}" == "FAILED" ]]; then
-        return 1
-      else
-        vinfo "OK     ${name}: nothing to push"
-      fi
-    fi
-
-    verbose_git_status_sb
-    return 0
-  )
-}
-
-pins_consistency_check() {
-  local repo repo_name
-  local ref_repo ref_classlib ref_qmc ref_tests
-  local mismatch=0
-
-  typeset -A classlib_sha qmc_sha tests_sha
-
-  is_full_sha() {
-    local v="$1"
-    [[ ${v} =~ ^[0-9A-Fa-f]{40}$ ]]
-  }
-
-  short_or_tag() {
-    local v="$1"
-    if [[ -z "$v" ]]; then
-      echo "-"
-    elif is_full_sha "$v"; then
-      echo "${v:0:12}"
-    else
-      echo "$v"
-    fi
-  }
-
-  for repo in "${ACTIVE_REPOS[@]}"; do
-    repo_name="${repo##*/}"
-    if [[ ! -d "${repo}/.git" && ! -f "${repo}/.git" ]]; then
-      classlib_sha[$repo_name]="NO_REPO"
-      qmc_sha[$repo_name]="NO_REPO"
-      tests_sha[$repo_name]="NO_REPO"
-      continue
-    fi
-
-    classlib_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse HEAD:classlib 2>/dev/null || echo "MISSING")
-    qmc_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse HEAD:qmcsoftware 2>/dev/null || echo "MISSING")
-
-    if /usr/bin/git -C "${repo}" ls-files --stage -- assets/tests/archive 2>/dev/null | awk '{print $1}' | grep -qx '160000'; then
-      tests_sha[$repo_name]=$(/usr/bin/git -C "${repo}" rev-parse HEAD:assets/tests/archive 2>/dev/null || echo "MISSING")
-    else
-      tests_sha[$repo_name]="-"
-    fi
-  done
-
-  ref_repo=""
-  ref_classlib=""
-  ref_qmc=""
-  ref_tests=""
-
-  for repo in "${ACTIVE_REPOS[@]}"; do
-    repo_name="${repo##*/}"
-    if is_full_sha "${classlib_sha[$repo_name]}" && is_full_sha "${qmc_sha[$repo_name]}"; then
-      ref_repo="${repo_name}"
-      ref_classlib="${classlib_sha[$repo_name]}"
-      ref_qmc="${qmc_sha[$repo_name]}"
-      if is_full_sha "${tests_sha[$repo_name]}"; then
-        ref_tests="${tests_sha[$repo_name]}"
-      fi
-      break
-    fi
-  done
-
-  if [[ -z "${ref_repo}" ]]; then
-    warn "WARNING: cannot determine reference submodule pins"
-    return 0
-  fi
-
-  for repo in "${ACTIVE_REPOS[@]}"; do
-    repo_name="${repo##*/}"
-
-    [[ "${classlib_sha[$repo_name]}" != "${ref_classlib}" ]] && mismatch=1
-    [[ "${qmc_sha[$repo_name]}" != "${ref_qmc}" ]] && mismatch=1
-
-    if [[ -n "${ref_tests}" ]]; then
-      if [[ "${tests_sha[$repo_name]}" != "-" && "${tests_sha[$repo_name]}" != "NO_REPO" && "${tests_sha[$repo_name]}" != "MISSING" ]]; then
-        [[ "${tests_sha[$repo_name]}" != "${ref_tests}" ]] && mismatch=1
-      fi
-    fi
-  done
-
-  printf "%-20s  %-12s  %-12s  %-12s\n" "repo" "classlib" "qmcsoftware" "tests-archive"
-  for repo in "${ACTIVE_REPOS[@]}"; do
-    repo_name="${repo##*/}"
-
-    test_display="$(short_or_tag "${tests_sha[$repo_name]}")"
-    [[ -z "${test_display}" ]] && test_display="-"
-
-    printf "%-20s  %-12s  %-12s  %-12s\n" \
-      "${repo_name}" \
-      "$(short_or_tag "${classlib_sha[$repo_name]}")" \
-      "$(short_or_tag "${qmc_sha[$repo_name]}")" \
-      "${test_display}"
-  done
-
-  if (( mismatch )); then
-    warn "WARNING: submodule pins differ across active repos"
-    warn "Reference: ${ref_repo} (classlib ${ref_classlib:0:12}, qmcsoftware ${ref_qmc:0:12}${ref_tests:+, tests ${ref_tests:0:12}})"
-  else
-    info "OK: classlib and qmcsoftware pins match across all repos"
-    if [[ -n "${ref_tests}" ]]; then
-      info "OK: tests archive pins match across repos that contain it"
-    else
-      info "OK: tests archive not present in reference repo (skipping check)"
-    fi
-  fi
-}
-
-health_summary() {
-  local repo repo_name line
-  if [[ "${DO_HEALTH}" -ne 1 && "${VERBOSE}" -ne 1 ]]; then
-    return 0
-  fi
-
-  if ! command -v repo-health >/dev/null 2>&1; then
-    warn "NOPE  repo-health not on PATH"
-    return 0
-  fi
-
-  banner "Repo health summary"
-  for repo in "${ACTIVE_REPOS[@]}"; do
-    repo_name="${repo##*/}"
-    if [[ -d "${repo}/.git" || -f "${repo}/.git" ]]; then
-      (
-        cd "${repo}"
-        line="$(repo-health --short 2>&1 || true)"
-        [[ -n "${line}" ]] && echo "${line}" || warn "NOPE  ${repo_name}  repo-health produced no output"
-      )
-    else
-      warn "NOPE  ${repo_name}  missing repo"
-    fi
-  done
-}
-
-final_verdict() {
-  if [[ "${ERROR_COUNT}" -gt 0 ]]; then
-    err_banner "FAILED: ${ERROR_COUNT} error(s)"
-    return 1
-  fi
-  if [[ "${SKIP_COUNT}" -gt 0 ]]; then
-    warn_banner "INCOMPLETE RUN: ${SKIP_COUNT} SKIP condition(s)"
-    return 1
-  fi
-  if [[ "${UPDATE_COUNT}" -gt 0 ]]; then
-    banner "SUCCESS: ${UPDATE_COUNT} update(s) applied"
-    return 0
-  fi
-  banner "SUCCESS: all repos already in sync"
-  return 0
-}
+shortsha() { print -r -- "${1[1,12]}"; }
 
 for arg in "$@"; do
   case "${arg}" in
@@ -472,49 +61,418 @@ for arg in "$@"; do
     --verbose) VERBOSE=1 ;;
     --health) DO_HEALTH=1 ;;
     --help|-h) usage; exit 0 ;;
-    *)
-      err "ERROR: unknown argument: ${arg}"
-      usage
-      exit 2
-      ;;
+    *) failure "ERROR: unknown argument: ${arg}"; usage; exit 2 ;;
   esac
 done
-
-if [[ "${do_push}" -eq 1 ]]; then
+if (( do_push == 1 )); then
   do_commit=1
   do_promote=1
 fi
 
-# Active project repositories only. Completed project repositories remain pinned and
-# are maintained explicitly rather than updated by routine synchronization.
-#
-# Order matters for pins_consistency_check: when possible, place first an
-# active repo containing assets/tests/archive.
-ACTIVE_REPOS=(
-#  "$HOME/SoftwareRepositories/MATH476Spring2026"
-#  "$HOME/SoftwareRepositories/MATH563Spring2026"
-  "$HOME/SoftwareRepositories/MATH565Fall2026"
+# Registry format: name<TAB>local path<TAB>clone URL<TAB>optional branch.
+# Each entry is one record, so repository fields cannot become misaligned.
+# Leave branch empty to use the remote default on clone and the checked-out
+# branch/upstream thereafter.
+typeset -a REPOSITORIES=(
+  $'MATH565Fall2026\t'"$HOME"$'/SoftwareRepositories/MATH565Fall2026\tgit@github.com:fjhickernell/MATH565Fall2026.git\t'
+  $'GeneralizedTractability\t'"$HOME"$'/SoftwareRepositories/GeneralizedTractability\thttps://git@git.overleaf.com/69c15e17b47160e5e81283e4\t'
 )
 
-if [[ "${do_promote}" -eq 1 ]]; then
-  banner "Sync active repos started (PROMOTE)"
-else
-  banner "Sync active repos started (PINNED)"
+# A tab-delimited override is useful for isolated validation and automation.
+# Blank lines and lines beginning with # are ignored.
+if [[ -n "${SYNC_ACTIVE_REGISTRY_FILE:-}" ]]; then
+  if [[ ! -r "$SYNC_ACTIVE_REGISTRY_FILE" ]]; then
+    failure "ERROR: cannot read registry file: ${SYNC_ACTIVE_REGISTRY_FILE}"
+    exit 2
+  fi
+  REPOSITORIES=()
+  registry_line=""
+  while IFS= read -r registry_line || [[ -n "$registry_line" ]]; do
+    [[ -z "$registry_line" || "$registry_line" == \#* ]] && continue
+    REPOSITORIES+=("$registry_line")
+  done < "$SYNC_ACTIVE_REGISTRY_FILE"
 fi
 
-for repo in "${ACTIVE_REPOS[@]}"; do
-  if ! sync_project_repo "${repo}" "${do_promote}" "${do_commit}" "${do_push}"; then
-    err_banner "Sync active repos finished"
-    exit 1
+REPO_NAME=""
+REPO_PATH=""
+REPO_URL=""
+REPO_BRANCH=""
+parse_repository_record() {
+  local record="$1"
+  local -a fields
+  fields=("${(@ps:\t:)record}")
+  if (( ${#fields} < 3 || ${#fields} > 4 )); then
+    failure "ERROR: invalid repository registry record"
+    return 1
   fi
+  REPO_NAME="${fields[1]}"
+  REPO_PATH="${fields[2]}"
+  REPO_URL="${fields[3]}"
+  REPO_BRANCH="${fields[4]-}"
+  if [[ -z "$REPO_NAME" || -z "$REPO_PATH" || -z "$REPO_URL" ]]; then
+    failure "ERROR: repository registry requires name, path, and clone URL"
+    return 1
+  fi
+}
+
+REPO_WAS_CLONED=0
+ensure_repository_exists() {
+  REPO_WAS_CLONED=0
+  if [[ -e "$REPO_PATH" ]]; then
+    return 0
+  fi
+  if ! /bin/mkdir -p "${REPO_PATH:h}"; then
+    failure "ERROR  ${REPO_NAME}: cannot create parent directory"
+    return 1
+  fi
+  local -a clone_args=(clone)
+  [[ -n "$REPO_BRANCH" ]] && clone_args+=(--branch "$REPO_BRANCH")
+  clone_args+=("$REPO_URL" "$REPO_PATH")
+  vinfo "CLONE  ${REPO_NAME}: ${REPO_URL}"
+  if ! /usr/bin/git "${clone_args[@]}" >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: clone failed from ${REPO_URL}"
+    return 1
+  fi
+  REPO_WAS_CLONED=1
+}
+
+validate_repository_and_remote() {
+  if [[ ! -d "$REPO_PATH" ]]; then
+    failure "ERROR  ${REPO_NAME}: path exists but is not a directory"
+    return 1
+  fi
+  if ! /usr/bin/git -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: path exists but is not a Git repository"
+    return 1
+  fi
+  local actual_url
+  if ! actual_url=$(/usr/bin/git -C "$REPO_PATH" remote get-url origin 2>/dev/null); then
+    failure "ERROR  ${REPO_NAME}: origin remote is missing"
+    return 1
+  fi
+  if [[ "$actual_url" != "$REPO_URL" ]]; then
+    warn "${REPO_NAME}: origin differs from registry (using existing origin)"
+    vinfo "       configured: ${REPO_URL}"
+    vinfo "       existing:   ${actual_url}"
+  fi
+}
+
+typeset -a SUBMODULE_PATHS=()
+typeset -a MANAGED_PATHS=()
+has_gitlink() {
+  local repo="$1" path="$2" entry
+  entry=$(/usr/bin/git -C "$repo" ls-files --stage -- "$path" 2>/dev/null || true)
+  [[ "$entry" == 160000\ * ]]
+}
+
+inspect_submodule_metadata() {
+  SUBMODULE_PATHS=()
+  MANAGED_PATHS=()
+  if ! /usr/bin/git -C "$REPO_PATH" ls-files --error-unmatch -- .gitmodules >/dev/null 2>&1; then
+    return 0
+  fi
+  local line path
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    path="${line#* }"
+    if has_gitlink "$REPO_PATH" "$path"; then
+      SUBMODULE_PATHS+=("$path")
+      case "$path" in
+        classlib|qmcsoftware|assets/tests/archive) MANAGED_PATHS+=("$path") ;;
+      esac
+    else
+      warn "${REPO_NAME}: .gitmodules path is not a committed gitlink: ${path}"
+    fi
+  done < <(/usr/bin/git -C "$REPO_PATH" config -f .gitmodules \
+    --get-regexp '^submodule\..*\.path$' 2>/dev/null || true)
+}
+
+status_is_clean() {
+  [[ -z "$(/usr/bin/git -C "$REPO_PATH" status --porcelain=v1 -z --untracked-files=normal)" ]]
+}
+
+only_recognized_pointer_changes() {
+  local record xy path renamed_path
+  local status_file
+  status_file=$(/usr/bin/mktemp)
+  /usr/bin/git -C "$REPO_PATH" status --porcelain=v1 -z \
+    --untracked-files=normal >| "$status_file"
+  [[ ! -s "$status_file" ]] && { /bin/rm -f "$status_file"; return 0; }
+
+  while IFS= read -r -d $'\0' record; do
+    xy="${record[1,2]}"
+    path="${record[4,-1]}"
+    if [[ "$xy" == *R* || "$xy" == *C* ]]; then
+      if ! IFS= read -r -d $'\0' renamed_path; then
+        /bin/rm -f "$status_file"
+        return 1
+      fi
+      /bin/rm -f "$status_file"
+      return 1
+    fi
+    if [[ "$xy" == '??' || "$xy" == *D* || "$xy" == *A* ]] ||
+       ! has_gitlink "$REPO_PATH" "$path"; then
+      /bin/rm -f "$status_file"
+      return 1
+    fi
+  done < "$status_file"
+  /bin/rm -f "$status_file"
+  return 0
+}
+
+prepare_branch() {
+  local current
+  current=$(/usr/bin/git -C "$REPO_PATH" branch --show-current)
+  if [[ -z "$current" ]]; then
+    failure "ERROR  ${REPO_NAME}: detached HEAD; configure or check out a branch"
+    return 1
+  fi
+  if [[ -n "$REPO_BRANCH" && "$current" != "$REPO_BRANCH" ]]; then
+    failure "ERROR  ${REPO_NAME}: branch ${current} differs from configured ${REPO_BRANCH}"
+    return 1
+  fi
+  if ! /usr/bin/git -C "$REPO_PATH" rev-parse --verify '@{u}' >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: branch ${current} has no upstream"
+    return 1
+  fi
+}
+
+SYNC_CHANGED=0
+fast_forward_sync() {
+  SYNC_CHANGED=0
+  local old new
+  old=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)
+  if ! /usr/bin/git -C "$REPO_PATH" -c fetch.recurseSubmodules=no \
+    fetch origin >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: fetch from origin failed"
+    return 1
+  fi
+  if ! /usr/bin/git -C "$REPO_PATH" merge --ff-only '@{u}' >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: fast-forward-only update failed"
+    return 1
+  fi
+  new=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)
+  [[ "$old" != "$new" ]] && SYNC_CHANGED=1
+}
+
+pinned_submodule_checkout() {
+  (( ${#SUBMODULE_PATHS} == 0 )) && return 0
+  if ! /usr/bin/git -C "$REPO_PATH" submodule sync --recursive >/dev/null 2>&1 ||
+     ! /usr/bin/git -C "$REPO_PATH" submodule update --init --recursive \
+       --checkout >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: pinned submodule checkout failed"
+    return 1
+  fi
+}
+
+ensure_qmcsoftware_fetch_policy() {
+  local qmc_path="${REPO_PATH}/qmcsoftware"
+  [[ -e "$qmc_path" ]] || return 0
+  /usr/bin/git -C "$qmc_path" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  /usr/bin/git -C "$qmc_path" remote get-url origin >/dev/null 2>&1 || return 0
+  /usr/bin/git -C "$qmc_path" config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
+  /usr/bin/git -C "$qmc_path" config --add remote.origin.fetch \
+    '+refs/heads/develop:refs/remotes/origin/develop'
+  /usr/bin/git -C "$qmc_path" config --add remote.origin.fetch \
+    '+refs/tags/*:refs/tags/*'
+  /usr/bin/git -C "$qmc_path" fetch --prune origin >/dev/null 2>&1 || true
+}
+
+promote_managed_submodules() {
+  (( ${#SUBMODULE_PATHS} == 0 )) && return 0
+  if (( ${#MANAGED_PATHS} == 0 )); then
+    warn "${REPO_NAME}: no promotion rule for its submodules; leaving them pinned"
+    return 0
+  fi
+  if ! command -v update-submodules.sh >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: managed submodules require update-submodules.sh"
+    return 1
+  fi
+  local old_pwd="$PWD"
+  if ! builtin cd "$REPO_PATH"; then
+    failure "ERROR  ${REPO_NAME}: cannot enter repository"
+    return 1
+  fi
+  local rc=0
+  update-submodules.sh >/dev/null 2>&1 || rc=$?
+  builtin cd "$old_pwd"
+  if (( rc != 0 )); then
+    failure "ERROR  ${REPO_NAME}: update-submodules.sh failed"
+    return 1
+  fi
+}
+
+commit_pointer_changes() {
+  status_is_clean && return 0
+  if ! only_recognized_pointer_changes; then
+    failure "ERROR  ${REPO_NAME}: changes are not limited to submodule pointers"
+    return 1
+  fi
+  if (( do_commit == 0 )); then
+    warn "${REPO_NAME}: uncommitted submodule pointer changes (run --commit or --push)"
+    return 2
+  fi
+  local -a changed_paths=()
+  local path
+  for path in "${SUBMODULE_PATHS[@]}"; do
+    if ! /usr/bin/git -C "$REPO_PATH" diff --quiet HEAD -- "$path"; then
+      changed_paths+=("$path")
+    fi
+  done
+  (( ${#changed_paths} > 0 )) || return 0
+  if ! /usr/bin/git -C "$REPO_PATH" add -- "${changed_paths[@]}" ||
+     ! /usr/bin/git -C "$REPO_PATH" commit -m \
+       'Update submodule pointers' >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: pointer commit failed"
+    return 1
+  fi
+  SYNC_CHANGED=1
+}
+
+push_if_requested() {
+  (( do_push == 0 )) && return 0
+  local ahead
+  ahead=$(/usr/bin/git -C "$REPO_PATH" rev-list --count '@{u}..HEAD')
+  (( ahead == 0 )) && return 0
+  if ! /usr/bin/git -C "$REPO_PATH" push >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: push failed"
+    return 1
+  fi
+  SYNC_CHANGED=1
+}
+
+# Return: 0 current, 10 cloned, 11 updated, 20 skipped, 30 failed.
+sync_repository() {
+  local record="$1"
+  parse_repository_record "$record" || return 30
+  ensure_repository_exists || return 30
+  validate_repository_and_remote || return 30
+  inspect_submodule_metadata
+
+  if ! only_recognized_pointer_changes; then
+    failure "SKIP   ${REPO_NAME}: dirty working tree"
+    (( VERBOSE == 1 )) &&
+      /usr/bin/git -C "$REPO_PATH" status --short >&2 || true
+    return 20
+  fi
+  # Existing pointer changes may only proceed for an explicitly requested commit.
+  if ! status_is_clean && (( do_commit == 0 )); then
+    failure "SKIP   ${REPO_NAME}: uncommitted submodule pointer changes"
+    return 20
+  fi
+
+  prepare_branch || return 30
+  fast_forward_sync || return 30
+  inspect_submodule_metadata
+  pinned_submodule_checkout || return 30
+  if (( do_promote == 1 )); then
+    promote_managed_submodules || return 30
+  fi
+  if (( ${MANAGED_PATHS[(Ie)qmcsoftware]} > 0 )); then
+    ensure_qmcsoftware_fetch_policy
+  fi
+  local commit_rc=0
+  commit_pointer_changes || commit_rc=$?
+  (( commit_rc == 1 )) && return 30
+  (( commit_rc == 2 )) && return 20
+  push_if_requested || return 30
+
+  (( VERBOSE == 1 && QUIET == 0 )) &&
+    /usr/bin/git -C "$REPO_PATH" status -sb || true
+  (( REPO_WAS_CLONED == 1 )) && return 10
+  (( SYNC_CHANGED == 1 )) && return 11
+  return 0
+}
+
+typeset -a COURSE_REPOS=()
+collect_course_repositories() {
+  COURSE_REPOS=()
+  local record
+  for record in "${REPOSITORIES[@]}"; do
+    parse_repository_record "$record" || continue
+    /usr/bin/git -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
+      continue
+    if has_gitlink "$REPO_PATH" classlib && has_gitlink "$REPO_PATH" qmcsoftware; then
+      COURSE_REPOS+=("$record")
+    fi
+  done
+}
+
+pins_consistency_check() {
+  collect_course_repositories
+  (( ${#COURSE_REPOS} < 2 )) && {
+    vinfo "Pin consistency: ${#COURSE_REPOS} qualifying repository/repositories; no comparison needed"
+    return 0
+  }
+  local record ref_class="" ref_qmc="" ref_tests="" mismatch=0
+  local cls qmc tests display_name
+  for record in "${COURSE_REPOS[@]}"; do
+    parse_repository_record "$record" || continue
+    cls=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD:classlib)
+    qmc=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD:qmcsoftware)
+    tests=""
+    has_gitlink "$REPO_PATH" assets/tests/archive &&
+      tests=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD:assets/tests/archive)
+    if [[ -z "$ref_class" ]]; then
+      ref_class="$cls"; ref_qmc="$qmc"
+    else
+      [[ "$cls" != "$ref_class" || "$qmc" != "$ref_qmc" ]] && mismatch=1
+    fi
+    if [[ -n "$tests" ]]; then
+      [[ -n "$ref_tests" && "$tests" != "$ref_tests" ]] && mismatch=1
+      [[ -z "$ref_tests" ]] && ref_tests="$tests"
+    fi
+    display_name="$REPO_NAME"
+    vinfo "PINS   ${display_name}: classlib $(shortsha "$cls"), qmcsoftware $(shortsha "$qmc")${tests:+, tests $(shortsha "$tests")}"
+  done
+  (( mismatch == 1 )) && warn "submodule pins differ across qualifying course repositories"
+  (( mismatch == 0 )) && vinfo "Pin consistency: shared course submodule pins match"
+}
+
+health_summary() {
+  (( DO_HEALTH == 1 || VERBOSE == 1 )) || return 0
+  if ! command -v repo-health >/dev/null 2>&1; then
+    warn "repo-health not on PATH"
+    return 0
+  fi
+  local record line
+  for record in "${REPOSITORIES[@]}"; do
+    parse_repository_record "$record" || continue
+    /usr/bin/git -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
+      continue
+    line=$(cd "$REPO_PATH" && repo-health --short 2>&1 || true)
+    [[ -n "$line" ]] && plain_log "$line"
+  done
+}
+
+(( do_promote == 1 )) &&
+  banner "Sync active repos started (PROMOTE)" ||
+  banner "Sync active repos started (PINNED)"
+
+local_record=""
+for local_record in "${REPOSITORIES[@]}"; do
+  rc=0
+  sync_repository "$local_record" || rc=$?
+  case "$rc" in
+    0) info "OK     ${REPO_NAME}: already current @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    10) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "CLONED ${REPO_NAME}: ready @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    11) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "UPDATED ${REPO_NAME}: synchronized @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    20) SKIP_COUNT=$((SKIP_COUNT + 1)) ;;
+    *) ERROR_COUNT=$((ERROR_COUNT + 1)) ;;
+  esac
 done
 
 pins_consistency_check || true
 health_summary || true
 
-if final_verdict; then
-  exit 0
-else
-  err_banner "Sync active repos finished"
+if (( ERROR_COUNT > 0 )); then
+  err_banner "FAILED: ${ERROR_COUNT} error(s), ${SKIP_COUNT} skip(s)"
   exit 1
+elif (( SKIP_COUNT > 0 )); then
+  warn_banner "INCOMPLETE RUN: ${SKIP_COUNT} skip condition(s)"
+  exit 1
+elif (( UPDATE_COUNT > 0 )); then
+  banner "SUCCESS: ${UPDATE_COUNT} repository/repositories changed"
+else
+  banner "SUCCESS: all repos already in sync"
 fi
