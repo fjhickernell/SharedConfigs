@@ -171,10 +171,10 @@ inspect_submodule_metadata() {
   if ! /usr/bin/git -C "$REPO_PATH" ls-files --error-unmatch -- .gitmodules >/dev/null 2>&1; then
     return 0
   fi
-  local line path
-  while IFS= read -r line; do
-    [[ -z "$line" ]] && continue
-    path="${line#* }"
+  local record path
+  while IFS= read -r -d $'\0' record; do
+    [[ -z "$record" ]] && continue
+    path="${record#*$'\n'}"
     if has_gitlink "$REPO_PATH" "$path"; then
       SUBMODULE_PATHS+=("$path")
       case "$path" in
@@ -183,8 +183,9 @@ inspect_submodule_metadata() {
     else
       warn "${REPO_NAME}: .gitmodules path is not a committed gitlink: ${path}"
     fi
-  done < <(/usr/bin/git -C "$REPO_PATH" config -f .gitmodules \
+  done < <(/usr/bin/git -C "$REPO_PATH" config -z -f .gitmodules \
     --get-regexp '^submodule\..*\.path$' 2>/dev/null || true)
+  return 0
 }
 
 status_is_clean() {
@@ -211,6 +212,7 @@ only_recognized_pointer_changes() {
       return 1
     fi
     if [[ "$xy" == '??' || "$xy" == *D* || "$xy" == *A* ]] ||
+       (( ${SUBMODULE_PATHS[(Ie)$path]} == 0 )) ||
        ! has_gitlink "$REPO_PATH" "$path"; then
       /bin/rm -f "$status_file"
       return 1
@@ -253,6 +255,7 @@ fast_forward_sync() {
   fi
   new=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)
   [[ "$old" != "$new" ]] && SYNC_CHANGED=1
+  return 0
 }
 
 pinned_submodule_checkout() {
@@ -431,6 +434,7 @@ pins_consistency_check() {
 
 health_summary() {
   (( DO_HEALTH == 1 || VERBOSE == 1 )) || return 0
+  (( QUIET == 0 )) || return 0
   if ! command -v repo-health >/dev/null 2>&1; then
     warn "repo-health not on PATH"
     return 0
