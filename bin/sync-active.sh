@@ -75,7 +75,7 @@ fi
 # branch/upstream thereafter.
 typeset -a REPOSITORIES=(
   $'MATH565Fall2026\t'"$HOME"$'/SoftwareRepositories/MATH565Fall2026\tgit@github.com:fjhickernell/MATH565Fall2026.git\t'
-  $'GeneralizedTractability\t'"$HOME"$'/SoftwareRepositories/GeneralizedTractability\thttps://git@git.overleaf.com/69c15e17b47160e5e81283e4\t'
+  $'GeneralizedTractabilityCones\t'"$HOME"$'/SoftwareRepositories/GeneralizedTractabilityCones\thttps://git@git.overleaf.com/69c15e17b47160e5e81283e4\t'
 )
 
 # A tab-delimited override is useful for isolated validation and automation.
