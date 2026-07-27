@@ -14,11 +14,11 @@ Checkpoint
 
 perform the following workflow:
 
-1. Review the current work and the Git diff.
-2. Confirm that the changes match the task and do not include unrelated files.
+1. Review the current work and the Git diff, including all tracked modifications, deletions, renames, and untracked files.
+2. Confirm which changes belong in the repository, including newly created source, documentation, configuration, test, and asset files, and exclude only files that are clearly temporary, generated, ignored, secret, or unrelated to the repository work.
 3. Run the relevant validation, tests, builds, linting, or syntax checks appropriate to the repository.
 4. If validation fails, diagnose and fix problems when reasonably possible. Do not commit known broken work merely because `Checkpoint` was requested.
-5. Stage only the intended changes.
+5. Stage all tracked changes and all new files that belong in the repository. Do not omit relevant files simply because they were not explicitly mentioned in the prompt.
 6. Create a concise, meaningful commit message based on the completed work.
 7. Commit the changes.
 8. Push the current branch to its configured upstream.
@@ -55,7 +55,7 @@ Do not silently rewrite a user-supplied checkpoint message unless it is invalid 
 
 ### Safety and scope
 
-- `Checkpoint` is explicit authorization to commit and push the work associated with the current task.
+- `Checkpoint` is explicit authorization to validate, commit, and push all repository changes that belong in the repository, subject to the exclusions below.
 - Do not ask again for permission to commit or push after receiving `Checkpoint`.
 - Do not interpret casual uses of the word “checkpoint” inside a longer sentence as authorization. The command must begin the user's message.
 - Never include unrelated pre-existing changes without clearly identifying them and obtaining direction.

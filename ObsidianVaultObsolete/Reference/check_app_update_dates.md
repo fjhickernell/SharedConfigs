@@ -1,1 +1,0 @@
-/Users/fredjhickernell/Documents/SharedConfigs/Notes/check_app_update_dates.md
