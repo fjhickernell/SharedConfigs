@@ -130,7 +130,7 @@ sync_repo() {
 
 HCL="$HOME/SoftwareRepositories/HickernellAcademicLib"
 QMC="$HOME/SoftwareRepositories/QMCSoftware"
-QMC_WEBSITE="$HOME/SoftwareRepositories/qmcpy-website"
+QMC_WEBSITE="$HOME/SoftwareRepositories/qmcsoftware-website"
 HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
 
 banner "Sync dev started"
