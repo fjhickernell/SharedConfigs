@@ -74,6 +74,7 @@ fi
 # Leave branch empty to use the remote default on clone and the checked-out
 # branch/upstream thereafter.
 typeset -a REPOSITORIES=(
+  $'MATH332Fall2026\t'"$HOME"$'/SoftwareRepositories/MATH332Fall2026\tgit@github.com:fjhickernell/MATH332Fall2026.git\t'
   $'MATH565Fall2026\t'"$HOME"$'/SoftwareRepositories/MATH565Fall2026\tgit@github.com:fjhickernell/MATH565Fall2026.git\t'
   $'GeneralizedTractabilityCones\t'"$HOME"$'/SoftwareRepositories/GeneralizedTractabilityCones\thttps://git@git.overleaf.com/69c15e17b47160e5e81283e4\t'
 )
