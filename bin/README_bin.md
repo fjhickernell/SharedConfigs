@@ -191,28 +191,37 @@ Creates an Excel version of the inventory for filtering and comparison.
 
 The authoritative environment-maintenance tool for QMCPy development and teaching.
 
-#### **Normal sync (fast):**
+#### **Full compatibility validation (default):**
 
 ```
 sync-qmcpy-env.sh
 ```
 
-This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal requirements, refreshes the `qmcpy` kernel, and runs the same validation as an upgrade without requesting a general environment upgrade.
+This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal requirements, refreshes and validates the `qmcpy` kernel, runs machine-local checks, and then executes the canonical notebooks, stable Quarto fixture, and advisory active-course checks.
 
-#### **Upgrade sync (academic maintenance: May 15 / Aug 1 / Dec 15):**
+Add `--upgrade` at an academic maintenance checkpoint to update the `qmcpy` environment first:
 
 ```
 sync-qmcpy-env.sh --upgrade
 ```
 
-This performs the normal synchronization and validation, plus a conda environment update and upgrades of the explicitly maintained personal requirements. Editable source is reinstalled without re-resolving QMCPy's self-referential development/documentation extras; the mandatory `pip check` detects missing or incompatible requirements. It does not update base Conda.
+#### **Machine-local maintenance and validation:**
+
+```
+sync-qmcpy-env.sh --machine-only
+sync-qmcpy-env.sh --upgrade --machine-only
+```
+
+Machine-only mode performs the same local synchronization, editable installs, kernel verification, imports, version reporting, and `pip check`, but skips notebook, Quarto, and active-course compatibility checks. Use it on an additional Mac only after full compatibility validation has passed for the same QMCSoftware and HickernellAcademicLib revisions and a comparable environment state. Reports make the host, architecture, full repository revisions, interpreters, and package versions conspicuous.
+
+The upgrade option performs a Conda update within the `qmcpy` environment and upgrades the explicitly maintained personal requirements. It never updates base Conda.
 
 Required environment checks use canonical QMCPy notebooks and `python/qmcpy-env-smoke.qmd`. Advisory active course checks use `settings/qmcpy-env.conf`, which is the only file normally changed at a semester transition. Course warnings do not cause feature-branch merges, notebook edits, canonical checkout changes, or a failed environment status.
 
-Successful runs write timestamped and latest validation reports plus a cumulative history under `reports/qmcpy-env/`. Reports clearly show `PASS`, `PASS WITH COURSE WARNINGS`, required environment results, and advisory active course results. Detailed output from a failed course check goes to a timestamped course-warning log instead of overwhelming the console.
+Successful runs write timestamped and latest validation reports plus a cumulative history under `reports/qmcpy-env/`. Machine-only reports use the top-level status `MACHINE-LOCAL PASS` and mark full compatibility `NOT RUN`; full reports use `PASS` or `PASS WITH COURSE WARNINGS`. Detailed output from a failed course check goes to a timestamped course-warning log instead of overwhelming the console.
 
 **Recommendation:**  
-Run `--upgrade` first on one primary Mac and review its report. After SharedConfigs has synchronized, run the same command on each additional Mac. A Mac without the configured active course checkout may report an advisory course warning while its required environment validation still passes.
+Run full validation again when relevant source revisions change, important Python or dependency versions change materially, representative active-course files change, or the next machine has a materially different architecture. For the current rollout: run full upgrade validation on the M5, machine-only upgrade on the Mini if its revisions and environment are comparable, full upgrade validation on the Intel Mac, and machine-only upgrade on the M3 if it remains comparable to the Apple Silicon reference result.
 
 ---
 

@@ -29,10 +29,12 @@ error() {
 
 usage() {
   cat <<'EOF'
-Usage: sync-qmcpy-env.sh [--upgrade]
+Usage: sync-qmcpy-env.sh [--upgrade] [--machine-only]
 
-Synchronize editable QMCPy development installs and run environment smoke tests.
+Synchronize editable QMCPy development installs and validate the environment.
 Use --upgrade for the May 15, August 1, and December 15 academic maintenance runs.
+Use --machine-only to skip notebook, Quarto, and active-course compatibility checks.
+Options may be supplied in either order. Full compatibility validation is the default.
 
 Optional environment overrides:
   CONDA_ROOT                 Miniconda root (default: /opt/miniconda3)
@@ -55,29 +57,29 @@ EOF
 
 UPGRADE_FLAG=""
 DO_CONDA_UPGRADE="0"
+DO_FULL_VALIDATION="1"
 
-case "${1:-}" in
-  "") ;;
-  --upgrade)
-    UPGRADE_FLAG="--upgrade"
-    DO_CONDA_UPGRADE="1"
-    ;;
-  -h|--help)
-    usage
-    exit 0
-    ;;
-  *)
-    error "unknown option: $1"
-    usage >&2
-    exit 2
-    ;;
-esac
-
-if (( $# > 1 )); then
-  error "too many arguments"
-  usage >&2
-  exit 2
-fi
+while (( $# > 0 )); do
+  case "$1" in
+    --upgrade)
+      UPGRADE_FLAG="--upgrade"
+      DO_CONDA_UPGRADE="1"
+      ;;
+    --machine-only)
+      DO_FULL_VALIDATION="0"
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      error "unknown option: $1"
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
 
 CONDA_ROOT="${CONDA_ROOT:-/opt/miniconda3}"
 CONDA_EXE="$CONDA_ROOT/bin/conda"
@@ -217,16 +219,23 @@ course_warn() {
 }
 
 banner "qmcpy environment sync started"
-echo "Mode: $([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)"
+MAINTENANCE_ACTION="$([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)"
+VALIDATION_SCOPE="$([[ "$DO_FULL_VALIDATION" == "1" ]] && echo "full compatibility" || echo "machine only")"
+echo "Maintenance action: $MAINTENANCE_ACTION"
+echo "Validation scope: $VALIDATION_SCOPE"
 echo "Maintenance config: ${MAINTENANCE_CONFIG:-not found}"
-echo "Active course repository: ${ACTIVE_COURSE_REPO_PATH:-not configured}"
-if (( ${#NOTEBOOKS[@]} > 0 )); then
-  printf "Environment notebooks:\n"
-  printf "  %s\n" "${NOTEBOOKS[@]}"
+if [[ "$DO_FULL_VALIDATION" == "1" ]]; then
+  echo "Active course repository: ${ACTIVE_COURSE_REPO_PATH:-not configured}"
+  if (( ${#NOTEBOOKS[@]} > 0 )); then
+    printf "Canonical notebooks:\n"
+    printf "  %s\n" "${NOTEBOOKS[@]}"
+  else
+    echo "Canonical notebooks: not found"
+  fi
+  echo "Stable Quarto document: $ENV_QUARTO_DOCUMENT"
 else
-  echo "Environment notebooks: not found"
+  echo "Compatibility checks: skipped by --machine-only"
 fi
-echo "Environment Quarto document: $ENV_QUARTO_DOCUMENT"
 
 python -m pip install --upgrade pip wheel
 python -m pip install "setuptools<82"
@@ -241,7 +250,7 @@ if [[ "$ACTUAL_PYTHON" != "$EXPECTED_PYTHON" ]]; then
   exit 1
 fi
 
-section "Required environment setup"
+section "Machine-local environment setup"
 
 for repo in "$QMCPY_REPO" "$HCL_REPO"; do
   if [[ -n "$(git -C "$repo" status --porcelain)" ]]; then
@@ -276,7 +285,7 @@ else
   warn "personal requirements file not found: $PERSONAL_REQUIREMENTS"
 fi
 
-section "Required environment kernel validation"
+section "Machine-local kernel validation"
 
 python -m ipykernel install --user --name "$QMCPY_ENV_NAME" --display-name "$QMCPY_ENV_NAME"
 jupyter kernelspec list
@@ -298,36 +307,50 @@ if [[ -d "${HOME}/Library/Jupyter/kernels/qmcpy-dev" ]]; then
   warn "legacy qmcpy-dev kernel still exists; remove it if no workflow uses it"
 fi
 
-section "Required environment package validation"
+section "Machine-local package validation"
 
 python -m pip check
 QMCPY_REPO="$QMCPY_REPO" HCL_REPO="$HCL_REPO" \
   python "$SHARED_CONFIGS_ROOT/python/dev_check.py"
 
-python - <<'PY'
+PACKAGE_VERSIONS="$(python - <<'PY'
 import jupyterlab
 import matplotlib
 import numpy
+import qmcpy
 import scipy
 import yaml
 
+print("qmcpy:", qmcpy.__version__)
 print("numpy:", numpy.__version__)
 print("scipy:", scipy.__version__)
 print("matplotlib:", matplotlib.__version__)
 print("jupyterlab:", jupyterlab.__version__)
-print("yaml: import OK")
+print("PyYAML:", yaml.__version__)
 PY
+)"
+print -r -- "$PACKAGE_VERSIONS"
 
-section "Required environment notebook validation"
+COURSE_STATUS="NOT RUN"
+COURSE_REQUIREMENTS_STATUS="NOT RUN"
+COURSE_NOTEBOOK_STATUS="NOT RUN"
+COURSE_QUARTO_STATUS="NOT RUN"
+COURSE_WARNING_LOG="none"
+CANONICAL_NOTEBOOK_STATUS="NOT RUN"
+ENV_QUARTO_STATUS="NOT RUN"
+FULL_VALIDATION_STATUS="NOT RUN (--machine-only)"
+
+if [[ "$DO_FULL_VALIDATION" == "1" ]]; then
+section "Full compatibility: canonical notebook validation"
 
 if (( ${#NOTEBOOKS[@]} == 0 )); then
-  error "representative notebook not found"
+  error "canonical notebook not found"
   exit 1
 fi
 
 for notebook in "${NOTEBOOKS[@]}"; do
   if [[ ! -f "$notebook" ]]; then
-    error "representative notebook not found: $notebook"
+    error "canonical notebook not found: $notebook"
     exit 1
   fi
   jupyter nbconvert \
@@ -337,8 +360,9 @@ for notebook in "${NOTEBOOKS[@]}"; do
     --ExecutePreprocessor.timeout=900 \
     --output-dir "$SMOKE_TMP"
 done
+CANONICAL_NOTEBOOK_STATUS="PASS"
 
-section "Required environment Quarto validation"
+section "Full compatibility: stable Quarto validation"
 
 export QUARTO_PYTHON="$ACTIVE_PYTHON"
 echo "QUARTO_PYTHON=$QUARTO_PYTHON"
@@ -351,17 +375,17 @@ if [[ -f "$ENV_QUARTO_DOCUMENT" ]]; then
     quarto render "${ENV_QUARTO_COPY:t}"
   )
 else
-  error "environment Quarto document not found: $ENV_QUARTO_DOCUMENT"
+  error "stable Quarto document not found: $ENV_QUARTO_DOCUMENT"
   exit 1
 fi
+ENV_QUARTO_STATUS="PASS"
 
-section "Active course validation (advisory)"
+section "Full compatibility: active course validation (advisory)"
 
 COURSE_STATUS="NOT CONFIGURED"
 COURSE_REQUIREMENTS_STATUS="NOT CONFIGURED"
 COURSE_NOTEBOOK_STATUS="NOT CONFIGURED"
 COURSE_QUARTO_STATUS="NOT CONFIGURED"
-COURSE_WARNING_LOG="none"
 COURSE_LOG_TMP="$SMOKE_TMP/active-course-validation.log"
 : > "$COURSE_LOG_TMP"
 
@@ -433,9 +457,16 @@ else
 fi
 
 if (( ${#COURSE_WARNINGS[@]} > 0 )); then
+  FULL_VALIDATION_STATUS="PASS WITH COURSE WARNINGS"
   OVERALL_STATUS="PASS WITH COURSE WARNINGS"
 else
+  FULL_VALIDATION_STATUS="PASS"
   OVERALL_STATUS="PASS"
+fi
+else
+  section "Full compatibility validation"
+  echo "Skipped by --machine-only. Use a full validation when revisions or environment state are not covered by a comparable reference-machine result."
+  OVERALL_STATUS="MACHINE-LOCAL PASS"
 fi
 
 section "Writing validation report"
@@ -444,22 +475,31 @@ section "Writing validation report"
   echo "QMCPy environment validation"
   echo "Date: $(timestamp)"
   echo "Host: $(hostname -s)"
-  echo "Mode: $([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)"
+  echo "Architecture: $ARCH"
+  echo "Maintenance action: $MAINTENANCE_ACTION"
+  echo "Validation scope: $VALIDATION_SCOPE"
   echo "Overall status: $OVERALL_STATUS"
-  echo "Environment validation: PASS"
+  echo "Machine-local validation: PASS"
+  echo "Full compatibility validation: $FULL_VALIDATION_STATUS"
+  echo "Conda environment: $QMCPY_ENV_NAME"
+  echo "Conda prefix: $CONDA_PREFIX"
   echo "Python: $(python --version 2>&1)"
   echo "Python executable: $ACTIVE_PYTHON"
-  echo "QMCPy: $(python -c 'import qmcpy; print(qmcpy.__version__)')"
+  echo "Package versions:"
+  while IFS= read -r version_line; do
+    echo "  $version_line"
+  done <<< "$PACKAGE_VERSIONS"
   echo "QMCPy source: $(python -c 'import qmcpy; print(qmcpy.__file__)')"
-  echo "QMCPy revision: $(git -C "$QMCPY_REPO" rev-parse --short HEAD) ($QMCPY_BRANCH)"
+  echo "QMCPy revision: $(git -C "$QMCPY_REPO" rev-parse HEAD) ($QMCPY_BRANCH)"
   echo "classlib source: $(python -c 'import classlib; print(classlib.__file__)')"
-  echo "HickernellAcademicLib revision: $(git -C "$HCL_REPO" rev-parse --short HEAD) ($HCL_BRANCH)"
+  echo "HickernellAcademicLib revision: $(git -C "$HCL_REPO" rev-parse HEAD) ($HCL_BRANCH)"
   echo "Kernel Python: $KERNEL_PYTHON"
-  printf "Environment notebooks: %s\n" "${NOTEBOOKS[*]}"
-  echo "Environment Quarto document: $ENV_QUARTO_DOCUMENT"
-  echo "Environment pip check: PASS"
-  echo "Environment notebook execution: PASS"
-  echo "Environment Quarto render: PASS"
+  echo "pip check: PASS"
+  echo "Core imports: PASS"
+  printf "Canonical notebooks: %s\n" "${NOTEBOOKS[*]}"
+  echo "Canonical notebook execution: $CANONICAL_NOTEBOOK_STATUS"
+  echo "Stable Quarto document: $ENV_QUARTO_DOCUMENT"
+  echo "Stable Quarto render: $ENV_QUARTO_STATUS"
   echo "Active course validation: $COURSE_STATUS"
   echo "Active course repository: ${ACTIVE_COURSE_REPO_PATH:-none}"
   echo "Active course requirements: $COURSE_REQUIREMENTS_STATUS"
@@ -475,7 +515,7 @@ section "Writing validation report"
 } | tee "$VALIDATION_REPORT"
 
 cp "$VALIDATION_REPORT" "$LATEST_REPORT"
-echo "$(hostname -s)  $(timestamp)  $(python --version 2>&1)  qmcpy $(python -c 'import qmcpy; print(qmcpy.__version__)')  $([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)  $OVERALL_STATUS" >> "$REPORT_DIR/qmcpy-upgrade-log.txt"
+echo "$(hostname -s)  $ARCH  $(timestamp)  $(python --version 2>&1)  qmcpy $(python -c 'import qmcpy; print(qmcpy.__version__)')  $MAINTENANCE_ACTION  $VALIDATION_SCOPE  $OVERALL_STATUS" >> "$REPORT_DIR/qmcpy-upgrade-log.txt"
 
 section "Recent qmcpy upgrade history"
 tail -n 20 "$REPORT_DIR/qmcpy-upgrade-log.txt"
