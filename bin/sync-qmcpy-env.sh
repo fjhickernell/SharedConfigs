@@ -356,7 +356,7 @@ COURSE_QUARTO_STATUS="NOT RUN"
 COURSE_WARNING_LOG="none"
 CANONICAL_NOTEBOOK_STATUS="NOT RUN"
 ENV_QUARTO_STATUS="NOT RUN"
-FULL_VALIDATION_STATUS="NOT RUN (--machine-only)"
+FULL_VALIDATION_STATUS="Deferred (machine-only mode)"
 
 if [[ "$DO_FULL_VALIDATION" == "1" ]]; then
 section "Full compatibility: canonical notebook validation"
