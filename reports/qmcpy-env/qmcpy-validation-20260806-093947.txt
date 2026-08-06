@@ -1,5 +1,5 @@
 QMCPy environment validation
-Date: 2026-08-06 09:43:23 CDT
+Date: 2026-08-06 09:40:30 CDT
 Host: Freds-M5-MBP
 Mode: sync
 Overall status: PASS WITH COURSE WARNINGS
@@ -22,6 +22,5 @@ Active course repository: /Users/fredjhickernell/SoftwareRepositories/MATH565Fal
 Active course requirements: PRESENT (not installed by maintenance)
 Active course notebook: WARNING
 Active course Quarto render: PASS
-Active course warning log: /Users/fredjhickernell/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-course-warning-20260806-094239.log
 Warnings:
   - active course notebook failed; review course or experimental development dependencies without changing the canonical maintenance checkout

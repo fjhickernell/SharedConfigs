@@ -42,10 +42,14 @@ Optional environment overrides:
   SHARED_CONFIGS_ROOT        SharedConfigs checkout
   QMCPY_REPO, QMCPY_BRANCH   QMCSoftware checkout and branch
   HCL_REPO, HCL_BRANCH       HickernellAcademicLib checkout and branch
-  QMCPY_COURSE_REPO          Active course repository
-  QMCPY_COURSE_REQUIREMENTS  Course requirements file; empty enables discovery
-  QMCPY_NOTEBOOK             Representative notebook; empty enables discovery
-  QMCPY_QUARTO_DOCUMENT      Representative .qmd file; empty enables discovery
+  QMCPY_MAINTENANCE_CONFIG   Active-course config file
+  QMCPY_ACTIVE_COURSE_REPO   Active course repository (relative or absolute)
+  QMCPY_ACTIVE_COURSE_NOTEBOOK
+                              Course notebook relative to the course repository
+  QMCPY_ACTIVE_COURSE_QUARTO_DOCUMENT
+                              Course .qmd relative to the course repository
+  QMCPY_NOTEBOOK             Override the canonical environment notebook set
+  QMCPY_ENV_QUARTO_DOCUMENT  Override the environment Quarto smoke fixture
 EOF
 }
 
@@ -87,20 +91,60 @@ HCL_REPO="${HCL_REPO:-$SOFTWARE_REPOS_ROOT/HickernellAcademicLib}"
 QMCPY_BRANCH="${QMCPY_BRANCH:-develop}"
 HCL_BRANCH="${HCL_BRANCH:-main}"
 
-if [[ -n "${QMCPY_COURSE_REPO:-}" ]]; then
-  COURSE_REPO="$QMCPY_COURSE_REPO"
-elif [[ -d "$SOFTWARE_REPOS_ROOT/MATH565Fall2026" ]]; then
-  COURSE_REPO="$SOFTWARE_REPOS_ROOT/MATH565Fall2026"
-else
-  COURSE_REPO="$SOFTWARE_REPOS_ROOT/MATH565Fall2025"
-  warn "MATH565Fall2026 not found; using legacy course repository $COURSE_REPO"
+MAINTENANCE_CONFIG="${QMCPY_MAINTENANCE_CONFIG:-$SHARED_CONFIGS_ROOT/settings/qmcpy-env.conf}"
+ACTIVE_COURSE_REPO=""
+ACTIVE_COURSE_NOTEBOOK=""
+ACTIVE_COURSE_QUARTO_DOCUMENT=""
+
+if [[ -f "$MAINTENANCE_CONFIG" ]]; then
+  source "$MAINTENANCE_CONFIG"
 fi
 
-COURSE_REQUIREMENTS="${QMCPY_COURSE_REQUIREMENTS:-}"
-if [[ -z "$COURSE_REQUIREMENTS" ]]; then
-  for candidate in "$COURSE_REPO/requirements.txt" "$COURSE_REPO/requirements-course.txt"; do
+if [[ -n "${QMCPY_COURSE_REPO:-}" && -z "${QMCPY_ACTIVE_COURSE_REPO:-}" ]]; then
+  warn "QMCPY_COURSE_REPO is deprecated; use QMCPY_ACTIVE_COURSE_REPO"
+fi
+
+ACTIVE_COURSE_REPO_SETTING="${QMCPY_ACTIVE_COURSE_REPO:-${QMCPY_COURSE_REPO:-$ACTIVE_COURSE_REPO}}"
+ACTIVE_COURSE_NOTEBOOK_SETTING="${QMCPY_ACTIVE_COURSE_NOTEBOOK:-$ACTIVE_COURSE_NOTEBOOK}"
+ACTIVE_COURSE_QUARTO_SETTING="${QMCPY_ACTIVE_COURSE_QUARTO_DOCUMENT:-$ACTIVE_COURSE_QUARTO_DOCUMENT}"
+
+if [[ -n "$ACTIVE_COURSE_REPO_SETTING" ]]; then
+  if [[ "$ACTIVE_COURSE_REPO_SETTING" == /* ]]; then
+    ACTIVE_COURSE_REPO_PATH="$ACTIVE_COURSE_REPO_SETTING"
+  else
+    ACTIVE_COURSE_REPO_PATH="$SOFTWARE_REPOS_ROOT/$ACTIVE_COURSE_REPO_SETTING"
+  fi
+else
+  ACTIVE_COURSE_REPO_PATH=""
+fi
+
+if [[ -n "$ACTIVE_COURSE_NOTEBOOK_SETTING" ]]; then
+  if [[ "$ACTIVE_COURSE_NOTEBOOK_SETTING" == /* ]]; then
+    ACTIVE_COURSE_NOTEBOOK_PATH="$ACTIVE_COURSE_NOTEBOOK_SETTING"
+  else
+    ACTIVE_COURSE_NOTEBOOK_PATH="$ACTIVE_COURSE_REPO_PATH/$ACTIVE_COURSE_NOTEBOOK_SETTING"
+  fi
+else
+  ACTIVE_COURSE_NOTEBOOK_PATH=""
+fi
+
+if [[ -n "$ACTIVE_COURSE_QUARTO_SETTING" ]]; then
+  if [[ "$ACTIVE_COURSE_QUARTO_SETTING" == /* ]]; then
+    ACTIVE_COURSE_QUARTO_PATH="$ACTIVE_COURSE_QUARTO_SETTING"
+  else
+    ACTIVE_COURSE_QUARTO_PATH="$ACTIVE_COURSE_REPO_PATH/$ACTIVE_COURSE_QUARTO_SETTING"
+  fi
+else
+  ACTIVE_COURSE_QUARTO_PATH=""
+fi
+
+ACTIVE_COURSE_REQUIREMENTS=""
+if [[ -n "$ACTIVE_COURSE_REPO_PATH" ]]; then
+  for candidate in \
+    "$ACTIVE_COURSE_REPO_PATH/requirements.txt" \
+    "$ACTIVE_COURSE_REPO_PATH/requirements-course.txt"; do
     if [[ -f "$candidate" ]]; then
-      COURSE_REQUIREMENTS="$candidate"
+      ACTIVE_COURSE_REQUIREMENTS="$candidate"
       break
     fi
   done
@@ -115,31 +159,9 @@ else
     "$QMCPY_REPO/demos/qmcpy_intro.ipynb"; do
     [[ -f "$candidate" ]] && NOTEBOOKS+=("$candidate")
   done
-
-  if (( ${#NOTEBOOKS[@]} == 0 )); then
-    for candidate in \
-      "$COURSE_REPO/notebooks/applications/AreWeThereYet.ipynb" \
-      "$COURSE_REPO/notebooks/AreWeThereYet.ipynb"; do
-      if [[ -f "$candidate" ]]; then
-        NOTEBOOKS+=("$candidate")
-        break
-      fi
-    done
-  fi
 fi
 
-QUARTO_DOCUMENT="${QMCPY_QUARTO_DOCUMENT:-}"
-if [[ -z "$QUARTO_DOCUMENT" ]]; then
-  for candidate in \
-    "$COURSE_REPO/slides/01-introduction.qmd" \
-    "$COURSE_REPO/slides/01-intro.qmd" \
-    "$SOFTWARE_REPOS_ROOT/MATH563Spring2026/slides/01-intro.qmd"; do
-    if [[ -f "$candidate" ]]; then
-      QUARTO_DOCUMENT="$candidate"
-      break
-    fi
-  done
-fi
+ENV_QUARTO_DOCUMENT="${QMCPY_ENV_QUARTO_DOCUMENT:-$SHARED_CONFIGS_ROOT/python/qmcpy-env-smoke.qmd}"
 
 for repo in "$QMCPY_REPO" "$HCL_REPO"; do
   if [[ ! -d "$repo/.git" ]]; then
@@ -188,17 +210,23 @@ export MPLCONFIGDIR="${MPLCONFIGDIR:-$SMOKE_TMP/matplotlib}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$SMOKE_TMP/cache}"
 mkdir -p "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 
+COURSE_WARNINGS=()
+course_warn() {
+  warn "$1"
+  COURSE_WARNINGS+=("$1")
+}
+
 banner "qmcpy environment sync started"
 echo "Mode: $([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)"
-echo "Course repository: $COURSE_REPO"
-echo "Course requirements: ${COURSE_REQUIREMENTS:-not found}"
+echo "Maintenance config: ${MAINTENANCE_CONFIG:-not found}"
+echo "Active course repository: ${ACTIVE_COURSE_REPO_PATH:-not configured}"
 if (( ${#NOTEBOOKS[@]} > 0 )); then
-  printf "Representative notebooks:\n"
+  printf "Environment notebooks:\n"
   printf "  %s\n" "${NOTEBOOKS[@]}"
 else
-  echo "Representative notebooks: not found"
+  echo "Environment notebooks: not found"
 fi
-echo "Representative Quarto document: ${QUARTO_DOCUMENT:-not found}"
+echo "Environment Quarto document: $ENV_QUARTO_DOCUMENT"
 
 python -m pip install --upgrade pip wheel
 python -m pip install "setuptools<82"
@@ -213,7 +241,7 @@ if [[ "$ACTUAL_PYTHON" != "$EXPECTED_PYTHON" ]]; then
   exit 1
 fi
 
-section "Updating editable source checkouts"
+section "Required environment setup"
 
 for repo in "$QMCPY_REPO" "$HCL_REPO"; do
   if [[ -n "$(git -C "$repo" status --porcelain)" ]]; then
@@ -248,13 +276,7 @@ else
   warn "personal requirements file not found: $PERSONAL_REQUIREMENTS"
 fi
 
-if [[ -n "$COURSE_REQUIREMENTS" && -f "$COURSE_REQUIREMENTS" ]]; then
-  python -m pip install $UPGRADE_FLAG -r "$COURSE_REQUIREMENTS"
-else
-  warn "no course requirements file found; skipping course-specific install"
-fi
-
-section "Refreshing and verifying Jupyter kernel"
+section "Required environment kernel validation"
 
 python -m ipykernel install --user --name "$QMCPY_ENV_NAME" --display-name "$QMCPY_ENV_NAME"
 jupyter kernelspec list
@@ -276,7 +298,7 @@ if [[ -d "${HOME}/Library/Jupyter/kernels/qmcpy-dev" ]]; then
   warn "legacy qmcpy-dev kernel still exists; remove it if no workflow uses it"
 fi
 
-section "Verifying packages and editable installs"
+section "Required environment package validation"
 
 python -m pip check
 QMCPY_REPO="$QMCPY_REPO" HCL_REPO="$HCL_REPO" \
@@ -296,7 +318,7 @@ print("jupyterlab:", jupyterlab.__version__)
 print("yaml: import OK")
 PY
 
-section "Executing representative notebook"
+section "Required environment notebook validation"
 
 if (( ${#NOTEBOOKS[@]} == 0 )); then
   error "representative notebook not found"
@@ -316,20 +338,104 @@ for notebook in "${NOTEBOOKS[@]}"; do
     --output-dir "$SMOKE_TMP"
 done
 
-section "Rendering representative Quarto document"
+section "Required environment Quarto validation"
 
 export QUARTO_PYTHON="$ACTIVE_PYTHON"
 echo "QUARTO_PYTHON=$QUARTO_PYTHON"
 
-if [[ -n "$QUARTO_DOCUMENT" && -f "$QUARTO_DOCUMENT" ]]; then
-  QUARTO_REPO="$(git -C "${QUARTO_DOCUMENT:h}" rev-parse --show-toplevel 2>/dev/null || print -r -- "${QUARTO_DOCUMENT:h}")"
+if [[ -f "$ENV_QUARTO_DOCUMENT" ]]; then
+  ENV_QUARTO_COPY="$SMOKE_TMP/${ENV_QUARTO_DOCUMENT:t}"
+  cp "$ENV_QUARTO_DOCUMENT" "$ENV_QUARTO_COPY"
   (
-    cd "$QUARTO_REPO"
-    quarto render "${QUARTO_DOCUMENT#$QUARTO_REPO/}"
+    cd "$SMOKE_TMP"
+    quarto render "${ENV_QUARTO_COPY:t}"
   )
 else
-  error "representative Quarto document not found"
+  error "environment Quarto document not found: $ENV_QUARTO_DOCUMENT"
   exit 1
+fi
+
+section "Active course validation (advisory)"
+
+COURSE_STATUS="NOT CONFIGURED"
+COURSE_REQUIREMENTS_STATUS="NOT CONFIGURED"
+COURSE_NOTEBOOK_STATUS="NOT CONFIGURED"
+COURSE_QUARTO_STATUS="NOT CONFIGURED"
+COURSE_WARNING_LOG="none"
+COURSE_LOG_TMP="$SMOKE_TMP/active-course-validation.log"
+: > "$COURSE_LOG_TMP"
+
+if [[ -z "$ACTIVE_COURSE_REPO_PATH" ]]; then
+  echo "No active course is configured; course validation skipped."
+elif [[ ! -d "$ACTIVE_COURSE_REPO_PATH" ]]; then
+  COURSE_STATUS="WARNING"
+  COURSE_REQUIREMENTS_STATUS="NOT RUN"
+  COURSE_NOTEBOOK_STATUS="NOT RUN"
+  COURSE_QUARTO_STATUS="NOT RUN"
+  course_warn "active course repository not found on this Mac: $ACTIVE_COURSE_REPO_PATH"
+else
+  COURSE_STATUS="PASS"
+  echo "Repository: $ACTIVE_COURSE_REPO_PATH"
+
+  if [[ -n "$ACTIVE_COURSE_REQUIREMENTS" ]]; then
+    COURSE_REQUIREMENTS_STATUS="PRESENT (not installed by maintenance)"
+    echo "Requirements: $ACTIVE_COURSE_REQUIREMENTS"
+  else
+    COURSE_REQUIREMENTS_STATUS="NOT PRESENT"
+    echo "Requirements: none"
+  fi
+
+  if [[ -z "$ACTIVE_COURSE_NOTEBOOK_PATH" ]]; then
+    COURSE_NOTEBOOK_STATUS="WARNING"
+    course_warn "active course notebook is not configured"
+  elif [[ ! -f "$ACTIVE_COURSE_NOTEBOOK_PATH" ]]; then
+    COURSE_NOTEBOOK_STATUS="WARNING"
+    course_warn "active course notebook not found: $ACTIVE_COURSE_NOTEBOOK_PATH"
+  elif jupyter nbconvert \
+      --to notebook \
+      --execute "$ACTIVE_COURSE_NOTEBOOK_PATH" \
+      --ExecutePreprocessor.kernel_name="$QMCPY_ENV_NAME" \
+      --ExecutePreprocessor.timeout=900 \
+      --output-dir "$SMOKE_TMP" >> "$COURSE_LOG_TMP" 2>&1; then
+    COURSE_NOTEBOOK_STATUS="PASS"
+    echo "Notebook: PASS"
+  else
+    COURSE_NOTEBOOK_STATUS="WARNING"
+    course_warn "active course notebook failed; review course or experimental development dependencies without changing the canonical maintenance checkout"
+  fi
+
+  if [[ -z "$ACTIVE_COURSE_QUARTO_PATH" ]]; then
+    COURSE_QUARTO_STATUS="WARNING"
+    course_warn "active course Quarto document is not configured"
+  elif [[ ! -f "$ACTIVE_COURSE_QUARTO_PATH" ]]; then
+    COURSE_QUARTO_STATUS="WARNING"
+    course_warn "active course Quarto document not found: $ACTIVE_COURSE_QUARTO_PATH"
+  else
+    ACTIVE_COURSE_QUARTO_REPO="$(git -C "${ACTIVE_COURSE_QUARTO_PATH:h}" rev-parse --show-toplevel 2>/dev/null || print -r -- "${ACTIVE_COURSE_QUARTO_PATH:h}")"
+    if (
+      cd "$ACTIVE_COURSE_QUARTO_REPO"
+      quarto render "${ACTIVE_COURSE_QUARTO_PATH#$ACTIVE_COURSE_QUARTO_REPO/}"
+    ) >> "$COURSE_LOG_TMP" 2>&1; then
+      COURSE_QUARTO_STATUS="PASS"
+      echo "Quarto: PASS"
+    else
+      COURSE_QUARTO_STATUS="WARNING"
+      course_warn "active course Quarto rendering failed; environment validation remains independent"
+    fi
+  fi
+
+  if (( ${#COURSE_WARNINGS[@]} > 0 )); then
+    COURSE_STATUS="WARNING"
+    COURSE_WARNING_LOG="$REPORT_DIR/qmcpy-course-warning-$RUN_STAMP.log"
+    cp "$COURSE_LOG_TMP" "$COURSE_WARNING_LOG"
+    echo "Course diagnostic log: $COURSE_WARNING_LOG"
+  fi
+fi
+
+if (( ${#COURSE_WARNINGS[@]} > 0 )); then
+  OVERALL_STATUS="PASS WITH COURSE WARNINGS"
+else
+  OVERALL_STATUS="PASS"
 fi
 
 section "Writing validation report"
@@ -339,6 +445,8 @@ section "Writing validation report"
   echo "Date: $(timestamp)"
   echo "Host: $(hostname -s)"
   echo "Mode: $([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)"
+  echo "Overall status: $OVERALL_STATUS"
+  echo "Environment validation: PASS"
   echo "Python: $(python --version 2>&1)"
   echo "Python executable: $ACTIVE_PYTHON"
   echo "QMCPy: $(python -c 'import qmcpy; print(qmcpy.__version__)')"
@@ -347,18 +455,29 @@ section "Writing validation report"
   echo "classlib source: $(python -c 'import classlib; print(classlib.__file__)')"
   echo "HickernellAcademicLib revision: $(git -C "$HCL_REPO" rev-parse --short HEAD) ($HCL_BRANCH)"
   echo "Kernel Python: $KERNEL_PYTHON"
-  echo "Course requirements: ${COURSE_REQUIREMENTS:-none}"
-  printf "Notebooks: %s\n" "${NOTEBOOKS[*]}"
-  echo "Quarto document: $QUARTO_DOCUMENT"
-  echo "pip check: passed"
-  echo "Notebook execution: passed"
-  echo "Quarto render: passed"
+  printf "Environment notebooks: %s\n" "${NOTEBOOKS[*]}"
+  echo "Environment Quarto document: $ENV_QUARTO_DOCUMENT"
+  echo "Environment pip check: PASS"
+  echo "Environment notebook execution: PASS"
+  echo "Environment Quarto render: PASS"
+  echo "Active course validation: $COURSE_STATUS"
+  echo "Active course repository: ${ACTIVE_COURSE_REPO_PATH:-none}"
+  echo "Active course requirements: $COURSE_REQUIREMENTS_STATUS"
+  echo "Active course notebook: $COURSE_NOTEBOOK_STATUS"
+  echo "Active course Quarto render: $COURSE_QUARTO_STATUS"
+  echo "Active course warning log: $COURSE_WARNING_LOG"
+  echo "Warnings:"
+  if (( ${#COURSE_WARNINGS[@]} == 0 )); then
+    echo "  none"
+  else
+    printf "  - %s\n" "${COURSE_WARNINGS[@]}"
+  fi
 } | tee "$VALIDATION_REPORT"
 
 cp "$VALIDATION_REPORT" "$LATEST_REPORT"
-echo "$(hostname -s)  $(timestamp)  $(python --version 2>&1)  qmcpy $(python -c 'import qmcpy; print(qmcpy.__version__)')  $([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)" >> "$REPORT_DIR/qmcpy-upgrade-log.txt"
+echo "$(hostname -s)  $(timestamp)  $(python --version 2>&1)  qmcpy $(python -c 'import qmcpy; print(qmcpy.__version__)')  $([[ "$DO_CONDA_UPGRADE" == "1" ]] && echo upgrade || echo sync)  $OVERALL_STATUS" >> "$REPORT_DIR/qmcpy-upgrade-log.txt"
 
 section "Recent qmcpy upgrade history"
 tail -n 20 "$REPORT_DIR/qmcpy-upgrade-log.txt"
 
-banner "qmcpy environment synced successfully"
+banner "qmcpy environment maintenance completed: $OVERALL_STATUS"

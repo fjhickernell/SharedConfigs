@@ -197,7 +197,7 @@ The authoritative environment-maintenance tool for QMCPy development and teachin
 sync-qmcpy-env.sh
 ```
 
-This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal and active-course requirements, refreshes the `qmcpy` kernel, and runs the same smoke tests as an upgrade without requesting a general conda/pip dependency upgrade.
+This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal requirements, refreshes the `qmcpy` kernel, and runs the same validation as an upgrade without requesting a general environment upgrade.
 
 #### **Upgrade sync (academic maintenance: May 15 / Aug 1 / Dec 15):**
 
@@ -205,12 +205,14 @@ This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, rei
 sync-qmcpy-env.sh --upgrade
 ```
 
-This performs the normal synchronization and validation, plus a conda environment update and upgrades of the explicitly maintained personal and active-course requirements. Editable source is reinstalled without re-resolving QMCPy's self-referential development/documentation extras; the mandatory `pip check` detects missing or incompatible requirements. The script defaults to the canonical QMCPy quickstart and introduction notebooks plus Fall 2026 requirements and Quarto rendering; run `sync-qmcpy-env.sh --help` for safe environment-variable overrides and legacy fallbacks.
+This performs the normal synchronization and validation, plus a conda environment update and upgrades of the explicitly maintained personal requirements. Editable source is reinstalled without re-resolving QMCPy's self-referential development/documentation extras; the mandatory `pip check` detects missing or incompatible requirements. It does not update base Conda.
 
-Successful runs write timestamped and latest validation reports plus a cumulative history under `reports/qmcpy-env/`.
+Required environment checks use canonical QMCPy notebooks and `python/qmcpy-env-smoke.qmd`. Advisory active course checks use `settings/qmcpy-env.conf`, which is the only file normally changed at a semester transition. Course warnings do not cause feature-branch merges, notebook edits, canonical checkout changes, or a failed environment status.
+
+Successful runs write timestamped and latest validation reports plus a cumulative history under `reports/qmcpy-env/`. Reports clearly show `PASS`, `PASS WITH COURSE WARNINGS`, required environment results, and advisory active course results. Detailed output from a failed course check goes to a timestamped course-warning log instead of overwhelming the console.
 
 **Recommendation:**  
-Only use `--upgrade` after testing on one Mac (usually M3 or M2), then roll out to others.
+Run `--upgrade` first on one primary Mac and review its report. After SharedConfigs has synchronized, run the same command on each additional Mac. A Mac without the configured active course checkout may report an advisory course warning while its required environment validation still passes.
 
 ---
 

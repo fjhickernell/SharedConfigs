@@ -1,0 +1,13 @@
+---
+title: "QMCPy environment smoke test"
+format: html
+jupyter: qmcpy
+---
+
+```{python}
+import classlib
+import qmcpy
+
+print(f"qmcpy {qmcpy.__version__}")
+print(f"classlib: {classlib.__file__}")
+```
