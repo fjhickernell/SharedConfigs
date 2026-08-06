@@ -189,7 +189,7 @@ Creates an Excel version of the inventory for filtering and comparison.
 
 ### `sync-qmcpy-env.sh`
 
-Your environment consistency tool for MATH 565 and QMCSoftware work.
+The authoritative environment-maintenance tool for QMCPy development and teaching.
 
 #### **Normal sync (fast):**
 
@@ -197,25 +197,17 @@ Your environment consistency tool for MATH 565 and QMCSoftware work.
 sync-qmcpy-env.sh
 ```
 
-This:
+This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal and active-course requirements, refreshes the `qmcpy` kernel, and runs the same smoke tests as an upgrade without requesting a general conda/pip dependency upgrade.
 
-1. Activates the `qmcpy` environment  
-2. Pulls updates from QMCSoftware `develop`  
-3. Reinstalls via editable mode (`pip install -e ".[dev]"`)  
-4. Leaves package versions unchanged  
-5. Ensures all Macs run the same codebase  
-
-#### **Upgrade sync (scheduled: Dec / May / Aug):**
+#### **Upgrade sync (academic maintenance: May 15 / Aug 1 / Dec 15):**
 
 ```
 sync-qmcpy-env.sh --upgrade
 ```
 
-This performs:
+This performs the normal synchronization and validation, plus a conda environment update and upgrades of the explicitly maintained personal and active-course requirements. Editable source is reinstalled without re-resolving QMCPy's self-referential development/documentation extras; the mandatory `pip check` detects missing or incompatible requirements. The script defaults to the canonical QMCPy quickstart and introduction notebooks plus Fall 2026 requirements and Quarto rendering; run `sync-qmcpy-env.sh --help` for safe environment-variable overrides and legacy fallbacks.
 
-- Everything in normal sync  
-- **Plus**: upgrades all pip packages according to dependency resolution  
-- May remove unused packages if they are no longer required by QMCSoftware or your environment  
+Successful runs write timestamped and latest validation reports plus a cumulative history under `reports/qmcpy-env/`.
 
 **Recommendation:**  
 Only use `--upgrade` after testing on one Mac (usually M3 or M2), then roll out to others.

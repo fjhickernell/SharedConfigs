@@ -1,0 +1,18 @@
+QMCPy environment validation
+Date: 2026-08-06 09:24:13 CDT
+Host: Freds-M5-MBP
+Mode: upgrade
+Python: Python 3.13.13
+Python executable: /opt/miniconda3/envs/qmcpy/bin/python3.13
+QMCPy: 2.3
+QMCPy source: /Users/fredjhickernell/SoftwareRepositories/QMCSoftware/qmcpy/__init__.py
+QMCPy revision: ab2b7a6b (develop)
+classlib source: /Users/fredjhickernell/SoftwareRepositories/HickernellAcademicLib/classlib/__init__.py
+HickernellAcademicLib revision: 9076d9a (main)
+Kernel Python: /opt/miniconda3/envs/qmcpy/bin/python3.13
+Course requirements: /Users/fredjhickernell/SoftwareRepositories/MATH565Fall2026/requirements.txt
+Notebooks: /Users/fredjhickernell/SoftwareRepositories/QMCSoftware/demos/quickstart.ipynb /Users/fredjhickernell/SoftwareRepositories/QMCSoftware/demos/qmcpy_intro.ipynb
+Quarto document: /Users/fredjhickernell/SoftwareRepositories/MATH565Fall2026/slides/01-introduction.qmd
+pip check: passed
+Notebook execution: passed
+Quarto render: passed

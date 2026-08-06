@@ -1,15 +1,35 @@
-import importlib.metadata as im, tomllib, pathlib
+"""List installed distributions not named by any QMCSoftware dependency group."""
 
-p = pathlib.Path.home() / "SoftwareRepositories" / "MATH565Fall2025" / "QMCSoftware" / "pyproject.toml"
-t = tomllib.load(open(p, "rb"))
-deps = set()
-deps.update(t["project"]["dependencies"])
-for group in t["project"]["optional-dependencies"].values():
-    deps.update(group)
-deps = {d.split()[0].split('[')[0].lower().replace('-', '_') for d in deps}
+import importlib.metadata as metadata
+import os
+from pathlib import Path
+import tomllib
 
-installed = {dist.metadata["Name"].lower().replace('-', '_') for dist in im.distributions()}
-extras = sorted(installed - deps)
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 
-for e in extras:
-    print(e)
+
+repositories_root = Path(
+    os.environ.get("SOFTWARE_REPOS_ROOT", Path.home() / "SoftwareRepositories")
+)
+qmcpy_repository = Path(os.environ.get("QMCPY_REPO", repositories_root / "QMCSoftware"))
+pyproject = qmcpy_repository / "pyproject.toml"
+
+with pyproject.open("rb") as stream:
+    project = tomllib.load(stream)["project"]
+
+declared = set()
+requirement_groups = [project.get("dependencies", [])]
+requirement_groups.extend(project.get("optional-dependencies", {}).values())
+for group in requirement_groups:
+    for value in group:
+        declared.add(canonicalize_name(Requirement(value).name))
+
+installed = {
+    canonicalize_name(distribution.metadata["Name"])
+    for distribution in metadata.distributions()
+    if distribution.metadata["Name"]
+}
+
+for name in sorted(installed - declared):
+    print(name)
