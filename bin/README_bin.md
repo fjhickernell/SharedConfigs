@@ -191,6 +191,18 @@ Creates an Excel version of the inventory for filtering and comparison.
 
 The authoritative environment-maintenance tool for QMCPy development and teaching.
 
+At the May 15, August 1, and December 15 checkpoints, update base Conda separately before running this script. Normally start with:
+
+```
+conda update --name base conda
+```
+
+If Conda advertises a newer release but this command retains the installed version, do not force the release immediately. Inspect the candidate builds and dependencies with `conda search --info`, review configured and prefix pins, and preview the proposed explicit transaction with `conda install --name base --dry-run ...`. Proceed only after checking the dry run for solver compatibility, removals, downgrades, and channel changes.
+
+On 2026-08-06, the M5 upgrade from Conda 26.3.2 to 26.7.0 required `conda-libmamba-solver>=26.4.1`; the reviewed transaction installed solver 26.7.0. The paired transaction was checked with `--dry-run` before installation. This is a dated diagnostic example, not a permanent version-pinned command.
+
+After any base-Conda change, run full `sync-qmcpy-env.sh` validation on the reference machine. That post-Conda report supersedes the earlier reference report for additional Macs with comparable revisions and environment state.
+
 #### **Full compatibility validation (default):**
 
 ```

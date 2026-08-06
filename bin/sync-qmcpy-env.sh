@@ -331,6 +331,24 @@ PY
 )"
 print -r -- "$PACKAGE_VERSIONS"
 
+CLASSLIB_SOURCE="$(python - <<'PY'
+from pathlib import Path
+
+import classlib
+
+module_file = getattr(classlib, "__file__", None)
+if module_file:
+    print(Path(module_file).resolve())
+else:
+    search_locations = getattr(classlib.__spec__, "submodule_search_locations", None)
+    locations = [str(Path(path).resolve()) for path in search_locations or ()]
+    if locations:
+        print("namespace search locations: " + ", ".join(locations))
+    else:
+        print(f"no file or package search locations (origin: {classlib.__spec__.origin})")
+PY
+)"
+
 COURSE_STATUS="NOT RUN"
 COURSE_REQUIREMENTS_STATUS="NOT RUN"
 COURSE_NOTEBOOK_STATUS="NOT RUN"
@@ -491,7 +509,7 @@ section "Writing validation report"
   done <<< "$PACKAGE_VERSIONS"
   echo "QMCPy source: $(python -c 'import qmcpy; print(qmcpy.__file__)')"
   echo "QMCPy revision: $(git -C "$QMCPY_REPO" rev-parse HEAD) ($QMCPY_BRANCH)"
-  echo "classlib source: $(python -c 'import classlib; print(classlib.__file__)')"
+  echo "classlib source: $CLASSLIB_SOURCE"
   echo "HickernellAcademicLib revision: $(git -C "$HCL_REPO" rev-parse HEAD) ($HCL_BRANCH)"
   echo "Kernel Python: $KERNEL_PYTHON"
   echo "pip check: PASS"

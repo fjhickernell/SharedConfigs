@@ -1,5 +1,5 @@
 QMCPy environment validation
-Date: 2026-08-06 12:12:14 CDT
+Date: 2026-08-06 12:07:20 CDT
 Host: Freds-M5-MBP
 Architecture: arm64
 Maintenance action: sync
@@ -20,7 +20,7 @@ Package versions:
   PyYAML: 6.0.3
 QMCPy source: /Users/fredjhickernell/SoftwareRepositories/QMCSoftware/qmcpy/__init__.py
 QMCPy revision: ab2b7a6b14495e84278388837b0a485717cae433 (develop)
-classlib source: /Users/fredjhickernell/SoftwareRepositories/HickernellAcademicLib/classlib/__init__.py
+classlib source: None
 HickernellAcademicLib revision: 9076d9a874a29246a1f88acc0cca5a9e1f3e2122 (main)
 Kernel Python: /opt/miniconda3/envs/qmcpy/bin/python3.13
 pip check: PASS
@@ -34,6 +34,6 @@ Active course repository: /Users/fredjhickernell/SoftwareRepositories/MATH565Fal
 Active course requirements: PRESENT (not installed by maintenance)
 Active course notebook: WARNING
 Active course Quarto render: PASS
-Active course warning log: /Users/fredjhickernell/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-course-warning-20260806-121127.log
+Active course warning log: /Users/fredjhickernell/Documents/SharedConfigs/reports/qmcpy-env/qmcpy-course-warning-20260806-120638.log
 Warnings:
   - active course notebook failed; review course or experimental development dependencies without changing the canonical maintenance checkout
