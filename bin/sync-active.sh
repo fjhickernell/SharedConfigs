@@ -388,49 +388,57 @@ sync_repository() {
   return 0
 }
 
-typeset -a COURSE_REPOS=()
-collect_course_repositories() {
-  COURSE_REPOS=()
-  local record
+check_submodule_pin_consistency() {
+  local submodule_path="$1"
+  local display_label="$2"
+  local -a repo_names=()
+  local -a pins=()
+  local record pin
+  local count mismatch i ref_pin
+
   for record in "${REPOSITORIES[@]}"; do
     parse_repository_record "$record" || continue
     /usr/bin/git -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
       continue
-    if has_gitlink "$REPO_PATH" classlib && has_gitlink "$REPO_PATH" qmcsoftware; then
-      COURSE_REPOS+=("$record")
+
+    if has_gitlink "$REPO_PATH" "$submodule_path"; then
+      pin=$(/usr/bin/git -C "$REPO_PATH" rev-parse "HEAD:${submodule_path}")
+      repo_names+=("$REPO_NAME")
+      pins+=("$pin")
     fi
   done
+
+  count=${#pins[@]}
+
+  if (( count < 2 )); then
+    info "INFO   ${display_label}: ${count} active repo(s); no cross-repo comparison needed"
+    return 0
+  fi
+
+  ref_pin="${pins[1]}"
+  mismatch=0
+
+  for (( i = 2; i <= count; i++ )); do
+    [[ "${pins[$i]}" != "$ref_pin" ]] && mismatch=1
+  done
+
+  if (( mismatch == 1 )); then
+    warn "${display_label} pins differ across active repositories"
+    for (( i = 1; i <= count; i++ )); do
+      info "       ${repo_names[$i]} @ $(shortsha "${pins[$i]}")"
+    done
+  else
+    info "OK     ${display_label} pins match across ${count} active repos"
+    for (( i = 1; i <= count; i++ )); do
+      vinfo "       ${repo_names[$i]} @ $(shortsha "${pins[$i]}")"
+    done
+  fi
 }
 
 pins_consistency_check() {
-  collect_course_repositories
-  (( ${#COURSE_REPOS} < 2 )) && {
-    vinfo "Pin consistency: ${#COURSE_REPOS} qualifying repository/repositories; no comparison needed"
-    return 0
-  }
-  local record ref_class="" ref_qmc="" ref_tests="" mismatch=0
-  local cls qmc tests display_name
-  for record in "${COURSE_REPOS[@]}"; do
-    parse_repository_record "$record" || continue
-    cls=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD:classlib)
-    qmc=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD:qmcsoftware)
-    tests=""
-    has_gitlink "$REPO_PATH" assets/tests/archive &&
-      tests=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD:assets/tests/archive)
-    if [[ -z "$ref_class" ]]; then
-      ref_class="$cls"; ref_qmc="$qmc"
-    else
-      [[ "$cls" != "$ref_class" || "$qmc" != "$ref_qmc" ]] && mismatch=1
-    fi
-    if [[ -n "$tests" ]]; then
-      [[ -n "$ref_tests" && "$tests" != "$ref_tests" ]] && mismatch=1
-      [[ -z "$ref_tests" ]] && ref_tests="$tests"
-    fi
-    display_name="$REPO_NAME"
-    vinfo "PINS   ${display_name}: classlib $(shortsha "$cls"), qmcsoftware $(shortsha "$qmc")${tests:+, tests $(shortsha "$tests")}"
-  done
-  (( mismatch == 1 )) && warn "submodule pins differ across qualifying course repositories"
-  (( mismatch == 0 )) && vinfo "Pin consistency: shared course submodule pins match"
+  check_submodule_pin_consistency "classlib" "classlib"
+  check_submodule_pin_consistency "qmcsoftware" "qmcsoftware"
+  check_submodule_pin_consistency "assets/tests/archive" "tests archive"
 }
 
 health_summary() {
