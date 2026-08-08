@@ -1,5 +1,19 @@
 # Global Codex instructions
 
+## Check-In & Focus Dashboard routing
+
+The authoritative task dashboard is `GitTracked/Check-In-Dashboard.md` in the `ObsidianVault` workspace root.
+
+When the user mentions a task, task abbreviation, status update, check-in, focus item, dot, or says that something is done, treat the request as referring to the Check-In & Focus Dashboard unless the context clearly indicates otherwise. Examples include `QT done`, `move X`, and `what should I work on?`.
+
+Before responding to or acting on such a request:
+
+1. Read and follow `GitTracked/AGENTS.md` in the `ObsidianVault` workspace root.
+2. Inspect the existing `GitTracked/Check-In-Dashboard.md` as required by those instructions.
+3. Resolve task abbreviations and task status from the dashboard itself rather than from conversation memory.
+
+The user does not need to explicitly say `Dashboard` or provide the file path for this routing rule to apply.
+
 ## Checkpoint workflow
 
 Treat a user message beginning with the exact word `Checkpoint` as authorization to complete the current repository work by validating, committing, and pushing it.
@@ -14,20 +28,20 @@ Checkpoint
 
 perform the following workflow:
 
-1. Review the current work and the Git diff, including all tracked modifications, deletions, renames, and untracked files.
-2. Confirm which changes belong in the repository, including newly created source, documentation, configuration, test, and asset files, and exclude only files that are clearly temporary, generated, ignored, secret, or unrelated to the repository work.
-3. Run the relevant validation, tests, builds, linting, or syntax checks appropriate to the repository.
-4. If validation fails, diagnose and fix problems when reasonably possible. Do not commit known broken work merely because `Checkpoint` was requested.
-5. Stage all tracked changes and all new files that belong in the repository. Do not omit relevant files simply because they were not explicitly mentioned in the prompt.
-6. Create a concise, meaningful commit message based on the completed work.
-7. Commit the changes.
-8. Push the current branch to its configured upstream.
+1. Review the work completed during the session and the current state of every repository being checkpointed. Inspect the complete Git diff, including all tracked modifications, deletions, renames, and untracked files.
+2. In each writable repository that contains `notes/NEXT.md`, read it and compare it with the completed work. If the immediate next task, current state, unresolved questions, constraints, or definition of done has materially changed, update `notes/NEXT.md` so another session or machine can resume accurately, and include that update in the same checkpoint commit. Keep it concise and operational; do not turn it into a session log or duplicate material belonging in `notes/TODO-LATER.md`, `notes/DECISIONS.md`, `notes/IDEAS.md`, `notes/TECHNICAL-NOTES.md`, `STATUS.md`, or similar planning and history files. If nothing relevant changed, leave it untouched. Do not modify it merely to change a timestamp or record that a checkpoint occurred. If the substantive next task is genuinely unclear, multiple plausible next tasks remain, or an update would require inferring the user's intent, ask before changing it. Do not ask merely because wording could be improved. When the current state is clear but one decision remains unresolved, record it under `Questions to resolve` rather than guessing. Perform this check independently in every writable repository being checkpointed that contains `notes/NEXT.md`.
+3. Update any other status, decision, workflow, or handoff documentation required by the completed work.
+4. Run the relevant validation, tests, builds, linting, or syntax checks appropriate to each repository. If validation fails, diagnose and fix problems when reasonably possible. Do not commit known broken work merely because `Checkpoint` was requested.
+5. Review the final diff and confirm which changes belong in each repository, including newly created source, documentation, configuration, test, and asset files. Exclude only files that are clearly temporary, generated, ignored, secret, or unrelated to the repository work.
+6. For repositories containing changed writable submodules, validate, commit, and push the submodule changes first where required, then update the parent repository's pinned submodule commit. Follow repository-specific publication and synchronization instructions.
+7. Stage all tracked changes and all new files that belong in each parent or standalone repository. Do not omit relevant files simply because they were not explicitly mentioned in the prompt. Create a concise, meaningful commit message and commit the changes.
+8. Push all intended commits to their configured upstreams.
 9. Report:
    - validation performed,
-   - commit message,
-   - abbreviated commit hash,
-   - branch and remote pushed,
-   - final Git status.
+   - commit messages and abbreviated commit hashes,
+   - branches and remotes pushed,
+   - final Git status for each repository,
+   - any files intentionally left uncommitted.
 
 ### `Checkpoint <message>`
 
