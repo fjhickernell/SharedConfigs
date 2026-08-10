@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage:
+#   pr-list
+#   pr-list QMCSoftware
+#   pr-list qmcpy-website
+#   pr-list MATH332Fall2026
+#   pr-list QMCSoftware/QMCSoftware
+#   pr-list fjhickernell/MATH332Fall2026
+#
+# With no argument, defaults to QMCSoftware/QMCSoftware.
+#
+# For a bare repository name:
+#   1. Look in QMCSoftware
+#   2. Look in fjhickernell
+#   3. If found in both, prefer QMCSoftware
+#   4. If found in neither, report an error
+#
+# An explicit owner/repo is used as given.
+
+arg="${1:-QMCSoftware/QMCSoftware}"
+
+# ------------------------------------------------------------
+# Resolve repository
+# ------------------------------------------------------------
+
+if [[ "$arg" == */* ]]; then
+    repo="$arg"
+
+    if ! gh repo view "$repo" --json name >/dev/null 2>&1; then
+        echo "Error: repository '$repo' could not be found." >&2
+        exit 1
+    fi
+else
+    qmc_repo="QMCSoftware/$arg"
+    fjh_repo="fjhickernell/$arg"
+
+    qmc_exists=false
+    fjh_exists=false
+
+    gh repo view "$qmc_repo" --json name >/dev/null 2>&1 && qmc_exists=true
+    gh repo view "$fjh_repo" --json name >/dev/null 2>&1 && fjh_exists=true
+
+    if $qmc_exists && $fjh_exists; then
+        repo="$qmc_repo"
+        echo "Note: '$arg' exists in both; using $repo." >&2
+    elif $qmc_exists; then
+        repo="$qmc_repo"
+    elif $fjh_exists; then
+        repo="$fjh_repo"
+    else
+        echo "Error: could not find '$arg' in QMCSoftware or fjhickernell." >&2
+        exit 1
+    fi
+fi
+
+# ------------------------------------------------------------
+# List open pull requests
+# ------------------------------------------------------------
+
+echo "Open pull requests for $repo"
+echo
+
+gh pr list \
+    --repo "$repo" \
+    --state open \
+    --limit 100 \
+    --json number,title,author,url,isDraft,reviewDecision,reviewRequests \
+    --jq '
+        .[] |
+        "#\(.number) — \(.title)\n" +
+        "       \(.author.login)\n" +
+        (
+            if .isDraft then
+                "       Draft\n"
+            elif .reviewDecision == "CHANGES_REQUESTED" then
+                "       Changes requested\n"
+            elif (.reviewRequests | length) > 0 then
+                "       Awaiting review: " +
+                ([.reviewRequests[].login // .reviewRequests[].name] | join(", ")) +
+                "\n"
+            elif .reviewDecision == "APPROVED" then
+                "       Approved\n"
+            else
+                "       Review pending\n"
+            end
+        ) +
+        "       \(.url)\n"
+    '

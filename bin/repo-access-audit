@@ -1,0 +1,531 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# repo-access-audit
+#
+# Audit elevated repository access and contribution activity.
+#
+# READ ONLY: this script NEVER changes GitHub permissions.
+#
+# Usage:
+#   repo-access-audit
+#   repo-access-audit QMCSoftware
+#   repo-access-audit qmcpy-website
+#   repo-access-audit MATH332Fall2026
+#   repo-access-audit QMCSoftware/QMCSoftware
+#   repo-access-audit QMCSoftware/QMCSoftware 2025-01-01
+#
+# Defaults:
+#   repository: QMCSoftware/QMCSoftware
+#   cutoff:     2025-01-01
+#
+# For a bare repository name:
+#   1. Look in QMCSoftware
+#   2. Look in fjhickernell
+#   3. If found in both, prefer QMCSoftware
+#
+# Compatible with macOS Bash 3.2.
+#
+# Activity counted:
+#   - commits
+#   - authored pull requests
+#   - authored issues
+#   - pull-request reviews
+#   - comments on issues or pull requests
+#
+# Unlike the earlier version, this script does NOT use GitHub's
+# search API once per user.
+
+arg="${1:-QMCSoftware/QMCSoftware}"
+cutoff="${2:-2025-01-01}"
+
+# ------------------------------------------------------------
+# Check dependencies
+# ------------------------------------------------------------
+
+for cmd in gh jq awk; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "Error: required command '$cmd' was not found." >&2
+        exit 1
+    fi
+done
+
+# ------------------------------------------------------------
+# Resolve repository
+# ------------------------------------------------------------
+
+if [[ "$arg" == */* ]]; then
+    repo="$arg"
+
+    if ! gh repo view "$repo" --json name >/dev/null 2>&1; then
+        echo "Error: repository '$repo' could not be found." >&2
+        exit 1
+    fi
+else
+    qmc_repo="QMCSoftware/$arg"
+    fjh_repo="fjhickernell/$arg"
+
+    qmc_exists=false
+    fjh_exists=false
+
+    gh repo view "$qmc_repo" --json name >/dev/null 2>&1 && qmc_exists=true
+    gh repo view "$fjh_repo" --json name >/dev/null 2>&1 && fjh_exists=true
+
+    if $qmc_exists && $fjh_exists; then
+        repo="$qmc_repo"
+        echo "Note: '$arg' exists in both; using $repo." >&2
+    elif $qmc_exists; then
+        repo="$qmc_repo"
+    elif $fjh_exists; then
+        repo="$fjh_repo"
+    else
+        echo "Error: could not find '$arg' in QMCSoftware or fjhickernell." >&2
+        exit 1
+    fi
+fi
+
+owner="${repo%%/*}"
+
+cutoff_time="${cutoff}T00:00:00Z"
+
+# ------------------------------------------------------------
+# Temporary files
+# ------------------------------------------------------------
+
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+
+collaborators="$tmpdir/collaborators.tsv"
+direct_collaborators="$tmpdir/direct-collaborators.tsv"
+teams="$tmpdir/teams.tsv"
+owners="$tmpdir/owners.txt"
+events="$tmpdir/events.tsv"
+policy="$tmpdir/policy.tsv"
+recent_access="$tmpdir/recent-access.tsv"
+
+: > "$collaborators"
+: > "$direct_collaborators"
+: > "$teams"
+: > "$owners"
+: > "$events"
+
+# Local access-policy exceptions. Keep these separate from activity counting.
+# Fields: repository, user, reason, assessment when inactive.
+printf "%s\t%s\t%s\t%s\n" \
+    "QMCSoftware/QMCSoftware" "fredhickernell" \
+        "alternate account retained for testing" "KEEP" \
+    "QMCSoftware/QMCSoftware" "yding2" \
+        "important collaborator" "KEEP" \
+    "QMCSoftware/QMCSoftware" "jagadeesr" \
+        "important collaborator; consider admin to write" \
+        "KEEP; REVIEW ADMIN->WRITE" \
+    "QMCSoftware/QMCSoftware" "schoi32" \
+        "important collaborator; same person as sou-cheng-choi" "KEEP" \
+    "QMCSoftware/QMCSoftware" "sou-cheng-choi" \
+        "important collaborator; same person as schoi32" "KEEP" \
+    > "$policy"
+
+# GitHub's current collaborator, team-membership, and organization-membership
+# responses do not include a durable date when access began. Open repository
+# invitations have created_at, but accepted invitations are not retained there.
+# Audit-log grant events have timestamps but limited retention, so they are not
+# a reliable source for every current collaborator and access route.
+#
+# This is LOCAL POLICY METADATA, not GitHub-derived data. Add repository-scoped
+# access-start dates here as tab-separated ISO dates when they are known from
+# administrative records.
+record_recent_access_metadata() {
+    # Example (remove the leading # and replace the values):
+    # printf "%s\t%s\t%s\n" \
+    #     "QMCSoftware/QMCSoftware" "github-user" "2026-08-01"
+    :
+}
+
+record_recent_access_metadata > "$recent_access"
+
+today="$(date +%Y-%m-%d)"
+grace_cutoff="$(date -v-6m +%Y-%m-%d)"
+
+# Each row in events.tsv is:
+#
+#   username<TAB>activity-type
+#
+# activity-type:
+#   commit
+#   pr
+#   issue
+#   review
+#   comment
+
+# ------------------------------------------------------------
+# Fetch collaborators once
+# ------------------------------------------------------------
+
+echo "Fetching collaborators..." >&2
+
+gh api \
+    --paginate \
+    "/repos/$repo/collaborators?affiliation=all&per_page=100" \
+    --jq '.[] | [.login, .role_name] | @tsv' \
+    > "$collaborators"
+
+# GitHub distinguishes collaborators explicitly attached to the repository
+# from users whose access is inherited. If this endpoint is unavailable, keep
+# that uncertainty visible in the report rather than guessing.
+direct_access_known=false
+if gh api \
+    --paginate \
+    "/repos/$repo/collaborators?affiliation=direct&per_page=100" \
+    --jq '.[] | .login' \
+    > "$direct_collaborators"; then
+    direct_access_known=true
+fi
+
+# ------------------------------------------------------------
+# Determine known team-based access
+#
+# This is best-effort. Personal repositories do not have teams,
+# and organization permissions can also arise from base access.
+# ------------------------------------------------------------
+
+echo "Checking team access..." >&2
+
+base_permission="unknown"
+if org_json="$(gh api "/orgs/$owner" 2>/dev/null)"; then
+    base_permission="$(printf "%s" "$org_json" | jq -r \
+        '.default_repository_permission // "unknown"')"
+
+    gh api \
+        --paginate \
+        "/orgs/$owner/members?role=admin&per_page=100" \
+        --jq '.[].login' \
+        > "$owners" 2>/dev/null || : > "$owners"
+fi
+
+gh api \
+    --paginate \
+    "/repos/$repo/teams?per_page=100" \
+    --jq '.[] | [.slug, .permission] | @tsv' \
+    2>/dev/null |
+while IFS=$'\t' read -r slug permission; do
+
+    [[ -z "$slug" ]] && continue
+
+    gh api \
+        --paginate \
+        "/orgs/$owner/teams/$slug/members?per_page=100" \
+        --jq '.[].login' \
+        2>/dev/null |
+    while IFS= read -r login; do
+        [[ -z "$login" ]] && continue
+        printf "%s\t%s:%s\n" \
+            "$login" "$slug" "$permission" >> "$teams"
+    done
+
+done || true
+
+# ------------------------------------------------------------
+# Fetch commits since cutoff
+# ------------------------------------------------------------
+
+echo "Fetching commits since $cutoff..." >&2
+
+gh api \
+    --paginate \
+    --method GET \
+    "/repos/$repo/commits" \
+    -f since="$cutoff_time" \
+    -f per_page=100 \
+    --jq '.[] |
+          select(.author.login != null) |
+          [.author.login, "commit"] |
+          @tsv' \
+    >> "$events"
+
+# ------------------------------------------------------------
+# Fetch pull requests once
+#
+# gh pr list uses GitHub's normal PR/GraphQL facilities rather
+# than issuing one search request for each collaborator.
+#
+# reviews are included with each PR.
+# ------------------------------------------------------------
+
+echo "Fetching pull requests and reviews..." >&2
+
+pr_json="$tmpdir/prs.json"
+
+gh pr list \
+    --repo "$repo" \
+    --state all \
+    --limit 1000 \
+    --json author,createdAt,reviews \
+    > "$pr_json"
+
+# Authored PRs created since cutoff.
+
+jq -r \
+    --arg cutoff "$cutoff_time" '
+        .[] |
+        select(.createdAt >= $cutoff) |
+        select(.author.login != null) |
+        [.author.login, "pr"] |
+        @tsv
+    ' "$pr_json" \
+    >> "$events"
+
+# Reviews submitted since cutoff.
+#
+# Ignore PENDING reviews because they were not submitted.
+
+jq -r \
+    --arg cutoff "$cutoff_time" '
+        .[] |
+        .reviews[]? |
+        select(.submittedAt != null) |
+        select(.submittedAt >= $cutoff) |
+        select(.state != "PENDING") |
+        select(.author.login != null) |
+        [.author.login, "review"] |
+        @tsv
+    ' "$pr_json" \
+    >> "$events"
+
+# ------------------------------------------------------------
+# Fetch issues once
+#
+# gh issue list returns issues rather than PRs, so PR authors
+# are counted above and issue authors here.
+# ------------------------------------------------------------
+
+echo "Fetching issues..." >&2
+
+issue_json="$tmpdir/issues.json"
+
+gh issue list \
+    --repo "$repo" \
+    --state all \
+    --limit 1000 \
+    --json author,createdAt \
+    > "$issue_json"
+
+jq -r \
+    --arg cutoff "$cutoff_time" '
+        .[] |
+        select(.createdAt >= $cutoff) |
+        select(.author.login != null) |
+        [.author.login, "issue"] |
+        @tsv
+    ' "$issue_json" \
+    >> "$events"
+
+# ------------------------------------------------------------
+# Fetch all issue/PR comments since cutoff in one paginated
+# repository-wide request.
+#
+# GitHub's issue-comments endpoint includes comments on both
+# issues and pull requests.
+# ------------------------------------------------------------
+
+echo "Fetching comments..." >&2
+
+gh api \
+    --paginate \
+    --method GET \
+    "/repos/$repo/issues/comments" \
+    -f since="$cutoff_time" \
+    -f per_page=100 \
+    --jq '.[] |
+          select(.user.login != null) |
+          [.user.login, "comment"] |
+          @tsv' \
+    >> "$events"
+
+# ------------------------------------------------------------
+# Produce report
+# ------------------------------------------------------------
+
+echo
+echo "Repository access audit"
+echo "Repository: $repo"
+echo "Activity since: $cutoff"
+echo
+echo "Activity includes:"
+echo "  commits, authored PRs, authored issues, reviews, and comments"
+echo
+echo "No permissions will be changed."
+echo
+
+printf "%-22s %-10s %-28s %7s %5s %6s %7s %8s  %s\n" \
+    "USER" "ACCESS" "ACCESS VIA" \
+    "COMMITS" "PRS" "ISSUES" "REVIEWS" "COMMENTS" "ASSESSMENT"
+
+printf "%-22s %-10s %-28s %7s %5s %6s %7s %8s  %s\n" \
+    "----------------------" "----------" "----------------------------" \
+    "-------" "-----" "------" "-------" "--------" "----------"
+
+report="$tmpdir/report.tsv"
+: > "$report"
+
+while IFS=$'\t' read -r user role; do
+
+    # Skip users who already have read-only access.
+    case "$role" in
+        read|pull)
+            continue
+            ;;
+    esac
+
+    # --------------------------------------------------------
+    # Determine known access route
+    # --------------------------------------------------------
+
+    user_teams="$(
+        awk -F '\t' -v user="$user" '
+            $1 == user {
+                if (found) printf ","
+                printf "%s", $2
+                found=1
+            }
+        ' "$teams"
+    )"
+
+    via=""
+
+    if $direct_access_known && awk -v user="$user" '$0 == user { found=1 } END { exit !found }' \
+        "$direct_collaborators"; then
+        via="direct"
+    fi
+
+    if [[ -n "$user_teams" ]]; then
+        [[ -n "$via" ]] && via="$via; "
+        via="${via}team:$user_teams"
+    fi
+
+    if awk -v user="$user" '$0 == user { found=1 } END { exit !found }' "$owners"; then
+        [[ -n "$via" ]] && via="$via; "
+        via="${via}org owner"
+    fi
+
+    if [[ -z "$via" ]]; then
+        if $direct_access_known && [[ "$role" == "$base_permission" ]]; then
+            via="org base:$base_permission"
+        else
+            via="direct or base"
+        fi
+    fi
+
+    # Keep the access column from becoming enormous.
+    if [[ ${#via} -gt 28 ]]; then
+        via="${via:0:25}..."
+    fi
+
+    # --------------------------------------------------------
+    # Count locally — no GitHub API calls here
+    # --------------------------------------------------------
+
+    counts="$(
+        awk -F '\t' -v user="$user" '
+            $1 == user {
+                if ($2 == "commit")  commits++
+                if ($2 == "pr")      prs++
+                if ($2 == "issue")   issues++
+                if ($2 == "review")  reviews++
+                if ($2 == "comment") comments++
+            }
+            END {
+                printf "%d %d %d %d %d",
+                    commits+0,
+                    prs+0,
+                    issues+0,
+                    reviews+0,
+                    comments+0
+            }
+        ' "$events"
+    )"
+
+    set -- $counts
+
+    commits="$1"
+    prs="$2"
+    issues="$3"
+    reviews="$4"
+    comments="$5"
+
+    # --------------------------------------------------------
+    # Conservative assessment
+    # --------------------------------------------------------
+
+    if [[ "$commits" -eq 0 &&
+          "$prs" -eq 0 &&
+          "$issues" -eq 0 &&
+          "$reviews" -eq 0 &&
+          "$comments" -eq 0 ]]; then
+
+        assessment="$(
+            awk -F '\t' -v repo="$repo" -v user="$user" '
+                $1 == repo && $2 == user { print $4; exit }
+            ' "$policy"
+        )"
+
+        if [[ -z "$assessment" ]]; then
+            access_start="$(
+                awk -F '\t' -v repo="$repo" -v user="$user" '
+                    $1 == repo && $2 == user { print $3; exit }
+                ' "$recent_access"
+            )"
+
+            if [[ -n "$access_start" && "$access_start" > "$grace_cutoff" ]] &&
+                [[ "$access_start" < "$today" || "$access_start" == "$today" ]]; then
+                assessment="NEW"
+            else
+                assessment="REVIEW ACCESS"
+            fi
+        fi
+    else
+        assessment="ACTIVE"
+    fi
+
+    case "$assessment" in
+        ACTIVE) sort_key=1 ;;
+        KEEP*) sort_key=2 ;;
+        NEW) sort_key=3 ;;
+        *) sort_key=4 ;;
+    esac
+
+    printf "%s\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%s\n" \
+        "$sort_key" "$user" "$role" "$via" \
+        "$commits" "$prs" "$issues" "$reviews" "$comments" \
+        "$assessment" >> "$report"
+
+done < "$collaborators"
+
+LC_ALL=C sort -t $'\t' -k1,1n -k2,2f "$report" |
+while IFS=$'\t' read -r sort_key user role via \
+    commits prs issues reviews comments assessment; do
+
+    printf "%-22s %-10s %-28s %7d %5d %6d %7d %8d  %s\n" \
+        "$user" "$role" "$via" \
+        "$commits" "$prs" "$issues" "$reviews" "$comments" \
+        "$assessment"
+done
+
+echo
+echo "KEEP means an explicit local policy exception applies despite no activity."
+echo "NEW means no qualifying activity yet, but local policy metadata records"
+echo "elevated access beginning after $grace_cutoff (within the 6-month grace period)."
+echo "REVIEW ACCESS means no qualifying activity, no KEEP policy, and no grace period:"
+echo "consider reducing elevated access to READ, not removing the collaborator."
+echo
+echo "LOCAL POLICY EXCEPTIONS:"
+awk -F '\t' -v repo="$repo" '
+    $1 == repo { printf "  %-22s %s\n", $2, $3 }
+' "$policy"
+echo
+echo "ACCESS VIA:"
+echo "  direct        explicitly attached to the repository"
+echo "  team:...      repository team access (team slug and permission)"
+echo "  org base:...  inherited organization default repository permission"
+echo "  org owner     organization-owner privileges also apply"
+echo "  direct or base GitHub did not expose enough information to distinguish"
+echo

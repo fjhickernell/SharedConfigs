@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# List open issues (not pull requests) in an email-friendly format.
+# Repository resolution intentionally matches pr-list.
+
+arg="${1:-QMCSoftware/QMCSoftware}"
+
+if [[ "$arg" == */* ]]; then
+    repo="$arg"
+
+    if ! gh repo view "$repo" --json name >/dev/null 2>&1; then
+        echo "Error: repository '$repo' could not be found." >&2
+        exit 1
+    fi
+else
+    qmc_repo="QMCSoftware/$arg"
+    fjh_repo="fjhickernell/$arg"
+
+    qmc_exists=false
+    fjh_exists=false
+
+    gh repo view "$qmc_repo" --json name >/dev/null 2>&1 && qmc_exists=true
+    gh repo view "$fjh_repo" --json name >/dev/null 2>&1 && fjh_exists=true
+
+    if $qmc_exists && $fjh_exists; then
+        repo="$qmc_repo"
+        echo "Note: '$arg' exists in both; using $repo." >&2
+    elif $qmc_exists; then
+        repo="$qmc_repo"
+    elif $fjh_exists; then
+        repo="$fjh_repo"
+    else
+        echo "Error: could not find '$arg' in QMCSoftware or fjhickernell." >&2
+        exit 1
+    fi
+fi
+
+echo "Open issues for $repo"
+echo
+
+# gh issue list returns issues only, excluding pull requests.
+gh issue list \
+    --repo "$repo" \
+    --state open \
+    --limit 1000 \
+    --json number,title,author,url,assignees,labels \
+    --jq '
+        .[] |
+        "#\(.number) — \(.title)\n" +
+        "       \(.author.login // "unknown author")\n" +
+        (
+            if (.assignees | length) > 0 then
+                "       Assigned to: " +
+                ([.assignees[].login] | join(", ")) + "\n"
+            else
+                "       Unassigned\n"
+            end
+        ) +
+        (
+            if (.labels | length) > 0 then
+                "       Labels: " +
+                ([.labels[].name] | join(", ")) + "\n"
+            else
+                ""
+            end
+        ) +
+        "       \(.url)\n"
+    '
