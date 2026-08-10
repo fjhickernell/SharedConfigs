@@ -102,15 +102,20 @@ owners="$tmpdir/owners.txt"
 events="$tmpdir/events.tsv"
 policy="$tmpdir/policy.tsv"
 recent_access="$tmpdir/recent-access.tsv"
+github_recent_access="$tmpdir/github-recent-access.tsv"
+repository_events_json="$tmpdir/repository-events.json"
+reported_recent_access="$tmpdir/reported-recent-access.tsv"
 
 : > "$collaborators"
 : > "$direct_collaborators"
 : > "$teams"
 : > "$owners"
 : > "$events"
+: > "$github_recent_access"
+: > "$reported_recent_access"
 
 # Local access-policy exceptions. Keep these separate from activity counting.
-# Fields: repository, user, reason, assessment when inactive.
+# Fields: repository, user, reason, assessment override.
 printf "%s\t%s\t%s\t%s\n" \
     "QMCSoftware/QMCSoftware" "fredhickernell" \
         "alternate account retained for testing" "KEEP" \
@@ -143,12 +148,13 @@ record_recent_access_metadata() {
 
 record_recent_access_metadata > "$recent_access"
 
-today="$(date +%Y-%m-%d)"
-grace_cutoff="$(date -v-6m +%Y-%m-%d)"
+now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+grace_cutoff="$(date -v-120d +%Y-%m-%d)"
+grace_cutoff_time="${grace_cutoff}T00:00:00Z"
 
 # Each row in events.tsv is:
 #
-#   username<TAB>activity-type
+#   username<TAB>activity-type<TAB>activity-timestamp
 #
 # activity-type:
 #   commit
@@ -179,6 +185,53 @@ if gh api \
     --jq '.[] | .login' \
     > "$direct_collaborators"; then
     direct_access_known=true
+fi
+
+# ------------------------------------------------------------
+# Fetch retained repository events once
+#
+# A GitHub MemberEvent with action=added is reliable evidence that direct
+# repository access began at that event timestamp. This is GitHub-derived
+# evidence and is kept separate from the local recent-access metadata above.
+# The Events API is retained for a limited period, so also measure its coverage.
+# ------------------------------------------------------------
+
+echo "Checking recent direct-access grants..." >&2
+
+oldest_event_timestamp="unknown"
+event_coverage_complete=false
+
+if gh api \
+    --paginate \
+    --slurp \
+    --method GET \
+    "/repos/$repo/events" \
+    -f per_page=100 \
+    > "$repository_events_json"; then
+
+    oldest_event_timestamp="$(
+        jq -r '[.[][]? | .created_at] | if length > 0 then min else "unknown" end' \
+            "$repository_events_json"
+    )"
+
+    jq -r '
+        [.[][]? |
+            select(.type == "MemberEvent") |
+            select(.payload.action == "added") |
+            select(.payload.member.login != null) |
+            {user: .payload.member.login, timestamp: .created_at}
+        ] |
+        group_by(.user)[]? |
+        max_by(.timestamp) |
+        [.user, .timestamp, "GitHub MemberEvent"] |
+        @tsv
+    ' "$repository_events_json" > "$github_recent_access"
+
+    if [[ "$oldest_event_timestamp" != "unknown" &&
+          ( "$oldest_event_timestamp" < "$grace_cutoff_time" ||
+            "$oldest_event_timestamp" == "$grace_cutoff_time" ) ]]; then
+        event_coverage_complete=true
+    fi
 fi
 
 # ------------------------------------------------------------
@@ -238,7 +291,7 @@ gh api \
     -f per_page=100 \
     --jq '.[] |
           select(.author.login != null) |
-          [.author.login, "commit"] |
+          [.author.login, "commit", .commit.author.date] |
           @tsv' \
     >> "$events"
 
@@ -269,7 +322,7 @@ jq -r \
         .[] |
         select(.createdAt >= $cutoff) |
         select(.author.login != null) |
-        [.author.login, "pr"] |
+        [.author.login, "pr", .createdAt] |
         @tsv
     ' "$pr_json" \
     >> "$events"
@@ -286,7 +339,7 @@ jq -r \
         select(.submittedAt >= $cutoff) |
         select(.state != "PENDING") |
         select(.author.login != null) |
-        [.author.login, "review"] |
+        [.author.login, "review", .submittedAt] |
         @tsv
     ' "$pr_json" \
     >> "$events"
@@ -314,7 +367,7 @@ jq -r \
         .[] |
         select(.createdAt >= $cutoff) |
         select(.author.login != null) |
-        [.author.login, "issue"] |
+        [.author.login, "issue", .createdAt] |
         @tsv
     ' "$issue_json" \
     >> "$events"
@@ -337,7 +390,7 @@ gh api \
     -f per_page=100 \
     --jq '.[] |
           select(.user.login != null) |
-          [.user.login, "comment"] |
+          [.user.login, "comment", .created_at] |
           @tsv' \
     >> "$events"
 
@@ -349,6 +402,14 @@ echo
 echo "Repository access audit"
 echo "Repository: $repo"
 echo "Activity since: $cutoff"
+echo "120-day grace cutoff: $grace_cutoff"
+echo "Oldest retained repository event: $oldest_event_timestamp"
+if $event_coverage_complete; then
+    echo "Recent direct-access coverage: COMPLETE for the 120-day grace period"
+else
+    echo "WARNING: RECENT-ACCESS EVIDENCE IS INCOMPLETE."
+    echo "REVIEW ACCESS classifications may require manual verification."
+fi
 echo
 echo "Activity includes:"
 echo "  commits, authored PRs, authored issues, reviews, and comments"
@@ -424,9 +485,43 @@ while IFS=$'\t' read -r user role; do
     # Count locally — no GitHub API calls here
     # --------------------------------------------------------
 
+    github_access_start="$(
+        awk -F '\t' -v user="$user" '$1 == user { print $2; exit }' \
+            "$github_recent_access"
+    )"
+
+    local_access_start="$(
+        awk -F '\t' -v repo="$repo" -v user="$user" '
+            $1 == repo && $2 == user { print $3; exit }
+        ' "$recent_access"
+    )"
+
+    if [[ -n "$local_access_start" && "$local_access_start" != *T* ]]; then
+        local_access_start="${local_access_start}T00:00:00Z"
+    fi
+
+    access_start=""
+    access_start_source=""
+
+    if [[ -n "$local_access_start" ]]; then
+        access_start="$local_access_start"
+        access_start_source="local policy metadata"
+    fi
+
+    if [[ -n "$github_access_start" &&
+          ( -z "$access_start" || "$github_access_start" > "$access_start" ) ]]; then
+        access_start="$github_access_start"
+        access_start_source="GitHub MemberEvent"
+    fi
+
+    activity_start="$cutoff_time"
+    if [[ -n "$access_start" && "$access_start" > "$activity_start" ]]; then
+        activity_start="$access_start"
+    fi
+
     counts="$(
-        awk -F '\t' -v user="$user" '
-            $1 == user {
+        awk -F '\t' -v user="$user" -v start="$activity_start" '
+            $1 == user && $3 > start {
                 if ($2 == "commit")  commits++
                 if ($2 == "pr")      prs++
                 if ($2 == "issue")   issues++
@@ -456,34 +551,31 @@ while IFS=$'\t' read -r user role; do
     # Conservative assessment
     # --------------------------------------------------------
 
-    if [[ "$commits" -eq 0 &&
-          "$prs" -eq 0 &&
-          "$issues" -eq 0 &&
-          "$reviews" -eq 0 &&
-          "$comments" -eq 0 ]]; then
+    policy_assessment="$(
+        awk -F '\t' -v repo="$repo" -v user="$user" '
+            $1 == repo && $2 == user { print $4; exit }
+        ' "$policy"
+    )"
 
-        assessment="$(
-            awk -F '\t' -v repo="$repo" -v user="$user" '
-                $1 == repo && $2 == user { print $4; exit }
-            ' "$policy"
-        )"
-
-        if [[ -z "$assessment" ]]; then
-            access_start="$(
-                awk -F '\t' -v repo="$repo" -v user="$user" '
-                    $1 == repo && $2 == user { print $3; exit }
-                ' "$recent_access"
-            )"
-
-            if [[ -n "$access_start" && "$access_start" > "$grace_cutoff" ]] &&
-                [[ "$access_start" < "$today" || "$access_start" == "$today" ]]; then
-                assessment="NEW"
-            else
-                assessment="REVIEW ACCESS"
-            fi
-        fi
-    else
+    if [[ -n "$policy_assessment" ]]; then
+        assessment="$policy_assessment"
+    elif [[ "$commits" -gt 0 ||
+            "$prs" -gt 0 ||
+            "$issues" -gt 0 ||
+            "$reviews" -gt 0 ||
+            "$comments" -gt 0 ]]; then
         assessment="ACTIVE"
+    elif [[ -n "$access_start" && "$access_start" > "$grace_cutoff_time" &&
+            ( "$access_start" < "$now" || "$access_start" == "$now" ) ]]; then
+        assessment="NEW"
+    else
+        assessment="REVIEW ACCESS"
+    fi
+
+    if [[ -n "$access_start" && "$access_start" > "$grace_cutoff_time" ]]; then
+        printf "%s\t%s\t%s\n" \
+            "$user" "$access_start" "$access_start_source" \
+            >> "$reported_recent_access"
     fi
 
     case "$assessment" in
@@ -500,9 +592,24 @@ while IFS=$'\t' read -r user role; do
 
 done < "$collaborators"
 
+current_sort_key=""
+
 LC_ALL=C sort -t $'\t' -k1,1n -k2,2f "$report" |
 while IFS=$'\t' read -r sort_key user role via \
     commits prs issues reviews comments assessment; do
+
+    if [[ "$sort_key" != "$current_sort_key" ]]; then
+        case "$sort_key" in
+            1) group_heading="ACTIVE" ;;
+            2) group_heading="KEEP" ;;
+            3) group_heading="NEW" ;;
+            *) group_heading="REVIEW ACCESS" ;;
+        esac
+
+        echo
+        echo "$group_heading"
+        current_sort_key="$sort_key"
+    fi
 
     printf "%-22s %-10s %-28s %7d %5d %6d %7d %8d  %s\n" \
         "$user" "$role" "$via" \
@@ -511,11 +618,22 @@ while IFS=$'\t' read -r sort_key user role via \
 done
 
 echo
-echo "KEEP means an explicit local policy exception applies despite no activity."
-echo "NEW means no qualifying activity yet, but local policy metadata records"
-echo "elevated access beginning after $grace_cutoff (within the 6-month grace period)."
+echo "KEEP means an explicit local policy exception applies."
+echo "NEW means no qualifying post-access activity yet, with reliable evidence"
+echo "that elevated access began after $grace_cutoff (within the 120-day grace period)."
 echo "REVIEW ACCESS means no qualifying activity, no KEEP policy, and no grace period:"
 echo "consider reducing elevated access to READ, not removing the collaborator."
+echo
+echo "RECENT ACCESS EVIDENCE:"
+if [[ -s "$reported_recent_access" ]]; then
+    LC_ALL=C sort -t $'\t' -k1,1f "$reported_recent_access" |
+    while IFS=$'\t' read -r recent_user recent_timestamp recent_source; do
+        printf "  %-28s %s  %s\n" \
+            "$recent_user" "$recent_timestamp" "$recent_source"
+    done
+else
+    echo "  none"
+fi
 echo
 echo "LOCAL POLICY EXCEPTIONS:"
 awk -F '\t' -v repo="$repo" '
