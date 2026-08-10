@@ -42,6 +42,13 @@ perform the following workflow:
    - branches and remotes pushed,
    - final Git status for each repository,
    - any files intentionally left uncommitted.
+10. After a successful Checkpoint, remind the user to run `depart` in Warp
+    before leaving the machine. Explain briefly that Checkpoint commits and
+    publishes the repository work, while `depart` synchronizes the wider
+    machine state, including standalone or canonical development checkouts
+    such as `HickernellAcademicLib`. This is a reminder only: do not run
+    `depart` as part of Checkpoint, and do not make Checkpoint success depend on
+    it.
 
 ### `Checkpoint <message>`
 
