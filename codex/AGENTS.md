@@ -14,6 +14,23 @@ Before responding to or acting on such a request:
 
 The user does not need to explicitly say `Dashboard` or provide the file path for this routing rule to apply.
 
+## Project handoff files
+
+**Project handoff files**, or simply **handoff files**, are the Git-tracked
+project documents that allow a future session or another machine to
+reconstruct the project's current state, rules, direction, and immediate next
+work. They include authoritative state and instruction files such as
+`notes/NEXT.md`, `STATUS.md`, `PLAN.md`, `AUTHOR_WORKFLOW.md`, and `AGENTS.md`,
+together with relevant supporting project notes when present. This shorthand
+does not change the substantive responsibilities or authority hierarchy of
+those files.
+
+“Update the handoff files” means inspect the completed work and reconcile it
+with the appropriate handoff documents; it does not mean mechanically edit
+every handoff file. At a Checkpoint, retain the special treatment of
+`notes/NEXT.md`: inspect it independently in every writable repository and
+update it only when the operational handoff has materially changed.
+
 ## Checkpoint workflow
 
 Treat a user message beginning with the exact word `Checkpoint` as authorization to complete the current repository work by validating, committing, and pushing it.
@@ -30,7 +47,15 @@ perform the following workflow:
 
 1. Review the work completed during the session and the current state of every repository being checkpointed. Inspect the complete Git diff, including all tracked modifications, deletions, renames, and untracked files.
 2. In each writable repository that contains `notes/NEXT.md`, read it and compare it with the completed work. If the immediate next task, current state, unresolved questions, constraints, or definition of done has materially changed, update `notes/NEXT.md` so another session or machine can resume accurately, and include that update in the same checkpoint commit. Keep it concise and operational; do not turn it into a session log or duplicate material belonging in `notes/TODO-LATER.md`, `notes/DECISIONS.md`, `notes/IDEAS.md`, `notes/TECHNICAL-NOTES.md`, `STATUS.md`, or similar planning and history files. If nothing relevant changed, leave it untouched. Do not modify it merely to change a timestamp or record that a checkpoint occurred. If the substantive next task is genuinely unclear, multiple plausible next tasks remain, or an update would require inferring the user's intent, ask before changing it. Do not ask merely because wording could be improved. When the current state is clear but one decision remains unresolved, record it under `Questions to resolve` rather than guessing. Perform this check independently in every writable repository being checkpointed that contains `notes/NEXT.md`.
-3. Update any other status, decision, workflow, or handoff documentation required by the completed work.
+3. Inspect the project's other handoff files and reconcile them with the work
+   being checkpointed. Update only files whose information materially changed;
+   do not mechanically edit every handoff file. Follow each file's existing
+   responsibility—for example, use `STATUS.md` for project progress, `PLAN.md`
+   for durable strategy, `AUTHOR_WORKFLOW.md` for workflow changes, `AGENTS.md`
+   for durable agent instructions, and relevant supporting notes for decisions,
+   deferred work, or technical knowledge. Complete these updates before final
+   validation and diff review, and include them in the same Checkpoint commit
+   when they belong to that repository.
 4. Run the relevant validation, tests, builds, linting, or syntax checks appropriate to each repository. If validation fails, diagnose and fix problems when reasonably possible. Do not commit known broken work merely because `Checkpoint` was requested.
 5. Review the final diff and confirm which changes belong in each repository, including newly created source, documentation, configuration, test, and asset files. Exclude only files that are clearly temporary, generated, ignored, secret, or unrelated to the repository work.
 6. For repositories containing changed writable submodules, validate, commit, and push the submodule changes first where required, then update the parent repository's pinned submodule commit. Follow repository-specific publication and synchronization instructions.
