@@ -26,3 +26,4 @@ Freds-M5-MBP  arm64  2026-08-06 11:18:27 CDT  Python 3.13.13  qmcpy 2.3  sync  f
 Freds-M5-MBP  arm64  2026-08-06 12:07:21 CDT  Python 3.13.13  qmcpy 2.3  sync  full compatibility  PASS WITH COURSE WARNINGS
 Freds-M5-MBP  arm64  2026-08-06 12:12:15 CDT  Python 3.13.13  qmcpy 2.3  sync  full compatibility  PASS WITH COURSE WARNINGS
 Freds-Mac-mini  arm64  2026-08-06 13:39:52 CDT  Python 3.13.13  qmcpy 2.3  upgrade  machine only  MACHINE-LOCAL PASS
+Freds-M3-MBP  arm64  2026-08-12 12:14:14 CDT  Python 3.13.13  qmcpy 2.3  upgrade  full compatibility  PASS

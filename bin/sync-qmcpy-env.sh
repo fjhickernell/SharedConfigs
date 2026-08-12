@@ -237,12 +237,15 @@ else
   echo "Compatibility checks: skipped by --machine-only"
 fi
 
-python -m pip install --upgrade pip wheel
-python -m pip install "setuptools<82"
-
 if [[ "$DO_CONDA_UPGRADE" == "1" ]]; then
   conda update --all -y
 fi
+
+# Run pip-managed upgrades after Conda. Otherwise, conda update may replace
+# pip with an older build after pip has upgraded itself, leaving a mixture of
+# files from two pip versions and an unusable environment.
+python -m pip install --upgrade pip wheel
+python -m pip install "setuptools<82"
 
 ACTUAL_PYTHON="$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
 if [[ "$ACTUAL_PYTHON" != "$EXPECTED_PYTHON" ]]; then
