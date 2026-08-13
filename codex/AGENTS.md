@@ -1,5 +1,14 @@
 # Global Codex instructions
 
+## Illinois Tech authentication
+
+When access to the user's Illinois Tech account or a protected Illinois Tech
+Microsoft 365 or SharePoint resource is needed, begin at
+`https://portal.iit.edu` and have the user sign in there. After portal
+authentication succeeds, navigate to the requested resource in the same
+browser session. Prefer this route over starting with a direct Microsoft
+passkey flow.
+
 ## Check-In & Focus Dashboard routing
 
 The authoritative task dashboard is `GitTracked/Check-In-Dashboard.md` in the `ObsidianVault` workspace root.
@@ -13,6 +22,10 @@ Before responding to or acting on such a request:
 3. Resolve task abbreviations and task status from the dashboard itself rather than from conversation memory.
 
 The user does not need to explicitly say `Dashboard` or provide the file path for this routing rule to apply.
+
+## Pull request review
+
+When creating or substantially updating a GitHub pull request, request a GitHub Copilot code review by default when it is available, unless the user or repository guidance explicitly opts out. Treat Copilot review only as a supplement: it never replaces required human reviewers, human approval, CI, testing, or repository-specific review safeguards. Address applicable automated feedback before requesting or re-requesting human review so that human reviewers evaluate the intended final revision.
 
 ## Project handoff files
 

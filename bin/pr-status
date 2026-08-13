@@ -19,64 +19,138 @@ section() {
   printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
 }
 
-warn() {
-  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
+heading() {
+  printf "${YELLOW_BOLD}%s:${NC}\n" "$1"
 }
 
 error() {
   printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
 }
 
-repos=(
-  "QMCSoftware/QMCSoftware"
-  "fjhickernell/MCQMC26"
-  "fjhickernell/SIAMUQ26"
-  "fjhickernell/MATH476Spring2026"
-  "fjhickernell/MATH563Spring2026"
-)
+if ! command -v gh >/dev/null 2>&1; then
+  error "GitHub CLI (gh) is not installed."
+  exit 1
+fi
 
-github_user="fjhickernell"
+if ! github_user=$(gh api user --jq .login 2>/dev/null) || [[ -z "$github_user" ]]; then
+  error "GitHub CLI is not authenticated; run 'gh auth login -h github.com'."
+  exit 1
+fi
 
-found_any=false
-banner "GitHub PR responsibilities check started"
+# Search across every repository visible to the authenticated account.  A
+# repository list here would inevitably go stale as active work changes.
+search_prs() {
+  gh search prs \
+    --limit 100 \
+    --sort updated \
+    --order desc \
+    --json repository,number,title,url,isDraft \
+    --jq '
+      .[] |
+      "  \(.repository.nameWithOwner)#\(.number) — \(.title)" +
+      (if .isDraft then " [draft]" else "" end) +
+      "\n    \(.url)"
+    ' \
+    -- "$@"
+}
 
-for repo in "${repos[@]}"; do
+if ! review_output=$(
+  search_prs "review-requested:$github_user" "state:open"
+); then
+  error "Could not search GitHub for requested reviews."
+  exit 1
+fi
 
-  review_output=$(
-    gh pr list \
-      -R "$repo" \
-      --search "review-requested:$github_user" \
-      --json number,title,headRefName \
-      --template '{{range .}}  PR #{{.number}}  [{{.headRefName}}]  {{.title}}{{"\n"}}{{end}}'
-  )
+if ! changes_output=$(
+  search_prs "author:$github_user" "-is:draft" "state:open" "review:changes_requested"
+); then
+  error "Could not search GitHub for changes requested on your PRs."
+  exit 1
+fi
 
-  assigned_output=$(
-    gh pr list \
-      -R "$repo" \
-      --search "assignee:$github_user" \
-      --json number,title,headRefName \
-      --template '{{range .}}  PR #{{.number}}  [{{.headRefName}}]  {{.title}}{{"\n"}}{{end}}'
-  )
+if ! assigned_output=$(
+  search_prs "assignee:$github_user" "-author:$github_user" \
+    "-review-requested:$github_user" "state:open"
+); then
+  error "Could not search GitHub for PRs assigned to you."
+  exit 1
+fi
 
-  if [[ -n "$review_output" || -n "$assigned_output" ]]; then
-    found_any=true
-    section "$repo"
+if ! approved_output=$(
+  search_prs "author:$github_user" "-is:draft" "state:open" "review:approved"
+); then
+  error "Could not search GitHub for your approved PRs."
+  exit 1
+fi
 
-    if [[ -n "$review_output" ]]; then
-      printf "${YELLOW_BOLD}Review requested:${NC}\n"
-      printf '%s\n' "$review_output"
-    fi
+# review:required omits some legitimate pending cases, including PRs without a
+# branch-protection review requirement.  Start with every non-draft PR of mine
+# and remove only the states already reported more specifically above.
+if ! awaiting_output=$(
+  search_prs "author:$github_user" "-is:draft" "-review:approved" \
+    "-review:changes_requested" "state:open"
+); then
+  error "Could not search GitHub for your PRs awaiting review."
+  exit 1
+fi
 
-    if [[ -n "$assigned_output" ]]; then
-      printf "${YELLOW_BOLD}Assigned to me:${NC}\n"
-      printf '%s\n' "$assigned_output"
-    fi
+if ! draft_output=$(
+  search_prs "author:$github_user" "is:draft" "state:open"
+); then
+  error "Could not search GitHub for your draft PRs."
+  exit 1
+fi
+
+has_action=false
+has_waiting=false
+has_drafts=false
+
+[[ -n "$review_output" || -n "$changes_output" || -n "$approved_output" || -n "$assigned_output" ]] && has_action=true
+[[ -n "$awaiting_output" ]] && has_waiting=true
+[[ -n "$draft_output" ]] && has_drafts=true
+
+banner "GitHub PR attention check started"
+
+if [[ "$has_action" == true ]]; then
+  section "Action needed"
+
+  if [[ -n "$review_output" ]]; then
+    heading "Review requested from me"
+    printf '%s\n' "$review_output"
   fi
 
-done
+  if [[ -n "$changes_output" ]]; then
+    heading "Changes requested on my PRs"
+    printf '%s\n' "$changes_output"
+  fi
 
-if [[ "$found_any" == true ]]; then
-  banner "PR review sweep completed"
+  if [[ -n "$approved_output" ]]; then
+    heading "My approved PRs (ready for the next merge step)"
+    printf '%s\n' "$approved_output"
+  fi
+
+  if [[ -n "$assigned_output" ]]; then
+    heading "Other PRs assigned to me"
+    printf '%s\n' "$assigned_output"
+  fi
+fi
+
+if [[ "$has_waiting" == true ]]; then
+  section "Waiting on others"
+  heading "My PRs awaiting review"
+  printf '%s\n' "$awaiting_output"
+fi
+
+if [[ "$has_drafts" == true ]]; then
+  section "Open drafts"
+  heading "My draft PRs"
+  printf '%s\n' "$draft_output"
+fi
+
+if [[ "$has_action" == false && "$has_waiting" == false && "$has_drafts" == false ]]; then
+  banner "No open PRs need attention"
+elif [[ "$has_action" == false && "$has_waiting" == true ]]; then
+  banner "No immediate PR action; some of your PRs are awaiting review"
 else
-  banner "No GitHub PR responsibilities pending"
+  banner "PR attention check completed"
 fi
