@@ -54,8 +54,21 @@ search_prs() {
     -- "$@"
 }
 
+# Add context to a formatted PR entry without changing its URL line.  Search
+# results use two leading spaces for the title and four for the URL.
+annotate_prs() {
+  sed 's/^  \([^ ].*\)$/  \1 [changes requested]/'
+}
+
 if ! review_output=$(
-  search_prs "review-requested:$github_user" "state:open"
+  {
+    # A requested review can reasonably wait when another reviewer has already
+    # asked the author for changes, so make that state visible in the listing.
+    search_prs "review-requested:$github_user" "review:changes_requested" \
+      "state:open" | annotate_prs
+    search_prs "review-requested:$github_user" "-review:changes_requested" \
+      "state:open"
+  }
 ); then
   error "Could not search GitHub for requested reviews."
   exit 1
