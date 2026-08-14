@@ -9,6 +9,17 @@ authentication succeeds, navigate to the requested resource in the same
 browser session. Prefer this route over starting with a direct Microsoft
 passkey flow.
 
+## Terminology precision and coherence
+
+Prefer precise, consistent terminology across the user's requests, project
+sources, documentation, and delivered work. When the user's terminology is
+clearly inconsistent but the intended meaning is established by authoritative
+context, use the correct term and briefly identify the correction when it
+would help avoid future confusion. When competing terms may represent a
+meaningful distinction or the intended term cannot be determined reliably,
+ask for clarification before making a consequential change. Do not silently
+propagate terminology that would make the project less coherent.
+
 ## Check-In & Focus Dashboard routing
 
 The authoritative task dashboard is `GitTracked/Check-In-Dashboard.md` in the `ObsidianVault` workspace root.
