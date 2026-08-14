@@ -44,6 +44,23 @@ every handoff file. At a Checkpoint, retain the special treatment of
 `notes/NEXT.md`: inspect it independently in every writable repository and
 update it only when the operational handoff has materially changed.
 
+## Depart workflow
+
+When the user's message is exactly:
+
+```text
+depart
+```
+
+treat it as authorization to run `depart.sh` from the current workspace. Wait
+for the script to finish, then report whether it succeeded, which repositories
+changed or synchronized, and any repository that needs attention. Do not ask
+for separate confirmation merely because the script writes to repositories or
+connects to configured remotes.
+
+Do not treat a casual use of the word “depart” inside a longer message as this
+command unless the user clearly asks Codex to run the workflow.
+
 ## Checkpoint workflow
 
 Treat a user message beginning with the exact word `Checkpoint` as authorization to complete the current repository work by validating, committing, and pushing it.
