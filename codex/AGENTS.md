@@ -9,6 +9,23 @@ authentication succeeds, navigate to the requested resource in the same
 browser session. Prefer this route over starting with a direct Microsoft
 passkey flow.
 
+## Illinois Tech calendar routing
+
+The user's primary calendar for nearly all events is the Apple Calendar
+calendar named `Calendar` under the `hickernell@illinoistech.edu` account,
+shown in Apple Calendar as `Illinois Tech Fred`. Prefer this calendar for new
+events unless the user specifies another calendar, because events placed there
+block the user's availability in Microsoft Bookings. Fantastical is the user's
+preferred calendar app, while Apple Calendar provides the working local
+automation path; events added through Apple Calendar synchronize into
+Fantastical. Do not confuse the target with the read-only `IIT Applied
+Mathematics` calendar. When local automation cannot disambiguate calendars with
+the same name by account, confirm the target or use a writable calendar only
+with the user's approval to move the event manually. When a source schedule
+specifies a time zone different from the Mac's current zone, preserve that
+named time zone explicitly on the calendar events when the available creation
+path supports it; do not rely only on converting the displayed clock times.
+
 ## Terminology precision and coherence
 
 Prefer precise, consistent terminology across the user's requests, project
