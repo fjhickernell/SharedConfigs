@@ -1,5 +1,19 @@
 # Global Codex instructions
 
+## Machine identity
+
+At the beginning of every new Codex session, check for
+`~/.codex-machine.md` before doing other work. If it exists, read it and treat
+its contents as the authoritative machine-specific context, including the
+machine's full identity and preferred short name.
+
+If `~/.codex-machine.md` does not exist, ask the user for the machine's full
+identity and preferred short name. After the user answers, create the file
+with both values before proceeding with other work. Treat this file as
+unshared, machine-local state: do not commit, synchronize, or copy it to other
+machines. Do not modify it unless the user asks or corrects the machine
+identity.
+
 ## Illinois Tech authentication
 
 When access to the user's Illinois Tech account or a protected Illinois Tech
