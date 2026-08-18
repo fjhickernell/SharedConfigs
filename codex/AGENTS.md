@@ -2,6 +2,11 @@
 
 ## Machine identity
 
+The known machines sharing this guidance have the preferred short names
+`M3`, `M5`, `Mini`, and `Intel`. When the user identifies another machine and
+its preferred short name is not already in this list, add the short name to
+this list in the shared global guidance.
+
 At the beginning of every new Codex session, check for
 `~/.codex-machine.md` before doing other work. If it exists, read it and treat
 its contents as the authoritative machine-specific context, including the
