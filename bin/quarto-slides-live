@@ -30,24 +30,70 @@ error() {
 
 banner "quarto-slides-live started"
 
-export QUARTO_PYTHON="${QUARTO_PYTHON:-$(conda run -n qmcpy python -c 'import sys; print(sys.executable)')}"
-export PATH="$(dirname "$QUARTO_PYTHON"):$PATH"
-
 FAST=0
-if [ "${1:-}" = "--fast" ]; then
-  FAST=1
-  shift
+port="${QUARTO_LIVE_PORT:-}"
+port_source="auto"
+
+if [ -n "$port" ]; then
+  port_source="environment"
 fi
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --fast)
+      FAST=1
+      shift
+      ;;
+    -p|--port)
+      if [ $# -lt 2 ]; then
+        error "$1 requires a port number."
+        exit 2
+      fi
+      port="$2"
+      port_source="command line"
+      shift 2
+      ;;
+    --port=*)
+      port="${1#*=}"
+      port_source="command line"
+      shift
+      ;;
+    -h|--help)
+      section "Usage"
+      echo "Usage: quarto-slides-live [--fast] [-p PORT|--port PORT] <deck>"
+      echo "  Examples:"
+      echo "    quarto-slides-live 03-hypothesis"
+      echo "    quarto-slides-live -p 4322 01-introduction"
+      echo "    quarto-slides-live --fast --port=4323 slides/05-selected-topics.qmd"
+      exit 0
+      ;;
+    -*)
+      error "Unknown option: $1"
+      exit 2
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 if [ $# -ne 1 ]; then
   section "Usage"
-  echo "Usage: quarto-slides-live [--fast] <deck>"
+  echo "Usage: quarto-slides-live [--fast] [-p PORT|--port PORT] <deck>"
   echo "  Examples:"
   echo "    quarto-slides-live 03-hypothesis"
-  echo "    quarto-slides-live 03-hypothesis.qmd"
-  echo "    quarto-slides-live slides/03-hypothesis.qmd"
+  echo "    quarto-slides-live -p 4322 01-introduction"
+  echo "    quarto-slides-live --fast --port=4323 slides/05-selected-topics.qmd"
   exit 2
 fi
+
+if [ -n "$port" ] && { [[ ! "$port" =~ ^[0-9]+$ ]] || (( 10#$port < 1 || 10#$port > 65535 )); }; then
+  error "Port must be an integer from 1 through 65535: $port"
+  exit 2
+fi
+
+export QUARTO_PYTHON="${QUARTO_PYTHON:-$(conda run -n qmcpy python -c 'import sys; print(sys.executable)')}"
+export PATH="$(dirname "$QUARTO_PYTHON"):$PATH"
 
 arg="$1"
 
@@ -81,7 +127,68 @@ logs_dir="$repo_root/.quarto-watch-logs"
 mkdir -p "$logs_dir"
 log="$logs_dir/${target_base}.render.log"
 
-port="${QUARTO_LIVE_PORT:-4321}"
+listener_belongs_to_repo() {
+  local candidate_port="$1"
+  local pid listener_cwd
+
+  for pid in $(lsof -tiTCP:"${candidate_port}" -sTCP:LISTEN 2>/dev/null || true); do
+    listener_cwd="$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -n 1)"
+    case "$listener_cwd" in
+      "$repo_root"|"$repo_root"/*)
+        return 0
+        ;;
+    esac
+  done
+
+  return 1
+}
+
+if [ "$port_source" = "auto" ]; then
+  port_file="$logs_dir/port"
+  stored_port=""
+
+  if [ -f "$port_file" ]; then
+    IFS= read -r stored_port < "$port_file" || true
+    if [[ ! "$stored_port" =~ ^[0-9]+$ ]] || (( 10#$stored_port < 1 || 10#$stored_port > 65535 )); then
+      stored_port=""
+    fi
+  fi
+
+  if [ -n "$stored_port" ]; then
+    candidate_port="$stored_port"
+  else
+    repo_name="$(basename "$repo_root")"
+    if [[ "$repo_name" =~ MATH([0-9]{3}) ]]; then
+      candidate_port=$((4000 + 10#${BASH_REMATCH[1]}))
+    else
+      repo_checksum="$(printf '%s' "$repo_root" | cksum)"
+      repo_checksum="${repo_checksum%% *}"
+      candidate_port=$((10000 + repo_checksum % 10000))
+    fi
+  fi
+
+  attempts=0
+  while [ "$attempts" -lt 64512 ]; do
+    if ! lsof -tiTCP:"${candidate_port}" -sTCP:LISTEN >/dev/null 2>&1 || listener_belongs_to_repo "$candidate_port"; then
+      port="$candidate_port"
+      break
+    fi
+    candidate_port=$((candidate_port + 1))
+    if [ "$candidate_port" -gt 65535 ]; then
+      candidate_port=1024
+    fi
+    attempts=$((attempts + 1))
+  done
+
+  if [ -z "$port" ]; then
+    error "Could not find an available local port."
+    exit 2
+  fi
+
+  printf '%s\n' "$port" > "$port_file"
+  section "Port"
+  echo "Using directory-assigned port ${port} for $(basename "$repo_root")."
+fi
 
 existing_pids="$(lsof -tiTCP:${port} -sTCP:LISTEN 2>/dev/null || true)"
 if [ -n "$existing_pids" ]; then

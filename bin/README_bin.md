@@ -65,6 +65,7 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `export-macapps-xlsx.sh` | Mac App Inventory | Export inventory to Excel. |
 | `link_sharedconfigs_minimal.sh` | Mac Setup | Bring a new Mac online with baseline links. |
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
+| `quarto-slides-live` | Teaching | Live-render one RevealJS deck on an automatically assigned per-course port. |
 | `regular-maintenance.sh` | System Maintenance | Run sync-brew, update-texlive, qmcpy sync, etc. |
 | `README_bin.md` | Documentation | This file. |
 | `setup-starship.sh` | Shell | Install and link shared starship config. |
@@ -265,6 +266,37 @@ Add this script to your Dock instead of TeXstudio.
 ---
 
 ## Teaching Tools
+
+### `quarto-slides-live`
+
+Live-renders one RevealJS deck and refreshes its browser tab whenever the
+course's slide or `classlib` sources change. Run it from the course repository
+root.
+
+```bash
+quarto-slides-live 00-why-linear-algebra
+```
+
+By default, the script assigns a stable port from the repository directory.
+For MATH course repositories it uses `4000 + course number`, so MATH 332 uses
+port `4332` and MATH 565 uses port `4565`. If that port belongs to another
+repository, it selects the next available port and remembers it in the
+repository's ignored `.quarto-watch-logs/port` file. Thus the simple command
+can run concurrently in two course terminals:
+
+```bash
+# MATH 332 terminal
+quarto-slides-live 00-why-linear-algebra
+
+# MATH 565 terminal
+quarto-slides-live 01-introduction
+```
+
+Use `-p` or `--port` when an explicit override is useful. The older
+`QUARTO_LIVE_PORT` environment variable remains supported, and a command-line
+port takes precedence over it. An explicit port preserves the earlier
+behavior of replacing any listener on that selected port. Use `--fast` in
+either command when cached rendering is appropriate.
 
 ### `prep_description_summary.sh`
 Generates boilerplate templates for student project summaries and descriptions.
