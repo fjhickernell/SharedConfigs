@@ -43,6 +43,7 @@ p = Path.home() / "Documents/SharedConfigs/Brewfile"
 lines = p.read_text().splitlines()
 
 blocked = (
+    'brew "r"',
     'cask "macdown"',
     'cask "mactex"',
     'cask "miniconda"',
@@ -61,7 +62,10 @@ header = [
     "# Do not manage these via Homebrew:",
     "#   - mactex (managed by tlmgr/update-texlive)",
     "#   - miniconda (managed manually/conda)",
+    "#   - R formula (use the r-app cask for the official R framework)",
     "#   - Xcode (Apple-managed)",
+    "#   - wolfram-engine (huge; install manually only on Macs where needed)",
+    "#   - matlab",
     "",
 ]
 
@@ -72,8 +76,13 @@ for line in lines:
         continue
     out.append(line)
 
-while out and out[0].startswith("# Do not manage these via Homebrew:"):
-    out = out[5:]
+if out and out[0].startswith("# Do not manage these via Homebrew:"):
+    try:
+        header_end = out.index("")
+    except ValueError:
+        header_end = -1
+    if header_end >= 0:
+        out = out[header_end + 1:]
 
 p.write_text("\n".join(header + out) + "\n")
 PY

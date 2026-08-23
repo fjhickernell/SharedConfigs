@@ -40,6 +40,7 @@ brew upgrade
 section "Ensuring Brewfile state via brew bundle"
 bundle_failed=0
 bundle_log="$(mktemp)"
+trap 'rm -f "$bundle_log"' EXIT
 
 if [[ -f Brewfile ]]; then
   brew bundle --file="$HOME/Documents/SharedConfigs/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
@@ -48,7 +49,15 @@ else
 fi
 
 bundle_ok_count="$(awk '/^(Using|Installing) / && $0 !~ / has failed!/ { n++ } END { print n+0 }' "$bundle_log")"
-bundle_fail_count="$(awk '/has failed|failed to install|depends on hardware architecture|dependency graph sorting failed|circular dependency/ { n++ } END { print n+0 }' "$bundle_log")"
+bundle_fail_count="$(awk '
+  /^(Installing|Upgrading) .* has failed!$/ { n++; next }
+  /depends on hardware architecture/ { n++; next }
+  /dependency graph sorting failed|circular dependency/ { n++; next }
+  END { print n+0 }
+' "$bundle_log")"
+if [[ "$bundle_failed" -eq 1 && "$bundle_fail_count" -eq 0 ]]; then
+  bundle_fail_count=1
+fi
 echo
 section "brew bundle summary"
 printf "${GREEN_BOLD}(Mostly) OK:${NC} %s Brewfile items were already installed or processed.
@@ -60,15 +69,25 @@ if [[ "$bundle_failed" -eq 1 ]]; then
   grep -E "has failed|failed to install|depends on hardware architecture" "$bundle_log" || true
   echo
 
-  if grep -Eq "dependency graph sorting failed|circular dependency" "$bundle_log"; then
+  unrecognized_errors="$(grep '^Error:' "$bundle_log" | grep -Ev 'depends on hardware architecture|dependency graph sorting failed|circular dependency' || true)"
+
+  if [[ -n "$unrecognized_errors" ]]; then
+    error "Homebrew Bundle failed unexpectedly; stopping sync-brew."
+    printf '%s\n' "$unrecognized_errors" >&2
+    exit 1
+  elif grep -Eq "dependency graph sorting failed|circular dependency" "$bundle_log"; then
     printf "${YELLOW_BOLD}Continuing because Homebrew Bundle encountered a formula dependency-cycle sorting error. brew upgrade and brew doctor otherwise completed normally.${NC}\n"
-  else
+  elif grep -Eq "depends on hardware architecture" "$bundle_log"; then
     printf "${YELLOW_BOLD}Continuing because some Brewfile items may be unavailable or architecture-specific on this Mac.${NC}\n"
+  else
+    error "Homebrew Bundle failed unexpectedly; stopping sync-brew."
+    exit 1
   fi
 fi
 
 echo
 rm -f "$bundle_log"
+trap - EXIT
 
 section "Removing unused dependencies"
 brew autoremove

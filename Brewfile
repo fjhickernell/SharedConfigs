@@ -1,6 +1,7 @@
 # Do not manage these via Homebrew:
 #   - mactex (managed by tlmgr/update-texlive)
 #   - miniconda (managed manually/conda)
+#   - R formula (use the r-app cask for the official R framework)
 #   - Xcode (Apple-managed)
 #   - wolfram-engine (huge; install manually only on Macs where needed)
 #   - matlab
@@ -45,7 +46,6 @@ brew "pkgconf"
 brew "poppler"
 brew "pstree"
 brew "pygments"
-brew "r"
 brew "ripgrep"
 brew "ruby"
 brew "ruby-install"
@@ -180,4 +180,3 @@ vscode "reditorsupport.r-syntax"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "tomoki1207.pdf"
 npm "browser-sync"
-
