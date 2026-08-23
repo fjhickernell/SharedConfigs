@@ -19,6 +19,22 @@ unshared, machine-local state: do not commit, synchronize, or copy it to other
 machines. Do not modify it unless the user asks or corrects the machine
 identity.
 
+## Session-start Dashboard preflight
+
+After completing the machine identity check, once per new Codex session and
+before ordinary task work, read `GitTracked/AGENTS.md` and the current
+`GitTracked/Check-In-Dashboard.md` from the `ObsidianVault` workspace root.
+
+Treat this startup preflight as read-only. If the current machine appears in
+any incomplete machine-specific subtask under Green **P29. Computer
+Infrastructure**, alert the user before beginning ordinary nonurgent work and
+name every matching subtask.
+
+Do not run Git synchronization, perform Dashboard rollover, audit recurring
+sources, or edit the Dashboard solely because of this startup preflight. Use
+the full Dashboard workflow when the user's request concerns the Dashboard or
+when the user chooses to address a preflight alert.
+
 ## Illinois Tech authentication
 
 When access to the user's Illinois Tech account or a protected Illinois Tech
