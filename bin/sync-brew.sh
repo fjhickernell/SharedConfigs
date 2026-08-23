@@ -49,12 +49,10 @@ else
 fi
 
 bundle_ok_count="$(awk '/^(Using|Installing) / && $0 !~ / has failed!/ { n++ } END { print n+0 }' "$bundle_log")"
-bundle_fail_count="$(awk '
-  /^(Installing|Upgrading) .* has failed!$/ { n++; next }
-  /depends on hardware architecture/ { n++; next }
-  /dependency graph sorting failed|circular dependency/ { n++; next }
-  END { print n+0 }
-' "$bundle_log")"
+bundle_fail_count="$(sed -nE 's/^`brew bundle` failed! ([0-9]+) Brewfile dependenc(y|ies) failed to install$/\1/p' "$bundle_log" | tail -n 1)"
+if [[ -z "$bundle_fail_count" ]]; then
+  bundle_fail_count="$(awk '/^(Installing|Upgrading) .* has failed!$/ { n++ } END { print n+0 }' "$bundle_log")"
+fi
 if [[ "$bundle_failed" -eq 1 && "$bundle_fail_count" -eq 0 ]]; then
   bundle_fail_count=1
 fi
