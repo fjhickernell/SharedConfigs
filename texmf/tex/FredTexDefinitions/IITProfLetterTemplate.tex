@@ -1,51 +1,28 @@
 \documentclass[11pt]{iitletterProf}
-\usepackage{amsmath,amssymb,hyperref,xspace}
-\usepackage[dvipsnames]{xcolor}
-%\input FJHDef.tex
 
-\colorlet{mylinkcolor}{violet}
-\colorlet{mycitecolor}{Aquamarine}
-\colorlet{myurlcolor}{YellowOrange}
-\newcommand\myshade{70}
-
-\hypersetup{
-	colorlinks = true,
-	linkcolor  = violet!\myshade!black,
-	citecolor  = mycitecolor!\myshade!black,
-	urlcolor   = myurlcolor!\myshade!black,
-}
-
-\usepackage[giveninits=false,backend=biber,style=nature, maxcitenames =10, mincitenames=9]{biblatex}
-\defbibheading{letterbib}[\refname]{\textbf{#1}}
-\addbibresource{FJHown23.bib}
-\addbibresource{FJH23.bib}
-
+% The class supplies the current logo, identity, footer, hyperlink styling,
+% and handwritten signature. Use \iitsetup only when overriding defaults.
+% \iitsetup{
+%   name={Fred J. Hickernell},
+%   title={Professor of Applied Mathematics},
+%   contact={10 West 32nd Street \redvert\ RE 208 \redvert\ Chicago, IL 60616 USA},
+%   accent=iitred
+% }
 
 \address{}
-
-\date{\today}  % optional
-%\signature{\vspace*{-9ex}\includegraphics[width=4.5cm]{FredSignature.pdf} \\ Fred J. Hickernell}
-\signature{Fred J. Hickernell}
+\date{\today}
 
 \begin{document}
 
-\begin{letter}{}
+\begin{letter}{Recipient Name\\Recipient Address}
 
-\opening{Dear Sir/Madam,}
+\opening{Dear Recipient,}
 
-\begin{center} \textbf{ } \end{center}
-
+Your letter text goes here.
 
 \closing{Sincerely yours,}
 
-%\encl{}
-
-%Bio: Fred J. Hickernell has served most of his career at Hong Kong Baptist University (HKBU) (1985–2005) and Illinois Institute of Technology (IIT) (2005–present).  He was department head at HKBU for 13 years and department chair at IIT for 12 years. He is presently Vice Provost for Research at IIT. Prof.\ Hickernell’s research straddles computational mathematics and statistics.  He is a Fellow of the Institute of Mathematical Statistics and has served on the editorial boards of the \emph{Journal of Complexity}, \emph{Mathematics of Computation}, and the \emph{SIAM Journal on Numerical Analysis}. He has over 130 refereed publications and has supervised 14 PhDs.
-
-
-%\vspace{5ex}
-%\printbibliography[heading=letterbib]
-
+% \encl{Enclosure description}
 
 \end{letter}
 \end{document}
