@@ -147,6 +147,26 @@ opt-in is in the repository-local instructions for the Infrastructure
 project's two entry points; the presence of this global file through the
 `~/.codex/AGENTS.md` symlink is not a project-specific opt-in.
 
+### `Infrastructure Checkpoint`
+
+When the user's message is exactly:
+
+```text
+Infrastructure Checkpoint
+```
+
+treat it as an Infrastructure-project Checkpoint regardless of the current
+Codex project or repository. Apply the normal Checkpoint workflow to both
+infrastructure repositories, `~/Documents/SharedConfigs` and
+`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault/GitTracked`,
+then run `git-repo-sync.sh` as the final synchronization step and report its
+result. Do not include the current teaching, research, or other project merely
+because this command was issued from that project's workspace, and do not run
+`sync-active.sh`.
+
+Do not treat casual or reordered uses of these words as this command. The
+message must be exactly `Infrastructure Checkpoint`.
+
 ### `Checkpoint`
 
 When the user's message is exactly:
