@@ -128,6 +128,25 @@ command unless the user clearly asks Codex to run the workflow.
 
 Treat a user message beginning with the exact word `Checkpoint` as authorization to complete the current repository work by validating, committing, and pushing it.
 
+### Repository scope and synchronization opt-in
+
+By default, a Checkpoint applies only to the repository or repositories that
+belong to the current Codex project and were modified for that project,
+together with any changed writable submodules covered by the workflow below.
+Verify, commit, and push only those repositories. Do not automatically
+synchronize or include `SharedConfigs` or `GitTracked` (named
+`GitTrackedObsidian` by `git-repo-sync.sh`) merely because they are named in
+this global guidance, used during the session-start Dashboard preflight, or
+available in the workspace.
+
+Do not run `git-repo-sync.sh` or `sync-active.sh` as part of a Checkpoint unless
+the current project's own `AGENTS.md` explicitly opts in to that specific
+script and defines the additional repository scope. An opt-in to one script
+does not authorize the other. The sole intended checkpoint synchronization
+opt-in is in the repository-local instructions for the Infrastructure
+project's two entry points; the presence of this global file through the
+`~/.codex/AGENTS.md` symlink is not a project-specific opt-in.
+
 ### `Checkpoint`
 
 When the user's message is exactly:

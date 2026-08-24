@@ -122,6 +122,7 @@ When linking a new application:
 ## Current Shared Applications
 
 * BibDesk
+* Codex global instructions (`~/.codex/AGENTS.md` → `codex/AGENTS.md`)
 * LaTeXiT
 * texmf
 * Warp
