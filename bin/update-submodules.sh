@@ -22,7 +22,7 @@ set -euo pipefail
 #     • Initializes submodules to the recorded pointers.
 #     • Fast-forwards each submodule to its upstream branch:
 #         - classlib → main
-#         - qmcsoftware → develop
+#         - qmcpy → develop
 #         - assets/tests/archive → main
 #     • Commits pointer updates if requested.
 # --------------------------------------------------------------------
@@ -78,11 +78,11 @@ fi
 # Submodule → branch mapping
 typeset -A BRANCH_FOR
 BRANCH_FOR[classlib]=main
-BRANCH_FOR[qmcsoftware]=develop
+BRANCH_FOR[qmcpy]=develop
 BRANCH_FOR[assets/tests/archive]=main
 SUBMODULES=(
   "classlib"
-  "qmcsoftware"
+  "qmcpy"
   "assets/tests/archive"
 )
 
@@ -184,7 +184,7 @@ git status --short
 if [[ "$AUTO_COMMIT" -eq 1 ]]; then
   log "Committing updated submodule pointers..."
   git add "${SUBMODULES[@]}"
-  git commit -m "Update submodules (classlib + qmcsoftware + assets/tests/archive)"
+  git commit -m "Update submodules (classlib + qmcpy + assets/tests/archive)"
 
   if [[ "$AUTO_PUSH" -eq 1 ]]; then
     log "Pushing commit..."

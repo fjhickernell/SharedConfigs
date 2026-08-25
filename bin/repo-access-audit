@@ -12,11 +12,11 @@ set -euo pipefail
 #   repo-access-audit QMCSoftware
 #   repo-access-audit qmcpy-website
 #   repo-access-audit MATH332Fall2026
-#   repo-access-audit QMCSoftware/QMCSoftware
-#   repo-access-audit QMCSoftware/QMCSoftware 2025-01-01
+#   repo-access-audit QMCSoftware/qmcpy
+#   repo-access-audit QMCSoftware/qmcpy 2025-01-01
 #
 # Defaults:
-#   repository: QMCSoftware/QMCSoftware
+#   repository: QMCSoftware/qmcpy
 #   cutoff:     2025-01-01
 #
 # For a bare repository name:
@@ -36,7 +36,7 @@ set -euo pipefail
 # Unlike the earlier version, this script does NOT use GitHub's
 # search API once per user.
 
-arg="${1:-QMCSoftware/QMCSoftware}"
+arg="${1:-QMCSoftware/qmcpy}"
 cutoff="${2:-2025-01-01}"
 
 # ------------------------------------------------------------
@@ -117,16 +117,16 @@ reported_recent_access="$tmpdir/reported-recent-access.tsv"
 # Local access-policy exceptions. Keep these separate from activity counting.
 # Fields: repository, user, reason, assessment override.
 printf "%s\t%s\t%s\t%s\n" \
-    "QMCSoftware/QMCSoftware" "fredhickernell" \
+    "QMCSoftware/qmcpy" "fredhickernell" \
         "alternate account retained for testing" "KEEP" \
-    "QMCSoftware/QMCSoftware" "yding2" \
+    "QMCSoftware/qmcpy" "yding2" \
         "important collaborator" "KEEP" \
-    "QMCSoftware/QMCSoftware" "jagadeesr" \
+    "QMCSoftware/qmcpy" "jagadeesr" \
         "important collaborator; consider admin to write" \
         "KEEP; REVIEW ADMIN->WRITE" \
-    "QMCSoftware/QMCSoftware" "schoi32" \
+    "QMCSoftware/qmcpy" "schoi32" \
         "important collaborator; same person as sou-cheng-choi" "KEEP" \
-    "QMCSoftware/QMCSoftware" "sou-cheng-choi" \
+    "QMCSoftware/qmcpy" "sou-cheng-choi" \
         "important collaborator; same person as schoi32" "KEEP" \
     > "$policy"
 
@@ -142,7 +142,7 @@ printf "%s\t%s\t%s\t%s\n" \
 record_recent_access_metadata() {
     # Example (remove the leading # and replace the values):
     # printf "%s\t%s\t%s\n" \
-    #     "QMCSoftware/QMCSoftware" "github-user" "2026-08-01"
+    #     "QMCSoftware/qmcpy" "github-user" "2026-08-01"
     :
 }
 

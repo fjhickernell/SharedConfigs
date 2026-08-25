@@ -2,10 +2,10 @@
 set -euo pipefail
 
 CLASSLIB_SUBMODULE="classlib"
-QMCSOFTWARE_SUBMODULE="qmcsoftware"
+QMCPY_SUBMODULE="qmcpy"
 
 CLASSLIB_CANONICAL="$HOME/SoftwareRepositories/HickernellAcademicLib"
-QMCSOFTWARE_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
+QMCPY_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
 
 GREEN="\033[0;32m"
 RED="\033[0;31m"
@@ -53,7 +53,7 @@ EOF
   cat <<'EOF'
 If the repo is dirty because you edited inside a submodule by mistake:
   git -C classlib status --short
-  git -C qmcsoftware status --short
+  git -C qmcpy status --short
 
 EOF
 }
@@ -62,15 +62,15 @@ mismatch=0
 details=()
 
 have_submodule "$CLASSLIB_SUBMODULE" || print_missing "No '$CLASSLIB_SUBMODULE' submodule found in this repo."
-have_submodule "$QMCSOFTWARE_SUBMODULE" || print_missing "No '$QMCSOFTWARE_SUBMODULE' submodule found in this repo."
+have_submodule "$QMCPY_SUBMODULE" || print_missing "No '$QMCPY_SUBMODULE' submodule found in this repo."
 
 [[ -d "$CLASSLIB_CANONICAL/.git" ]] || print_missing "Canonical repo missing: $CLASSLIB_CANONICAL"
-[[ -d "$QMCSOFTWARE_CANONICAL/.git" ]] || print_missing "Canonical repo missing: $QMCSOFTWARE_CANONICAL"
+[[ -d "$QMCPY_CANONICAL/.git" ]] || print_missing "Canonical repo missing: $QMCPY_CANONICAL"
 
 sub_classlib="$(sha_head "$CLASSLIB_SUBMODULE")"
 can_classlib="$(sha_head "$CLASSLIB_CANONICAL")"
-sub_qmc="$(sha_head "$QMCSOFTWARE_SUBMODULE")"
-can_qmc="$(sha_head "$QMCSOFTWARE_CANONICAL")"
+sub_qmc="$(sha_head "$QMCPY_SUBMODULE")"
+can_qmc="$(sha_head "$QMCPY_CANONICAL")"
 
 if [[ "$sub_classlib" != "$can_classlib" ]]; then
   mismatch=1
@@ -80,12 +80,12 @@ fi
 
 if [[ "$sub_qmc" != "$can_qmc" ]]; then
   mismatch=1
-  details+=("qmcsoftware submodule: $sub_qmc
-qmcsoftware canonical: $can_qmc")
+  details+=("qmcpy submodule: $sub_qmc
+qmcpy canonical: $can_qmc")
 fi
 
 if [[ "$mismatch" -eq 0 ]]; then
-  echo -e "${GREEN}Submodules Match!${RESET}  (classlib + qmcsoftware)"
+  echo -e "${GREEN}Submodules Match!${RESET}  (classlib + qmcpy)"
   exit 0
 fi
 

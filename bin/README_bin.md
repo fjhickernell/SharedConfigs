@@ -210,7 +210,7 @@ After any base-Conda change, run full `sync-qmcpy-env.sh` validation on the refe
 sync-qmcpy-env.sh
 ```
 
-This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal requirements, refreshes and validates the `qmcpy` kernel, runs machine-local checks, and then executes the canonical notebooks, stable Quarto fixture, and advisory active-course checks.
+This refreshes the canonical QMCPy and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal requirements, refreshes and validates the `qmcpy` kernel, runs machine-local checks, and then executes the canonical notebooks, stable Quarto fixture, and advisory active-course checks.
 
 Add `--upgrade` at an academic maintenance checkpoint to update the `qmcpy` environment first:
 
@@ -225,7 +225,7 @@ sync-qmcpy-env.sh --machine-only
 sync-qmcpy-env.sh --upgrade --machine-only
 ```
 
-Machine-only mode performs the same local synchronization, editable installs, kernel verification, imports, version reporting, and `pip check`, but skips notebook, Quarto, and active-course compatibility checks. Use it on an additional Mac only after full compatibility validation has passed for the same QMCSoftware and HickernellAcademicLib revisions and a comparable environment state. Reports make the host, architecture, full repository revisions, interpreters, and package versions conspicuous.
+Machine-only mode performs the same local synchronization, editable installs, kernel verification, imports, version reporting, and `pip check`, but skips notebook, Quarto, and active-course compatibility checks. Use it on an additional Mac only after full compatibility validation has passed for the same QMCPy and HickernellAcademicLib revisions and a comparable environment state. Reports make the host, architecture, full repository revisions, interpreters, and package versions conspicuous.
 
 The upgrade option performs a Conda update within the `qmcpy` environment and upgrades the explicitly maintained personal requirements. It never updates base Conda.
 

@@ -256,7 +256,7 @@ log="$log"
 FAST="$FAST"
 render_flags="$render_flags"
 
-export PYTHONPATH="\$repo_root/classlib:\$repo_root/qmcsoftware\${PYTHONPATH:+:\$PYTHONPATH}"
+export PYTHONPATH="\$repo_root/classlib:\$repo_root/qmcpy\${PYTHONPATH:+:\$PYTHONPATH}"
 
 echo "QUARTO_PYTHON=\$QUARTO_PYTHON"
 echo "PATH=\$PATH"

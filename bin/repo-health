@@ -8,13 +8,13 @@ if [[ "${1:-}" == "--short" ]]; then
 fi
 
 CLASSLIB_SUBMODULE="classlib"
-QMCSOFTWARE_SUBMODULE="qmcsoftware"
+QMCPY_SUBMODULE="qmcpy"
 
 CLASSLIB_CANONICAL="$HOME/SoftwareRepositories/HickernellAcademicLib"
-QMCSOFTWARE_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
+QMCPY_CANONICAL="$HOME/SoftwareRepositories/QMCSoftware"
 
 CLASSLIB_CANONICAL_REF="origin/main"
-QMCSOFTWARE_CANONICAL_REF="origin/develop"
+QMCPY_CANONICAL_REF="origin/develop"
 
 GREEN="\033[0;32m"
 RED="\033[0;31m"
@@ -148,11 +148,11 @@ main() {
     warn "Missing/uninitialized submodule: ${CLASSLIB_SUBMODULE}"
   fi
 
-  if have_dir_git "$QMCSOFTWARE_SUBMODULE"; then
-    ok "Found submodule: ${QMCSOFTWARE_SUBMODULE}"
+  if have_dir_git "$QMCPY_SUBMODULE"; then
+    ok "Found submodule: ${QMCPY_SUBMODULE}"
     have_any_sub=1
   else
-    warn "Missing/uninitialized submodule: ${QMCSOFTWARE_SUBMODULE}"
+    warn "Missing/uninitialized submodule: ${QMCPY_SUBMODULE}"
   fi
 
   if [[ "$have_any_sub" -eq 0 ]]; then
@@ -171,15 +171,15 @@ main() {
       fi
     fi
 
-    if have_dir_git "$QMCSOFTWARE_SUBMODULE"; then
+    if have_dir_git "$QMCPY_SUBMODULE"; then
       local s
-      s="$(porcelain "$QMCSOFTWARE_SUBMODULE")"
+      s="$(porcelain "$QMCPY_SUBMODULE")"
       if [[ -z "$s" ]]; then
-        ok "qmcsoftware clean."
+        ok "qmcpy clean."
       else
-        bad "qmcsoftware has uncommitted changes:"
+        bad "qmcpy has uncommitted changes:"
         echo "$s"
-        tip_clean_submodule "qmcsoftware"
+        tip_clean_submodule "qmcpy"
       fi
     fi
 
@@ -187,7 +187,7 @@ main() {
     local mismatch=0
 
     fetch_if_possible "$CLASSLIB_CANONICAL"
-    fetch_if_possible "$QMCSOFTWARE_CANONICAL"
+    fetch_if_possible "$QMCPY_CANONICAL"
 
     if have_dir_git "$CLASSLIB_CANONICAL"; then
       if have_dir_git "$CLASSLIB_SUBMODULE"; then
@@ -209,24 +209,24 @@ main() {
       warn "Canonical repo missing/unavailable: ${CLASSLIB_CANONICAL}"
     fi
 
-    if have_dir_git "$QMCSOFTWARE_CANONICAL"; then
-      if have_dir_git "$QMCSOFTWARE_SUBMODULE"; then
+    if have_dir_git "$QMCPY_CANONICAL"; then
+      if have_dir_git "$QMCPY_SUBMODULE"; then
         local sub can
-        sub="$(sha_head "$QMCSOFTWARE_SUBMODULE")"
-        can="$(sha_ref "$QMCSOFTWARE_CANONICAL" "$QMCSOFTWARE_CANONICAL_REF")"
+        sub="$(sha_head "$QMCPY_SUBMODULE")"
+        can="$(sha_ref "$QMCPY_CANONICAL" "$QMCPY_CANONICAL_REF")"
         if [[ -n "$sub" && -n "$can" && "$sub" == "$can" ]]; then
-          ok "qmcsoftware matches canonical (${sub})."
+          ok "qmcpy matches canonical (${sub})."
         else
-          bad "qmcsoftware does not match canonical."
+          bad "qmcpy does not match canonical."
           echo "  submodule:  ${sub:-<unknown>}"
-          echo "  canonical:  ${can:-<unknown>} (${QMCSOFTWARE_CANONICAL_REF})"
+          echo "  canonical:  ${can:-<unknown>} (${QMCPY_CANONICAL_REF})"
           mismatch=1
         fi
       else
-        warn "Skipping qmcsoftware SHA check (submodule missing)."
+        warn "Skipping qmcpy SHA check (submodule missing)."
       fi
     else
-      warn "Canonical repo missing/unavailable: ${QMCSOFTWARE_CANONICAL}"
+      warn "Canonical repo missing/unavailable: ${QMCPY_CANONICAL}"
     fi
 
     if [[ "$mismatch" -ne 0 ]]; then

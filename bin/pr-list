@@ -6,10 +6,10 @@ set -euo pipefail
 #   pr-list QMCSoftware
 #   pr-list qmcpy-website
 #   pr-list MATH332Fall2026
-#   pr-list QMCSoftware/QMCSoftware
+#   pr-list QMCSoftware/qmcpy
 #   pr-list fjhickernell/MATH332Fall2026
 #
-# With no argument, defaults to QMCSoftware/QMCSoftware.
+# With no argument, defaults to QMCSoftware/qmcpy.
 #
 # For a bare repository name:
 #   1. Look in QMCSoftware
@@ -19,7 +19,7 @@ set -euo pipefail
 #
 # An explicit owner/repo is used as given.
 
-arg="${1:-QMCSoftware/QMCSoftware}"
+arg="${1:-QMCSoftware/qmcpy}"
 
 # ------------------------------------------------------------
 # Resolve repository

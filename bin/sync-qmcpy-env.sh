@@ -42,7 +42,7 @@ Optional environment overrides:
   EXPECTED_PYTHON            Required Python major.minor (default: 3.13)
   SOFTWARE_REPOS_ROOT        Repository parent directory
   SHARED_CONFIGS_ROOT        SharedConfigs checkout
-  QMCPY_REPO, QMCPY_BRANCH   QMCSoftware checkout and branch
+  QMCPY_REPO, QMCPY_BRANCH   QMCPy checkout and branch
   HCL_REPO, HCL_BRANCH       HickernellAcademicLib checkout and branch
   QMCPY_MAINTENANCE_CONFIG   Active-course config file
   QMCPY_ACTIVE_COURSE_REPO   Active course repository (relative or absolute)

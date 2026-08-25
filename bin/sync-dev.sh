@@ -78,6 +78,7 @@ sync_repo() {
   local repo="$1"
   local name="$2"
   local branch="$3"
+  local expected_origin="${4:-}"
 
   if [[ ! -d "$repo/.git" && ! -f "$repo/.git" ]]; then
     ERROR_COUNT=$((ERROR_COUNT + 1))
@@ -90,6 +91,24 @@ sync_repo() {
     warn "SKIP   ${name}: dirty working tree"
     verbose_status "$repo"
     return 0
+  fi
+
+  local origin_changed=0
+  local actual_origin=""
+  if [[ -n "$expected_origin" ]]; then
+    if ! actual_origin="$(git -C "$repo" remote get-url origin 2>/dev/null)"; then
+      ERROR_COUNT=$((ERROR_COUNT + 1))
+      err "ERROR  ${name}: origin remote is missing"
+      return 0
+    fi
+    if [[ "$actual_origin" != "$expected_origin" ]]; then
+      if ! git -C "$repo" remote set-url origin "$expected_origin"; then
+        ERROR_COUNT=$((ERROR_COUNT + 1))
+        err "ERROR  ${name}: cannot retarget origin to ${expected_origin}"
+        return 0
+      fi
+      origin_changed=1
+    fi
   fi
 
   local old new count
@@ -121,6 +140,9 @@ sync_repo() {
     count="$(git -C "$repo" rev-list --count "${old}..${new}" 2>/dev/null || echo "?")"
     UPDATE_COUNT=$((UPDATE_COUNT + 1))
     ok "UPDATED ${name} (${branch}) +${count} -> $(shortsha "$new")"
+  elif [[ "$origin_changed" -eq 1 ]]; then
+    UPDATE_COUNT=$((UPDATE_COUNT + 1))
+    ok "UPDATED ${name} (${branch}) origin -> ${expected_origin}"
   else
     info "OK     ${name} (${branch}) @ $(shortsha "$new")"
   fi
@@ -129,14 +151,15 @@ sync_repo() {
 }
 
 HCL="$HOME/SoftwareRepositories/HickernellAcademicLib"
-QMC="$HOME/SoftwareRepositories/QMCSoftware"
+QMCPY="$HOME/SoftwareRepositories/QMCSoftware"
+QMCPY_ORIGIN="git@github.com:QMCSoftware/qmcpy.git"
 QMC_WEBSITE="$HOME/SoftwareRepositories/qmcsoftware-website"
 HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
 
 banner "Sync dev started"
 
 sync_repo "$HCL" "HickernellAcademicLib" "main"
-sync_repo "$QMC" "QMCSoftware" "develop"
+sync_repo "$QMCPY" "qmcpy" "develop" "$QMCPY_ORIGIN"
 sync_repo "$QMC_WEBSITE" "qmcsoftware-website" "main"
 sync_repo "$HTA" "HickernellTestArchive" "main"
 

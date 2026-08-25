@@ -168,6 +168,12 @@ has_gitlink() {
   [[ "$entry" == 160000\ * ]]
 }
 
+ref_has_gitlink() {
+  local repo="$1" ref="$2" path="$3" entry
+  entry=$(/usr/bin/git -C "$repo" ls-tree "$ref" -- "$path" 2>/dev/null || true)
+  [[ "$entry" == 160000\ commit\ *$'\t'"$path" ]]
+}
+
 inspect_submodule_metadata() {
   SUBMODULE_PATHS=()
   MANAGED_PATHS=()
@@ -181,7 +187,7 @@ inspect_submodule_metadata() {
     if has_gitlink "$REPO_PATH" "$path"; then
       SUBMODULE_PATHS+=("$path")
       case "$path" in
-        classlib|qmcsoftware|assets/tests/archive) MANAGED_PATHS+=("$path") ;;
+        classlib|qmcpy|assets/tests/archive) MANAGED_PATHS+=("$path") ;;
       esac
     else
       warn "${REPO_NAME}: .gitmodules path is not a committed gitlink: ${path}"
@@ -243,6 +249,26 @@ prepare_branch() {
 }
 
 SYNC_CHANGED=0
+migrate_legacy_qmcpy_before_fast_forward() {
+  (( ${SUBMODULE_PATHS[(Ie)qmcsoftware]} > 0 )) || return 0
+  has_gitlink "$REPO_PATH" "qmcsoftware" || return 0
+  ref_has_gitlink "$REPO_PATH" '@{u}' "qmcsoftware" && return 0
+  ref_has_gitlink "$REPO_PATH" '@{u}' "qmcpy" || return 0
+
+  if [[ ! -e "${REPO_PATH}/qmcsoftware/.git" ]] &&
+     ! /usr/bin/git -C "$REPO_PATH" config --get \
+       submodule.qmcsoftware.url >/dev/null 2>&1; then
+    return 0
+  fi
+
+  if ! /usr/bin/git -C "$REPO_PATH" submodule deinit -- qmcsoftware \
+    >/dev/null 2>&1; then
+    failure "ERROR  ${REPO_NAME}: legacy qmcsoftware submodule is not clean enough for the one-time qmcpy path migration"
+    return 1
+  fi
+  info "MIGRATE ${REPO_NAME}: qmcsoftware submodule prepared for qmcpy path"
+}
+
 fast_forward_sync() {
   SYNC_CHANGED=0
   local old new
@@ -251,6 +277,9 @@ fast_forward_sync() {
     fetch origin >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: fetch from origin failed"
     return 1
+  fi
+  if /usr/bin/git -C "$REPO_PATH" merge-base --is-ancestor HEAD '@{u}'; then
+    migrate_legacy_qmcpy_before_fast_forward || return 1
   fi
   if ! /usr/bin/git -C "$REPO_PATH" merge --ff-only '@{u}' >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: fast-forward-only update failed"
@@ -271,17 +300,17 @@ pinned_submodule_checkout() {
   fi
 }
 
-ensure_qmcsoftware_fetch_policy() {
-  local qmc_path="${REPO_PATH}/qmcsoftware"
-  [[ -e "$qmc_path" ]] || return 0
-  /usr/bin/git -C "$qmc_path" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
-  /usr/bin/git -C "$qmc_path" remote get-url origin >/dev/null 2>&1 || return 0
-  /usr/bin/git -C "$qmc_path" config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
-  /usr/bin/git -C "$qmc_path" config --add remote.origin.fetch \
+ensure_qmcpy_fetch_policy() {
+  local qmcpy_path="${REPO_PATH}/qmcpy"
+  [[ -e "$qmcpy_path" ]] || return 0
+  /usr/bin/git -C "$qmcpy_path" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  /usr/bin/git -C "$qmcpy_path" remote get-url origin >/dev/null 2>&1 || return 0
+  /usr/bin/git -C "$qmcpy_path" config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
+  /usr/bin/git -C "$qmcpy_path" config --add remote.origin.fetch \
     '+refs/heads/develop:refs/remotes/origin/develop'
-  /usr/bin/git -C "$qmc_path" config --add remote.origin.fetch \
+  /usr/bin/git -C "$qmcpy_path" config --add remote.origin.fetch \
     '+refs/tags/*:refs/tags/*'
-  /usr/bin/git -C "$qmc_path" fetch --prune origin >/dev/null 2>&1 || true
+  /usr/bin/git -C "$qmcpy_path" fetch --prune origin >/dev/null 2>&1 || true
 }
 
 promote_managed_submodules() {
@@ -374,8 +403,8 @@ sync_repository() {
   if (( do_promote == 1 )); then
     promote_managed_submodules || return 30
   fi
-  if (( ${MANAGED_PATHS[(Ie)qmcsoftware]} > 0 )); then
-    ensure_qmcsoftware_fetch_policy
+  if (( ${MANAGED_PATHS[(Ie)qmcpy]} > 0 )); then
+    ensure_qmcpy_fetch_policy
   fi
   local commit_rc=0
   commit_pointer_changes || commit_rc=$?
@@ -439,7 +468,7 @@ check_submodule_pin_consistency() {
 
 pins_consistency_check() {
   check_submodule_pin_consistency "classlib" "classlib"
-  check_submodule_pin_consistency "qmcsoftware" "qmcsoftware"
+  check_submodule_pin_consistency "qmcpy" "qmcpy"
   check_submodule_pin_consistency "assets/tests/archive" "tests archive"
 }
 

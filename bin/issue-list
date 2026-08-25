@@ -4,7 +4,7 @@ set -euo pipefail
 # List open issues (not pull requests) in an email-friendly format.
 # Repository resolution intentionally matches pr-list.
 
-arg="${1:-QMCSoftware/QMCSoftware}"
+arg="${1:-QMCSoftware/qmcpy}"
 
 if [[ "$arg" == */* ]]; then
     repo="$arg"
