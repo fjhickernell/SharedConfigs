@@ -65,6 +65,7 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `export-macapps-xlsx.sh` | Mac App Inventory | Export inventory to Excel. |
 | `link_sharedconfigs_minimal.sh` | Mac Setup | Bring a new Mac online with baseline links. |
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
+| `quarto-site-live` | Teaching | Live-render a Quarto website on an independent automatically assigned per-course port. |
 | `quarto-slides-live` | Teaching | Live-render one RevealJS deck on an automatically assigned per-course port. |
 | `regular-maintenance.sh` | System Maintenance | Run sync-brew, update-texlive, qmcpy sync, etc. |
 | `README_bin.md` | Documentation | This file. |
@@ -267,6 +268,37 @@ Add this script to your Dock instead of TeXstudio.
 
 ## Teaching Tools
 
+### `quarto-site-live`
+
+Live-renders a Quarto website and refreshes its browser tab whenever the
+website sources change. Run it with no positional arguments from the course
+repository root:
+
+```bash
+quarto-site-live
+```
+
+The helper uses `quarto render`, BrowserSync, and an independent file watcher;
+it does not invoke Quarto's preview process manager. It ignores `slides/`, so a
+site session and a `quarto-slides-live` session can run together without
+restarting or rebuilding one another. It serves the standard `_site` output
+directory used by the active course repositories.
+
+For MATH course repositories, the default site port is `5000 + course number`.
+The four active-course live views therefore have distinct defaults:
+
+| Repository | Website | Slide deck |
+|---|---:|---:|
+| MATH 332 | `http://localhost:5332/` | `http://localhost:4332/<deck>.html` |
+| MATH 565 | `http://localhost:5565/` | `http://localhost:4565/<deck>.html` |
+
+The site port is remembered in the repository's ignored
+`.quarto-watch-logs/site-port` file. Use `-p` or `--port` to override it, or set
+`QUARTO_SITE_LIVE_PORT`; a command-line port takes precedence. The helper
+refuses to replace an existing listener on an explicitly selected port, so do
+not choose a slide session's port. Use `--fast` when cached rendering is
+appropriate, and `--no-open` to serve without opening a new browser tab.
+
 ### `quarto-slides-live`
 
 Live-renders one RevealJS deck and refreshes its browser tab whenever the
@@ -296,7 +328,9 @@ Use `-p` or `--port` when an explicit override is useful. The older
 `QUARTO_LIVE_PORT` environment variable remains supported, and a command-line
 port takes precedence over it. An explicit port preserves the earlier
 behavior of replacing any listener on that selected port. Use `--fast` in
-either command when cached rendering is appropriate.
+either command when cached rendering is appropriate. For simultaneous website
+and slide editing, leave the slide helper on its 4000-series default and use
+`quarto-site-live` on the corresponding 5000-series default.
 
 ### `prep_description_summary.sh`
 Generates boilerplate templates for student project summaries and descriptions.

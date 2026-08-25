@@ -1,0 +1,394 @@
+#!/usr/bin/env bash
+set -u
+set -o pipefail
+
+GREEN_BOLD=$'\033[1;32m'
+MAGENTA_BOLD=$'\033[1;35m'
+YELLOW_BOLD=$'\033[1;33m'
+RED_BOLD=$'\033[1;31m'
+NC=$'\033[0m'
+
+timestamp() {
+  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
+}
+
+banner() {
+  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
+}
+
+section() {
+  printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"
+}
+
+warn() {
+  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
+}
+
+error() {
+  printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
+}
+
+usage() {
+  section "Usage"
+  echo "Usage: quarto-site-live [--fast] [--no-open] [-p PORT|--port PORT]"
+  echo "  Examples:"
+  echo "    quarto-site-live"
+  echo "    quarto-site-live --fast"
+  echo "    quarto-site-live -p 5333"
+  echo "    quarto-site-live --no-open --port=5334"
+}
+
+banner "quarto-site-live started"
+
+FAST=0
+OPEN_BROWSER=1
+port="${QUARTO_SITE_LIVE_PORT:-}"
+port_source="auto"
+
+if [ -n "$port" ]; then
+  port_source="environment"
+fi
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --fast)
+      FAST=1
+      shift
+      ;;
+    --no-open)
+      OPEN_BROWSER=0
+      shift
+      ;;
+    -p|--port)
+      if [ $# -lt 2 ]; then
+        error "$1 requires a port number."
+        exit 2
+      fi
+      port="$2"
+      port_source="command line"
+      shift 2
+      ;;
+    --port=*)
+      port="${1#*=}"
+      port_source="command line"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -*)
+      error "Unknown option: $1"
+      usage
+      exit 2
+      ;;
+    *)
+      error "Unexpected argument: $1"
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+if [ "$port_source" = "command line" ] && [ -z "$port" ]; then
+  error "A command-line port cannot be empty."
+  exit 2
+fi
+
+if [ -n "$port" ] && { [[ ! "$port" =~ ^[0-9]+$ ]] || (( 10#$port < 1 || 10#$port > 65535 )); }; then
+  error "Port must be an integer from 1 through 65535: $port"
+  exit 2
+fi
+
+repo_root="$(pwd)"
+
+if [ ! -f "$repo_root/_quarto.yml" ] && [ ! -f "$repo_root/_quarto.yaml" ]; then
+  error "Run quarto-site-live from the root of a Quarto project."
+  exit 2
+fi
+
+need_cmd() {
+  command -v "$1" >/dev/null 2>&1 || {
+    error "Missing $1"
+    exit 2
+  }
+}
+
+need_cmd browser-sync
+need_cmd curl
+need_cmd lsof
+need_cmd quarto
+need_cmd watchexec
+
+if [ "$OPEN_BROWSER" -eq 1 ]; then
+  need_cmd open
+fi
+
+if [ -z "${QUARTO_PYTHON:-}" ]; then
+  need_cmd conda
+  if ! QUARTO_PYTHON="$(conda run -n qmcpy python -c 'import sys; print(sys.executable)')"; then
+    error "Could not resolve Python from the qmcpy Conda environment."
+    exit 2
+  fi
+fi
+
+if [ ! -x "$QUARTO_PYTHON" ]; then
+  error "QUARTO_PYTHON is not an executable file: $QUARTO_PYTHON"
+  exit 2
+fi
+
+export QUARTO_PYTHON
+export PATH="$(dirname "$QUARTO_PYTHON"):$PATH"
+
+logs_dir="$repo_root/.quarto-watch-logs"
+mkdir -p "$logs_dir"
+
+render_log="$logs_dir/site.render.log"
+browser_log="$logs_dir/site.browser-sync.log"
+render_success="$logs_dir/site.render-success"
+
+port_is_listening() {
+  lsof -tiTCP:"$1" -sTCP:LISTEN >/dev/null 2>&1
+}
+
+site_listener_belongs_to_repo() {
+  local candidate_port="$1"
+  local pid listener_cwd
+
+  for pid in $(lsof -tiTCP:"${candidate_port}" -sTCP:LISTEN 2>/dev/null || true); do
+    listener_cwd="$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -n 1)"
+    case "$listener_cwd" in
+      "$repo_root/_site"|"$repo_root/_site"/*)
+        return 0
+        ;;
+    esac
+  done
+
+  return 1
+}
+
+if [ "$port_source" = "auto" ]; then
+  port_file="$logs_dir/site-port"
+  stored_port=""
+
+  if [ -f "$port_file" ]; then
+    IFS= read -r stored_port < "$port_file" || true
+    if [[ ! "$stored_port" =~ ^[0-9]+$ ]] || (( 10#$stored_port < 1 || 10#$stored_port > 65535 )); then
+      stored_port=""
+    fi
+  fi
+
+  if [ -n "$stored_port" ]; then
+    candidate_port="$stored_port"
+  else
+    repo_name="$(basename "$repo_root")"
+    if [[ "$repo_name" =~ MATH([0-9]{3}) ]]; then
+      candidate_port=$((5000 + 10#${BASH_REMATCH[1]}))
+    else
+      repo_checksum="$(printf '%s' "$repo_root" | cksum)"
+      repo_checksum="${repo_checksum%% *}"
+      candidate_port=$((20000 + repo_checksum % 10000))
+    fi
+  fi
+
+  attempts=0
+  while [ "$attempts" -lt 64512 ]; do
+    if ! port_is_listening "$candidate_port"; then
+      port="$candidate_port"
+      break
+    fi
+
+    if site_listener_belongs_to_repo "$candidate_port"; then
+      error "A site preview for $(basename "$repo_root") already appears to be running at http://localhost:${candidate_port}/."
+      error "Stop that session before starting another one for this repository."
+      exit 2
+    fi
+
+    candidate_port=$((candidate_port + 1))
+    if [ "$candidate_port" -gt 65535 ]; then
+      candidate_port=1024
+    fi
+    attempts=$((attempts + 1))
+  done
+
+  if [ -z "$port" ]; then
+    error "Could not find an available local port."
+    exit 2
+  fi
+
+  printf '%s\n' "$port" > "$port_file"
+  section "Port"
+  echo "Using directory-assigned site port ${port} for $(basename "$repo_root")."
+elif port_is_listening "$port"; then
+  error "Port ${port} is already in use; refusing to replace its listener."
+  error "Stop that listener or choose a different site port."
+  exit 2
+else
+  section "Port"
+  echo "Using ${port_source} site port ${port} for $(basename "$repo_root")."
+fi
+
+runner="$logs_dir/site.render-runner.sh"
+
+export QUARTO_SITE_REPO_ROOT="$repo_root"
+export QUARTO_SITE_RENDER_LOG="$render_log"
+export QUARTO_SITE_RENDER_SUCCESS="$render_success"
+export QUARTO_SITE_FAST="$FAST"
+
+cat > "$runner" <<'RUNEOF'
+#!/usr/bin/env bash
+set -u
+set -o pipefail
+
+GREEN_BOLD=$'\033[1;32m'
+MAGENTA_BOLD=$'\033[1;35m'
+YELLOW_BOLD=$'\033[1;33m'
+RED_BOLD=$'\033[1;31m'
+NC=$'\033[0m'
+
+timestamp() {
+  /bin/date '+%Y-%m-%d %H:%M:%S %Z'
+}
+
+banner() {
+  printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"
+}
+
+warn() {
+  printf "${YELLOW_BOLD}Warning:${NC} %s\n" "$1"
+}
+
+banner "quarto website render started"
+
+export PATH="$(dirname "$QUARTO_PYTHON"):$PATH"
+
+repo_root="${QUARTO_SITE_REPO_ROOT:?}"
+render_log="${QUARTO_SITE_RENDER_LOG:?}"
+render_success="${QUARTO_SITE_RENDER_SUCCESS:?}"
+FAST="${QUARTO_SITE_FAST:?}"
+
+export PYTHONPATH="$repo_root/classlib:$repo_root/qmcpy${PYTHONPATH:+:$PYTHONPATH}"
+
+echo "QUARTO_PYTHON=$QUARTO_PYTHON"
+echo "PATH=$PATH"
+echo "PYTHONPATH=$PYTHONPATH"
+
+rm -f "$render_success"
+
+if [ "$FAST" -eq 1 ]; then
+  ( cd "$repo_root" && quarto render --no-clean ) >"$render_log" 2>&1
+else
+  ( cd "$repo_root" && quarto render --no-clean --no-cache ) >"$render_log" 2>&1
+fi
+rc=$?
+
+if [ $rc -ne 0 ]; then
+  echo "============================================================"
+  echo "WARNING: quarto website render failed (watch continues)"
+  echo "log: $render_log"
+  echo "------------------------------------------------------------"
+  tail -n 50 "$render_log" 2>/dev/null || true
+  echo "============================================================"
+  exit 0
+fi
+
+touch "$render_success"
+
+if [ ! -f "$repo_root/_site/index.html" ]; then
+  warn "Render succeeded but _site/index.html was not found."
+fi
+
+echo "[ok] $(date '+%H:%M:%S')"
+exit 0
+RUNEOF
+
+chmod +x "$runner"
+
+"$runner"
+
+if [ ! -f "$render_success" ]; then
+  warn "The initial render failed; BrowserSync will serve the last output, if any."
+  warn "Fix the source and save it to trigger another render."
+fi
+
+mkdir -p "$repo_root/_site"
+cd "$repo_root/_site" || exit 2
+browser-sync start --server --files "**/*" --port "$port" --listen localhost \
+  --no-ui --no-online --no-open --no-notify >"$browser_log" 2>&1 &
+bs_pid="$!"
+
+cleanup() {
+  kill "$bs_pid" >/dev/null 2>&1 || true
+  wait "$bs_pid" >/dev/null 2>&1 || true
+}
+
+trap cleanup EXIT
+
+url="http://localhost:${port}/"
+
+ready=0
+for _ in $(seq 1 50); do
+  if curl -fsS "$url" >/dev/null 2>&1; then
+    ready=1
+    break
+  fi
+
+  if ! kill -0 "$bs_pid" >/dev/null 2>&1; then
+    error "BrowserSync exited before serving the site."
+    tail -n 50 "$browser_log" 2>/dev/null || true
+    exit 2
+  fi
+
+  sleep 0.1
+done
+
+if [ "$ready" -eq 0 ]; then
+  warn "BrowserSync did not answer at ${url} within five seconds."
+  warn "See $browser_log for details."
+fi
+
+banner "quarto-site-live serving $url"
+
+if [ "$OPEN_BROWSER" -eq 1 ]; then
+  open "$url"
+fi
+
+cd "$repo_root" || exit 2
+
+watch_args=(-W "$repo_root")
+
+for watch_dir in \
+  "$repo_root/pages" \
+  "$repo_root/assets" \
+  "$repo_root/assignments" \
+  "$repo_root/includes" \
+  "$repo_root/resources" \
+  "$repo_root/classlib/classlib/quarto" \
+  "$repo_root/classlib/classlib/notebooks" \
+  "$repo_root/classlib/website"
+do
+  if [ -d "$watch_dir" ]; then
+    watch_args+=(-w "$watch_dir")
+  fi
+done
+
+watchexec --postpone --on-busy-update=queue --debounce 500ms --poll 1s --no-meta \
+  "${watch_args[@]}" \
+  --ignore '**/.git/**' \
+  --ignore '**/.quarto/**' \
+  --ignore '**/_freeze/**' \
+  --ignore '**/_site/**' \
+  --ignore '**/*_files/**' \
+  --ignore '**/__pycache__/**' \
+  --ignore '/*.html' \
+  --ignore 'assignments/*.html' \
+  --ignore 'pages/*.html' \
+  --ignore 'classlib/classlib/quarto/pages/*.html' \
+  --ignore 'classlib/classlib/quarto/snippets/*.html' \
+  --ignore 'classlib/website/*.html' \
+  --ignore '.quarto-watch-logs/**' \
+  --ignore 'notebooks/**' \
+  --ignore 'qmcpy/**' \
+  --ignore '**/slides/**' \
+  -e qmd,md,yml,yaml,html,htm,scss,sass,css,js,mjs,json,xml,txt,tex,lua,py,bib,csl,ipynb,png,jpg,jpeg,gif,svg,webp,ico,pdf,csv,tsv \
+  -- "$runner"
