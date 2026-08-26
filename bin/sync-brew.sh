@@ -31,6 +31,16 @@ cd "$HOME/Documents/SharedConfigs"
 
 banner "sync-brew started"
 
+if command -v mas >/dev/null 2>&1 && grep -q '^mas ' Brewfile; then
+  spotlight_status="$(mdutil -s / 2>&1 || true)"
+  if ! grep -qi 'indexing enabled' <<<"$spotlight_status"; then
+    error "Spotlight indexing must be enabled before syncing Mac App Store apps."
+    printf '%s\n' "$spotlight_status" >&2
+    printf '%s\n' "Run 'sudo mdutil -i on /' and 'sudo mdutil -E /', then retry sync-brew." >&2
+    exit 1
+  fi
+fi
+
 section "Updating Homebrew"
 brew update
 

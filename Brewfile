@@ -95,6 +95,7 @@ cask "unclutter"
 cask "visual-studio-code"
 cask "vlc"
 cask "warp"
+cask "whatsapp"
 cask "zoom"
 cask "zotero"
 mas "Air Printer", id: 929399895
@@ -138,7 +139,6 @@ mas "SplitPrint", id: 412574988
 mas "Tempus Stopwatch", id: 1491326665
 mas "United MileagePlus Shopping℠", id: 6471036405
 mas "WeChat", id: 836500024
-mas "WhatsApp", id: 310633997
 mas "World Time", id: 912698955
 vscode "alefragnani.bookmarks"
 vscode "bierner.markdown-mermaid"

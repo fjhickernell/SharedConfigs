@@ -56,6 +56,7 @@ blocked = (
     'mas "Numbers", id: 409203825',
     'mas "LastPass for Safari", id: 6504626762',
     'mas "Mailbutler Installer", id: 1313355438',
+    'mas "WhatsApp", id: 310633997',
 )
 
 header = [
