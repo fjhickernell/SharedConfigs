@@ -79,6 +79,7 @@ typeset -a REPOSITORIES=(
   $'MCQMC26\t'"$HOME"$'/SoftwareRepositories/MCQMC26\tgit@github.com:fjhickernell/MCQMC26.git\t'
   $'JMM27\t'"$HOME"$'/SoftwareRepositories/JMM27\tgit@github.com:fjhickernell/JMM27.git\t'
   $'GeneralizedTractabilityCones\t'"$HOME"$'/SoftwareRepositories/GeneralizedTractabilityCones\thttps://git@git.overleaf.com/69c15e17b47160e5e81283e4\t'
+  $'NumericalCertificationFrontiers\t'"$HOME"$'/SoftwareRepositories/NumericalCertificationFrontiers\thttps://git@git.overleaf.com/6a8f73c32435332e2fc19d2a\t'
 )
 
 # A tab-delimited override is useful for isolated validation and automation.
