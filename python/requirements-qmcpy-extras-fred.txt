@@ -1,5 +1,6 @@
 # Fred’s personal extras for the qmcpy environment
 # (Safe, small, intentionally added; editable installs are handled separately)
 
+jupyterlab
 simple-colors
 tabulate
