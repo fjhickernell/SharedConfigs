@@ -1,16 +1,16 @@
 QMCPy environment validation
-Date: 2026-08-25 22:52:38 CDT
-Host: Fred-2019-August-MacBook-Pro-2
-Architecture: x86_64
+Date: 2026-08-25 19:52:42 CDT
+Host: Freds-Mac-mini
+Architecture: arm64
 Maintenance action: sync
-Validation scope: full compatibility
-Overall status: PASS
+Validation scope: machine only
+Overall status: MACHINE-LOCAL PASS
 Machine-local validation: PASS
-Full compatibility validation: PASS
+Full compatibility validation: Deferred (machine-only mode)
 Conda environment: qmcpy
-Conda prefix: /opt/miniconda3/envs/qmcpy
-Python: Python 3.13.5
-Python executable: /opt/miniconda3/envs/qmcpy/bin/python3.13
+Conda prefix: /Users/fredjhickernell/.conda/envs/qmcpy
+Python: Python 3.13.13
+Python executable: /Users/fredjhickernell/.conda/envs/qmcpy/bin/python3.13
 Package versions:
   qmcpy: 2.4
   numpy: 2.4.6
@@ -22,18 +22,18 @@ QMCPy source: /Users/fredjhickernell/SoftwareRepositories/QMCSoftware/qmcpy/__in
 QMCPy revision: dc3d9236caa1cac48823709e6074f0d19874837a (develop)
 classlib source: /Users/fredjhickernell/SoftwareRepositories/HickernellAcademicLib/classlib/__init__.py
 HickernellAcademicLib revision: ebb496301e12b6a9a3a119195081e0557d238c95 (main)
-Kernel Python: /opt/miniconda3/envs/qmcpy/bin/python3.13
+Kernel Python: /Users/fredjhickernell/.conda/envs/qmcpy/bin/python3.13
 pip check: PASS
 Core imports: PASS
 Canonical notebooks: /Users/fredjhickernell/SoftwareRepositories/QMCSoftware/demos/quickstart.ipynb /Users/fredjhickernell/SoftwareRepositories/QMCSoftware/demos/qmcpy_intro.ipynb
-Canonical notebook execution: PASS
+Canonical notebook execution: NOT RUN
 Stable Quarto document: /Users/fredjhickernell/Documents/SharedConfigs/python/qmcpy-env-smoke.qmd
-Stable Quarto render: PASS
-Active course validation: PASS
+Stable Quarto render: NOT RUN
+Active course validation: NOT RUN
 Active course repository: /Users/fredjhickernell/SoftwareRepositories/MATH565Fall2026
-Active course requirements: PRESENT (not installed by maintenance)
-Active course notebook: PASS
-Active course Quarto render: PASS
+Active course requirements: NOT RUN
+Active course notebook: NOT RUN
+Active course Quarto render: NOT RUN
 Active course warning log: none
 Warnings:
   none

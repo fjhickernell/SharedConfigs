@@ -1,7 +1,7 @@
 QMCPy environment validation
-Date: 2026-08-25 22:52:38 CDT
-Host: Fred-2019-August-MacBook-Pro-2
-Architecture: x86_64
+Date: 2026-08-25 18:46:42 CDT
+Host: Freds-M5-MBP
+Architecture: arm64
 Maintenance action: sync
 Validation scope: full compatibility
 Overall status: PASS
@@ -9,7 +9,7 @@ Machine-local validation: PASS
 Full compatibility validation: PASS
 Conda environment: qmcpy
 Conda prefix: /opt/miniconda3/envs/qmcpy
-Python: Python 3.13.5
+Python: Python 3.13.13
 Python executable: /opt/miniconda3/envs/qmcpy/bin/python3.13
 Package versions:
   qmcpy: 2.4

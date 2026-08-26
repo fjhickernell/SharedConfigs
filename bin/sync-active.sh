@@ -168,12 +168,6 @@ has_gitlink() {
   [[ "$entry" == 160000\ * ]]
 }
 
-ref_has_gitlink() {
-  local repo="$1" ref="$2" path="$3" entry
-  entry=$(/usr/bin/git -C "$repo" ls-tree "$ref" -- "$path" 2>/dev/null || true)
-  [[ "$entry" == 160000\ commit\ *$'\t'"$path" ]]
-}
-
 inspect_submodule_metadata() {
   SUBMODULE_PATHS=()
   MANAGED_PATHS=()
@@ -249,26 +243,6 @@ prepare_branch() {
 }
 
 SYNC_CHANGED=0
-migrate_legacy_qmcpy_before_fast_forward() {
-  (( ${SUBMODULE_PATHS[(Ie)qmcsoftware]} > 0 )) || return 0
-  has_gitlink "$REPO_PATH" "qmcsoftware" || return 0
-  ref_has_gitlink "$REPO_PATH" '@{u}' "qmcsoftware" && return 0
-  ref_has_gitlink "$REPO_PATH" '@{u}' "qmcpy" || return 0
-
-  if [[ ! -e "${REPO_PATH}/qmcsoftware/.git" ]] &&
-     ! /usr/bin/git -C "$REPO_PATH" config --get \
-       submodule.qmcsoftware.url >/dev/null 2>&1; then
-    return 0
-  fi
-
-  if ! /usr/bin/git -C "$REPO_PATH" submodule deinit -- qmcsoftware \
-    >/dev/null 2>&1; then
-    failure "ERROR  ${REPO_NAME}: legacy qmcsoftware submodule is not clean enough for the one-time qmcpy path migration"
-    return 1
-  fi
-  info "MIGRATE ${REPO_NAME}: qmcsoftware submodule prepared for qmcpy path"
-}
-
 fast_forward_sync() {
   SYNC_CHANGED=0
   local old new
@@ -277,9 +251,6 @@ fast_forward_sync() {
     fetch origin >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: fetch from origin failed"
     return 1
-  fi
-  if /usr/bin/git -C "$REPO_PATH" merge-base --is-ancestor HEAD '@{u}'; then
-    migrate_legacy_qmcpy_before_fast_forward || return 1
   fi
   if ! /usr/bin/git -C "$REPO_PATH" merge --ff-only '@{u}' >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: fast-forward-only update failed"
