@@ -6,6 +6,7 @@ shared_root="$(CDPATH= cd -- "${script_dir}/.." && pwd -P)"
 sweep="${shared_root}/bin/repo-sweep"
 
 test_root="$(mktemp -d "${TMPDIR:-/tmp}/repo-sweep-test.XXXXXX")"
+test_root="$(CDPATH= cd -- "$test_root" && pwd -P)"
 trap 'rm -rf "$test_root"' EXIT
 
 origin="${test_root}/origin.git"
