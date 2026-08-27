@@ -1,0 +1,597 @@
+#!/usr/bin/env bash
+set -u
+set -o pipefail
+
+# Keep status queries from taking optional Git locks or refreshing indexes.
+export GIT_OPTIONAL_LOCKS=0
+
+usage() {
+  cat <<'EOF'
+Usage: repo-sweep [--local] [--all] [--list] [--group GROUP]
+
+Check every current repository in the shared managed-repository registry and
+print only repositories that need attention.
+
+Options:
+  --local        Skip fresh remote-tip checks and use cached tracking refs
+  --all          Also print repositories that need no attention
+  --list         List current and archived registry entries without checking
+  --group GROUP  Limit the check/list to active, dev, or infrastructure
+  -h, --help     Show this help
+
+The default remote check uses git ls-remote. The command never commits, pulls,
+merges, pushes, checks out branches, prunes worktrees, or changes source files.
+Exit status is 0 when all checked repositories are clear, 1 when attention is
+needed, and 2 for command or registry errors.
+EOF
+}
+
+script_dir="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+shared_root="$(CDPATH= cd -- "${script_dir}/.." && pwd -P)"
+registry_file="${REPOSITORY_REGISTRY_FILE:-${shared_root}/settings/repositories.conf}"
+
+remote_check=1
+show_all=0
+list_only=0
+group_filter=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --local) remote_check=0 ;;
+    --remote) remote_check=1 ;;
+    --all) show_all=1 ;;
+    --list) list_only=1 ;;
+    --group)
+      shift
+      if [[ $# -eq 0 ]]; then
+        echo "ERROR: --group requires active, dev, or infrastructure." >&2
+        exit 2
+      fi
+      group_filter="$1"
+      ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "ERROR: unknown argument: $1" >&2; usage >&2; exit 2 ;;
+  esac
+  shift
+done
+
+case "$group_filter" in
+  ""|active|dev|infrastructure) ;;
+  *) echo "ERROR: unknown group: $group_filter" >&2; exit 2 ;;
+esac
+
+if [[ ! -r "$registry_file" ]]; then
+  echo "ERROR: cannot read repository registry: $registry_file" >&2
+  exit 2
+fi
+
+resolve_path() {
+  case "$1" in
+    /*) resolved_path="$1" ;;
+    *) resolved_path="$HOME/$1" ;;
+  esac
+}
+
+resolved_common_dir=""
+resolve_git_common_dir() {
+  local checkout="$1"
+  local common_dir
+
+  resolved_common_dir=""
+  common_dir="$(git -C "$checkout" rev-parse --git-common-dir 2>/dev/null)" || return 1
+  case "$common_dir" in
+    /*) ;;
+    *) common_dir="${checkout}/${common_dir}" ;;
+  esac
+  resolved_common_dir="$(CDPATH= cd -- "$common_dir" 2>/dev/null && pwd -P)" || return 1
+}
+
+issues=""
+tracking_state_prefix=""
+remote_cache_names=()
+remote_cache_outputs=()
+remote_cache_statuses=()
+live_remote_output=""
+live_remote_ok=0
+live_ref_sha=""
+add_issue() {
+  if [[ -n "$issues" ]]; then
+    issues="${issues}; $1"
+  else
+    issues="$1"
+  fi
+}
+
+load_remote_heads() {
+  local checkout="$1"
+  local remote_name="$2"
+  local cache_index cache_count remote_output remote_status
+
+  cache_index=0
+  cache_count=${#remote_cache_names[@]}
+  while [[ "$cache_index" -lt "$cache_count" ]]; do
+    if [[ "${remote_cache_names[$cache_index]}" == "$remote_name" ]]; then
+      live_remote_output="${remote_cache_outputs[$cache_index]}"
+      live_remote_ok="${remote_cache_statuses[$cache_index]}"
+      return
+    fi
+    cache_index=$((cache_index + 1))
+  done
+
+  if remote_output="$(GIT_TERMINAL_PROMPT=0 \
+      GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes}" \
+      git -C "$checkout" ls-remote --heads "$remote_name" 2>/dev/null)"; then
+    remote_status=1
+  else
+    remote_output=""
+    remote_status=0
+  fi
+
+  remote_cache_names[$cache_count]="$remote_name"
+  remote_cache_outputs[$cache_count]="$remote_output"
+  remote_cache_statuses[$cache_count]="$remote_status"
+  live_remote_output="$remote_output"
+  live_remote_ok="$remote_status"
+}
+
+find_live_ref() {
+  local wanted_ref="$1"
+  local remote_line remote_sha remote_ref
+
+  live_ref_sha=""
+  while IFS=$'\t' read -r remote_sha remote_ref; do
+    if [[ "$remote_ref" == "$wanted_ref" ]]; then
+      live_ref_sha="$remote_sha"
+      return
+    fi
+  done <<< "$live_remote_output"
+}
+
+check_tracking_state() {
+  local checkout="$1"
+  local label="$2"
+  local branch upstream counts ahead behind
+
+  branch="$(git -C "$checkout" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  if [[ -z "$branch" ]]; then
+    add_issue "DETACHED ${label}"
+    return
+  fi
+
+  upstream="$(git -C "$checkout" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+  if [[ -z "$upstream" ]]; then
+    add_issue "NO-UPSTREAM ${label} branch ${branch}"
+    return
+  fi
+
+  counts="$(git -C "$checkout" rev-list --left-right --count 'HEAD...@{u}' 2>/dev/null || true)"
+  if [[ -z "$counts" ]]; then
+    add_issue "TRACKING-ERROR ${label} branch ${branch}"
+    return
+  fi
+  read -r ahead behind <<< "$counts"
+
+  if [[ "$ahead" -gt 0 && "$behind" -gt 0 ]]; then
+    add_issue "${tracking_state_prefix}DIVERGED ${label} ${branch} vs ${upstream} (${ahead} ahead, ${behind} behind)"
+  elif [[ "$ahead" -gt 0 ]]; then
+    add_issue "${tracking_state_prefix}AHEAD ${label} ${branch} vs ${upstream} by ${ahead}"
+  elif [[ "$behind" -gt 0 ]]; then
+    add_issue "${tracking_state_prefix}BEHIND ${label} ${branch} vs ${upstream} by ${behind}"
+  fi
+}
+
+check_remote_tip() {
+  local checkout="$1"
+  local label="$2"
+  local branch upstream remote_name merge_ref
+  local remote_line remote_sha cached_upstream_sha
+
+  tracking_state_prefix=""
+  if [[ "$remote_check" -ne 1 ]]; then
+    tracking_state_prefix="CACHED-"
+    return
+  fi
+
+  branch="$(git -C "$checkout" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  upstream="$(git -C "$checkout" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+  [[ -n "$branch" && -n "$upstream" ]] || return
+
+  remote_name="$(git -C "$checkout" config --get "branch.${branch}.remote" 2>/dev/null || true)"
+  merge_ref="$(git -C "$checkout" config --get "branch.${branch}.merge" 2>/dev/null || true)"
+
+  if [[ -z "$remote_name" || -z "$merge_ref" ]]; then
+    tracking_state_prefix="CACHED-"
+    add_issue "REMOTE-CHECK ${label} missing tracking configuration"
+    return
+  fi
+  [[ "$remote_name" == "." ]] && return
+
+  if ! remote_line="$(GIT_TERMINAL_PROMPT=0 \
+      GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes}" \
+      git -C "$checkout" ls-remote --exit-code "$remote_name" "$merge_ref" 2>/dev/null)"; then
+    tracking_state_prefix="CACHED-"
+    add_issue "REMOTE-CHECK ${label} failed for ${remote_name} ${merge_ref}"
+    return
+  fi
+
+  read -r remote_sha _ <<< "$remote_line"
+  cached_upstream_sha="$(git -C "$checkout" rev-parse '@{u}' 2>/dev/null || true)"
+  if [[ -n "$cached_upstream_sha" && "$remote_sha" != "$cached_upstream_sha" ]]; then
+    tracking_state_prefix="CACHED-"
+    add_issue "REMOTE-CHANGED ${label} ${upstream} needs refresh"
+  fi
+}
+
+check_linked_worktrees() {
+  local repo="$1"
+  local canonical_path="$2"
+  local canonical_common_dir="$3"
+  local worktree_path worktree_status worktree_branch label worktree_output
+
+  if ! worktree_output="$(git -C "$repo" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')"; then
+    add_issue "WORKTREE-LIST-ERROR canonical checkout"
+    return
+  fi
+
+  while IFS= read -r worktree_path; do
+    [[ -z "$worktree_path" || "$worktree_path" == "$canonical_path" ]] && continue
+
+    if [[ ! -d "$worktree_path" ]]; then
+      add_issue "STALE-WORKTREE ${worktree_path}"
+      continue
+    fi
+    if ! resolve_git_common_dir "$worktree_path" ||
+       [[ "$resolved_common_dir" != "$canonical_common_dir" ]]; then
+      add_issue "STALE-WORKTREE ${worktree_path} (path is invalid or reused)"
+      continue
+    fi
+
+    worktree_branch="$(git -C "$worktree_path" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+    label="worktree ${worktree_branch:-detached} at ${worktree_path}"
+    if ! worktree_status="$(git -C "$worktree_path" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none 2>/dev/null)"; then
+      add_issue "STATUS-ERROR ${label}"
+    elif [[ -n "$worktree_status" ]]; then
+      add_issue "DIRTY ${label}"
+    fi
+    check_remote_tip "$worktree_path" "$label"
+    check_tracking_state "$worktree_path" "$label"
+  done <<< "$worktree_output"
+}
+
+live_branch_reachable=0
+live_branch_uncertain=0
+live_branch_remote_failure=0
+check_live_branch_reachability() {
+  local repo="$1"
+  local local_branch="$2"
+  local local_sha remote_sha remote_ref
+
+  live_branch_reachable=0
+  live_branch_uncertain=0
+  live_branch_remote_failure=0
+  local_sha="$(git -C "$repo" rev-parse "${local_branch}^{commit}" 2>/dev/null || true)"
+  if [[ -z "$local_sha" ]]; then
+    live_branch_remote_failure=1
+    return
+  fi
+  if ! git -C "$repo" remote get-url origin >/dev/null 2>&1; then
+    live_branch_remote_failure=1
+    return
+  fi
+
+  load_remote_heads "$repo" origin
+  if [[ "$live_remote_ok" -ne 1 ]]; then
+    live_branch_remote_failure=1
+    return
+  fi
+
+  while IFS=$'\t' read -r remote_sha remote_ref; do
+    [[ -z "$remote_sha" || -z "$remote_ref" ]] && continue
+    if [[ "$remote_sha" == "$local_sha" ]]; then
+      live_branch_reachable=1
+      return
+    fi
+    if git -C "$repo" cat-file -e "${remote_sha}^{commit}" 2>/dev/null; then
+      if git -C "$repo" merge-base --is-ancestor "$local_sha" "$remote_sha" 2>/dev/null; then
+        live_branch_reachable=1
+        return
+      fi
+    else
+      live_branch_uncertain=1
+    fi
+  done <<< "$live_remote_output"
+}
+
+report_cached_dormant_state() {
+  local repo="$1"
+  local local_branch="$2"
+  local upstream="$3"
+  local counts ahead behind
+
+  if [[ -n "$upstream" ]] &&
+     git -C "$repo" rev-parse --verify --quiet "${upstream}^{commit}" >/dev/null 2>&1; then
+    if ! counts="$(git -C "$repo" rev-list --left-right --count \
+        "${local_branch}...${upstream}" 2>/dev/null)"; then
+      add_issue "BRANCH-TRACKING-ERROR dormant branch ${local_branch}"
+      return
+    fi
+    read -r ahead behind <<< "$counts"
+    if [[ "$ahead" -gt 0 && "$behind" -gt 0 ]]; then
+      add_issue "CACHED-DIVERGED dormant branch ${local_branch} vs ${upstream} (${ahead} ahead, ${behind} behind)"
+    elif [[ "$ahead" -gt 0 ]]; then
+      add_issue "CACHED-AHEAD dormant branch ${local_branch} vs ${upstream} by ${ahead}"
+    else
+      add_issue "LOCAL-ONLY dormant branch ${local_branch}"
+    fi
+  elif [[ -n "$upstream" ]]; then
+    add_issue "LOCAL-ONLY dormant branch ${local_branch} (upstream ${upstream} unavailable)"
+  else
+    add_issue "LOCAL-ONLY dormant branch ${local_branch} (no upstream or containing remote-tracking branch)"
+  fi
+}
+
+report_live_dormant_state() {
+  local repo="$1"
+  local local_branch="$2"
+  local upstream="$3"
+  local remote_name merge_ref counts ahead behind
+
+  remote_name="$(git -C "$repo" config --get "branch.${local_branch}.remote" 2>/dev/null || true)"
+  merge_ref="$(git -C "$repo" config --get "branch.${local_branch}.merge" 2>/dev/null || true)"
+  if [[ "$remote_name" == "origin" && -n "$merge_ref" ]]; then
+    load_remote_heads "$repo" "$remote_name"
+    if [[ "$live_remote_ok" -eq 1 ]]; then
+      find_live_ref "$merge_ref"
+      if [[ -n "$live_ref_sha" ]] &&
+         counts="$(git -C "$repo" rev-list --left-right --count \
+           "${local_branch}...${live_ref_sha}" 2>/dev/null)"; then
+        read -r ahead behind <<< "$counts"
+        if [[ "$ahead" -gt 0 && "$behind" -gt 0 ]]; then
+          add_issue "DIVERGED dormant branch ${local_branch} vs ${upstream} (${ahead} ahead, ${behind} behind)"
+          return
+        elif [[ "$ahead" -gt 0 ]]; then
+          add_issue "AHEAD dormant branch ${local_branch} vs ${upstream} by ${ahead}"
+          return
+        fi
+      fi
+    fi
+  fi
+
+  if [[ -n "$upstream" ]]; then
+    add_issue "LOCAL-ONLY dormant branch ${local_branch} (upstream ${upstream} unavailable from origin)"
+  else
+    add_issue "LOCAL-ONLY dormant branch ${local_branch} (not reachable from a live origin branch)"
+  fi
+}
+
+check_dormant_branches() {
+  local repo="$1"
+  local canonical_common_dir="$2"
+  local worktree_output branch_output checked_branches
+  local worktree_line worktree_path checked_branch
+  local local_branch upstream containing_remote
+
+  if ! worktree_output="$(git -C "$repo" worktree list --porcelain 2>/dev/null)"; then
+    add_issue "BRANCH-LIST-ERROR could not inspect worktrees"
+    return
+  fi
+
+  checked_branches=$'\n'
+  worktree_path=""
+  while IFS= read -r worktree_line; do
+    case "$worktree_line" in
+      worktree\ *) worktree_path="${worktree_line#worktree }" ;;
+      branch\ refs/heads/*)
+        checked_branch="${worktree_line#branch refs/heads/}"
+        if [[ -d "$worktree_path" ]] &&
+           resolve_git_common_dir "$worktree_path" &&
+           [[ "$resolved_common_dir" == "$canonical_common_dir" ]]; then
+          checked_branches="${checked_branches}${checked_branch}"$'\n'
+        fi
+        ;;
+      "") worktree_path="" ;;
+    esac
+  done <<< "$worktree_output"
+
+  if ! branch_output="$(git -C "$repo" for-each-ref \
+      --format='%(refname:short)%09%(upstream:short)' refs/heads 2>/dev/null)"; then
+    add_issue "BRANCH-LIST-ERROR could not inspect local branches"
+    return
+  fi
+
+  while IFS=$'\t' read -r local_branch upstream; do
+    [[ -z "$local_branch" ]] && continue
+    case "$checked_branches" in
+      *$'\n'"$local_branch"$'\n'*) continue ;;
+    esac
+
+    if [[ "$remote_check" -eq 1 ]]; then
+      check_live_branch_reachability "$repo" "$local_branch"
+      if [[ "$live_branch_reachable" -eq 1 ]]; then
+        continue
+      elif [[ "$live_branch_remote_failure" -eq 1 ]]; then
+        add_issue "REMOTE-CHECK dormant branch ${local_branch} could not verify origin"
+        continue
+      elif [[ "$live_branch_uncertain" -eq 1 ]]; then
+        add_issue "REMOTE-UNCERTAIN dormant branch ${local_branch} (fetch needed to verify live remote history)"
+        continue
+      fi
+      report_live_dormant_state "$repo" "$local_branch" "$upstream"
+      continue
+    fi
+
+    if ! containing_remote="$(git -C "$repo" for-each-ref \
+        --format='%(refname:short)' --contains="$local_branch" refs/remotes/origin 2>/dev/null)"; then
+      add_issue "BRANCH-TRACKING-ERROR dormant branch ${local_branch}"
+    elif [[ -z "$containing_remote" ]]; then
+      report_cached_dormant_state "$repo" "$local_branch" "$upstream"
+    fi
+  done <<< "$branch_output"
+}
+
+check_repository() {
+  local name="$1"
+  local workflow="$2"
+  local repo="$3"
+  local expected_branch="$4"
+  local expected_origin="$5"
+  local actual_origin status branch repo_top repo_physical top_physical
+  local canonical_common_dir
+
+  issues=""
+  remote_cache_names=()
+  remote_cache_outputs=()
+  remote_cache_statuses=()
+
+  if [[ ! -e "$repo" ]]; then
+    add_issue "MISSING repository"
+  elif ! git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    add_issue "NOT-GIT repository path"
+  else
+    repo_top="$(git -C "$repo" rev-parse --show-toplevel 2>/dev/null || true)"
+    repo_physical="$(CDPATH= cd -- "$repo" 2>/dev/null && pwd -P)"
+    top_physical="$(CDPATH= cd -- "$repo_top" 2>/dev/null && pwd -P)"
+    if [[ -z "$repo_top" || -z "$repo_physical" || -z "$top_physical" ||
+          "$repo_physical" != "$top_physical" ]]; then
+      add_issue "NOT-ROOT registry path (checkout root: ${repo_top:-unknown})"
+    fi
+
+    actual_origin="$(git -C "$repo" remote get-url origin 2>/dev/null || true)"
+    if [[ -z "$actual_origin" ]]; then
+      add_issue "NO-ORIGIN remote"
+    elif [[ -n "$expected_origin" && "$actual_origin" != "$expected_origin" ]]; then
+      add_issue "WRONG-ORIGIN ${actual_origin}"
+    fi
+
+    if ! status="$(git -C "$repo" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none 2>/dev/null)"; then
+      add_issue "STATUS-ERROR working tree"
+    elif [[ -n "$status" ]]; then
+      add_issue "DIRTY working tree"
+    fi
+
+    branch="$(git -C "$repo" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+    if [[ -n "$expected_branch" && -n "$branch" && "$branch" != "$expected_branch" ]]; then
+      add_issue "WRONG-BRANCH ${branch} (expected ${expected_branch})"
+    fi
+
+    check_remote_tip "$repo" "canonical checkout"
+    check_tracking_state "$repo" "canonical checkout"
+
+    if resolve_git_common_dir "$repo"; then
+      canonical_common_dir="$resolved_common_dir"
+      check_linked_worktrees "$repo" "$repo_physical" "$canonical_common_dir"
+      check_dormant_branches "$repo" "$canonical_common_dir"
+    else
+      add_issue "COMMON-DIR-ERROR could not identify repository storage"
+    fi
+  fi
+
+  checked_count=$((checked_count + 1))
+  if [[ -n "$issues" ]]; then
+    attention_count=$((attention_count + 1))
+    printf 'ATTENTION  %s [%s]\n' "$name" "$workflow"
+    printf '           %s\n' "$issues"
+    printf '           %s\n' "$repo"
+  elif [[ "$show_all" -eq 1 ]]; then
+    printf 'OK         %s [%s]\n' "$name" "$workflow"
+  fi
+}
+
+checked_count=0
+attention_count=0
+registry_errors=0
+listed_count=0
+seen_names=$'\n'
+seen_paths=$'\n'
+
+if [[ "$list_only" -eq 1 ]]; then
+  printf '%-9s %-15s %-32s %s\n' STATUS WORKFLOW NAME PATH
+fi
+
+while IFS= read -r registry_line || [[ -n "$registry_line" ]]; do
+  case "$registry_line" in
+    ""|\#*) continue ;;
+  esac
+
+  IFS='|' read -r state workflow name relative_path branch expected_origin extra <<< "$registry_line"
+  if [[ -n "${extra:-}" || -z "${state:-}" || -z "${workflow:-}" ||
+        -z "${name:-}" || -z "${relative_path:-}" ]]; then
+    echo "ERROR: invalid registry row: $registry_line" >&2
+    registry_errors=$((registry_errors + 1))
+    continue
+  fi
+  case "$state" in
+    current|archived) ;;
+    *) echo "ERROR: invalid registry status for ${name}: ${state}" >&2; registry_errors=$((registry_errors + 1)); continue ;;
+  esac
+  case "$workflow" in
+    active|dev|infrastructure) ;;
+    *) echo "ERROR: invalid registry workflow for ${name}: ${workflow}" >&2; registry_errors=$((registry_errors + 1)); continue ;;
+  esac
+  if [[ -z "${expected_origin:-}" ]]; then
+    echo "ERROR: expected origin is required for ${name}" >&2
+    registry_errors=$((registry_errors + 1))
+    continue
+  fi
+  if [[ "$workflow" != "active" && -z "${branch:-}" ]]; then
+    echo "ERROR: expected branch is required for ${name} [${workflow}]" >&2
+    registry_errors=$((registry_errors + 1))
+    continue
+  fi
+  case "$seen_names" in
+    *$'\n'"$name"$'\n'*)
+      echo "ERROR: duplicate registry name: ${name}" >&2
+      registry_errors=$((registry_errors + 1))
+      continue
+      ;;
+  esac
+  seen_names="${seen_names}${name}"$'\n'
+
+  resolve_path "$relative_path"
+  case "$seen_paths" in
+    *$'\n'"$resolved_path"$'\n'*)
+      echo "ERROR: duplicate registry path: ${resolved_path}" >&2
+      registry_errors=$((registry_errors + 1))
+      continue
+      ;;
+  esac
+  seen_paths="${seen_paths}${resolved_path}"$'\n'
+  [[ -n "$group_filter" && "$workflow" != "$group_filter" ]] && continue
+
+  if [[ "$list_only" -eq 1 ]]; then
+    printf '%-9s %-15s %-32s %s\n' "$state" "$workflow" "$name" "$resolved_path"
+    listed_count=$((listed_count + 1))
+    continue
+  fi
+
+  [[ "$state" == "current" ]] || continue
+  check_repository "$name" "$workflow" "$resolved_path" "${branch:-}" "${expected_origin:-}"
+done < "$registry_file"
+
+if [[ "$registry_errors" -gt 0 ]]; then
+  echo "ERROR: repository registry has ${registry_errors} invalid row(s): $registry_file" >&2
+  exit 2
+fi
+
+if [[ "$list_only" -eq 1 ]]; then
+  printf '\n%d registry entries listed from %s\n' "$listed_count" "$registry_file"
+  exit 0
+fi
+
+if [[ "$checked_count" -eq 0 ]]; then
+  echo "ERROR: no current repositories matched the requested scope." >&2
+  exit 2
+fi
+
+if [[ "$attention_count" -eq 0 ]]; then
+  if [[ "$remote_check" -eq 1 ]]; then
+    printf 'OK: %d managed repositories need no attention (remote tips verified).\n' "$checked_count"
+  else
+    printf 'OK: %d managed repositories need no attention (cached remote state only).\n' "$checked_count"
+  fi
+  exit 0
+fi
+
+printf '\nATTENTION: %d of %d managed repositories need attention.\n' \
+  "$attention_count" "$checked_count"
+exit 1

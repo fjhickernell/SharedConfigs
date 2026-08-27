@@ -11,6 +11,9 @@ Default:
 Flags:
   --quiet     Print only SKIP/ERROR and the final verdict
   --verbose   Print extra git status details
+
+Repository scope comes from current "dev" rows in
+SharedConfigs/settings/repositories.conf.
 USAGE
 }
 
@@ -42,8 +45,8 @@ error() {
 
 timestamp_log() { printf "[%s] %s\n" "$(timestamp)" "$*"; }
 
-banner() { [[ "$QUIET" -eq 0 ]] && printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
-section() { [[ "$QUIET" -eq 0 ]] && printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"; }
+banner() { [[ "$QUIET" -eq 0 ]] && printf "\n${GREEN_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; return 0; }
+section() { [[ "$QUIET" -eq 0 ]] && printf "\n${MAGENTA_BOLD}--- %s ---${NC}\n" "$1"; return 0; }
 warn_banner() { printf "\n${YELLOW_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1"; }
 err_banner() { printf "\n${RED_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1" >&2; }
 
@@ -52,9 +55,9 @@ UPDATE_COUNT=0
 ERROR_COUNT=0
 
 say() { echo "$*"; }
-info() { [[ "$QUIET" -eq 0 ]] && say "$*"; }
-ok() { info "${GREEN_BOLD}$*${NC}"; }
-warn() { [[ "$QUIET" -eq 0 ]] && say "${YELLOW_BOLD}$*${NC}"; }
+info() { [[ "$QUIET" -eq 0 ]] && say "$*"; return 0; }
+ok() { info "${GREEN_BOLD}$*${NC}"; return 0; }
+warn() { [[ "$QUIET" -eq 0 ]] && say "${YELLOW_BOLD}$*${NC}"; return 0; }
 err() { say "${RED_BOLD}$*${NC}" >&2; }
 
 shortsha() {
@@ -150,18 +153,49 @@ sync_repo() {
   verbose_status "$repo"
 }
 
-HCL="$HOME/SoftwareRepositories/HickernellAcademicLib"
-QMCPY="$HOME/SoftwareRepositories/QMCSoftware"
-QMCPY_ORIGIN="git@github.com:QMCSoftware/qmcpy.git"
-QMC_WEBSITE="$HOME/SoftwareRepositories/qmcsoftware-website"
-HTA="$HOME/SoftwareRepositories/HickernellTestArchive"
-
 banner "Sync dev started"
 
-sync_repo "$HCL" "HickernellAcademicLib" "main"
-sync_repo "$QMCPY" "qmcpy" "develop" "$QMCPY_ORIGIN"
-sync_repo "$QMC_WEBSITE" "qmcsoftware-website" "main"
-sync_repo "$HTA" "HickernellTestArchive" "main"
+script_dir="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+repository_registry="${REPOSITORY_REGISTRY_FILE:-${script_dir}/../settings/repositories.conf}"
+if [[ ! -r "$repository_registry" ]]; then
+  error "cannot read repository registry: ${repository_registry}"
+  exit 2
+fi
+if ! REPOSITORY_REGISTRY_FILE="$repository_registry" \
+  "${script_dir}/repo-sweep" --list >/dev/null; then
+  error "managed repository registry validation failed"
+  exit 2
+fi
+
+repo_count=0
+while IFS='|' read -r registry_status registry_workflow registry_name \
+  registry_path registry_branch registry_origin registry_extra ||
+  [[ -n "$registry_status" ]]; do
+  [[ -z "$registry_status" || "$registry_status" == \#* ]] && continue
+  [[ "$registry_status" == "current" && "$registry_workflow" == "dev" ]] || continue
+  if [[ -n "$registry_extra" || -z "$registry_name" || -z "$registry_path" ||
+        -z "$registry_branch" ]]; then
+    error "invalid dev repository row in ${repository_registry}"
+    exit 2
+  fi
+  if [[ "$registry_path" == /* ]]; then
+    repo_path="$registry_path"
+  else
+    repo_path="$HOME/$registry_path"
+  fi
+
+  # Preserve the existing synchronization policy: only qmcpy has its origin
+  # actively normalized by sync-dev. repo-sweep checks all expected origins.
+  sync_origin=""
+  [[ "$registry_name" == "qmcpy" ]] && sync_origin="$registry_origin"
+  sync_repo "$repo_path" "$registry_name" "$registry_branch" "$sync_origin"
+  repo_count=$((repo_count + 1))
+done < "$repository_registry"
+
+if [[ "$repo_count" -eq 0 ]]; then
+  error "no current dev repositories are configured"
+  exit 2
+fi
 
 if [[ "$ERROR_COUNT" -gt 0 ]]; then
   err_banner "FAILED: ${ERROR_COUNT} error(s)"

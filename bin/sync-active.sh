@@ -14,6 +14,9 @@ Flags:
   --quiet     Print only SKIP/WARN/ERROR and final verdict
   --verbose   Print extra Git details
   --health    Run repo-health summary (also enabled by --verbose)
+
+Repository scope comes from current "active" rows in
+SharedConfigs/settings/repositories.conf.
 EOF
 }
 
@@ -69,21 +72,14 @@ if (( do_push == 1 )); then
   do_promote=1
 fi
 
-# Registry format: name<TAB>local path<TAB>clone URL<TAB>optional branch.
+# Internal record format: name<TAB>local path<TAB>clone URL<TAB>optional branch.
 # Each entry is one record, so repository fields cannot become misaligned.
 # Leave branch empty to use the remote default on clone and the checked-out
 # branch/upstream thereafter.
-typeset -a REPOSITORIES=(
-  $'MATH332Fall2026\t'"$HOME"$'/SoftwareRepositories/MATH332Fall2026\tgit@github.com:fjhickernell/MATH332Fall2026.git\t'
-  $'MATH565Fall2026\t'"$HOME"$'/SoftwareRepositories/MATH565Fall2026\tgit@github.com:fjhickernell/MATH565Fall2026.git\t'
-  $'MCQMC26\t'"$HOME"$'/SoftwareRepositories/MCQMC26\tgit@github.com:fjhickernell/MCQMC26.git\t'
-  $'JMM27\t'"$HOME"$'/SoftwareRepositories/JMM27\tgit@github.com:fjhickernell/JMM27.git\t'
-  $'GeneralizedTractabilityCones\t'"$HOME"$'/SoftwareRepositories/GeneralizedTractabilityCones\thttps://git@git.overleaf.com/69c15e17b47160e5e81283e4\t'
-  $'NumericalCertificationFrontiers\t'"$HOME"$'/SoftwareRepositories/NumericalCertificationFrontiers\thttps://git@git.overleaf.com/6a8f73c32435332e2fc19d2a\t'
-)
+typeset -a REPOSITORIES=()
 
-# A tab-delimited override is useful for isolated validation and automation.
-# Blank lines and lines beginning with # are ignored.
+# The legacy tab-delimited override remains available for isolated validation
+# and automation. Normal operation reads the shared managed-repository registry.
 if [[ -n "${SYNC_ACTIVE_REGISTRY_FILE:-}" ]]; then
   if [[ ! -r "$SYNC_ACTIVE_REGISTRY_FILE" ]]; then
     failure "ERROR: cannot read registry file: ${SYNC_ACTIVE_REGISTRY_FILE}"
@@ -95,6 +91,49 @@ if [[ -n "${SYNC_ACTIVE_REGISTRY_FILE:-}" ]]; then
     [[ -z "$registry_line" || "$registry_line" == \#* ]] && continue
     REPOSITORIES+=("$registry_line")
   done < "$SYNC_ACTIVE_REGISTRY_FILE"
+else
+  script_dir="${0:A:h}"
+  repository_registry="${REPOSITORY_REGISTRY_FILE:-${script_dir:h}/settings/repositories.conf}"
+  if [[ ! -r "$repository_registry" ]]; then
+    failure "ERROR: cannot read repository registry: ${repository_registry}"
+    exit 2
+  fi
+  if ! REPOSITORY_REGISTRY_FILE="$repository_registry" \
+    "${script_dir}/repo-sweep" --list >/dev/null; then
+    failure "ERROR: managed repository registry validation failed"
+    exit 2
+  fi
+
+  registry_status=""
+  registry_workflow=""
+  registry_name=""
+  registry_path=""
+  registry_branch=""
+  registry_origin=""
+  registry_extra=""
+  resolved_registry_path=""
+  while IFS='|' read -r registry_status registry_workflow registry_name \
+    registry_path registry_branch registry_origin registry_extra ||
+    [[ -n "$registry_status" ]]; do
+    [[ -z "$registry_status" || "$registry_status" == \#* ]] && continue
+    [[ "$registry_status" == "current" && "$registry_workflow" == "active" ]] || continue
+    if [[ -n "$registry_extra" || -z "$registry_name" || -z "$registry_path" ||
+          -z "$registry_origin" ]]; then
+      failure "ERROR: invalid active repository row in ${repository_registry}"
+      exit 2
+    fi
+    if [[ "$registry_path" == /* ]]; then
+      resolved_registry_path="$registry_path"
+    else
+      resolved_registry_path="$HOME/$registry_path"
+    fi
+    REPOSITORIES+=("${registry_name}"$'\t'"${resolved_registry_path}"$'\t'"${registry_origin}"$'\t'"${registry_branch}")
+  done < "$repository_registry"
+fi
+
+if (( ${#REPOSITORIES} == 0 )); then
+  failure "ERROR: no current active repositories are configured"
+  exit 2
 fi
 
 REPO_NAME=""
@@ -149,7 +188,16 @@ validate_repository_and_remote() {
     failure "ERROR  ${REPO_NAME}: path exists but is not a Git repository"
     return 1
   fi
-  local actual_url
+  local actual_top resolved_repo resolved_top actual_url
+  actual_top=$(/usr/bin/git -C "$REPO_PATH" rev-parse --show-toplevel 2>/dev/null)
+  resolved_repo="${REPO_PATH:A}"
+  resolved_top="${actual_top:A}"
+  if [[ "$resolved_repo" != "$resolved_top" ]]; then
+    failure "ERROR  ${REPO_NAME}: registry path is not the repository root"
+    vinfo "       configured: ${REPO_PATH}"
+    vinfo "       actual root: ${actual_top}"
+    return 1
+  fi
   if ! actual_url=$(/usr/bin/git -C "$REPO_PATH" remote get-url origin 2>/dev/null); then
     failure "ERROR  ${REPO_NAME}: origin remote is missing"
     return 1

@@ -65,10 +65,8 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `export-macapps-xlsx.sh` | Mac App Inventory | Export inventory to Excel. |
 | `link_sharedconfigs_minimal.sh` | Mac Setup | Bring a new Mac online with baseline links. |
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
-| `quarto-site-live` | Teaching | Live-render a Quarto website on an independent automatically assigned per-course port. |
 | `quarto-slides-live` | Teaching | Live-render one RevealJS deck on an automatically assigned per-course port. |
 | `regular-maintenance.sh` | System Maintenance | Run sync-brew, update-texlive, qmcpy sync, etc. |
-| `repo-sweep` | Git | Check all current managed repositories and print only those needing attention. |
 | `README_bin.md` | Documentation | This file. |
 | `setup-starship.sh` | Shell | Install and link shared starship config. |
 | `sharedconfigs-save.sh` | Git | Commit and push SharedConfigs snapshots. |
@@ -133,27 +131,6 @@ Use when:
 ---
 
 ## SharedConfigs / Git Utilities
-
-### `repo-sweep`
-
-Runs one non-synchronizing check across every current repository in
-`settings/repositories.conf`: the standalone `dev` libraries, the `active`
-course/talk/project repositories, and the `infrastructure` repositories
-SharedConfigs and GitTracked. Its normal output contains only repositories
-that need attention; `--all` also prints clear repositories, `--local` skips
-fresh remote-tip queries, and `--list` displays current and archived registry
-rows. The check includes dirty files and submodules, origins, upstream state,
-linked worktrees, and dormant local branches with unpublished commits.
-
-```sh
-repo-sweep
-```
-
-Codex maintains the registry when asked to add or archive a repository.
-Archiving changes a row's status from `current` to `archived`; it does not
-delete a checkout or remote. The same registry drives `sync-active.sh`,
-`sync-dev.sh`, and `git-repo-sync.sh`, so their scopes cannot drift from the
-sweep.
 
 ### `sharedconfigs-save.sh`
 Commit-and-push tool for SharedConfigs:
@@ -233,7 +210,7 @@ After any base-Conda change, run full `sync-qmcpy-env.sh` validation on the refe
 sync-qmcpy-env.sh
 ```
 
-This refreshes the canonical QMCPy and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal requirements, refreshes and validates the `qmcpy` kernel, runs machine-local checks, and then executes the canonical notebooks, stable Quarto fixture, and advisory active-course checks.
+This refreshes the canonical QMCSoftware and HickernellAcademicLib branches, reinstalls them in editable mode, applies personal requirements, refreshes and validates the `qmcpy` kernel, runs machine-local checks, and then executes the canonical notebooks, stable Quarto fixture, and advisory active-course checks.
 
 Add `--upgrade` at an academic maintenance checkpoint to update the `qmcpy` environment first:
 
@@ -248,7 +225,7 @@ sync-qmcpy-env.sh --machine-only
 sync-qmcpy-env.sh --upgrade --machine-only
 ```
 
-Machine-only mode performs the same local synchronization, editable installs, kernel verification, imports, version reporting, and `pip check`, but skips notebook, Quarto, and active-course compatibility checks. Use it on an additional Mac only after full compatibility validation has passed for the same QMCPy and HickernellAcademicLib revisions and a comparable environment state. Reports make the host, architecture, full repository revisions, interpreters, and package versions conspicuous.
+Machine-only mode performs the same local synchronization, editable installs, kernel verification, imports, version reporting, and `pip check`, but skips notebook, Quarto, and active-course compatibility checks. Use it on an additional Mac only after full compatibility validation has passed for the same QMCSoftware and HickernellAcademicLib revisions and a comparable environment state. Reports make the host, architecture, full repository revisions, interpreters, and package versions conspicuous.
 
 The upgrade option performs a Conda update within the `qmcpy` environment and upgrades the explicitly maintained personal requirements. It never updates base Conda.
 
@@ -290,37 +267,6 @@ Add this script to your Dock instead of TeXstudio.
 
 ## Teaching Tools
 
-### `quarto-site-live`
-
-Live-renders a Quarto website and refreshes its browser tab whenever the
-website sources change. Run it with no positional arguments from the course
-repository root:
-
-```bash
-quarto-site-live
-```
-
-The helper uses `quarto render`, BrowserSync, and an independent file watcher;
-it does not invoke Quarto's preview process manager. It ignores `slides/`, so a
-site session and a `quarto-slides-live` session can run together without
-restarting or rebuilding one another. It serves the standard `_site` output
-directory used by the active course repositories.
-
-For MATH course repositories, the default site port is `5000 + course number`.
-The four active-course live views therefore have distinct defaults:
-
-| Repository | Website | Slide deck |
-|---|---:|---:|
-| MATH 332 | `http://localhost:5332/` | `http://localhost:4332/<deck>.html` |
-| MATH 565 | `http://localhost:5565/` | `http://localhost:4565/<deck>.html` |
-
-The site port is remembered in the repository's ignored
-`.quarto-watch-logs/site-port` file. Use `-p` or `--port` to override it, or set
-`QUARTO_SITE_LIVE_PORT`; a command-line port takes precedence. The helper
-refuses to replace an existing listener on an explicitly selected port, so do
-not choose a slide session's port. Use `--fast` when cached rendering is
-appropriate, and `--no-open` to serve without opening a new browser tab.
-
 ### `quarto-slides-live`
 
 Live-renders one RevealJS deck and refreshes its browser tab whenever the
@@ -350,9 +296,7 @@ Use `-p` or `--port` when an explicit override is useful. The older
 `QUARTO_LIVE_PORT` environment variable remains supported, and a command-line
 port takes precedence over it. An explicit port preserves the earlier
 behavior of replacing any listener on that selected port. Use `--fast` in
-either command when cached rendering is appropriate. For simultaneous website
-and slide editing, leave the slide helper on its 4000-series default and use
-`quarto-site-live` on the corresponding 5000-series default.
+either command when cached rendering is appropriate.
 
 ### `prep_description_summary.sh`
 Generates boilerplate templates for student project summaries and descriptions.

@@ -107,6 +107,32 @@ every handoff file. At a Checkpoint, retain the special treatment of
 `notes/NEXT.md`: inspect it independently in every writable repository and
 update it only when the operational handoff has materially changed.
 
+## Managed repository sweep
+
+The shared managed-repository registry is
+`~/Documents/SharedConfigs/settings/repositories.conf`. Its `current` rows are
+the single source of truth for `repo-sweep`, `sync-active.sh`, `sync-dev.sh`,
+and `git-repo-sync.sh`; `archived` rows are retained but excluded from routine
+checks and synchronization. Preserve the workflow partition: `dev` contains
+the standalone libraries and support repositories, `active` contains courses,
+talks, and other current project repositories, and `infrastructure` contains
+SharedConfigs and GitTracked.
+
+When the user asks for a quick check of the managed repositories, asks whether
+anything is unsynchronized, or asks what needs attention before leaving a
+machine, run `repo-sweep`. It checks working trees, branches, upstream state,
+expected origins, remote tips, linked worktrees, and dormant local branches
+with unpublished commits without committing, pulling, merging, pushing,
+checking out branches, or pruning. Report only the repositories needing
+attention unless the user asks for the full list. Do not run a synchronizing
+command merely because the sweep finds an issue.
+
+When the user asks to add a repository to the sweep or archive one, Codex—not
+the user—updates the shared registry. Add a `current` row with the appropriate
+workflow, canonical home-relative path, expected branch when fixed, and origin.
+To retire a repository, change its status to `archived` rather than deleting
+the row or deleting any local or remote repository.
+
 ## Depart workflow
 
 When the user's message is exactly:
