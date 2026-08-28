@@ -153,7 +153,9 @@ Codex maintains the registry when asked to add or archive a repository.
 Archiving changes a row's status from `current` to `archived`; it does not
 delete a checkout or remote. The same registry drives `sync-active.sh`,
 `sync-dev.sh`, and `git-repo-sync.sh`, so their scopes cannot drift from the
-sweep.
+sweep. When a current `dev` or `active` repository's canonical path is absent,
+its synchronization script clones the configured origin and branch. An
+existing non-Git path is reported as an error and is never overwritten.
 
 ### `sharedconfigs-save.sh`
 Commit-and-push tool for SharedConfigs:

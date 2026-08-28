@@ -6,7 +6,8 @@ usage() {
 Usage: sync-dev.sh [--quiet|--verbose]
 
 Default:
-  - Prints one summary line per repo (UPDATED/OK/SKIP/ERROR)
+  - Clones a registered repository when its path is absent
+  - Prints one summary line per repo (CLONED/UPDATED/OK/SKIP/ERROR)
 
 Flags:
   --quiet     Print only SKIP/ERROR and the final verdict
@@ -81,11 +82,30 @@ sync_repo() {
   local repo="$1"
   local name="$2"
   local branch="$3"
-  local expected_origin="${4:-}"
+  local clone_origin="$4"
+  local sync_origin="${5:-}"
 
   if [[ ! -d "$repo/.git" && ! -f "$repo/.git" ]]; then
-    ERROR_COUNT=$((ERROR_COUNT + 1))
-    err "ERROR  ${name}: not a git repo: ${repo}"
+    if [[ -e "$repo" ]]; then
+      ERROR_COUNT=$((ERROR_COUNT + 1))
+      err "ERROR  ${name}: path exists but is not a Git repository: ${repo}"
+      return 0
+    fi
+    if ! mkdir -p -- "$(dirname -- "$repo")"; then
+      ERROR_COUNT=$((ERROR_COUNT + 1))
+      err "ERROR  ${name}: cannot create parent directory for ${repo}"
+      return 0
+    fi
+    if ! git clone --branch "$branch" -- "$clone_origin" "$repo" >/dev/null 2>&1; then
+      ERROR_COUNT=$((ERROR_COUNT + 1))
+      err "ERROR  ${name}: clone failed from ${clone_origin}"
+      return 0
+    fi
+    local cloned_head
+    cloned_head="$(git -C "$repo" rev-parse HEAD)"
+    UPDATE_COUNT=$((UPDATE_COUNT + 1))
+    ok "CLONED  ${name} (${branch}) @ $(shortsha "$cloned_head")"
+    verbose_status "$repo"
     return 0
   fi
 
@@ -98,16 +118,16 @@ sync_repo() {
 
   local origin_changed=0
   local actual_origin=""
-  if [[ -n "$expected_origin" ]]; then
+  if [[ -n "$sync_origin" ]]; then
     if ! actual_origin="$(git -C "$repo" remote get-url origin 2>/dev/null)"; then
       ERROR_COUNT=$((ERROR_COUNT + 1))
       err "ERROR  ${name}: origin remote is missing"
       return 0
     fi
-    if [[ "$actual_origin" != "$expected_origin" ]]; then
-      if ! git -C "$repo" remote set-url origin "$expected_origin"; then
+    if [[ "$actual_origin" != "$sync_origin" ]]; then
+      if ! git -C "$repo" remote set-url origin "$sync_origin"; then
         ERROR_COUNT=$((ERROR_COUNT + 1))
-        err "ERROR  ${name}: cannot retarget origin to ${expected_origin}"
+        err "ERROR  ${name}: cannot retarget origin to ${sync_origin}"
         return 0
       fi
       origin_changed=1
@@ -145,7 +165,7 @@ sync_repo() {
     ok "UPDATED ${name} (${branch}) +${count} -> $(shortsha "$new")"
   elif [[ "$origin_changed" -eq 1 ]]; then
     UPDATE_COUNT=$((UPDATE_COUNT + 1))
-    ok "UPDATED ${name} (${branch}) origin -> ${expected_origin}"
+    ok "UPDATED ${name} (${branch}) origin -> ${sync_origin}"
   else
     info "OK     ${name} (${branch}) @ $(shortsha "$new")"
   fi
@@ -174,7 +194,7 @@ while IFS='|' read -r registry_status registry_workflow registry_name \
   [[ -z "$registry_status" || "$registry_status" == \#* ]] && continue
   [[ "$registry_status" == "current" && "$registry_workflow" == "dev" ]] || continue
   if [[ -n "$registry_extra" || -z "$registry_name" || -z "$registry_path" ||
-        -z "$registry_branch" ]]; then
+        -z "$registry_branch" || -z "$registry_origin" ]]; then
     error "invalid dev repository row in ${repository_registry}"
     exit 2
   fi
@@ -184,11 +204,13 @@ while IFS='|' read -r registry_status registry_workflow registry_name \
     repo_path="$HOME/$registry_path"
   fi
 
-  # Preserve the existing synchronization policy: only qmcpy has its origin
-  # actively normalized by sync-dev. repo-sweep checks all expected origins.
+  # All registry origins are used when cloning. Preserve the existing policy
+  # that only qmcpy has its origin actively normalized after clone;
+  # repo-sweep checks every existing checkout's expected origin.
   sync_origin=""
   [[ "$registry_name" == "qmcpy" ]] && sync_origin="$registry_origin"
-  sync_repo "$repo_path" "$registry_name" "$registry_branch" "$sync_origin"
+  sync_repo "$repo_path" "$registry_name" "$registry_branch" \
+    "$registry_origin" "$sync_origin"
   repo_count=$((repo_count + 1))
 done < "$repository_registry"
 

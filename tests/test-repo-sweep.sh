@@ -70,6 +70,37 @@ REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-dev.sh" --quiet \
   > "$output" 2>&1 || fail "sync-dev registry integration failed"
 [[ ! -s "$output" ]] || fail "sync-dev --quiet produced unexpected output"
 
+# A current dev row is sufficient to bootstrap an absent canonical checkout.
+dev_clone="${test_root}/dev-clone"
+printf '%s\n' \
+  "current|dev|CloneFixture|${dev_clone}|main|${origin}" > "$registry"
+REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-dev.sh" --quiet \
+  > "$output" 2>&1 || fail "sync-dev failed to clone an absent repository"
+[[ ! -s "$output" ]] || fail "sync-dev clone produced output in quiet mode"
+[[ -d "${dev_clone}/.git" ]] || fail "sync-dev did not create a Git checkout"
+[[ "$(git -C "$dev_clone" branch --show-current)" == "main" ]] ||
+  fail "sync-dev cloned the wrong branch"
+[[ "$(git -C "$dev_clone" remote get-url origin)" == "$origin" ]] ||
+  fail "sync-dev cloned from the wrong origin"
+
+# Never overwrite a pre-existing non-Git path while bootstrapping a dev row.
+nonrepo="${test_root}/nonrepo"
+mkdir -p "$nonrepo"
+printf 'preserve me\n' > "${nonrepo}/sentinel.txt"
+printf '%s\n' \
+  "current|dev|NonRepoFixture|${nonrepo}|main|${origin}" > "$registry"
+set +e
+REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-dev.sh" --quiet \
+  > "$output" 2>&1
+sync_dev_nonrepo_rc=$?
+set -e
+[[ "$sync_dev_nonrepo_rc" -ne 0 ]] ||
+  fail "sync-dev accepted an existing non-Git path"
+grep -Fq "path exists but is not a Git repository" "$output" ||
+  fail "sync-dev did not explain the existing non-Git path"
+[[ -f "${nonrepo}/sentinel.txt" ]] ||
+  fail "sync-dev damaged an existing non-Git path"
+
 printf '%s\n' "current|active|Fixture|${repo}||${origin}" > "$registry"
 REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-active.sh" --quiet \
   > "$output" 2>&1 || fail "sync-active registry integration failed"
