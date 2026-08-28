@@ -70,6 +70,26 @@ REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-dev.sh" --quiet \
   > "$output" 2>&1 || fail "sync-dev registry integration failed"
 [[ ! -s "$output" ]] || fail "sync-dev --quiet produced unexpected output"
 
+REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-dev.sh" \
+  > "$output" 2>&1 || fail "sync-dev current-state output failed"
+grep -Fq "OK     Fixture (main): already current @" "$output" ||
+  fail "sync-dev did not report an already-current repository clearly"
+
+# Updated active repositories report the number of commits fast-forwarded.
+sync_writer="${test_root}/sync-writer"
+git clone -q "$origin" "$sync_writer"
+git -C "$sync_writer" config user.name "Repo Sweep Test"
+git -C "$sync_writer" config user.email "repo-sweep@example.invalid"
+printf 'sync update\n' > "${sync_writer}/sync-update.txt"
+git -C "$sync_writer" add sync-update.txt
+git -C "$sync_writer" commit -q -m "Sync update"
+git -C "$sync_writer" push -q
+printf '%s\n' "current|active|Fixture|${repo}|main|${origin}" > "$registry"
+REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-active.sh" \
+  > "$output" 2>&1 || fail "sync-active update-count output failed"
+grep -Fq "UPDATED Fixture: +1 ->" "$output" ||
+  fail "sync-active did not report the fast-forward commit count"
+
 # A current dev row is sufficient to bootstrap an absent canonical checkout.
 dev_clone="${test_root}/dev-clone"
 printf '%s\n' \

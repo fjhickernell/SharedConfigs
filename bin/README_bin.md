@@ -155,7 +155,9 @@ delete a checkout or remote. The same registry drives `sync-active.sh`,
 `sync-dev.sh`, and `git-repo-sync.sh`, so their scopes cannot drift from the
 sweep. When a current `dev` or `active` repository's canonical path is absent,
 its synchronization script clones the configured origin and branch. An
-existing non-Git path is reported as an error and is never overwritten.
+existing non-Git path is reported as an error and is never overwritten. Both
+synchronization scripts label unchanged repositories as `already current` and
+report the number of commits added by a fast-forward as `+N`.
 
 ### `sharedconfigs-save.sh`
 Commit-and-push tool for SharedConfigs:

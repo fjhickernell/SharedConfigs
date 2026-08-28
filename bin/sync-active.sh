@@ -292,8 +292,10 @@ prepare_branch() {
 }
 
 SYNC_CHANGED=0
+SYNC_COMMIT_COUNT=0
 fast_forward_sync() {
   SYNC_CHANGED=0
+  SYNC_COMMIT_COUNT=0
   local old new
   old=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)
   if ! /usr/bin/git -C "$REPO_PATH" -c fetch.recurseSubmodules=no \
@@ -306,7 +308,10 @@ fast_forward_sync() {
     return 1
   fi
   new=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)
-  [[ "$old" != "$new" ]] && SYNC_CHANGED=1
+  if [[ "$old" != "$new" ]]; then
+    SYNC_CHANGED=1
+    SYNC_COMMIT_COUNT=$(/usr/bin/git -C "$REPO_PATH" rev-list --count "${old}..${new}")
+  fi
   return 0
 }
 
@@ -382,6 +387,7 @@ commit_pointer_changes() {
     return 1
   fi
   SYNC_CHANGED=1
+  SYNC_COMMIT_COUNT=$((SYNC_COMMIT_COUNT + 1))
 }
 
 push_if_requested() {
@@ -393,6 +399,7 @@ push_if_requested() {
     failure "ERROR  ${REPO_NAME}: push failed"
     return 1
   fi
+  (( SYNC_COMMIT_COUNT == 0 )) && SYNC_COMMIT_COUNT=$ahead
   SYNC_CHANGED=1
 }
 
@@ -520,7 +527,7 @@ for local_record in "${REPOSITORIES[@]}"; do
   case "$rc" in
     0) info "OK     ${REPO_NAME}: already current @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
     10) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "CLONED ${REPO_NAME}: ready @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
-    11) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "UPDATED ${REPO_NAME}: synchronized @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    11) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "UPDATED ${REPO_NAME}: +${SYNC_COMMIT_COUNT} -> $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
     20) SKIP_COUNT=$((SKIP_COUNT + 1)) ;;
     *) ERROR_COUNT=$((ERROR_COUNT + 1)) ;;
   esac

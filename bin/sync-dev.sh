@@ -167,7 +167,7 @@ sync_repo() {
     UPDATE_COUNT=$((UPDATE_COUNT + 1))
     ok "UPDATED ${name} (${branch}) origin -> ${sync_origin}"
   else
-    info "OK     ${name} (${branch}) @ $(shortsha "$new")"
+    info "OK     ${name} (${branch}): already current @ $(shortsha "$new")"
   fi
 
   verbose_status "$repo"
