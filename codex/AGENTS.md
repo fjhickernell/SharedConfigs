@@ -61,6 +61,21 @@ specifies a time zone different from the Mac's current zone, preserve that
 named time zone explicitly on the calendar events when the available creation
 path supports it; do not rely only on converting the displayed clock times.
 
+When creating timed events through Apple Calendar automation, treat Calendar's
+scripting date values as wall-clock fields rather than guaranteed absolute
+instants. The `osascript` process may report GMT even while Calendar's event
+editor is set to Central Time; passing a correctly converted UTC instant can
+therefore copy the UTC clock components into the Central Time fields (for
+example, 8:20 PM CDT may appear as 1:20 AM the next day). Set the event's named
+time zone, then pass the wall-clock date and time for that zone. For an
+itinerary that crosses time zones, use the departure time zone for the event
+block, convert the arrival to that same zone for the event's end, and record
+the destination-local arrival time in the notes. When updating an existing
+event through JXA, use the scripting property's `set(...)` method rather than
+plain JavaScript assignment. After creation or modification, verify the
+visible account, date, start time, end time, and time zone in Apple Calendar;
+do not rely solely on the scripting API's UTC serialization.
+
 ## Terminology precision and coherence
 
 Prefer precise, consistent terminology across the user's requests, project
