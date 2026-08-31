@@ -272,10 +272,43 @@ Add automatic cloning to active repository sync
 
 Do not silently rewrite a user-supplied checkpoint message unless it is invalid as a Git commit message.
 
+### `Express Checkpoint`
+
+When the user's message is exactly:
+
+```text
+Express Checkpoint
+```
+
+perform an expedited Checkpoint. Follow the normal repository scope, diff and
+handoff review, submodule ordering, staging, commit, push, and reporting rules,
+with this validation exception:
+
+- Run only fast, non-rendering checks needed to catch obvious problems.
+- Do not start or wait for full renders, builds, or long-running test suites.
+  If one is already running, do not interrupt it, but do not wait for it to
+  finish before publishing.
+- Do not publish a known broken state when a completed check has already
+  failed; an Express Checkpoint defers unfinished validation but does not erase
+  known failures.
+- Report every full validation step that was skipped or still running so the
+  remaining verification is explicit.
+
+When the user's message begins with the exact prefix `Express Checkpoint ` and
+then includes text, use that following text exactly as the commit message,
+subject to the same validity rule as `Checkpoint <message>`.
+
+Do not interpret casual or reordered uses of these words as authorization.
+The message must begin with the exact words `Express Checkpoint`.
+
 ### Safety and scope
 
 - `Checkpoint` is explicit authorization to validate, commit, and push all repository changes that belong in the repository, subject to the exclusions below.
-- Do not ask again for permission to commit or push after receiving `Checkpoint`.
+- `Express Checkpoint` is explicit authorization to review, commit, and push
+  the same intended scope while deferring unfinished full validation as
+  described above.
+- Do not ask again for permission to commit or push after receiving
+  `Checkpoint` or `Express Checkpoint`.
 - Do not interpret casual uses of the word “checkpoint” inside a longer sentence as authorization. The command must begin the user's message.
 - Never include unrelated pre-existing changes without clearly identifying them and obtaining direction.
 - Never use `git push --force` or `git push --force-with-lease` unless the user explicitly requests it.
