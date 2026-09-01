@@ -63,6 +63,8 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `brew-publish` | Homebrew | Publish/update canonical Brewfile in SharedConfigs. |
 | `dump-mac-apps.sh` | Mac App Inventory | Dump installed apps/casks/MAS apps. |
 | `export-macapps-xlsx.sh` | Mac App Inventory | Export inventory to Excel. |
+| `jlab332` | Teaching | Open MATH 332 notebooks as one JupyterLab Desktop project using `qmcpy`. |
+| `jlab565` | Teaching | Open MATH 565 notebooks as one JupyterLab Desktop project using `qmcpy`. |
 | `link_sharedconfigs_minimal.sh` | Mac Setup | Bring a new Mac online with baseline links. |
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
 | `quarto-site-live` | Teaching | Live-render a Quarto website on an independent automatically assigned per-course port. |
@@ -293,6 +295,22 @@ Add this script to your Dock instead of TeXstudio.
 ---
 
 ## Teaching Tools
+
+### `jlab332` and `jlab565`
+
+Launch JupyterLab Desktop with the corresponding course's parent `notebooks/`
+directory as one project and the `qmcpy` Python environment:
+
+```bash
+jlab332
+jlab565
+```
+
+Keeping the Desktop project rooted at `notebooks/` allows normal navigation
+among its category folders without opening a separate project rooted inside a
+category. The shared `jlab-course` helper locates the standard `qmcpy`
+installation automatically. Set `QMCPY_PYTHON` only when its Python executable
+is installed elsewhere.
 
 ### `quarto-site-live`
 

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: jlab-course MATH332Fall2026|MATH565Fall2026" >&2
+  exit 2
+fi
+
+course_repo=$1
+case "$course_repo" in
+  MATH332Fall2026|MATH565Fall2026) ;;
+  *)
+    echo "Unsupported course repository: $course_repo" >&2
+    exit 2
+    ;;
+esac
+
+jlab_launcher=${JLAB_DESKTOP_LAUNCHER:-/Applications/JupyterLab.app/Contents/Resources/app/jlab}
+notebook_dir="$HOME/SoftwareRepositories/$course_repo/notebooks"
+
+if [[ ! -x "$jlab_launcher" ]]; then
+  echo "JupyterLab Desktop launcher not found: $jlab_launcher" >&2
+  exit 1
+fi
+
+if [[ ! -d "$notebook_dir" ]]; then
+  echo "Course notebook directory not found: $notebook_dir" >&2
+  exit 1
+fi
+
+qmcpy_python=${QMCPY_PYTHON:-}
+if [[ -z "$qmcpy_python" ]]; then
+  for candidate in \
+    /opt/miniconda3/envs/qmcpy/bin/python \
+    /opt/anaconda3/envs/qmcpy/bin/python \
+    "$HOME/.conda/envs/qmcpy/bin/python"
+  do
+    if [[ -x "$candidate" ]]; then
+      qmcpy_python=$candidate
+      break
+    fi
+  done
+fi
+
+if [[ ! -x "$qmcpy_python" ]]; then
+  echo "The qmcpy Python executable was not found." >&2
+  echo "Set QMCPY_PYTHON to its full path and try again." >&2
+  exit 1
+fi
+
+exec "$jlab_launcher" \
+  --python-path "$qmcpy_python" \
+  "$notebook_dir"
