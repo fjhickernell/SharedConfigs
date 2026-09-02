@@ -64,6 +64,7 @@ Other applications store only a few configuration files.
 Examples:
 
 * Warp
+* Zsh startup files (`~/.zshenv`, `~/.zprofile`, and `~/.zshrc`)
 
 These use file links.
 
@@ -126,6 +127,7 @@ When linking a new application:
 * LaTeXiT
 * texmf
 * Warp
+* Zsh startup files (`~/.zshenv`, `~/.zprofile`, and `~/.zshrc`)
 
 Additional applications should be added conservatively.
 

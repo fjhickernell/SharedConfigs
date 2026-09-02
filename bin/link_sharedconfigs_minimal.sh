@@ -15,6 +15,7 @@
 #   ls -l ~/Library/Application\ Support/LaTeXiT
 #   ls -l ~/Library/Application\ Support/BibDesk
 #   ls -l ~/.codex/AGENTS.md
+#   ls -l ~/.zshenv ~/.zprofile ~/.zshrc
 #
 # Expected result:
 #   Each line shows an arrow (→) pointing to
@@ -86,6 +87,10 @@ link_to "$ICLOUD_SC/BibDesk" "$HOME/Library/Application Support/BibDesk"
 
 link_file_to "$ICLOUD_SC/codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
 
+link_file_to "$ICLOUD_SC/settings/zsh/zshenv" "$HOME/.zshenv"
+link_file_to "$ICLOUD_SC/settings/zsh/zprofile" "$HOME/.zprofile"
+link_file_to "$ICLOUD_SC/settings/zsh/zshrc" "$HOME/.zshrc"
+
 if [ -d "$ICLOUD_SC/settings/warp" ]; then
   mkdir -p "$HOME/.warp/tab_configs"
   link_file_to "$ICLOUD_SC/settings/warp/settings.toml" "$HOME/.warp/settings.toml"
@@ -104,6 +109,7 @@ ls -l ~/.config/karabiner 2>/dev/null || true
 ls -l ~/Library/Application\ Support/LaTeXiT 2>/dev/null || true
 ls -l ~/Library/Application\ Support/BibDesk 2>/dev/null || true
 ls -l ~/.codex/AGENTS.md 2>/dev/null || true
+ls -l ~/.zshenv ~/.zprofile ~/.zshrc 2>/dev/null || true
 ls -l ~/.warp/settings.toml 2>/dev/null || true
 ls -l ~/.warp/keybindings.yaml 2>/dev/null || true
 ls -l ~/.warp/tab_configs/startup_config.toml 2>/dev/null || true

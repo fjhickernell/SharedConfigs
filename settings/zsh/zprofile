@@ -8,13 +8,18 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 
 if [ -f "$HOME/.zprofile.local" ]; then . "$HOME/.zprofile.local"; fi
 
+export CONDA_CHANGEPS1=false
+
 if [ -f /opt/miniconda3/etc/profile.d/conda.sh ]; then
   . /opt/miniconda3/etc/profile.d/conda.sh
-  conda activate qmcpy >/dev/null 2>&1 || true
+  if [ -z "${CONDA_PREFIX:-}" ]; then
+    conda activate qmcpy >/dev/null 2>&1 || true
+  fi
 fi
 
-if [ -x /opt/miniconda3/bin/conda ]; then
-  export QUARTO_PYTHON="$(
-    /opt/miniconda3/bin/conda run -n qmcpy python -c 'import sys; print(sys.executable)' 2>/dev/null
-  )"
+# Avoid launching Conda and Python merely to discover this stable path.  That
+# subprocess made GUI applications such as VS Code exceed their shell-
+# environment startup timeout, especially on the Intel Mac.
+if [ -x /opt/miniconda3/envs/qmcpy/bin/python ]; then
+  export QUARTO_PYTHON=/opt/miniconda3/envs/qmcpy/bin/python
 fi

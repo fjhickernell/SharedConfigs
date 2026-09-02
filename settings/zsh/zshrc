@@ -40,7 +40,9 @@ export PATH="$HOME/Documents/bin:$PATH"
 # Starship prompt
 # ===============================
 
-command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+if [ -z "${VSCODE_RESOLVING_ENVIRONMENT:-}" ]; then
+  command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+fi
 
 
 # ===============================
@@ -89,28 +91,20 @@ depart() {
 
 
 export CONDA_CHANGEPS1=false
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/miniconda3/bin:$PATH"
-    fi
+
+# Login shells initialize Conda in .zprofile.  Source the lightweight shell
+# definitions here only for interactive shells that did not run .zprofile;
+# do not invoke `conda shell.zsh hook` a second time.
+if ! command -v conda >/dev/null 2>&1; then
+  if [ -f /opt/miniconda3/etc/profile.d/conda.sh ]; then
+    . /opt/miniconda3/etc/profile.d/conda.sh
+  elif [ -d /opt/miniconda3/bin ]; then
+    export PATH="/opt/miniconda3/bin:$PATH"
+  fi
 fi
-unset __conda_setup
-# <<< conda initialize <<<
 
-
-
-
-if [[ $- == *i* ]]; then
-  if command -v conda >/dev/null 2>&1; then
-    if [ -z "${CONDA_PREFIX:-}" ]; then
-      conda activate qmcpy >/dev/null 2>&1 || true
-    fi
+if [[ $- == *i* ]] && command -v conda >/dev/null 2>&1; then
+  if [ -z "${CONDA_PREFIX:-}" ]; then
+    conda activate qmcpy >/dev/null 2>&1 || true
   fi
 fi
