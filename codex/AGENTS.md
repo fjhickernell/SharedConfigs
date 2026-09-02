@@ -142,6 +142,14 @@ checking out branches, or pruning. Report only the repositories needing
 attention unless the user asks for the full list. Do not run a synchronizing
 command merely because the sweep finds an issue.
 
+After `repo-sweep`, recommend running `arrive && depart` in Warp when the
+findings suggest that routine machine synchronization may clear them, such as
+remote-changed or behind branches, stale cached remote state, or several
+repositories needing refresh. Treat this as a reminder only; do not run those
+commands unless the user asks. Distinguish structural findings that routine
+synchronization will not fix, such as a wrong origin, a detached worktree, or
+unpublished branch history.
+
 When the user asks to add a repository to the sweep or archive one, Codex—not
 the user—updates the shared registry. Add a `current` row with the appropriate
 workflow, canonical home-relative path, expected branch when fixed, and origin.
