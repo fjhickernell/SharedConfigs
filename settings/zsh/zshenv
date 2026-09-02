@@ -1,1 +1,9 @@
+# Homebrew Ruby is the unpinned default in every shell mode. chruby may replace
+# it later only when a project supplies a local .ruby-version.
+if [ -d /opt/homebrew/opt/ruby/bin ]; then
+  export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+elif [ -d /usr/local/opt/ruby/bin ]; then
+  export PATH="/usr/local/opt/ruby/bin:$PATH"
+fi
+
 export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"

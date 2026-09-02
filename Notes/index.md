@@ -1,8 +1,9 @@
 # SharedConfigs Notes
 
-This folder is surfaced in Obsidian via the `SharedConfigs-Notes` symlink.
-
-Contents here are part of the SharedConfigs knowledge base.
+These notes document the SharedConfigs infrastructure. Selected individual
+files are surfaced in Obsidian through the links declared in
+`settings/vault-links.conf`; the former `SharedConfigs-Notes` directory link is
+retired.
 
 ## Procedures
 

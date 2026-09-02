@@ -11,12 +11,12 @@ elif [ -x /usr/local/bin/brew ]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-
 # ===============================
 # chruby (ARM + Intel unified)
+#
+# Load chruby so a repository-local .ruby-version can select a Ruby when a
+# project needs one. Do not activate one Ruby globally here.
 # ===============================
-
-export RUBY_AUTO_VERSION=""
 
 if [ -f /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]; then
   source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
@@ -26,14 +26,12 @@ elif [ -f /usr/local/opt/chruby/share/chruby/chruby.sh ]; then
   [ -f /usr/local/opt/chruby/share/chruby/auto.sh ] && source /usr/local/opt/chruby/share/chruby/auto.sh
 fi
 
-type chruby >/dev/null 2>&1 && chruby ruby-3.4.1 >/dev/null 2>&1 || true
-
 
 # ===============================
 # PATH additions
 # ===============================
 
-export PATH="$HOME/Documents/bin:$PATH"
+export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 
 
 # ===============================

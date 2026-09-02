@@ -1,0 +1,239 @@
+#!/bin/zsh
+
+# Read-only audit of the deliberate relative links inside the Obsidian vault.
+
+set -u
+setopt pipefail
+
+script_dir=${0:A:h}
+managed_root=${script_dir:h}
+managed_home=${HOME}
+vault_root="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault"
+manifest_path=""
+show_all=0
+
+usage() {
+  cat <<'EOF'
+Usage: vault-links-audit [options]
+
+Audit the exact relative links declared in settings/vault-links.conf. This
+command is always read-only.
+
+Options:
+  --all            Also print links that are already correct.
+  --root PATH      Use PATH as the SharedConfigs root (primarily for tests).
+  --home PATH      Resolve home-rooted sources below PATH.
+  --vault PATH     Audit PATH as the Obsidian vault.
+  --manifest PATH  Read a different manifest (primarily for tests).
+  -h, --help       Show this help.
+
+Exit status is 0 when every link is correct, 1 when attention is needed, and
+2 for an invocation or manifest error.
+EOF
+}
+
+die_usage() {
+  print -u2 -r -- "ERROR: $*"
+  print -u2 -r -- "Run vault-links-audit --help for usage."
+  exit 2
+}
+
+while (( $# > 0 )); do
+  case "$1" in
+    --all)
+      show_all=1
+      ;;
+    --root)
+      (( $# >= 2 )) || die_usage "--root requires a path"
+      managed_root=${2:A}
+      shift
+      ;;
+    --home)
+      (( $# >= 2 )) || die_usage "--home requires a path"
+      managed_home=${2:A}
+      shift
+      ;;
+    --vault)
+      (( $# >= 2 )) || die_usage "--vault requires a path"
+      vault_root=${2:A}
+      shift
+      ;;
+    --manifest)
+      (( $# >= 2 )) || die_usage "--manifest requires a path"
+      manifest_path=${2:A}
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      die_usage "unknown option: $1"
+      ;;
+  esac
+  shift
+done
+
+[[ -n "$manifest_path" ]] || manifest_path="$managed_root/settings/vault-links.conf"
+[[ -d "$managed_root" ]] || die_usage "SharedConfigs root is not a directory: $managed_root"
+[[ -d "$managed_home" ]] || die_usage "home path is not a directory: $managed_home"
+[[ -d "$vault_root" ]] || die_usage "vault path is not a directory: $vault_root"
+[[ -f "$manifest_path" ]] || die_usage "manifest is not a file: $manifest_path"
+
+valid_relative_path() {
+  local relative_path=$1
+  local component
+  local -a components
+
+  [[ -n "$relative_path" && "$relative_path" != /* && "$relative_path" != *//* ]] || return 1
+  components=("${(@s:/:)relative_path}")
+  for component in "${components[@]}"; do
+    [[ -n "$component" && "$component" != "." && "$component" != ".." ]] || return 1
+  done
+  return 0
+}
+
+valid_identifier() {
+  local identifier=$1
+  [[ -n "$identifier" && "$identifier" != [.-]* && "$identifier" != *[^A-Za-z0-9._-]* ]]
+}
+
+typeset -a entry_names entry_kinds entry_source_roots entry_sources entry_destinations
+typeset -a destination_relatives
+integer line_number=0
+integer manifest_errors=0
+raw_line=""
+
+while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
+  (( line_number += 1 ))
+  raw_line=${raw_line%$'\r'}
+  trimmed_line=${raw_line#"${raw_line%%[![:space:]]*}"}
+  [[ -z "$trimmed_line" || "$trimmed_line" == \#* ]] && continue
+
+  fields=("${(@s:|:)raw_line}")
+  if (( ${#fields} != 5 )); then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: expected 5 pipe-delimited fields"
+    (( manifest_errors += 1 ))
+    continue
+  fi
+
+  name=${fields[1]}
+  kind=${fields[2]}
+  source_root=${fields[3]}
+  source_relative=${fields[4]}
+  destination_relative=${fields[5]}
+
+  if ! valid_identifier "$name"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: invalid name: $name"
+    (( manifest_errors += 1 ))
+  fi
+  if [[ "$kind" != "file" && "$kind" != "directory" ]]; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: kind must be file or directory"
+    (( manifest_errors += 1 ))
+  fi
+  if [[ "$source_root" != "home" && "$source_root" != "vault" ]]; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: source root must be home or vault"
+    (( manifest_errors += 1 ))
+  fi
+  if ! valid_relative_path "$source_relative"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: unsafe source path: $source_relative"
+    (( manifest_errors += 1 ))
+  fi
+  if ! valid_relative_path "$destination_relative"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: unsafe destination path: $destination_relative"
+    (( manifest_errors += 1 ))
+  fi
+
+  for prior_name in "${entry_names[@]}"; do
+    if [[ "$prior_name" == "$name" ]]; then
+      print -u2 -r -- "MANIFEST-ERROR line $line_number: duplicate name: $name"
+      (( manifest_errors += 1 ))
+      break
+    fi
+  done
+  for prior_destination in "${destination_relatives[@]}"; do
+    if [[ "$prior_destination" == "$destination_relative" ]]; then
+      print -u2 -r -- "MANIFEST-ERROR line $line_number: duplicate destination: $destination_relative"
+      (( manifest_errors += 1 ))
+      break
+    fi
+  done
+
+  entry_names+=("$name")
+  entry_kinds+=("$kind")
+  entry_source_roots+=("$source_root")
+  entry_sources+=("$source_relative")
+  entry_destinations+=("$vault_root/$destination_relative")
+  destination_relatives+=("$destination_relative")
+done < "$manifest_path"
+
+(( manifest_errors == 0 )) || exit 2
+(( ${#entry_names} > 0 )) || die_usage "manifest contains no entries: $manifest_path"
+
+integer problems=0
+integer checked=0
+
+for (( index = 1; index <= ${#entry_names}; index += 1 )); do
+  (( checked += 1 ))
+  name=${entry_names[index]}
+  kind=${entry_kinds[index]}
+  if [[ "${entry_source_roots[index]}" == "home" ]]; then
+    source_path="$managed_home/${entry_sources[index]}"
+  else
+    source_path="$vault_root/${entry_sources[index]}"
+  fi
+  destination_path=${entry_destinations[index]}
+
+  if [[ "$kind" == "file" ]]; then
+    source_valid=$([[ -f "$source_path" ]] && print yes || print no)
+  else
+    source_valid=$([[ -d "$source_path" ]] && print yes || print no)
+  fi
+
+  if [[ "$source_valid" != "yes" ]]; then
+    if [[ -e "$source_path" || -L "$source_path" ]]; then
+      print -r -- "SOURCE-TYPE $name: $source_path"
+    else
+      print -r -- "SOURCE-MISSING $name: $source_path"
+    fi
+    (( problems += 1 ))
+    continue
+  fi
+
+  if [[ ! -L "$destination_path" ]]; then
+    if [[ -e "$destination_path" ]]; then
+      print -r -- "NOT-SYMLINK $name: $destination_path"
+    else
+      print -r -- "MISSING $name: $destination_path"
+    fi
+    (( problems += 1 ))
+    continue
+  fi
+
+  stored_target=$(readlink "$destination_path" 2>/dev/null || true)
+  if [[ "$stored_target" == /* ]]; then
+    print -r -- "ABSOLUTE-TARGET $name: $destination_path -> $stored_target"
+    (( problems += 1 ))
+    continue
+  fi
+  if [[ ! -e "$destination_path" ]]; then
+    print -r -- "BROKEN $name: $destination_path -> $stored_target"
+    (( problems += 1 ))
+    continue
+  fi
+  if [[ ! "$source_path" -ef "$destination_path" ]]; then
+    print -r -- "WRONG-TARGET $name: $destination_path -> $stored_target (expected $source_path)"
+    (( problems += 1 ))
+    continue
+  fi
+
+  (( show_all )) && print -r -- "OK $name: $destination_path -> $stored_target"
+done
+
+if (( problems > 0 )); then
+  print -r -- "ATTENTION: $problems of $checked vault link(s) need attention."
+  exit 1
+fi
+
+print -r -- "OK: $checked vault link(s)."
+exit 0

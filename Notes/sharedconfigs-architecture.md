@@ -8,7 +8,7 @@ Its goals are:
 
 * Maintain a consistent working environment across all Macs.
 * Version configuration using Git.
-* Synchronize configuration via iCloud Drive.
+* Synchronize configuration through the managed Git workflow.
 * Keep application-specific settings in their expected locations by using symbolic links.
 * Minimize machine-specific configuration.
 
@@ -22,14 +22,10 @@ The guiding principle is:
 
 ### Synchronization
 
-Configuration is synchronized in two ways:
-
-* **Git** provides version history and recovery.
-* **iCloud Drive** propagates changes automatically among Macs.
-
-Git answers *what changed*.
-
-iCloud answers *where the change should appear*.
+Each Mac has a Git checkout at `~/Documents/SharedConfigs`. The managed
+`arrive`/`depart` and infrastructure synchronization workflows move changes
+between those checkouts through Git. The Obsidian vault is a separate iCloud
+workspace; SharedConfigs itself is not synchronized by iCloud.
 
 ---
 
@@ -37,7 +33,11 @@ iCloud answers *where the change should appear*.
 
 Applications continue to use their normal configuration locations.
 
-`link_sharedconfigs_minimal.sh` creates symbolic links from the standard macOS locations to files or directories inside `SharedConfigs`.
+`settings/managed-links.conf` is the single source of truth for symbolic links
+from standard macOS locations to files or directories inside SharedConfigs.
+`sharedconfigs-audit` checks the inventory without changing anything.
+`link_sharedconfigs_minimal.sh` is the compatibility entry point for explicit
+repair and onboarding; it delegates to `sharedconfigs-audit --repair`.
 
 This provides three benefits:
 
@@ -51,13 +51,9 @@ This provides three benefits:
 
 Some applications naturally store all portable configuration in a directory.
 
-Examples:
-
-* BibDesk
-* LaTeXiT
-* texmf
-
-These use directory links.
+The `texmf` tree uses a directory link. Live application-support directories
+remain machine-local unless an application has been deliberately validated for
+whole-directory sharing.
 
 Other applications store only a few configuration files.
 
@@ -68,10 +64,13 @@ Examples:
 
 These use file links.
 
-The helper functions reflect this distinction:
-
-* `link_to()` — directories
-* `link_file_to()` — individual files
+The manifest records this distinction as `directory` or `file` for every
+entry, and the auditor verifies the source type before any repair begins.
+Each entry also declares required versus optional status and either `all` or a
+comma-separated set of preferred machine short names. A deliberate local
+exception can be recorded, with a reason, in the untracked
+`~/.config/sharedconfigs/link-audit-exemptions.conf`; exemptions remain visible
+in every audit and are never silently inferred.
 
 ---
 
@@ -106,28 +105,41 @@ When evaluating whether to add a new application:
 4. Test on one Mac.
 5. Verify that the application respects symbolic links.
 6. Roll out to remaining Macs.
-7. Add support to `link_sharedconfigs_minimal.sh`.
+7. Add the link to `settings/managed-links.conf` and extend the audit fixtures
+   when the new case introduces different behavior.
 
 ---
 
 ## Backup Strategy
 
-When linking a new application:
+When repairing or linking a new application:
 
 * Existing files are renamed with a timestamp.
 * The shared version replaces them via a symbolic link.
 * Backups are retained until the configuration has been verified on all Macs.
+* All declared sources are preflighted before repair begins, preventing a
+  missing shared source from causing a partial repair.
+* Broad home-directory containers and any destination overlapping the source
+  repository are rejected before repair.
+* If link creation fails or the process is interrupted, the active entry is
+  rolled back to its preserved original when that can be done safely.
 
 ---
 
 ## Current Shared Applications
 
-* BibDesk
 * Codex global instructions (`~/.codex/AGENTS.md` → `codex/AGENTS.md`)
-* LaTeXiT
+* MarkEdit's portable script, style, and settings files
+* Starship
 * texmf
 * Warp
 * Zsh startup files (`~/.zshenv`, `~/.zprofile`, and `~/.zshrc`)
+
+Karabiner-Elements, LaTeXiT, and BibDesk's live Application Support directory
+are deliberately outside the managed inventory. Karabiner and LaTeXiT are not
+part of current workflows. BibDesk remains in use, but its writable support
+directory stays local; `BibDesk/` in this repository is retained as an archive,
+not as a live link target.
 
 Additional applications should be added conservatively.
 

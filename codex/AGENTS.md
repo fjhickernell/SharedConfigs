@@ -196,12 +196,18 @@ opt-in is in the repository-local instructions for the Infrastructure
 project's two entry points; the presence of this global file through the
 `~/.codex/AGENTS.md` symlink is not a project-specific opt-in.
 
-### `Infrastructure Checkpoint`
+### `Infrastructure Checkpoint` and `infra save`
 
-When the user's message is exactly:
+When the user's entire message is exactly either:
 
 ```text
 Infrastructure Checkpoint
+```
+
+or:
+
+```text
+infra save
 ```
 
 treat it as an Infrastructure-project Checkpoint regardless of the current
@@ -214,7 +220,7 @@ because this command was issued from that project's workspace, and do not run
 `sync-active.sh`.
 
 Do not treat casual or reordered uses of these words as this command. The
-message must be exactly `Infrastructure Checkpoint`.
+entire message must match one of the two commands exactly.
 
 ### `Checkpoint`
 

@@ -1,0 +1,262 @@
+#!/bin/zsh
+
+# Broad, read-only health check for the portable configuration on one Mac.
+
+set -u
+setopt pipefail
+
+script_dir=${0:A:h}
+managed_root=${script_dir:h}
+managed_home=${HOME}
+vault_root="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault"
+show_all=0
+full_audit=0
+configuration_only=0
+
+usage() {
+  cat <<'EOF'
+Usage: machine-audit [options]
+
+Run read-only checks for SharedConfigs links, Zsh startup, machine identity,
+Obsidian vault wiring, essential commands, and managed Git repositories.
+
+Options:
+  --all                 Also print checks that are already correct.
+  --full                Query live remote Git tips and check the Brewfile.
+  --configuration-only  Skip managed-repository and Brewfile checks.
+  --root PATH           Use PATH as the SharedConfigs root.
+  --home PATH           Audit PATH as the home directory.
+  --vault PATH          Audit PATH as the Obsidian vault.
+  -h, --help            Show this help.
+
+The default repository check is local-only and does not contact remotes. The
+entire command is read-only. Exit status is 0 when clear, 1 when attention is
+needed, and 2 for an invocation or audit error.
+EOF
+}
+
+die_usage() {
+  print -u2 -r -- "ERROR: $*"
+  print -u2 -r -- "Run machine-audit --help for usage."
+  exit 2
+}
+
+while (( $# > 0 )); do
+  case "$1" in
+    --all)
+      show_all=1
+      ;;
+    --full)
+      full_audit=1
+      ;;
+    --configuration-only)
+      configuration_only=1
+      ;;
+    --root)
+      (( $# >= 2 )) || die_usage "--root requires a path"
+      managed_root=${2:A}
+      shift
+      ;;
+    --home)
+      (( $# >= 2 )) || die_usage "--home requires a path"
+      managed_home=${2:A}
+      shift
+      ;;
+    --vault)
+      (( $# >= 2 )) || die_usage "--vault requires a path"
+      vault_root=${2:A}
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      die_usage "unknown option: $1"
+      ;;
+  esac
+  shift
+done
+
+(( ! full_audit || ! configuration_only )) || die_usage "--full and --configuration-only cannot be combined"
+[[ -d "$managed_root" ]] || die_usage "SharedConfigs root is not a directory: $managed_root"
+[[ -d "$managed_home" ]] || die_usage "home path is not a directory: $managed_home"
+
+integer overall_status=0
+integer has_advisories=0
+
+record_status() {
+  local component_status=$1
+  case $component_status in
+    0)
+      ;;
+    1)
+      (( overall_status == 0 )) && overall_status=1
+      ;;
+    *)
+      overall_status=2
+      ;;
+  esac
+}
+
+print -r -- "=== SharedConfigs links and Zsh ==="
+shared_args=(--root "$managed_root" --home "$managed_home")
+(( show_all )) && shared_args+=(--all)
+shared_output=$("$managed_root/bin/sharedconfigs-audit" "${shared_args[@]}" 2>&1)
+shared_status=$?
+[[ -n "$shared_output" ]] && print -r -- "$shared_output"
+[[ "$shared_output" == *'CLEAR WITH ADVISORIES:'* ]] && has_advisories=1
+record_status $shared_status
+
+print
+print -r -- "=== Machine identity ==="
+identity_file="$managed_home/.codex-machine.md"
+if [[ ! -f "$identity_file" ]]; then
+  print -r -- "MISSING machine identity: $identity_file"
+  record_status 1
+else
+  full_identity=$(sed -n 's/^- Full identity:[[:space:]]*//p' "$identity_file" | head -n 1)
+  short_name=$(sed -n 's/^- Preferred short name:[[:space:]]*//p' "$identity_file" | head -n 1)
+  if [[ -z "$full_identity" || -z "$short_name" ]]; then
+    print -r -- "INVALID machine identity: expected Full identity and Preferred short name in $identity_file"
+    record_status 1
+  else
+    print -r -- "OK: $short_name — $full_identity"
+  fi
+fi
+
+print
+print -r -- "=== Obsidian vault wiring ==="
+if [[ ! -d "$vault_root" ]]; then
+  print -r -- "MISSING vault: $vault_root"
+  record_status 1
+else
+  vault_args=(--root "$managed_root" --home "$managed_home" --vault "$vault_root")
+  (( show_all )) && vault_args+=(--all)
+  "$managed_root/bin/vault-links-audit" "${vault_args[@]}"
+  record_status $?
+fi
+
+print
+print -r -- "=== Essential commands ==="
+current_user=$(id -un)
+command_output=$(/usr/bin/env -i \
+  HOME="$managed_home" \
+  ZDOTDIR="$managed_home" \
+  USER="$current_user" \
+  LOGNAME="$current_user" \
+  SHELL=/bin/zsh \
+  TERM=dumb \
+  VSCODE_RESOLVING_ENVIRONMENT=1 \
+  PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+  /bin/zsh -lc '
+    for command_name in git brew ruby conda quarto starship repo-sweep git-repo-sync.sh arrive.sh depart.sh; do
+      command_path=$(command -v "$command_name" 2>/dev/null) || command_path=""
+      print -r -- "$command_name|$command_path"
+    done
+  ' 2>/dev/null)
+command_probe_status=$?
+
+typeset -A command_paths
+integer command_problems=0
+if (( command_probe_status != 0 )); then
+  print -r -- "COMMAND-PROBE-FAILED: clean login shell exited $command_probe_status"
+  (( command_problems += 1 ))
+else
+  command_lines=("${(@f)command_output}")
+  for command_line in "${command_lines[@]}"; do
+    command_fields=("${(@s:|:)command_line}")
+    (( ${#command_fields} == 2 )) || continue
+    command_paths[${command_fields[1]}]=${command_fields[2]}
+  done
+fi
+
+if (( command_probe_status == 0 )); then
+  for command_name in git brew ruby conda quarto starship repo-sweep git-repo-sync.sh arrive.sh depart.sh; do
+    command_path=${command_paths[$command_name]-}
+    if [[ -z "$command_path" ]]; then
+      print -r -- "COMMAND-MISSING $command_name"
+      (( command_problems += 1 ))
+    elif (( show_all )); then
+      print -r -- "OK $command_name: $command_path"
+    fi
+  done
+fi
+
+ruby_path=${command_paths[ruby]-}
+if [[ -n "$ruby_path" ]]; then
+  brew_path=${command_paths[brew]-}
+  expected_ruby=""
+  if [[ -n "$brew_path" ]]; then
+    ruby_prefix=$(HOMEBREW_NO_AUTO_UPDATE=1 "$brew_path" --prefix ruby 2>/dev/null)
+    ruby_prefix_status=$?
+    if (( ruby_prefix_status == 0 )) && [[ -n "$ruby_prefix" ]]; then
+      expected_ruby="$ruby_prefix/bin/ruby"
+    fi
+  fi
+  if [[ -z "$expected_ruby" || ! -x "$expected_ruby" || ! "$ruby_path" -ef "$expected_ruby" ]]; then
+    print -r -- "RUNTIME-WRONG ruby: $ruby_path (expected the Ruby selected by brew --prefix ruby)"
+    (( command_problems += 1 ))
+  else
+    ruby_version=$(/usr/bin/env -i \
+      HOME="$managed_home" ZDOTDIR="$managed_home" USER="$current_user" \
+      LOGNAME="$current_user" SHELL=/bin/zsh TERM=dumb \
+      VSCODE_RESOLVING_ENVIRONMENT=1 \
+      PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+      /bin/zsh -lc 'ruby --version' 2>/dev/null)
+    ruby_version_status=$?
+    if (( ruby_version_status != 0 )) || [[ -z "$ruby_version" ]]; then
+      print -r -- "RUNTIME-FAILED ruby: $ruby_path could not report its version"
+      (( command_problems += 1 ))
+    else
+      print -r -- "Ruby: $ruby_version ($ruby_path)"
+    fi
+  fi
+fi
+
+if (( command_problems > 0 )); then
+  print -r -- "ATTENTION: $command_problems essential command problem(s)."
+  record_status 1
+else
+  print -r -- "OK: all essential commands are available through a clean login shell."
+fi
+
+if (( ! configuration_only )); then
+  print
+  print -r -- "=== Managed repositories ==="
+  if (( full_audit )); then
+    "$managed_root/bin/repo-sweep"
+  else
+    "$managed_root/bin/repo-sweep" --local
+  fi
+  record_status $?
+
+  if (( full_audit )); then
+    print
+    print -r -- "=== Brewfile ==="
+    brew_path=${command_paths[brew]-}
+    if [[ -z "$brew_path" ]]; then
+      print -r -- "COMMAND-MISSING brew: cannot check Brewfile"
+      record_status 1
+    elif HOMEBREW_NO_AUTO_UPDATE=1 "$brew_path" bundle check --file="$managed_root/Brewfile"; then
+      print -r -- "OK: every Brewfile dependency is installed."
+    else
+      print -r -- "ATTENTION: Brewfile dependencies need attention."
+      record_status 1
+    fi
+  fi
+fi
+
+print
+if (( overall_status == 0 )); then
+  if (( has_advisories )); then
+    print -r -- "MACHINE AUDIT CLEAR WITH ADVISORIES"
+  else
+    print -r -- "MACHINE AUDIT CLEAR"
+  fi
+elif (( overall_status == 1 )); then
+  print -r -- "MACHINE AUDIT NEEDS ATTENTION"
+else
+  print -r -- "MACHINE AUDIT ERROR"
+fi
+exit $overall_status

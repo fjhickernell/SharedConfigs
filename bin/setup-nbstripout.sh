@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Usage reminder:
-#   ~/Documents/bin/setup-nbstripout.sh "/path/to/repo"
+#   ~/Documents/SharedConfigs/bin/setup-nbstripout.sh "/path/to/repo"
 
 set -euo pipefail
 

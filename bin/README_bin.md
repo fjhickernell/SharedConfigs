@@ -1,29 +1,16 @@
-# SharedConfigs `bin/` – Script Guide (v1.3)
+# SharedConfigs `bin/` – Script Guide (v1.4)
 
 This README provides a complete reference to all scripts in  
 `~/Documents/SharedConfigs/bin`, describing what each script does, when to run it, and how these scripts fit into your multi-Mac workflow.
 
 ---
 
-## iCloud + Git Workflow
+## Git Workflow
 
-Your `SharedConfigs` folder lives in **iCloud Drive**, which means:
-
-- **All edits propagate across all Macs automatically** within seconds.  
-- Daily syncing of scripts happens via **iCloud**, not Git.  
-- **Git is only for periodic snapshots** and version history.
-
-Use Git via `sharedconfigs-save.sh` when:
-
-- You reach a stable configuration point  
-- Before travel or major system upgrades  
-- After adding new scripts or modifying existing ones  
-- You want a reproducible configuration checkpoint  
-
-This hybrid approach gives:
-
-- **iCloud** → instant cross-Mac updates  
-- **Git** → safety, history, and rollback  
+SharedConfigs is a normal Git checkout at `~/Documents/SharedConfigs`, not an
+iCloud-synchronized directory. The `arrive` and `depart` workflows synchronize
+the wider managed repository set; `git-repo-sync.sh` handles SharedConfigs and
+GitTracked as the two infrastructure repositories.
 
 ---
 
@@ -35,20 +22,9 @@ This hybrid approach gives:
 ~/Documents/SharedConfigs/bin
 ```
 
-Therefore any script run by a LaunchAgent must be placed in:
-
-```
-~/bin
-```
-
-As of v1.3, only these scripts must reside in `~/bin`:
-
-- `sync-brew.sh`
-- `regular-maintenance.sh` (if you ever choose to automate it—currently **manual only**)  
-
-The older `sync-brew-launchd.sh` has been **retired**.
-
-All other scripts stay in SharedConfigs because your `.zshrc` adds:
+LaunchAgents should therefore invoke scripts by their absolute paths. There is
+no supported `~/bin` mirror. Interactive and non-interactive Zsh sessions find
+the scripts because `.zshenv` adds:
 
 ```
 export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
@@ -60,20 +36,22 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 
 | Script | Category | Purpose |
 |--------|----------|---------|
-| `brew-publish` | Homebrew | Publish/update canonical Brewfile in SharedConfigs. |
+| `brewfile-refresh` | Homebrew | Refresh and normalize the canonical Brewfile from the current Mac. |
 | `dump-mac-apps.sh` | Mac App Inventory | Dump installed apps/casks/MAS apps. |
 | `export-macapps-xlsx.sh` | Mac App Inventory | Export inventory to Excel. |
 | `jlab332` | Teaching | Open MATH 332 notebooks as one JupyterLab Desktop project using `qmcpy`. |
 | `jlab565` | Teaching | Open MATH 565 notebooks as one JupyterLab Desktop project using `qmcpy`. |
 | `link_sharedconfigs_minimal.sh` | Mac Setup | Bring a new Mac online with baseline links. |
+| `machine-audit` | Mac Setup | Run the broad read-only machine configuration and repository audit. |
+| `markedit-recover-sync` | Mac Setup | Repair only the managed MarkEdit links. |
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
 | `quarto-site-live` | Teaching | Live-render a Quarto website on an independent automatically assigned per-course port. |
 | `quarto-slides-live` | Teaching | Live-render one RevealJS deck on an automatically assigned per-course port. |
-| `regular-maintenance.sh` | System Maintenance | Run sync-brew, update-texlive, qmcpy sync, etc. |
+| `regular-maintenance.sh` | System Maintenance | Update Brew and TeX Live, then synchronize managed repositories and npm globals. |
 | `repo-sweep` | Git | Check all current managed repositories and print only those needing attention. |
 | `README_bin.md` | Documentation | This file. |
+| `sharedconfigs-audit` | Mac Setup | Audit managed links and Zsh; repair only with `--repair`. |
 | `setup-starship.sh` | Shell | Install and link shared starship config. |
-| `sharedconfigs-save.sh` | Git | Commit and push SharedConfigs snapshots. |
 | `setup_matlab_toolboxes.sh` | MATLAB | Install or sync MATLAB toolboxes. |
 | `sync-brew.sh` | Homebrew | Sync Homebrew formulae/casks using Brewfile. |
 | `sync-qmcpy-env.sh` | Conda | Sync or upgrade the `qmcpy` conda environment. |
@@ -81,6 +59,7 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `texstudio-fixed` | TeX | Launch TeXstudio with stable preference paths. |
 | `update-macapps-inventory.sh` | Mac App Inventory | Regenerate `MacAppsInventory.md`. |
 | `update-texlive.sh` | TeX | Update TeX Live via tlmgr. |
+| `vault-links-audit` | Mac Setup | Audit the deliberate portable links inside the Obsidian vault. |
 
 ---
 
@@ -96,8 +75,11 @@ Your consolidated maintenance driver script.
 It currently runs:
 
 - `sync-brew.sh`
-- `update-texlive.sh`  
-- `sync-qmcpy-env.sh` (optional and commented in/out by you)  
+- `update-texlive.sh`
+- `git-repo-sync.sh`
+- `sync-dev.sh` in pull-only mode, when available
+- `sync-active.sh` without `--push`, when available
+- `npm-globals-sync.sh`, when npm and the script are available
 
 Workflow:
 
@@ -110,7 +92,8 @@ Workflow:
    - `tlmgr` (always requires separate authentication)
    - Homebrew (for privileged installs)
 
-This script is now your *primary unified maintenance workflow*.
+This is a mutating maintenance workflow. Use `machine-audit` when a read-only
+health check is appropriate.
 
 ---
 
@@ -121,10 +104,13 @@ Synchronizes all Homebrew formulae and casks using your canonical Brewfile.
 
 Shows `Using …` versus `Installing …` for clarity.
 
-Resides in `~/bin` so it can be used in LaunchAgents should you ever re-enable automation.
+It lives in `~/Documents/SharedConfigs/bin`. Any future LaunchAgent must invoke
+that absolute path rather than relying on shell startup or a separate script
+mirror.
 
-### `brew-publish`
-Creates or updates your “gold standard” Brewfile in SharedConfigs.
+### `brewfile-refresh`
+Refreshes the canonical Brewfile from the current Mac, removes deliberately
+excluded entries, and normalizes its ordering.
 
 Use when:
 
@@ -161,22 +147,39 @@ existing non-Git path is reported as an error and is never overwritten. Both
 synchronization scripts label unchanged repositories as `already current` and
 report the number of commits added by a fast-forward as `+N`.
 
-### `sharedconfigs-save.sh`
-Commit-and-push tool for SharedConfigs:
+### `machine-audit`
 
-- Stages all changes  
-- Adds timestamp + hostname  
-- Pushes to GitHub  
-- Does **not** pull first (safer with iCloud)  
+Runs the broad, read-only machine check: SharedConfigs links, Zsh startup,
+machine identity, essential commands, Obsidian vault wiring, and locally
+cached managed-repository state. `--full` also queries live remote tips and
+checks installed dependencies against the Brewfile without updating local
+refs.
+
+### `sharedconfigs-audit`
+
+Checks the exact inventory in `settings/managed-links.conf`. It reports
+missing, non-link, dangling, wrong-target, missing-source, and wrong-source-type
+states. It also validates the shared Zsh files and four clean startup modes.
+The default is read-only; `--repair` backs up every displaced path and creates
+the declared links. `--group` limits work to one application or subsystem.
+Manifest entries support required/optional policy and per-machine selectors;
+`--include-optional` opts optional entries into repair. Intentional local
+exceptions are read from
+`~/.config/sharedconfigs/link-audit-exemptions.conf` in `name|reason` format
+and are always printed. `--no-exemptions` shows the underlying state.
+
+### `vault-links-audit`
+
+Checks the exact inventory in `settings/vault-links.conf`, including whether
+each vault link stores a portable relative target. It is always read-only.
 
 ### `link_sharedconfigs_minimal.sh`
-Initial linking + setup step for a newly configured Mac:
-
-- Ensures `~/bin` exists  
-- Adds SharedConfigs/bin to PATH  
-- Links starship config and other essentials  
-
-Use once when onboarding a new machine.
+Compatibility entry point for onboarding or repairing a Mac. It delegates to
+`sharedconfigs-audit --repair --all`, so existing correct links remain
+untouched and displaced paths receive timestamped backups. Karabiner-Elements
+and LaTeXiT are deliberately not managed. BibDesk remains in use, but its live
+Application Support directory is also kept machine-local rather than linked as
+a whole.
 
 ---
 
@@ -186,9 +189,10 @@ Use once when onboarding a new machine.
 Ensures consistent and shared starship setup:
 
 - Installs starship via Homebrew  
-- Creates `~/.config`  
-- Symlinks shared `starship.toml`  
-- Ensures `.zshrc` has `eval "$(starship init zsh)"`  
+- Repairs the shared `starship.toml` link through the central manifest
+
+Prompt initialization already lives in the shared `.zshrc`; this helper does
+not edit shell startup files.
 
 ---
 
@@ -389,6 +393,7 @@ Whenever you add or modify a script:
 
 1. Update the **Quick Reference Table**  
 2. Update the **Detailed Descriptions**  
-3. Save the README, then run `sharedconfigs-save.sh` if you want a Git snapshot  
+3. Include the documentation change in the next Infrastructure Checkpoint so
+   it is validated, committed, and pushed with the corresponding script change.
 
 This keeps your scripting environment clear, documented, and future-proof.

@@ -1,0 +1,789 @@
+#!/bin/zsh
+
+# Audit and, only when explicitly requested, repair the filesystem links whose
+# authoritative copies live in SharedConfigs.
+
+set -u
+setopt pipefail
+
+script_dir=${0:A:h}
+managed_root=${script_dir:h}
+managed_home=${HOME}
+manifest_path=""
+selected_group=""
+repair=0
+show_all=0
+links_only=0
+include_optional=0
+ignore_exemptions=0
+exemptions_path=""
+exemptions_explicit=0
+
+usage() {
+  cat <<'EOF'
+Usage: sharedconfigs-audit [options]
+
+Audit the links declared in settings/managed-links.conf. The default operation
+is read-only. A correct link may use either an absolute or a relative target.
+
+Options:
+  --repair         Back up each displaced path and create the declared link.
+  --all            Also print links and Zsh checks that are already correct.
+  --group GROUP    Limit link checks or repairs to one manifest group.
+  --include-optional
+                   Include optional entries in repair mode.
+  --exemptions PATH
+                   Read machine-local exemptions from PATH.
+  --no-exemptions  Ignore the default machine-local exemptions file.
+  --links-only     Skip Zsh syntax and clean-startup checks.
+  --root PATH      Use PATH as the SharedConfigs root (primarily for tests).
+  --home PATH      Audit links below PATH instead of HOME (primarily for tests).
+  --manifest PATH  Read a different manifest (primarily for tests).
+  -h, --help       Show this help.
+
+Exit status is 0 when no required, applicable, unexempted check fails; optional
+findings may still be printed as advisories. Status 1 means attention is needed,
+and 2 indicates an invocation or manifest error.
+EOF
+}
+
+die_usage() {
+  print -u2 -r -- "ERROR: $*"
+  print -u2 -r -- "Run sharedconfigs-audit --help for usage."
+  exit 2
+}
+
+while (( $# > 0 )); do
+  case "$1" in
+    --repair)
+      repair=1
+      ;;
+    --all)
+      show_all=1
+      ;;
+    --group)
+      (( $# >= 2 )) || die_usage "--group requires a value"
+      selected_group=$2
+      shift
+      ;;
+    --include-optional)
+      include_optional=1
+      ;;
+    --exemptions)
+      (( $# >= 2 )) || die_usage "--exemptions requires a path"
+      exemptions_path=${2:A}
+      exemptions_explicit=1
+      shift
+      ;;
+    --no-exemptions)
+      ignore_exemptions=1
+      ;;
+    --links-only)
+      links_only=1
+      ;;
+    --root)
+      (( $# >= 2 )) || die_usage "--root requires a path"
+      managed_root=${2:A}
+      shift
+      ;;
+    --home)
+      (( $# >= 2 )) || die_usage "--home requires a path"
+      managed_home=${2:A}
+      shift
+      ;;
+    --manifest)
+      (( $# >= 2 )) || die_usage "--manifest requires a path"
+      manifest_path=${2:A}
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      die_usage "unknown option: $1"
+      ;;
+  esac
+  shift
+done
+
+[[ -n "$manifest_path" ]] || manifest_path="$managed_root/settings/managed-links.conf"
+if (( ! ignore_exemptions )) && [[ -z "$exemptions_path" ]]; then
+  exemptions_path="$managed_home/.config/sharedconfigs/link-audit-exemptions.conf"
+fi
+(( ! ignore_exemptions || ! exemptions_explicit )) || die_usage "--exemptions and --no-exemptions cannot be combined"
+[[ -d "$managed_root" ]] || die_usage "SharedConfigs root is not a directory: $managed_root"
+[[ -d "$managed_home" ]] || die_usage "home path is not a directory: $managed_home"
+[[ -f "$manifest_path" ]] || die_usage "manifest is not a file: $manifest_path"
+if (( exemptions_explicit )) && [[ ! -f "$exemptions_path" ]]; then
+  die_usage "exemptions file is not a file: $exemptions_path"
+fi
+
+valid_relative_path() {
+  local relative_path=$1
+  local component
+  local -a components
+
+  [[ -n "$relative_path" && "$relative_path" != /* && "$relative_path" != *//* ]] || return 1
+  components=("${(@s:/:)relative_path}")
+  for component in "${components[@]}"; do
+    [[ -n "$component" && "$component" != "." && "$component" != ".." ]] || return 1
+  done
+  return 0
+}
+
+valid_identifier() {
+  local identifier=$1
+  [[ -n "$identifier" && "$identifier" != [.-]* && "$identifier" != *[^A-Za-z0-9._-]* ]]
+}
+
+valid_machine_selector() {
+  local selector=$1
+  local machine_name
+  local -a machine_names
+
+  [[ "$selector" == "all" ]] && return 0
+  machine_names=("${(@s:,:)selector}")
+  (( ${#machine_names} > 0 )) || return 1
+  for machine_name in "${machine_names[@]}"; do
+    [[ "$machine_name" != "all" ]] || return 1
+    valid_identifier "$machine_name" || return 1
+  done
+  return 0
+}
+
+protected_destination() {
+  local kind=$1
+  local destination_relative=$2
+  local root_guard=${managed_root:A}
+  local home_guard=${managed_home:A}
+  local destination_guard="$home_guard/$destination_relative"
+
+  if [[ "$kind" == "directory" && "$destination_relative" != */* ]]; then
+    return 0
+  fi
+
+  case "$destination_relative" in
+    Documents|Library|Applications|Desktop|Downloads|Movies|Music|Pictures|Public|.config|.codex|.warp|\
+    "Library/Application Support"|"Library/Containers")
+      return 0
+      ;;
+  esac
+
+  if [[ "$destination_guard" == "$root_guard" ||
+        "$destination_guard" == "$root_guard"/* ||
+        "$root_guard" == "$destination_guard"/* ]]; then
+    return 0
+  fi
+  return 1
+}
+
+repair_safety_detail=""
+repair_destination_is_safe() {
+  local source_path=$1
+  local destination_path=$2
+  local home_guard=${managed_home:A}
+  local root_guard=${managed_root:A}
+  local source_guard=${source_path:A}
+  local parent_guard=${destination_path:h:A}
+  local destination_guard="$parent_guard/${destination_path:t}"
+
+  repair_safety_detail=""
+  if [[ "$destination_guard" != "$home_guard" && "$destination_guard" != "$home_guard"/* ]]; then
+    repair_safety_detail="destination resolves outside the audited home: $destination_guard"
+    return 1
+  fi
+  if [[ "$destination_guard" == "$root_guard" ||
+        "$destination_guard" == "$root_guard"/* ||
+        "$root_guard" == "$destination_guard"/* ]]; then
+    repair_safety_detail="destination overlaps the SharedConfigs root: $destination_guard"
+    return 1
+  fi
+  if [[ "$destination_guard" == "$source_guard" ]]; then
+    repair_safety_detail="source and destination resolve to the same path: $destination_guard"
+    return 1
+  fi
+  return 0
+}
+
+typeset -a entry_names entry_groups entry_kinds entry_policies entry_machines
+typeset -a entry_sources entry_destinations
+typeset -a source_relatives destination_relatives
+integer line_number=0
+integer manifest_errors=0
+integer selected_entries=0
+raw_line=""
+
+while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
+  (( line_number += 1 ))
+  raw_line=${raw_line%$'\r'}
+  trimmed_line=${raw_line#"${raw_line%%[![:space:]]*}"}
+  [[ -z "$trimmed_line" || "$trimmed_line" == \#* ]] && continue
+
+  fields=("${(@s:|:)raw_line}")
+  if (( ${#fields} != 7 )); then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: expected 7 pipe-delimited fields"
+    (( manifest_errors += 1 ))
+    continue
+  fi
+
+  name=${fields[1]}
+  group=${fields[2]}
+  kind=${fields[3]}
+  policy=${fields[4]}
+  machines=${fields[5]}
+  source_relative=${fields[6]}
+  destination_relative=${fields[7]}
+
+  if ! valid_identifier "$name"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: invalid name: $name"
+    (( manifest_errors += 1 ))
+  fi
+  if ! valid_identifier "$group"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: invalid group: $group"
+    (( manifest_errors += 1 ))
+  fi
+  if [[ "$kind" != "file" && "$kind" != "directory" ]]; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: kind must be file or directory"
+    (( manifest_errors += 1 ))
+  fi
+  if [[ "$policy" != "required" && "$policy" != "optional" ]]; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: policy must be required or optional"
+    (( manifest_errors += 1 ))
+  fi
+  if ! valid_machine_selector "$machines"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: invalid machine selector: $machines"
+    (( manifest_errors += 1 ))
+  fi
+  if ! valid_relative_path "$source_relative"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: unsafe source path: $source_relative"
+    (( manifest_errors += 1 ))
+  fi
+  if ! valid_relative_path "$destination_relative"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: unsafe destination path: $destination_relative"
+    (( manifest_errors += 1 ))
+  elif protected_destination "$kind" "$destination_relative"; then
+    print -u2 -r -- "MANIFEST-ERROR line $line_number: protected or overlapping destination: $destination_relative"
+    (( manifest_errors += 1 ))
+  fi
+
+  for prior_name in "${entry_names[@]}"; do
+    if [[ "$prior_name" == "$name" ]]; then
+      print -u2 -r -- "MANIFEST-ERROR line $line_number: duplicate name: $name"
+      (( manifest_errors += 1 ))
+      break
+    fi
+  done
+  for prior_destination in "${destination_relatives[@]}"; do
+    if [[ "$prior_destination" == "$destination_relative" ]]; then
+      print -u2 -r -- "MANIFEST-ERROR line $line_number: duplicate destination: $destination_relative"
+      (( manifest_errors += 1 ))
+      break
+    elif [[ "$prior_destination" == "$destination_relative"/* ||
+            "$destination_relative" == "$prior_destination"/* ]]; then
+      print -u2 -r -- "MANIFEST-ERROR line $line_number: overlapping destinations: $prior_destination and $destination_relative"
+      (( manifest_errors += 1 ))
+      break
+    fi
+  done
+
+  entry_names+=("$name")
+  entry_groups+=("$group")
+  entry_kinds+=("$kind")
+  entry_policies+=("$policy")
+  entry_machines+=("$machines")
+  source_relatives+=("$source_relative")
+  destination_relatives+=("$destination_relative")
+  entry_sources+=("$managed_root/$source_relative")
+  entry_destinations+=("$managed_home/$destination_relative")
+done < "$manifest_path"
+
+(( manifest_errors == 0 )) || exit 2
+(( ${#entry_names} > 0 )) || die_usage "manifest contains no entries: $manifest_path"
+
+machine_short_name=""
+machine_identity_file="$managed_home/.codex-machine.md"
+if [[ -f "$machine_identity_file" ]]; then
+  while IFS= read -r identity_line || [[ -n "$identity_line" ]]; do
+    if [[ "$identity_line" == '- Preferred short name: '* ]]; then
+      machine_short_name=${identity_line#'- Preferred short name: '}
+      break
+    fi
+  done < "$machine_identity_file"
+fi
+
+machine_applies=0
+entry_applies_to_machine() {
+  local selector=$1
+  local candidate
+  local -a candidates
+
+  machine_applies=0
+  if [[ "$selector" == "all" ]]; then
+    machine_applies=1
+    return 0
+  fi
+  [[ -n "$machine_short_name" ]] || return 2
+  candidates=("${(@s:,:)selector}")
+  for candidate in "${candidates[@]}"; do
+    if [[ "$candidate" == "$machine_short_name" ]]; then
+      machine_applies=1
+      break
+    fi
+  done
+  return 0
+}
+
+for (( index = 1; index <= ${#entry_names}; index += 1 )); do
+  [[ -z "$selected_group" || "$selected_group" == "${entry_groups[index]}" ]] || continue
+  if ! entry_applies_to_machine "${entry_machines[index]}"; then
+    print -u2 -r -- "MACHINE-IDENTITY-ERROR: ${entry_names[index]} requires a preferred short name in $machine_identity_file"
+    exit 2
+  fi
+done
+
+typeset -a exemption_names exemption_reasons
+integer exemption_errors=0
+if [[ -n "$exemptions_path" && -f "$exemptions_path" ]]; then
+  line_number=0
+  raw_line=""
+  while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
+    (( line_number += 1 ))
+    raw_line=${raw_line%$'\r'}
+    trimmed_line=${raw_line#"${raw_line%%[![:space:]]*}"}
+    [[ -z "$trimmed_line" || "$trimmed_line" == \#* ]] && continue
+    fields=("${(@s:|:)raw_line}")
+    if (( ${#fields} != 2 )); then
+      print -u2 -r -- "EXEMPTIONS-ERROR line $line_number: expected name|reason"
+      (( exemption_errors += 1 ))
+      continue
+    fi
+    exemption_name=${fields[1]}
+    exemption_reason=${fields[2]}
+    if ! valid_identifier "$exemption_name" || [[ -z "$exemption_reason" ]]; then
+      print -u2 -r -- "EXEMPTIONS-ERROR line $line_number: invalid name or empty reason"
+      (( exemption_errors += 1 ))
+      continue
+    fi
+    known_exemption=0
+    for name in "${entry_names[@]}"; do
+      [[ "$name" == "$exemption_name" ]] && known_exemption=1
+    done
+    if (( ! known_exemption )); then
+      print -u2 -r -- "EXEMPTIONS-ERROR line $line_number: unknown managed-link name: $exemption_name"
+      (( exemption_errors += 1 ))
+    fi
+    for name in "${exemption_names[@]}"; do
+      if [[ "$name" == "$exemption_name" ]]; then
+        print -u2 -r -- "EXEMPTIONS-ERROR line $line_number: duplicate name: $exemption_name"
+        (( exemption_errors += 1 ))
+        break
+      fi
+    done
+    exemption_names+=("$exemption_name")
+    exemption_reasons+=("$exemption_reason")
+  done < "$exemptions_path"
+fi
+(( exemption_errors == 0 )) || exit 2
+
+exemption_reason=""
+find_exemption() {
+  local requested_name=$1
+  exemption_reason=""
+  for (( exemption_index = 1; exemption_index <= ${#exemption_names}; exemption_index += 1 )); do
+    if [[ "${exemption_names[exemption_index]}" == "$requested_name" ]]; then
+      exemption_reason=${exemption_reasons[exemption_index]}
+      return 0
+    fi
+  done
+  return 1
+}
+
+for group in "${entry_groups[@]}"; do
+  if [[ -z "$selected_group" || "$selected_group" == "$group" ]]; then
+    (( selected_entries += 1 ))
+  fi
+done
+(( selected_entries > 0 )) || die_usage "manifest contains no group named: $selected_group"
+
+source_is_valid() {
+  local kind=$1
+  local source_path=$2
+  if [[ "$kind" == "file" ]]; then
+    [[ -f "$source_path" ]]
+  else
+    [[ -d "$source_path" ]]
+  fi
+}
+
+source_problem_label() {
+  local source_path=$1
+  if [[ -e "$source_path" || -L "$source_path" ]]; then
+    print -r -- "SOURCE-TYPE"
+  else
+    print -r -- "SOURCE-MISSING"
+  fi
+}
+
+link_state=""
+link_detail=""
+assess_link() {
+  local kind=$1
+  local source_path=$2
+  local destination_path=$3
+  local stored_target=""
+
+  link_state=""
+  link_detail=""
+
+  if ! source_is_valid "$kind" "$source_path"; then
+    link_state=$(source_problem_label "$source_path")
+    link_detail="$source_path"
+    return
+  fi
+
+  if [[ -L "$destination_path" ]]; then
+    stored_target=$(readlink "$destination_path" 2>/dev/null || true)
+    if [[ ! -e "$destination_path" ]]; then
+      link_state="BROKEN"
+      link_detail="$destination_path -> $stored_target"
+    elif [[ "$source_path" -ef "$destination_path" ]]; then
+      link_state="OK"
+      link_detail="$destination_path -> $stored_target"
+    else
+      link_state="WRONG-TARGET"
+      link_detail="$destination_path -> $stored_target (expected $source_path)"
+    fi
+  elif [[ -e "$destination_path" ]]; then
+    link_state="NOT-SYMLINK"
+    link_detail="$destination_path"
+  else
+    link_state="MISSING"
+    link_detail="$destination_path"
+  fi
+}
+
+if (( repair )); then
+  integer preflight_failures=0
+  integer preflight_safety_errors=0
+  typeset -a preflight_destination_names preflight_destination_guards
+  for (( index = 1; index <= ${#entry_names}; index += 1 )); do
+    [[ -z "$selected_group" || "$selected_group" == "${entry_groups[index]}" ]] || continue
+    entry_applies_to_machine "${entry_machines[index]}" || exit 2
+    (( machine_applies )) || continue
+    find_exemption "${entry_names[index]}" && continue
+    if [[ "${entry_policies[index]}" == "optional" ]] && (( ! include_optional )); then
+      continue
+    fi
+    if ! repair_destination_is_safe "${entry_sources[index]}" "${entry_destinations[index]}"; then
+      print -u2 -r -- "REPAIR-REFUSED ${entry_names[index]}: $repair_safety_detail"
+      (( preflight_safety_errors += 1 ))
+    fi
+    preflight_destination_path=${entry_destinations[index]}
+    preflight_destination_guard="${preflight_destination_path:h:A}/${preflight_destination_path:t}"
+    for (( prior_index = 1; prior_index <= ${#preflight_destination_guards}; prior_index += 1 )); do
+      prior_guard=${preflight_destination_guards[prior_index]}
+      if [[ "$preflight_destination_guard" == "$prior_guard" ||
+            "$preflight_destination_guard" == "$prior_guard"/* ||
+            "$prior_guard" == "$preflight_destination_guard"/* ]]; then
+        print -u2 -r -- "REPAIR-REFUSED ${entry_names[index]}: canonical destination overlaps ${preflight_destination_names[prior_index]} ($preflight_destination_guard)"
+        (( preflight_safety_errors += 1 ))
+        break
+      fi
+    done
+    preflight_destination_names+=("${entry_names[index]}")
+    preflight_destination_guards+=("$preflight_destination_guard")
+    if ! source_is_valid "${entry_kinds[index]}" "${entry_sources[index]}"; then
+      problem=$(source_problem_label "${entry_sources[index]}")
+      print -u2 -r -- "$problem ${entry_names[index]}: ${entry_sources[index]}"
+      (( preflight_failures += 1 ))
+    fi
+  done
+  if (( preflight_safety_errors > 0 )); then
+    print -u2 -r -- "Repair aborted before making changes: $preflight_safety_errors unsafe destination(s)."
+    exit 2
+  fi
+  if (( preflight_failures > 0 )); then
+    print -u2 -r -- "Repair aborted before making changes: $preflight_failures source problem(s)."
+    exit 1
+  fi
+fi
+
+integer link_problems=0
+integer repaired_links=0
+integer checked_links=0
+integer optional_findings=0
+timestamp=$(date +%Y%m%d-%H%M%S)
+active_name=""
+active_destination=""
+active_backup=""
+repair_stage="idle"
+
+rollback_active_repair() {
+  local rollback_ok=1
+
+  if [[ ( "$repair_stage" == "link-attempt" || "$repair_stage" == "linked" ) && -L "$active_destination" ]]; then
+    if ! unlink "$active_destination"; then
+      print -u2 -r -- "ROLLBACK-FAILED $active_name: could not remove new link $active_destination"
+      rollback_ok=0
+    fi
+  elif [[ ( "$repair_stage" == "link-attempt" || "$repair_stage" == "linked" ) && -e "$active_destination" ]]; then
+    print -u2 -r -- "ROLLBACK-FAILED $active_name: new destination is no longer a symlink; left $active_destination untouched"
+    rollback_ok=0
+  fi
+
+  if [[ -n "$active_backup" && ( -e "$active_backup" || -L "$active_backup" ) ]]; then
+    if [[ -e "$active_destination" || -L "$active_destination" ]]; then
+      print -u2 -r -- "ROLLBACK-FAILED $active_name: destination is occupied; original remains at $active_backup"
+      rollback_ok=0
+    elif mv "$active_backup" "$active_destination"; then
+      print -u2 -r -- "ROLLED-BACK $active_name: restored $active_destination"
+    else
+      print -u2 -r -- "ROLLBACK-FAILED $active_name: original remains at $active_backup"
+      rollback_ok=0
+    fi
+  fi
+
+  repair_stage="idle"
+  active_name=""
+  active_destination=""
+  active_backup=""
+  return $(( ! rollback_ok ))
+}
+
+interrupt_repair() {
+  trap - HUP INT TERM
+  if [[ "$repair_stage" != "idle" ]]; then
+    print -u2 -r -- "Repair interrupted; restoring the active entry."
+    rollback_active_repair || true
+  fi
+  exit 130
+}
+
+(( repair )) && trap interrupt_repair HUP INT TERM
+
+for (( index = 1; index <= ${#entry_names}; index += 1 )); do
+  [[ -z "$selected_group" || "$selected_group" == "${entry_groups[index]}" ]] || continue
+  entry_applies_to_machine "${entry_machines[index]}" || exit 2
+  if (( ! machine_applies )); then
+    (( show_all )) && print -r -- "SKIP ${entry_names[index]}: applies to ${entry_machines[index]}, not ${machine_short_name:-unknown}"
+    continue
+  fi
+  if find_exemption "${entry_names[index]}"; then
+    print -r -- "EXEMPT ${entry_names[index]}: $exemption_reason"
+    continue
+  fi
+  if (( repair )) && [[ "${entry_policies[index]}" == "optional" ]] && (( ! include_optional )); then
+    print -r -- "SKIP ${entry_names[index]}: optional entry (use --include-optional to repair)"
+    continue
+  fi
+  (( checked_links += 1 ))
+
+  name=${entry_names[index]}
+  kind=${entry_kinds[index]}
+  source_path=${entry_sources[index]}
+  destination_path=${entry_destinations[index]}
+  assess_link "$kind" "$source_path" "$destination_path"
+
+  if [[ "$link_state" == "OK" ]]; then
+    (( show_all )) && print -r -- "OK $name: $link_detail"
+    continue
+  fi
+
+  if [[ "${entry_policies[index]}" == "optional" ]] && (( ! repair )); then
+    print -r -- "OPTIONAL-$link_state $name: $link_detail"
+    (( optional_findings += 1 ))
+    continue
+  fi
+
+  if (( repair )) && [[ "$link_state" != SOURCE-* ]]; then
+    if ! repair_destination_is_safe "$source_path" "$destination_path"; then
+      print -u2 -r -- "REPAIR-REFUSED $name: $repair_safety_detail"
+      exit 2
+    fi
+    active_name=$name
+    active_destination=$destination_path
+    active_backup=""
+    repair_stage="initial"
+    backup_path=""
+    if [[ -e "$destination_path" || -L "$destination_path" ]]; then
+      backup_path="${destination_path}.backup-${timestamp}"
+      integer suffix=1
+      while [[ -e "$backup_path" || -L "$backup_path" ]]; do
+        backup_path="${destination_path}.backup-${timestamp}-${suffix}"
+        (( suffix += 1 ))
+      done
+      active_backup=$backup_path
+      repair_stage="backup-planned"
+      if ! mv "$destination_path" "$backup_path"; then
+        print -u2 -r -- "REPAIR-FAILED $name: could not back up $destination_path"
+        repair_stage="idle"
+        active_name=""
+        active_destination=""
+        active_backup=""
+        (( link_problems += 1 ))
+        continue
+      fi
+      repair_stage="backed-up"
+    fi
+
+    if ! mkdir -p "${destination_path:h}"; then
+      print -u2 -r -- "REPAIR-FAILED $name: could not create ${destination_path:h}"
+      rollback_active_repair || true
+      (( link_problems += 1 ))
+      continue
+    fi
+    repair_stage="link-attempt"
+    if ! ln -s "$source_path" "$destination_path"; then
+      print -u2 -r -- "REPAIR-FAILED $name: could not link $destination_path"
+      rollback_active_repair || true
+      (( link_problems += 1 ))
+      continue
+    fi
+    repair_stage="linked"
+
+    assess_link "$kind" "$source_path" "$destination_path"
+    if [[ "$link_state" == "OK" ]]; then
+      if [[ -n "$backup_path" ]]; then
+        print -r -- "REPAIRED $name: $destination_path -> $source_path (backup: $backup_path)"
+      else
+        print -r -- "REPAIRED $name: $destination_path -> $source_path"
+      fi
+      (( repaired_links += 1 ))
+      repair_stage="idle"
+      active_name=""
+      active_destination=""
+      active_backup=""
+      continue
+    fi
+    print -u2 -r -- "REPAIR-FAILED $name: $link_detail"
+    rollback_active_repair || true
+    (( link_problems += 1 ))
+    continue
+  fi
+
+  print -r -- "$link_state $name: $link_detail"
+  (( link_problems += 1 ))
+done
+
+integer zsh_problems=0
+integer zsh_checks=0
+
+report_zsh_ok() {
+  local label=$1
+  (( zsh_checks += 1 ))
+  (( show_all )) && print -r -- "OK $label"
+}
+
+report_zsh_problem() {
+  local label=$1
+  local detail=$2
+  (( zsh_checks += 1 ))
+  (( zsh_problems += 1 ))
+  print -r -- "$label: $detail"
+}
+
+audit_zsh() {
+  local startup_file
+  local startup_name
+  local current_user
+  local probe
+  local probe_detail
+  local probe_output
+  local probe_status
+  local -a mode_labels mode_options
+
+  for startup_name in zshenv zprofile zshrc; do
+    startup_file="$managed_root/settings/zsh/$startup_name"
+    if [[ ! -f "$startup_file" ]]; then
+      report_zsh_problem "ZSH-SOURCE-MISSING" "$startup_file"
+    elif /bin/zsh -n "$startup_file"; then
+      report_zsh_ok "zsh-syntax-$startup_name: $startup_file"
+    else
+      report_zsh_problem "ZSH-SYNTAX" "$startup_file"
+    fi
+  done
+
+  global_ruby_pin=""
+  for startup_name in zshenv zprofile zshrc; do
+    startup_file="$managed_root/settings/zsh/$startup_name"
+    [[ -f "$startup_file" ]] || continue
+    while IFS= read -r startup_line || [[ -n "$startup_line" ]]; do
+      trimmed_startup_line=${startup_line#"${startup_line%%[![:space:]]*}"}
+      [[ "$trimmed_startup_line" == \#* ]] && continue
+      if print -r -- "$startup_line" | grep -Eq '(^|[;&|[:space:]])chruby[[:space:]]+(ruby-)?[0-9]'; then
+        global_ruby_pin="$startup_name: $trimmed_startup_line"
+        break
+      fi
+    done < "$startup_file"
+    [[ -z "$global_ruby_pin" ]] || break
+  done
+  if [[ -n "$global_ruby_pin" ]]; then
+    report_zsh_problem "ZSH-RUBY-PIN" "global chruby version activation found; use a project-local .ruby-version instead"
+  else
+    report_zsh_ok "zsh-ruby: no global chruby version activation"
+  fi
+
+  current_user=$(id -un)
+  mode_labels=(
+    "zsh-startup-nonlogin-noninteractive"
+    "zsh-startup-login-noninteractive"
+    "zsh-startup-nonlogin-interactive"
+    "zsh-startup-login-interactive"
+  )
+  mode_options=("-c" "-lc" "-ic" "-lic")
+
+  for (( mode_index = 1; mode_index <= ${#mode_labels}; mode_index += 1 )); do
+    probe='command -v repo-sweep >/dev/null 2>&1 && command -v git-repo-sync.sh >/dev/null 2>&1 && command -v ruby >/dev/null 2>&1'
+    if [[ "${mode_options[mode_index]}" == *i* ]]; then
+      probe+=' && (( $+functions[arrive] && $+functions[depart] ))'
+    fi
+
+    probe_output=$(/usr/bin/env -i \
+        HOME="$managed_home" \
+        ZDOTDIR="$managed_home" \
+        USER="$current_user" \
+        LOGNAME="$current_user" \
+        SHELL=/bin/zsh \
+        TERM=dumb \
+        VSCODE_RESOLVING_ENVIRONMENT=1 \
+        PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+        /bin/zsh "${mode_options[mode_index]}" "$probe" 2>&1)
+    probe_status=$?
+    if (( probe_status != 0 )); then
+      if [[ -n "$probe_output" ]]; then
+        probe_detail=${probe_output//$'\n'/; }
+        probe_detail=${probe_detail[1,500]}
+        report_zsh_problem "ZSH-STARTUP" "${mode_labels[mode_index]} failed (exit $probe_status): $probe_detail"
+      else
+        report_zsh_problem "ZSH-STARTUP" "${mode_labels[mode_index]} failed its command/function probe (exit $probe_status)"
+      fi
+    elif [[ -n "$probe_output" ]]; then
+      probe_detail=${probe_output//$'\n'/; }
+      probe_detail=${probe_detail[1,500]}
+      report_zsh_problem "ZSH-STARTUP-OUTPUT" "${mode_labels[mode_index]} emitted: $probe_detail"
+    else
+      report_zsh_ok "${mode_labels[mode_index]}"
+    fi
+  done
+}
+
+if (( ! links_only )) && [[ -z "$selected_group" || "$selected_group" == "zsh" ]]; then
+  audit_zsh
+fi
+
+integer total_problems=$(( link_problems + zsh_problems ))
+if (( total_problems > 0 )); then
+  print -r -- "ATTENTION: $total_problems problem(s) across $checked_links managed link(s) and $zsh_checks Zsh check(s)."
+  exit 1
+fi
+
+if (( repair && repaired_links > 0 )); then
+  print -r -- "REPAIRED: $repaired_links managed link(s)."
+fi
+if (( optional_findings > 0 )); then
+  print -r -- "CLEAR WITH ADVISORIES: no required link failures; $optional_findings optional finding(s)."
+else
+  print -r -- "OK: $checked_links managed link(s) and $zsh_checks Zsh check(s)."
+fi
+exit 0

@@ -7,6 +7,9 @@ the primary repository is `GitTracked` (named `GitTrackedObsidian` by
 
 ## Checkpoint scope and synchronization opt-in
 
+The exact whole-message command `infra save` is the short alias for
+`Infrastructure Checkpoint` and follows the same workflow and scope.
+
 For a Checkpoint or Express Checkpoint requested with either Infrastructure
 entry point as the current project, extend the normal project scope to both
 infrastructure repositories:

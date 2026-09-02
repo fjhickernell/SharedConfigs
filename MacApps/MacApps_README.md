@@ -39,7 +39,7 @@ All scripts live in `~/Documents/SharedConfigs/bin/`.
 
    ```bash
    brew install pandoc mas
-   brew-publish
+   brewfile-refresh
    ```
 2. Sign in to the Mac App Store app (mas uses this login).
 3. Verify:
@@ -163,8 +163,9 @@ Apps listed there will be excluded from `*.applications.txt` and the inventory.
 
 * `Usage`, `Notes`, and `Family` persist across updates as long as app names remain unchanged.
 * The Excel version is **read-only for convenience**; edit the Markdown file instead.
-* All data lives in iCloud (`SharedConfigs`) and syncs automatically across Macs.
+* The inventory is version-controlled in SharedConfigs and moves across Macs
+  through the managed Git workflow.
 
 ---
 
-*Last updated: 2025-11-11*
+*Last updated: 2026-09-02*
