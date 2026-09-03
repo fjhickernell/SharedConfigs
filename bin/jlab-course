@@ -18,8 +18,8 @@ esac
 jlab_launcher=${JLAB_DESKTOP_LAUNCHER:-/Applications/JupyterLab.app/Contents/Resources/app/jlab}
 notebook_dir="$HOME/SoftwareRepositories/$course_repo/notebooks"
 
-if [[ ! -x "$jlab_launcher" ]]; then
-  echo "JupyterLab Desktop launcher not found: $jlab_launcher" >&2
+if [[ ! -f "$jlab_launcher" || ! -r "$jlab_launcher" ]]; then
+  echo "JupyterLab Desktop launcher missing or unreadable: $jlab_launcher" >&2
   exit 1
 fi
 
@@ -48,6 +48,7 @@ if [[ ! -x "$qmcpy_python" ]]; then
   exit 1
 fi
 
-exec "$jlab_launcher" \
+# Some macOS app bundles ship this Bash script without executable permission.
+exec /bin/bash "$jlab_launcher" \
   --python-path "$qmcpy_python" \
   "$notebook_dir"
