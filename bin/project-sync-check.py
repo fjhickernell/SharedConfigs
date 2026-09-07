@@ -50,7 +50,7 @@ def validate_manifest(data, home):
             names.add(name)
         roots = project.get('roots')
         if not isinstance(roots, list) or not roots or len(set(roots)) != len(roots):
-            raise ValueError('Project needs unique ordered roots: ' + project['name'])
+            raise ValueError('Project needs unique roots with the primary folder first: ' + project['name'])
         for root in roots + project.get('retiredRoots', []):
             local_path(root, home)
 
@@ -117,8 +117,10 @@ def reconcile(manifest, local, home, capture):
                 messages.append('ADD FOLDER: ' + name + ': ' + root)
             if not local_path(root, home).is_dir():
                 messages.append('MISSING DIRECTORY: ' + name + ': ' + root)
-        if actual['roots'] != desired['roots'] and set(actual['roots']) == set(desired['roots']):
-            messages.append('ORDER: ' + name + ': ' + ' -> '.join(desired['roots']))
+        # Codex exposes a primary folder; additional folder order is immaterial.
+        primary = desired['roots'][0]
+        if primary in actual['roots'] and actual['roots'][0] != primary:
+            messages.append('PRIMARY FOLDER: ' + name + ': make ' + primary + ' primary')
     for desired in manifest['projects']:
         if desired['name'] not in seen:
             messages.append('ADD PROJECT: ' + desired['name'] + ': ' + ' -> '.join(desired['roots']))
@@ -171,6 +173,10 @@ def main():
                     raise ValueError('Invalid observation: ' + path.name)
                 snapshots.append(observation)
         current = {'version': 1, 'machine': machine, 'projects': local, 'registry': registry}
+        if args.capture:
+            # Readers validate every shared observation, so reject invalid local
+            # projects before writing a snapshot that could break other Macs.
+            validate_manifest(current, home)
         previous = max((s for s in snapshots if s['machine'] == machine),
                        key=lambda s: s.get('recordedAt', ''), default={})
         if args.capture and not all(previous.get(k) == v for k, v in current.items()):

@@ -46,13 +46,54 @@ class ProjectChecks(unittest.TestCase):
         self.assertFalse(changed)
         self.assertTrue(any(x.startswith('REVIEW') for x in messages))
 
-    def test_missing_and_order(self):
+    def test_missing_project(self):
         messages, _ = mod.reconcile(self.manifest, [], self.home, False)
         self.assertTrue(messages[0].startswith('ADD PROJECT'))
+
+    def test_additional_folder_order_is_ignored(self):
+        self.manifest['projects'][0]['roots'].extend(['~/second', '~/third'])
+        for folder in ['second', 'third']:
+            (self.home / folder).mkdir()
+        for capture in [False, True]:
+            with self.subTest(capture=capture):
+                messages, changed = mod.reconcile(self.manifest, [
+                    {'name': 'Project', 'roots': ['~/repo', '~/third', '~/second']}
+                ], self.home, capture)
+                self.assertEqual(messages, [])
+                self.assertFalse(changed)
+                self.assertEqual(self.manifest['projects'][0]['roots'],
+                                 ['~/repo', '~/second', '~/third'])
+
+    def test_wrong_primary_folder(self):
         self.manifest['projects'][0]['roots'].append('~/second')
+        (self.home / 'second').mkdir()
         messages, _ = mod.reconcile(self.manifest, [{'name': 'Project', 'roots': ['~/second', '~/repo']}], self.home, False)
-        self.assertTrue(any(x.startswith('ORDER') for x in messages))
-        self.assertTrue(any(x.startswith('MISSING DIRECTORY') for x in messages))
+        self.assertEqual(messages, ['PRIMARY FOLDER: Project: make ~/repo primary'])
+
+    def test_primary_mismatch_with_missing_and_extra_folders(self):
+        self.manifest['projects'][0]['roots'].extend(['~/second', '~/missing'])
+        for folder in ['second', 'extra']:
+            (self.home / folder).mkdir()
+        messages, changed = mod.reconcile(self.manifest, [
+            {'name': 'Project', 'roots': ['~/second', '~/repo', '~/extra']}
+        ], self.home, False)
+        self.assertFalse(changed)
+        self.assertCountEqual(messages, [
+            'NEW FOLDER: Project: ~/extra',
+            'ADD FOLDER: Project: ~/missing',
+            'MISSING DIRECTORY: Project: ~/missing',
+            'PRIMARY FOLDER: Project: make ~/repo primary',
+        ])
+
+    def test_missing_primary_folder_needs_adding_first(self):
+        self.manifest['projects'][0]['roots'].append('~/second')
+        messages, _ = mod.reconcile(self.manifest, [
+            {'name': 'Project', 'roots': ['~/second']}
+        ], self.home, False)
+        self.assertCountEqual(messages, [
+            'ADD FOLDER: Project: ~/repo',
+            'MISSING DIRECTORY: Project: ~/second',
+        ])
 
     def test_four_machines_contribute_and_receive_union(self):
         manifest = self.home / 'manifest.json'
@@ -102,6 +143,46 @@ class ProjectChecks(unittest.TestCase):
         self.manifest['projects'].append({'name': 'Old', 'roots': ['~/repo']})
         with self.assertRaises(ValueError):
             mod.validate_manifest(self.manifest, self.home)
+
+    def test_duplicate_name_capture_does_not_poison_observations(self):
+        manifest = self.home / 'manifest.json'
+        manifest.write_text(json.dumps(self.manifest))
+        registry = self.home / 'repositories.conf'
+        registry.write_text('current|active|repo|repo||git@example.org:repo.git\n')
+        state = self.home / 'state.json'
+        project = {'name': 'Project', 'rootPaths': [str(self.home / 'repo')]}
+        valid = json.dumps({'project-order': ['id'], 'local-projects': {'id': project}})
+        duplicate = json.dumps({'project-order': ['id', 'duplicate'],
+                                'local-projects': {'id': project, 'duplicate': project}})
+        command = ['python3', str(SCRIPT), '--home', str(self.home), '--machine', 'M5',
+                   '--manifest', str(manifest), '--state', str(state), '--registry', str(registry)]
+        observations = self.home / 'project-observations'
+        for existing_snapshot in [False, True]:
+            with self.subTest(existing_snapshot=existing_snapshot):
+                if existing_snapshot:
+                    state.write_text(valid)
+                    result = subprocess.run(command + ['--capture'], capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+                before = {path.name: path.read_bytes() for path in observations.glob('*')}
+                state.write_text(duplicate)
+                result = subprocess.run(command + ['--capture'], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 2, result.stderr + result.stdout)
+                self.assertIn('Duplicate/invalid project name or alias: Project', result.stderr)
+                self.assertNotIn('RECORDED', result.stdout)
+                self.assertEqual(observations.exists(), existing_snapshot)
+                self.assertEqual({path.name: path.read_bytes() for path in observations.glob('*')}, before)
+                self.assertEqual(state.read_text(), duplicate)
+                self.assertEqual(json.loads(manifest.read_text()), self.manifest)
+
+                # Read-only checks keep their actionable duplicate diagnostic.
+                result = subprocess.run(command, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
+                self.assertIn('DUPLICATE PROJECT: Project', result.stdout)
+
+                # Once local names are corrected, no shared snapshot poisons checks.
+                state.write_text(valid)
+                result = subprocess.run(command, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
 
     def test_arrive_depart_hooks_and_failure_status(self):
         fixture_bin = self.home / 'bin'

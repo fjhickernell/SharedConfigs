@@ -4,6 +4,9 @@
 			"path": "../../../../../SoftwareRepositories/qmcsoftware-website"
 		},
 		{
+			"path": "../../../../../SoftwareRepositories/QMCSoftware"
+		},
+		{
 			"path": "../../../../../SoftwareRepositories/MATH565Fall2026"
 		},
 		{
@@ -11,9 +14,6 @@
 		},
 		{
 			"path": "../../../../../SoftwareRepositories/MATH563Spring2026"
-		},
-		{
-			"path": "../../../../../SoftwareRepositories/QMCSoftware"
 		}
 	]
 }

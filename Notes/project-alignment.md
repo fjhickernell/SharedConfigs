@@ -6,11 +6,16 @@ No running Codex JSON is modified, and no application is restarted.
 
 ## Shared data
 
-The canonical project names, ordered roots, aliases, fixed-folder exceptions,
+The canonical project names, primary/additional roots, aliases, fixed-folder exceptions,
 and retired paths live in the Obsidian vault at
 `GitTracked/Reference/Codex Project Manifest.json`. Any Mac may edit this
 manifest through Codex as a reviewed configuration change. The readable
 `Project and Repository Inventory.md` should be reconciled at the same time.
+
+The first entry in each project's `roots` is its primary/opening folder.
+Additional folders are compared by membership; their order does not need to
+match across Macs. In Codex, use **Make primary** when the opening folder is
+wrong. Do not ask Fred to reorder additional folders just to match the JSON.
 
 Each departure records the saved project's portable names/roots and the
 repository registry in a uniquely named JSON file under the adjacent
@@ -30,13 +35,16 @@ The check cannot prove that iCloud has delivered every remote observation.
 
 - Departure captures configuration observations even if later repository sync
   fails. It never infers a deletion from a missing folder or project.
+- Capture validates the local observation before writing it. Duplicate saved
+  project names fail visibly without creating a shared file that other Macs
+  would reject; reconcile the duplicate names in Codex before capturing again.
 - Arrival checks after the existing repository sync so freshly cloned paths
   are available. It does not write an observation.
 - All observed additions form a deterministic union over the canonical
   manifest. A stale machine cannot remove another machine's additions.
 - Names known as aliases map to the same project. Unknown names that share
   existing roots require review, avoiding accidental duplicate projects.
-- Missing projects, roots, directories, differing order, legacy roots, and
+- Missing projects, roots, directories, a different primary folder, legacy roots, and
   registry differences are printed in the terminal.
 - A changed registry on any Mac is recorded and compared on the others.
   Existing `repo-sweep` handles live Git state; this checker compares registry
@@ -48,7 +56,7 @@ and return nonzero for project findings instead of an unqualified success.
 
 ## Deliberate modifications
 
-Renames, removals, reordering, and registry edits are reviewable changes, not
+Renames, removals, primary-folder changes, and registry edits are reviewable changes, not
 last-writer-wins updates. On whichever Mac originates the change, ask Codex
 to update the canonical manifest (aliases for names, `retiredRoots` for removed
 paths, `fixedRoots` for explicit single-folder policies), the Markdown inventory,
