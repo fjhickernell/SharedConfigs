@@ -1,0 +1,12 @@
+#!/bin/zsh
+set -e
+
+src="$HOME/Documents/SharedConfigs/bin/research-desktop.applescript"
+dst="$HOME/Applications/Research Desktop.app"
+
+mkdir -p "$HOME/Applications"
+rm -rf "$dst"
+osacompile -o "$dst" "$src"
+
+echo "Installed: $dst"
+echo "On first launch, macOS may ask for Accessibility/Automation permissions."
