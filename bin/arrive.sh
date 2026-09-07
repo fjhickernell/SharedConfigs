@@ -41,6 +41,10 @@ section "Syncing active repos"
 sync-active.sh
 rc_active=$?
 
+section "Checking Codex projects against shared inventory"
+python3 "${0:A:h}/project-sync-check.py"
+rc_projects=$?
+
 if [[ $rc_dev -ne 0 || $rc_active -ne 0 ]]; then
   error "arrive failed (sync-dev=$rc_dev, sync-active=$rc_active)"
   exit 1
@@ -58,7 +62,10 @@ else
   warn "pr-status is unavailable; PR attention was not checked."
 fi
 
-if [[ "$pr_check_failed" == true ]]; then
+if [[ $rc_projects -ne 0 ]]; then
+  warn_banner "arrive sync completed; Codex project setup needs attention (see findings above)"
+  exit "$rc_projects"
+elif [[ "$pr_check_failed" == true ]]; then
   warn_banner "arrive sync completed, but the PR attention check was incomplete"
 else
   banner "arrive completed successfully"

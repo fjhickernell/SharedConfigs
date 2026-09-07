@@ -49,6 +49,7 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `quarto-slides-live` | Teaching | Live-render one RevealJS deck on an automatically assigned per-course port. |
 | `regular-maintenance.sh` | System Maintenance | Update Brew and TeX Live, then synchronize managed repositories and npm globals. |
 | `repo-sweep` | Git | Check all current managed repositories and print only those needing attention. |
+| `project-sync-check.py` | Projects | Check shared project assignments; `--capture` records this Mac's additions for other Macs. Called by `arrive` and `depart`; see `Notes/project-alignment.md`. |
 | `README_bin.md` | Documentation | This file. |
 | `sharedconfigs-audit` | Mac Setup | Audit managed links and Zsh; repair only with `--repair`. |
 | `setup-starship.sh` | Shell | Install and link shared starship config. |

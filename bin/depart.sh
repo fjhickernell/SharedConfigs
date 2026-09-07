@@ -29,6 +29,10 @@ error() {
 
 banner "depart started"
 
+section "Recording Codex project additions for other Macs"
+python3 "${0:A:h}/project-sync-check.py" --capture
+rc_projects=$?
+
 section "Syncing standalone development repos"
 sync-dev.sh
 rc_dev=$?
@@ -40,6 +44,11 @@ rc_class=$?
 if [[ $rc_dev -ne 0 || $rc_class -ne 0 ]]; then
   error "depart failed (sync-dev=$rc_dev, sync-active=$rc_class)"
   exit 1
+fi
+
+if [[ $rc_projects -ne 0 ]]; then
+  warn "depart repository sync completed; review the Codex project findings above."
+  exit "$rc_projects"
 fi
 
 banner "depart completed successfully"

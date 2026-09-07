@@ -42,6 +42,13 @@ across SharedConfigs and GitTracked.
 
 ## Managed Repository Check
 
+`arrive` checks Codex projects against the shared project manifest after
+repository synchronization. `depart` records portable project/folder and
+repository-registry observations for the other Macs. Findings produce a
+nonzero exit and a terminal checklist. See
+[Cross-machine project alerts](Notes/project-alignment.md) for the shared
+iCloud files, conflict rules, and manual app setup steps.
+
 Run `repo-sweep` to check the current `dev`, `active`, and `infrastructure`
 repositories and print only those needing attention, including unpublished
 work on linked worktrees or dormant local branches. Codex maintains the shared
