@@ -50,9 +50,11 @@ The check cannot prove that iCloud has delivered every remote observation.
   Existing `repo-sweep` handles live Git state; this checker compares registry
   configuration, not unregistered changes to a checkout's actual remote.
 
-Exit codes: 0 = matching configuration; 1 = setup/reconciliation needed;
-2 = check failed. Both wrapper commands preserve repository failure handling
-and return nonzero for project findings instead of an unqualified success.
+Exit codes from the checker are: 0 = matching configuration; 1 =
+setup/reconciliation needed; 2 = check failed. The `arrive` and `depart`
+wrappers report status 1 as a warning and return success when repository sync
+succeeds, so project maintenance does not block the wider workflow. Status 2
+remains a wrapper failure, as do repository synchronization failures.
 
 ## Deliberate modifications
 

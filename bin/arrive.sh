@@ -62,8 +62,10 @@ else
   warn "pr-status is unavailable; PR attention was not checked."
 fi
 
-if [[ $rc_projects -ne 0 ]]; then
-  warn_banner "arrive sync completed; Codex project setup needs attention (see findings above)"
+if [[ $rc_projects -eq 1 ]]; then
+  warn_banner "arrive completed with warnings; Codex project setup needs attention (see findings above)"
+elif [[ $rc_projects -ne 0 ]]; then
+  error "arrive failed: Codex project check failed (exit $rc_projects)"
   exit "$rc_projects"
 elif [[ "$pr_check_failed" == true ]]; then
   warn_banner "arrive sync completed, but the PR attention check was incomplete"

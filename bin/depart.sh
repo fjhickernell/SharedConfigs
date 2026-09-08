@@ -46,9 +46,11 @@ if [[ $rc_dev -ne 0 || $rc_class -ne 0 ]]; then
   exit 1
 fi
 
-if [[ $rc_projects -ne 0 ]]; then
-  warn "depart repository sync completed; review the Codex project findings above."
+if [[ $rc_projects -eq 1 ]]; then
+  warn "depart completed with warnings; review the Codex project findings above."
+elif [[ $rc_projects -ne 0 ]]; then
+  error "depart failed: Codex project check failed (exit $rc_projects)"
   exit "$rc_projects"
+else
+  banner "depart completed successfully"
 fi
-
-banner "depart completed successfully"

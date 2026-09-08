@@ -199,10 +199,15 @@ class ProjectChecks(unittest.TestCase):
         for name in ['arrive.sh', 'depart.sh']:
             for code in [0, 1, 2]:
                 result = subprocess.run(['zsh', '-f', str(fixture_bin / name)], env=dict(env, CHECK_RC=str(code)), capture_output=True, text=True)
-                self.assertEqual(result.returncode, code, result.stderr + result.stdout)
+                expected = 0 if code in [0, 1] else code
+                self.assertEqual(result.returncode, expected, result.stderr + result.stdout)
                 self.assertIn('STUB sync-dev.sh', result.stdout)
                 self.assertIn('STUB sync-active.sh', result.stdout)
                 self.assertEqual('--capture' in result.stdout, name == 'depart.sh')
+                if code == 1:
+                    self.assertIn('completed with warnings', result.stdout)
+                elif code == 2:
+                    self.assertIn('Codex project check failed', result.stderr)
                 if name == 'arrive.sh':
                     self.assertLess(result.stdout.index('STUB sync-active.sh'), result.stdout.index('PROJECT CHECK'))
 
