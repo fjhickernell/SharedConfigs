@@ -372,7 +372,9 @@ do
   fi
 done
 
-watchexec --postpone --on-busy-update=queue --debounce 500ms --poll 1s --no-meta \
+# Polling reports saved-file changes through metadata events on macOS.
+# Keep those events enabled so ordinary saves trigger a render.
+watchexec --postpone --on-busy-update=queue --debounce 500ms --poll 1s \
   "${watch_args[@]}" \
   --ignore '**/.git/**' \
   --ignore '**/.quarto/**' \
