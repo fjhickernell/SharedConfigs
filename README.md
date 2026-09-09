@@ -23,7 +23,9 @@ scripts shared through Git across my Macs.
   Dirty trees, unpublished/divergent commits, and refresh failures stop arrival
   before development or active synchronization. Publish intended local work
   with `infra save` before retrying. `depart` does not publish infrastructure;
-  the existing full `git-repo-sync.sh` workflow remains available separately.
+  its project capture writes to an external iCloud inbox so it does not dirty
+  GitTracked. The existing full `git-repo-sync.sh` workflow remains available
+  separately.
 - On a Mac with the old `arrive`, first update its clean SharedConfigs checkout
   with `git -C ~/Documents/SharedConfigs pull --ff-only` to install this behavior.
 - Home-directory configuration paths point into this checkout through the
@@ -57,7 +59,8 @@ across SharedConfigs and GitTracked.
 `arrive` checks Codex projects against the shared project manifest after
 repository synchronization. `depart` records portable project/folder and
 repository-registry observations for the other Macs. Findings produce a
-nonzero exit and a terminal checklist. See
+nonzero exit and a terminal checklist. New observations remain outside Git
+until `infra save` imports and publishes them. See
 [Cross-machine project alerts](Notes/project-alignment.md) for the shared
 iCloud files, conflict rules, and manual app setup steps.
 

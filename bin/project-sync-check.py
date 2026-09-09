@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime, timezone
 
 VAULT = 'Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault'
+INBOX = 'Reference/Codex Project Observations Inbox'
 
 
 def read_json(path):
@@ -53,6 +54,72 @@ def validate_manifest(data, home):
             raise ValueError('Project needs unique roots with the primary folder first: ' + project['name'])
         for root in roots + project.get('retiredRoots', []):
             local_path(root, home)
+
+
+def validate_observation(data, home, path):
+    validate_manifest(data, home)
+    if not isinstance(data.get('registry'), list) or not isinstance(data.get('machine'), str):
+        raise ValueError('Invalid observation: ' + path.name)
+    if not isinstance(data.get('recordedAt'), str):
+        raise ValueError('Observation lacks recordedAt: ' + path.name)
+
+
+def load_observations(directories, home):
+    snapshots = []
+    seen = {}
+    for directory in directories:
+        if not directory.exists():
+            continue
+        for path in sorted(directory.glob('*.json')):
+            if path.is_symlink() or not path.is_file():
+                raise ValueError('Observation is not a regular file: ' + path.name)
+            observation = read_json(path)
+            validate_observation(observation, home, path)
+            previous = seen.get(path.name)
+            if previous is not None:
+                if previous != observation:
+                    raise ValueError('Conflicting observation filename: ' + path.name)
+                continue
+            seen[path.name] = observation
+            snapshots.append(observation)
+    return snapshots
+
+
+def import_observations(inbox, observations, home):
+    pending = []
+    if inbox.exists():
+        for path in sorted(inbox.glob('*.json')):
+            if path.is_symlink() or not path.is_file():
+                raise ValueError('Observation is not a regular file: ' + path.name)
+            observation = read_json(path)
+            validate_observation(observation, home, path)
+            pending.append((path, observation))
+    if not pending:
+        print('No pending project observations to import.')
+        return
+
+    # Validate every source and destination before moving anything, so a
+    # conflict cannot leave a partially imported batch.
+    for source, observation in pending:
+        destination = observations / source.name
+        if destination.exists():
+            existing = read_json(destination)
+            validate_observation(existing, home, destination)
+            if existing != observation:
+                raise ValueError('Conflicting observation filename: ' + source.name)
+
+    observations.mkdir(parents=True, exist_ok=True)
+    for source, observation in pending:
+        destination = observations / source.name
+        if destination.exists():
+            source.unlink()
+        else:
+            os.replace(source, destination)
+    try:
+        inbox.rmdir()
+    except OSError:
+        pass
+    print(f'IMPORTED {len(pending)} project observation(s) into GitTracked for checkpointing.')
 
 
 def load_local(state, home):
@@ -129,10 +196,13 @@ def reconcile(manifest, local, home, capture):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--capture', action='store_true', help='Record portable observations for all other Macs')
+    actions = parser.add_mutually_exclusive_group()
+    actions.add_argument('--capture', action='store_true', help='Record portable observations for all other Macs')
+    actions.add_argument('--import-observations', action='store_true', help='Move pending observations into GitTracked for checkpointing')
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--state', type=Path)
     parser.add_argument('--manifest', type=Path)
+    parser.add_argument('--inbox', type=Path)
     parser.add_argument('--machine', help='Override machine short name (for fixtures)')
     parser.add_argument('--registry', type=Path)
     args = parser.parse_args()
@@ -140,6 +210,13 @@ def main():
     state_path = args.state or home / '.codex/.codex-global-state.json'
     manifest_path = args.manifest or home / VAULT / 'GitTracked/Reference/Codex Project Manifest.json'
     try:
+        manifest = read_json(manifest_path)
+        validate_manifest(manifest, home)
+        observations = manifest_path.parent / 'project-observations'
+        inbox = args.inbox or home / VAULT / INBOX
+        if args.import_observations:
+            import_observations(inbox, observations, home)
+            return 0
         machine = args.machine
         if not machine:
             identity = (home / '.codex-machine.md').read_text()
@@ -149,8 +226,6 @@ def main():
             machine = match.group(1)
         if not re.fullmatch(r'[A-Za-z0-9_-]+', machine):
             raise ValueError('Invalid machine short name')
-        manifest = read_json(manifest_path)
-        validate_manifest(manifest, home)
         local = load_local(read_json(state_path), home)
         registry_path = args.registry or Path(__file__).resolve().parents[1] / 'settings/repositories.conf'
         registry = [line.strip() for line in registry_path.read_text().splitlines()
@@ -163,15 +238,7 @@ def main():
             remote = fields[5]
             if ('://' in remote and '@' in remote and remote.split('://', 1)[1].split('@', 1)[0] != 'git') or '?' in remote or '#' in remote:
                 raise ValueError('Registry remote needs credentials removed before sharing')
-        observations = manifest_path.parent / 'project-observations'
-        snapshots = []
-        if observations.exists():
-            for path in sorted(observations.glob('*.json')):
-                observation = read_json(path)
-                validate_manifest(observation, home)
-                if not isinstance(observation.get('registry'), list) or not isinstance(observation.get('machine'), str):
-                    raise ValueError('Invalid observation: ' + path.name)
-                snapshots.append(observation)
+        snapshots = load_observations([observations, inbox], home)
         current = {'version': 1, 'machine': machine, 'projects': local, 'registry': registry}
         if args.capture:
             # Readers validate every shared observation, so reject invalid local
@@ -180,12 +247,12 @@ def main():
         previous = max((s for s in snapshots if s['machine'] == machine),
                        key=lambda s: s.get('recordedAt', ''), default={})
         if args.capture and not all(previous.get(k) == v for k, v in current.items()):
-            observations.mkdir(exist_ok=True)
+            inbox.mkdir(parents=True, exist_ok=True)
             current['recordedAt'] = datetime.now(timezone.utc).isoformat()
             # Each observation has a unique filename: offline Macs never overwrite
             # one another's contributions. Canonical edits remain explicit.
-            destination = observations / (machine + '-' + uuid.uuid4().hex + '.json')
-            fd, temp = tempfile.mkstemp(prefix='.observation-', dir=observations)
+            destination = inbox / (machine + '-' + uuid.uuid4().hex + '.json')
+            fd, temp = tempfile.mkstemp(prefix='.observation-', dir=inbox)
             try:
                 with os.fdopen(fd, 'w') as stream:
                     json.dump(current, stream, indent=2, ensure_ascii=False)
@@ -195,7 +262,7 @@ def main():
                 if os.path.exists(temp):
                     os.unlink(temp)
             snapshots.append(current)
-            print('RECORDED ' + machine + ' project/folder and repository configuration for the other Macs.')
+            print('RECORDED ' + machine + ' project/folder and repository configuration in the shared iCloud inbox; no Git working tree was changed.')
         messages = []
         # Deterministic additive union. Missing projects/folders never delete a
         # contribution; retiredRoots and aliases encode deliberate decisions.

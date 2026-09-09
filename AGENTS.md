@@ -17,6 +17,12 @@ infrastructure repositories:
 - `~/Documents/SharedConfigs`
 - `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault/GitTracked`
 
+Before inspecting those repositories, run
+`python3 ~/Documents/SharedConfigs/bin/project-sync-check.py --import-observations`.
+This validates and moves pending project snapshots from the external iCloud
+inbox into GitTracked so the same Checkpoint reviews and publishes them. Stop
+if the import fails.
+
 Inspect both repositories, then follow the matching global Checkpoint workflow
 to commit and push their intended changes, including the Express Checkpoint
 validation exception when applicable. After that succeeds, run

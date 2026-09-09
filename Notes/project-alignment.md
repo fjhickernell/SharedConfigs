@@ -18,23 +18,31 @@ match across Macs. In Codex, use **Make primary** when the opening folder is
 wrong. Do not ask Fred to reorder additional folders just to match the JSON.
 
 Each departure records the saved project's portable names/roots and the
-repository registry in a uniquely named JSON file under the adjacent
-`project-observations/` directory. Identical observations are not repeated.
-Files contain no Codex UUIDs, conversations, credentials, or private course
-contents. Home paths become `~/` and paths outside home require an explicit
-mapping. The current reader uses `local-projects` and `project-order` from
+repository registry in a uniquely named JSON file under the iCloud-synchronized
+vault directory `Reference/Codex Project Observations Inbox`, outside every Git
+working tree. Identical observations are not repeated. `arrive` reads both this
+inbox and the Git-tracked history under
+`GitTracked/Reference/project-observations/`. An Infrastructure Checkpoint
+moves validated inbox files into that history immediately before its normal
+inspection, commit, and push. Files contain no Codex UUIDs, conversations,
+credentials, or private course contents. Home paths become `~/` and paths
+outside home require an explicit mapping. The current reader uses
+`local-projects` and `project-order` from
 `~/.codex/.codex-global-state.json`; an unsupported schema fails visibly.
 
 iCloud transports these files between all four Macs, including contributions
 made offline; wait for it to finish before expecting another Mac's changes.
 Unique filenames prevent independent captures from overwriting one another.
-GitTracked provides checkpoint history; these files are not auto-committed.
-The check cannot prove that iCloud has delivered every remote observation.
+The external inbox prevents `depart` from dirtying GitTracked and blocking the
+next `arrive`; GitTracked still provides checkpoint history after `infra save`
+imports and publishes pending observations. The check cannot prove that iCloud
+has delivered every remote observation.
 
 ## What is automatic
 
-- Departure captures configuration observations even if later repository sync
-  fails. It never infers a deletion from a missing folder or project.
+- Departure captures configuration observations in the external inbox even if
+  later repository sync fails. It never infers a deletion from a missing
+  folder or project, and capture alone does not dirty a Git repository.
 - Capture validates the local observation before writing it. Duplicate saved
   project names fail visibly without creating a shared file that other Macs
   would reject; reconcile the duplicate names in Codex before capturing again.
@@ -70,8 +78,11 @@ capture is additive and will flag it again otherwise.
 Fred applies Codex app changes; Codex can edit VS Code workspace files. Neither
 app's folder list is automatically changed. Register new Git repositories
 separately before expecting `arrive` to clone them; OneDrive handles its own
-folders. Publish SharedConfigs using `infra save`, then update its checkout on
-the next Mac. `arrive` now pulls both infrastructure repositories first via
+folders. `infra save` first runs
+`python3 ~/Documents/SharedConfigs/bin/project-sync-check.py --import-observations`
+to move pending observations into GitTracked, then publishes both
+infrastructure repositories. Update SharedConfigs on the next Mac afterward.
+`arrive` pulls both infrastructure repositories first via
 `git-repo-sync.sh --pull-only`, then continues to the other scripts and
 registry without restarting. Changes to `arrive` itself take effect on the
 next invocation. Local changes or unpublished/divergent history stop

@@ -98,6 +98,7 @@ class ProjectChecks(unittest.TestCase):
     def test_four_machines_contribute_and_receive_union(self):
         manifest = self.home / 'manifest.json'
         manifest.write_text(json.dumps(self.manifest))
+        inbox = self.home / 'inbox'
         registry = self.home / 'repositories.conf'
         registry.write_text('current|active|repo|repo||git@example.org:repo.git\n')
         originals = {}
@@ -112,12 +113,12 @@ class ProjectChecks(unittest.TestCase):
                 'id': {'name': 'Project', 'rootPaths': [str(machine_home / 'repo'), str(machine_home / machine)]},
                 'new': {'name': 'New ' + machine, 'rootPaths': [str(machine_home / ('new-' + machine))]}}})
             state.write_text(content)
-            command = ['python3', str(SCRIPT), '--home', str(machine_home), '--machine', machine, '--manifest', str(manifest), '--state', str(state), '--registry', str(registry)]
+            command = ['python3', str(SCRIPT), '--home', str(machine_home), '--machine', machine, '--manifest', str(manifest), '--inbox', str(inbox), '--state', str(state), '--registry', str(registry)]
             result = subprocess.run(command + ['--capture'], capture_output=True, text=True)
             self.assertIn(result.returncode, (0, 1), result.stderr)
             originals[machine] = (state, content, command)
-        observations = self.home / 'project-observations'
-        self.assertEqual(len(list(observations.glob('*.json'))), 4)
+        self.assertEqual(len(list(inbox.glob('*.json'))), 4)
+        self.assertFalse((self.home / 'project-observations').exists())
         for machine, (state, content, command) in originals.items():
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertEqual(result.returncode, 1, result.stderr)
@@ -127,7 +128,7 @@ class ProjectChecks(unittest.TestCase):
                     self.assertIn('ADD PROJECT: New ' + other, result.stdout)
             self.assertEqual(state.read_text(), content)
             subprocess.run(command + ['--capture'], capture_output=True)
-        self.assertEqual(len(list(observations.glob('*.json'))), 4)
+        self.assertEqual(len(list(inbox.glob('*.json'))), 4)
         self.assertEqual(json.loads(manifest.read_text()), self.manifest)
         registry.write_text('current|active|repo|repo||git@example.org:changed.git\n')
         result = subprocess.run(originals['Mini'][2], capture_output=True, text=True)
@@ -135,7 +136,114 @@ class ProjectChecks(unittest.TestCase):
         subprocess.run(originals['Mini'][2] + ['--capture'], capture_output=True)
         registry.write_text('current|active|repo|repo||git@example.org:repo.git\n')
         subprocess.run(originals['Mini'][2] + ['--capture'], capture_output=True)
-        self.assertEqual(len(list(observations.glob('*.json'))), 6)
+        self.assertEqual(len(list(inbox.glob('*.json'))), 6)
+
+    def test_import_moves_validated_inbox_to_tracked_history(self):
+        manifest = self.home / 'manifest.json'
+        manifest.write_text(json.dumps(self.manifest))
+        inbox = self.home / 'inbox'
+        inbox.mkdir()
+        observation = {
+            'version': 1,
+            'machine': 'Intel',
+            'projects': self.manifest['projects'],
+            'registry': ['current|active|repo|repo||git@example.org:repo.git'],
+            'recordedAt': '2026-09-09T12:00:00+00:00',
+        }
+        source = inbox / 'Intel-example.json'
+        source.write_text(json.dumps(observation))
+        result = subprocess.run([
+            'python3', str(SCRIPT), '--home', str(self.home),
+            '--manifest', str(manifest), '--inbox', str(inbox),
+            '--import-observations',
+        ], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertIn('IMPORTED 1 project observation', result.stdout)
+        self.assertFalse(source.exists())
+        destination = self.home / 'project-observations/Intel-example.json'
+        self.assertEqual(json.loads(destination.read_text()), observation)
+
+    def test_capture_does_not_dirty_gittracked_until_import(self):
+        gittracked = self.home / 'GitTracked'
+        reference = gittracked / 'Reference'
+        reference.mkdir(parents=True)
+        manifest = reference / 'Codex Project Manifest.json'
+        manifest.write_text(json.dumps(self.manifest))
+        inbox = self.home / 'inbox'
+        registry = self.home / 'repositories.conf'
+        registry.write_text('current|active|repo|repo||git@example.org:repo.git\n')
+        state = self.home / 'state.json'
+        state.write_text(json.dumps({'project-order': ['id'], 'local-projects': {
+            'id': {'name': 'Project', 'rootPaths': [str(self.home / 'repo')]},
+        }}))
+        for arguments in [
+            ['init', '-q'],
+            ['config', 'user.name', 'Test'],
+            ['config', 'user.email', 'test@example.org'],
+            ['add', '.'],
+            ['commit', '-qm', 'fixture'],
+        ]:
+            subprocess.run(['git', '-C', str(gittracked), *arguments], check=True)
+
+        command = [
+            'python3', str(SCRIPT), '--home', str(self.home), '--machine', 'Intel',
+            '--manifest', str(manifest), '--inbox', str(inbox),
+            '--state', str(state), '--registry', str(registry),
+        ]
+        result = subprocess.run(command + ['--capture'], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertIn('no Git working tree was changed', result.stdout)
+        status = subprocess.run(
+            ['git', '-C', str(gittracked), 'status', '--porcelain', '--untracked-files=all'],
+            check=True, capture_output=True, text=True).stdout
+        self.assertEqual(status, '')
+        self.assertEqual(len(list(inbox.glob('Intel-*.json'))), 1)
+
+        result = subprocess.run([
+            'python3', str(SCRIPT), '--home', str(self.home),
+            '--manifest', str(manifest), '--inbox', str(inbox),
+            '--import-observations',
+        ], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        status = subprocess.run(
+            ['git', '-C', str(gittracked), 'status', '--porcelain', '--untracked-files=all'],
+            check=True, capture_output=True, text=True).stdout
+        self.assertRegex(status, r'^\?\? Reference/project-observations/Intel-.*\.json\n$')
+
+    def test_import_conflict_does_not_partially_move_batch(self):
+        manifest = self.home / 'manifest.json'
+        manifest.write_text(json.dumps(self.manifest))
+        inbox = self.home / 'inbox'
+        observations = self.home / 'project-observations'
+        inbox.mkdir()
+        observations.mkdir()
+
+        def observation(machine, recorded_at):
+            return {
+                'version': 1,
+                'machine': machine,
+                'projects': self.manifest['projects'],
+                'registry': ['current|active|repo|repo||git@example.org:repo.git'],
+                'recordedAt': recorded_at,
+            }
+
+        first = inbox / 'Intel-first.json'
+        conflict = inbox / 'Intel-conflict.json'
+        first.write_text(json.dumps(observation('Intel', '2026-09-09T12:00:00+00:00')))
+        conflict.write_text(json.dumps(observation('Intel', '2026-09-09T12:01:00+00:00')))
+        (observations / conflict.name).write_text(
+            json.dumps(observation('Intel', '2026-09-09T11:59:00+00:00')))
+
+        result = subprocess.run([
+            'python3', str(SCRIPT), '--home', str(self.home),
+            '--manifest', str(manifest), '--inbox', str(inbox),
+            '--import-observations',
+        ], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2, result.stderr + result.stdout)
+        self.assertIn('Conflicting observation filename', result.stderr)
+        self.assertTrue(first.exists())
+        self.assertTrue(conflict.exists())
+        self.assertFalse((observations / first.name).exists())
 
     def test_invalid_schema(self):
         with self.assertRaises(ValueError):
@@ -147,6 +255,7 @@ class ProjectChecks(unittest.TestCase):
     def test_duplicate_name_capture_does_not_poison_observations(self):
         manifest = self.home / 'manifest.json'
         manifest.write_text(json.dumps(self.manifest))
+        inbox = self.home / 'inbox'
         registry = self.home / 'repositories.conf'
         registry.write_text('current|active|repo|repo||git@example.org:repo.git\n')
         state = self.home / 'state.json'
@@ -155,22 +264,22 @@ class ProjectChecks(unittest.TestCase):
         duplicate = json.dumps({'project-order': ['id', 'duplicate'],
                                 'local-projects': {'id': project, 'duplicate': project}})
         command = ['python3', str(SCRIPT), '--home', str(self.home), '--machine', 'M5',
-                   '--manifest', str(manifest), '--state', str(state), '--registry', str(registry)]
-        observations = self.home / 'project-observations'
+                   '--manifest', str(manifest), '--inbox', str(inbox),
+                   '--state', str(state), '--registry', str(registry)]
         for existing_snapshot in [False, True]:
             with self.subTest(existing_snapshot=existing_snapshot):
                 if existing_snapshot:
                     state.write_text(valid)
                     result = subprocess.run(command + ['--capture'], capture_output=True, text=True)
                     self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
-                before = {path.name: path.read_bytes() for path in observations.glob('*')}
+                before = {path.name: path.read_bytes() for path in inbox.glob('*')}
                 state.write_text(duplicate)
                 result = subprocess.run(command + ['--capture'], capture_output=True, text=True)
                 self.assertEqual(result.returncode, 2, result.stderr + result.stdout)
                 self.assertIn('Duplicate/invalid project name or alias: Project', result.stderr)
                 self.assertNotIn('RECORDED', result.stdout)
-                self.assertEqual(observations.exists(), existing_snapshot)
-                self.assertEqual({path.name: path.read_bytes() for path in observations.glob('*')}, before)
+                self.assertEqual(inbox.exists(), existing_snapshot)
+                self.assertEqual({path.name: path.read_bytes() for path in inbox.glob('*')}, before)
                 self.assertEqual(state.read_text(), duplicate)
                 self.assertEqual(json.loads(manifest.read_text()), self.manifest)
 

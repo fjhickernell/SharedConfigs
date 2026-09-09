@@ -214,10 +214,14 @@ treat it as an Infrastructure-project Checkpoint regardless of the current
 Codex project or repository. Apply the normal Checkpoint workflow to both
 infrastructure repositories, `~/Documents/SharedConfigs` and
 `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault/GitTracked`,
-then run `git-repo-sync.sh` as the final synchronization step and report its
-result. Do not include the current teaching, research, or other project merely
-because this command was issued from that project's workspace, and do not run
-`sync-active.sh`.
+first running
+`python3 ~/Documents/SharedConfigs/bin/project-sync-check.py --import-observations`
+to validate and move pending snapshots from the external iCloud inbox into
+GitTracked. Stop if the import fails. Then perform the normal inspection,
+validation, commit, and push workflow and run `git-repo-sync.sh` as the final
+synchronization step. Report its result. Do not include the current teaching,
+research, or other project merely because this command was issued from that
+project's workspace, and do not run `sync-active.sh`.
 
 Do not treat casual or reordered uses of these words as this command. The
 entire message must match one of the two commands exactly.
