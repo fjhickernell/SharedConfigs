@@ -7,6 +7,17 @@ set -uo pipefail
 # can find git-lfs even when it is installed but absent from the caller's PATH.
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
+pull_only=false
+case "${1:-}" in
+  --pull-only) pull_only=true ;;
+  '') ;;
+  *) echo "Usage: git-repo-sync.sh [--pull-only]" >&2; exit 2 ;;
+esac
+if (( $# > 1 )); then
+  echo "Usage: git-repo-sync.sh [--pull-only]" >&2
+  exit 2
+fi
+
 typeset -a REPOS=()
 
 script_dir="${0:A:h}"
@@ -119,6 +130,27 @@ sync_repo() {
 
     cd "$repo" || exit 1
 
+    if [[ "$pull_only" == true ]]; then
+      # Never let user Git configuration introduce autostashing or recursion.
+      if [[ -n "$(git status --porcelain)" ]]; then
+        log "FAILED: $name has local changes; publish or resolve them before arrival."
+        exit 1
+      fi
+      for operation in MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD rebase-merge rebase-apply; do
+        if [[ -e "$(git rev-parse --git-path "$operation")" ]]; then
+          log "FAILED: $name has an unfinished Git operation."
+          exit 1
+        fi
+      done
+      git -c fetch.recurseSubmodules=false fetch origin || exit 1
+      if ! git merge-base --is-ancestor HEAD '@{u}'; then
+        log "FAILED: $name has unpublished or divergent commits; resolve before arrival."
+        exit 1
+      fi
+      git -c merge.autostash=false -c submodule.recurse=false merge --ff-only '@{u}' || exit 1
+      exit 0
+    fi
+
     if ! git add -A; then
       log "FAILED: could not stage local changes in $name."
       exit 1
@@ -151,6 +183,9 @@ sync_repo() {
   return $exit_code
 }
 
+if [[ "$pull_only" == true ]]; then
+  log "Pull-only infrastructure refresh: no staging, commits, rebases, or pushes."
+fi
 log "===== Git repository synchronization started. ====="
 
 overall_exit_code=0

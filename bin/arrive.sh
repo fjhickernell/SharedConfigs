@@ -32,6 +32,12 @@ error() {
 }
 
 banner "arrive started"
+section "Pulling infrastructure repositories"
+if ! "${0:A:h}/git-repo-sync.sh" --pull-only; then
+  error "arrive stopped: infrastructure refresh failed; development and active repos were not synchronized."
+  exit 1
+fi
+# Continue this invocation; wrapper updates take effect on the next run.
 
 section "Syncing standalone development repos"
 sync-dev.sh

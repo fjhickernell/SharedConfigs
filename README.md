@@ -16,10 +16,22 @@ scripts shared through Git across my Macs.
 
 - Each Mac has a Git checkout at `~/Documents/SharedConfigs`.
 - `arrive` and `depart` handle the normal multi-repository synchronization
-  workflow; `git-repo-sync.sh` handles the infrastructure repositories.
+  workflow. `arrive` first runs `git-repo-sync.sh --pull-only` for both
+  infrastructure repositories, then continues without restarting. Changes to
+  `arrive` itself take effect on the next invocation.
+  This fast-forward-only step never stages, commits, rebases, stashes, or pushes.
+  Dirty trees, unpublished/divergent commits, and refresh failures stop arrival
+  before development or active synchronization. Publish intended local work
+  with `infra save` before retrying. `depart` does not publish infrastructure;
+  the existing full `git-repo-sync.sh` workflow remains available separately.
+- On a Mac with the old `arrive`, first update its clean SharedConfigs checkout
+  with `git -C ~/Documents/SharedConfigs pull --ff-only` to install this behavior.
 - Home-directory configuration paths point into this checkout through the
   links declared in `settings/managed-links.conf`.
-- The GitHub remote provides cross-machine synchronization and history.
+- GitHub provides published history and remote reconciliation. Documents is
+  also managed by iCloud Drive on Mini, so SharedConfigs files can synchronize
+  through iCloud. Do not assume `~/Documents` is outside iCloud; check each
+  Mac's Documents configuration when relevant.
 
 ## Machine Configuration Audit
 

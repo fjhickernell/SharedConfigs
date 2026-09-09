@@ -71,7 +71,13 @@ Fred applies Codex app changes; Codex can edit VS Code workspace files. Neither
 app's folder list is automatically changed. Register new Git repositories
 separately before expecting `arrive` to clone them; OneDrive handles its own
 folders. Publish SharedConfigs using `infra save`, then update its checkout on
-the next Mac. `arrive` does not fetch SharedConfigs itself.
+the next Mac. `arrive` now pulls both infrastructure repositories first via
+`git-repo-sync.sh --pull-only`, then continues to the other scripts and
+registry without restarting. Changes to `arrive` itself take effect on the
+next invocation. Local changes or unpublished/divergent history stop
+arrival without staging, committing, stashing, rebasing, or pushing. Install
+this version once on Macs still running the old wrapper by fast-forwarding
+SharedConfigs manually. `depart` does not publish infrastructure changes.
 
 Validate with `python3 tests/test-project-sync-check.py` and
 `zsh -n bin/arrive.sh bin/depart.sh`. Fixtures exercise all four contributing

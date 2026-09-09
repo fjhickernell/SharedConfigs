@@ -191,7 +191,7 @@ class ProjectChecks(unittest.TestCase):
             shutil.copyfile(SCRIPT.parent / name, fixture_bin / name)
         (fixture_bin / 'project-sync-check.py').write_text(
             'import os, sys\nprint("PROJECT CHECK", sys.argv[1:])\nsys.exit(int(os.environ.get("CHECK_RC", "0")))\n')
-        for name in ['sync-dev.sh', 'sync-active.sh', 'pr-status']:
+        for name in ['git-repo-sync.sh', 'sync-dev.sh', 'sync-active.sh', 'pr-status']:
             stub = fixture_bin / name
             stub.write_text('#!/bin/sh\necho "STUB ' + name + ' $*"\nexit 0\n')
             stub.chmod(0o755)
@@ -210,6 +210,12 @@ class ProjectChecks(unittest.TestCase):
                     self.assertIn('Codex project check failed', result.stderr)
                 if name == 'arrive.sh':
                     self.assertLess(result.stdout.index('STUB sync-active.sh'), result.stdout.index('PROJECT CHECK'))
+                    self.assertEqual(result.stdout.count('STUB git-repo-sync.sh --pull-only'), 1)
+                    self.assertLess(result.stdout.index('STUB git-repo-sync.sh'), result.stdout.index('STUB sync-dev.sh'))
+        (fixture_bin / 'git-repo-sync.sh').write_text('#!/bin/sh\nexit 1\n')
+        result = subprocess.run(['zsh', '-f', str(fixture_bin / 'arrive.sh')], env=env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn('STUB sync-dev.sh', result.stdout)
 
 
 if __name__ == '__main__':

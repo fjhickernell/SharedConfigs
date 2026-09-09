@@ -22,10 +22,15 @@ The guiding principle is:
 
 ### Synchronization
 
-Each Mac has a Git checkout at `~/Documents/SharedConfigs`. The managed
-`arrive`/`depart` and infrastructure synchronization workflows move changes
-between those checkouts through Git. The Obsidian vault is a separate iCloud
-workspace; SharedConfigs itself is not synchronized by iCloud.
+SharedConfigs is a Git repository at `~/Documents/SharedConfigs`. Documents
+is also managed by iCloud Drive on Mini, verified September 8, 2026 through
+its CloudDocs file-provider attribute and the iCloud Documents link. Therefore
+SharedConfigs files can arrive through iCloud as well as through Git; do not
+infer that a `~/Documents` path is outside iCloud. Verify Documents settings
+on other Macs when that distinction matters. The infrastructure Git workflow
+provides published history and remote reconciliation. `arrive` pulls both
+infrastructure repositories safely; iCloud delivery can still leave local
+uncommitted changes that require attention before a Git pull.
 
 ---
 
