@@ -52,11 +52,14 @@ has delivered every remote observation.
   manifest. A stale machine cannot remove another machine's additions.
 - Names known as aliases map to the same project. Unknown names that share
   existing roots require review, avoiding accidental duplicate projects.
-- Missing projects, roots, directories, a different primary folder, legacy roots, and
-  registry differences are printed in the terminal.
-- A changed registry on any Mac is recorded and compared on the others.
-  Existing `repo-sweep` handles live Git state; this checker compares registry
-  configuration, not unregistered changes to a checkout's actual remote.
+- Missing projects, roots, directories, a different primary folder, and legacy
+  roots are printed in the terminal.
+- A changed registry on any Mac is recorded and compared on the others. Rows
+  observed elsewhere that are absent or modified in the authoritative local
+  registry require review. Older snapshots that merely lack later local rows
+  do not warn. Existing `repo-sweep` handles live Git state; this checker
+  compares registry configuration, not unregistered changes to a checkout's
+  actual remote.
 
 Exit codes from the checker are: 0 = matching configuration; 1 =
 setup/reconciliation needed; 2 = check failed. The `arrive` and `depart`

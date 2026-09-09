@@ -273,11 +273,11 @@ def main():
                             if n.startswith(('REVIEW', 'DUPLICATE')))
             latest[snapshot['machine']] = snapshot
         for other, snapshot in latest.items():
-            if other != machine and snapshot['registry'] != registry:
+            foreign_rows = [row for row in snapshot['registry'] if row not in registry]
+            if other != machine and foreign_rows:
                 messages.append('REGISTRY REVIEW: ' + other + ' recorded different repository entries; fetch SharedConfigs and reconcile additions/modifications before cloning.')
-                for row in snapshot['registry']:
-                    if row not in registry:
-                        messages.append('  ' + other + ' registry entry: ' + row)
+                for row in foreign_rows:
+                    messages.append('  ' + other + ' registry entry: ' + row)
         notices, _ = reconcile(manifest, local, home, False)
         messages.extend(notices)
         messages = list(dict.fromkeys(messages))

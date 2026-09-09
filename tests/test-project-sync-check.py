@@ -138,6 +138,14 @@ class ProjectChecks(unittest.TestCase):
         subprocess.run(originals['Mini'][2] + ['--capture'], capture_output=True)
         self.assertEqual(len(list(inbox.glob('*.json'))), 6)
 
+        # Older observations that merely lack rows added to the authoritative
+        # registry do not propose a conflicting addition or modification.
+        registry.write_text(
+            'current|active|repo|repo||git@example.org:repo.git\n'
+            'archived|active|old|old||git@example.org:old.git\n')
+        result = subprocess.run(originals['Intel'][2], capture_output=True, text=True)
+        self.assertNotIn('REGISTRY REVIEW', result.stdout)
+
     def test_import_moves_validated_inbox_to_tracked_history(self):
         manifest = self.home / 'manifest.json'
         manifest.write_text(json.dumps(self.manifest))
