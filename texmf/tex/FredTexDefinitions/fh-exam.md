@@ -2,8 +2,15 @@
 
 `fh-exam.sty` provides headers, instructions, scoring boxes, problems and
 subproblems, point totals, and switchable answers for paper assessments.
-Version **3.23 (2026/09/09)** adds optional quiz instructions and a single
+Version **26.1 (2026/09/09)** adds optional quiz instructions and a single
 score box. The package's version history is at the top of `fh-exam.sty`.
+
+Versions use **YY.N**: the two-digit year followed by the release number
+within that year, starting at 1. Thus 26.1 is followed by 26.2, and the first
+release in 2027 is 27.1. Keep the full release date alongside the version.
+This release was initially published as 3.23 and renumbered to 26.1; its
+functionality is unchanged. Earlier changelog entries retain their original
+version numbers.
 
 ## A quiz
 
