@@ -3,6 +3,15 @@
 %%
 %% Changelog
 %%
+%% v3.23 (2026/09/09)
+%%   • Added opt-in \examstyle{quiz} with compact classroom instructions,
+%%     automatic question/point wording, and configurable instruction text.
+%%   • Added \setexamgradesummarymode{single} for a single Score box;
+%%     table mode remains the default and retains the existing layout.
+%%   • Quiz mode respects explicit full and first-instruction overrides.
+%%   • Preserved regular-exam and take-home defaults, answer switches,
+%%     and two-pass question/point counting. See fh-exam.md for usage.
+%%
 %% v3.22c (2026/05/06)
 %%   • Fixed grading summary row vertical centering by replacing row-end
 %%     extra space with a centered cell strut.
@@ -62,7 +71,7 @@
 %% ------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesExplPackage{fh-exam}{2026/05/06}{3.22c}{Slim exam scaffolding}
+\ProvidesExplPackage{fh-exam}{2026/09/09}{3.23}{Slim exam scaffolding}
 
 \RequirePackage{xstring}
 \makeatletter
@@ -170,8 +179,19 @@
 %   \showexamgradesummarytrue   % places the box to the right of the instructions
 %   \examgradesummary           % manually prints the box
 %   \examgradesummary[8]        % manually prints an 8-question box
+%   \setexamgradesummarymode{single} % one Score box, using the score width
+%   \setexamgradesummarymode{table}  % restore the default Q / Score / Total table
 \newif\ifshowexamgradesummary
 \showexamgradesummarytrue
+\newif\iffhx@singlescore
+\fhx@singlescorefalse
+\NewDocumentCommand{\setexamgradesummarymode}{m}{%
+	\IfStrEqCase{#1}{%
+		{single}{\fhx@singlescoretrue}%
+		{table}{\fhx@singlescorefalse}%
+	}[\PackageError{fh-exam}{Unknown grading summary mode `#1'}%
+		{Use single or table.}]%
+}
 
 \newlength{\examgradesummaryqwidth}
 \newlength{\examgradesummaryscorewidth}
@@ -215,12 +235,20 @@
 	\small
 	\renewcommand{\arraystretch}{1.05}%
 	\setlength{\tabcolsep}{4pt}%
+	\iffhx@singlescore
+	\begin{tabular}[t]{|>{\centering\arraybackslash}m{\examgradesummaryscorewidth}|}
+		\hline
+		\textbf{Score} \\ \hline
+		\examgradesummarycell{} \\ \hline
+	\end{tabular}%
+	\else
 	\begin{tabular}[t]{|>{\centering\arraybackslash}m{\examgradesummaryqwidth}|>{\centering\arraybackslash}m{\examgradesummaryscorewidth}|}
 		\hline
 		\textbf{Q} & \textbf{Score} \\ \hline
 		\fhxgradesummaryrows{#1}%
 		\examgradesummarycell{\textbf{Total}} & \examgradesummarycell{} \\ \hline
 	\end{tabular}%
+	\fi
 	\endgroup
 }
 
@@ -396,10 +424,27 @@
 
 % --- Instructions block ---
 
+\newif\ifexam@quiz
+\exam@quizfalse
+
 \newcommand{\examtimeallowed}{\forcespaces{75 minutes}}
 \newcommand{\examnotesheets}{4}
-\newcommand{\examnotesdesc}{\forcespaces{double-sided letter-size sheets of notes}}
-\newcommand{\examdevices}{\forcespaces{No calculators or other electronic devices are allowed. Phones must be placed in your bags under your desks or at the front of the room. Hands must be on top of your desks.}}
+\newcommand{\examnotesdesc}{%
+	\ifexam@quiz
+		double-sided letter-sized sheets of notes%
+	\else
+		\forcespaces{double-sided letter-size sheets of notes}%
+	\fi
+}
+\newcommand{\examdevices}{%
+	\ifexam@quiz
+		No calculators or other electronic devices are allowed.
+		Silence and put devices in your bag under your desk or at the front
+		of the room.%
+	\else
+		\forcespaces{No calculators or other electronic devices are allowed. Phones must be placed in your bags under your desks or at the front of the room. Hands must be on top of your desks.}%
+	\fi
+}
 \newcommand{\examsigfigs}{three}
 \newcommand{\examinstructorcontact}{\forcespaces{Off-site students may contact the instructor as directed by your syllabus.}}
 
@@ -411,9 +456,16 @@
 }
 
 \newcommand{\examfirstinstructiondefault}{%
+	\ifexam@quiz
+		This quiz has \textbf{\examnumproblemsword\space
+		\ifnum\examnumproblemsref=1 question\else questions\fi}, worth
+		\textbf{\examtotalpointsref\space
+		\ifnum\examtotalpointsref=1 point\else points\fi}.%
+	\else
 	\forcespaces{This test has \textbf{\examnumproblemsWORD} question(s).%
 		\space Attempt all.%
 		\space The maximum number of points is \textbf{\examtotalpointsref}.}%
+	\fi
 }
 \newcommand{\examfirstinstruction}{\examfirstinstructiondefault}
 \NewDocumentCommand{\setexamfirstinstruction}{m}{%
@@ -437,8 +489,36 @@
 }
 
 \newcommand{\examfullinstructions}{\examfullinstructionsdefault}
+\newif\iffhx@custominstructions
+\fhx@custominstructionsfalse
 \NewDocumentCommand{\setexamfullinstructions}{m}{%
+	\fhx@custominstructionstrue
 	\renewcommand{\examfullinstructions}{#1}%
+}
+
+% Quiz-only hooks; course-specific accommodation wording is opt-in.
+\newcommand{\quizaccommodations}{}
+\newcommand{\quizworkinstructions}{%
+	Work individually. Do not communicate with other students or
+	share materials. Direct questions to the instructor.%
+}
+\newcommand{\quizanswerinstructions}{%
+	Show all your work to justify your answer. Answers without
+	adequate justification will not receive credit. Simplify fractions
+	and leave other expressions in exact form.%
+}
+\newcommand{\examfullinstructionsquiz}{%
+	\begin{enumerate}[label=\roman*., leftmargin=*, itemsep=2pt, topsep=2pt]
+		\item \examfirstinstruction
+		\item The time allowed is \textbf{\examtimeallowed}.\space
+			\quizaccommodations
+		\item This quiz is closed book, but you may use up to
+			\textbf{\examnotesheets} \examnotesdesc.
+		\item \examdevices
+		\item \quizworkinstructions
+		\item \quizanswerinstructions
+		\item Print your name clearly on each answer sheet.
+	\end{enumerate}%
 }
 
 \newif\ifexam@takehome
@@ -446,6 +526,7 @@
 
 \NewDocumentCommand{\examstyle}{m}{%
 	\edef\temp{#1}%
+	\IfStrEq{\temp}{quiz}{\exam@quiztrue}{\exam@quizfalse}%
 	\IfStrEq{\temp}{takehome}{%
 		\exam@takehometrue
 	}{%
@@ -454,6 +535,11 @@
 }
 
 \AtBeginDocument{%
+	\ifexam@quiz
+		\iffhx@custominstructions\else
+			\renewcommand{\examfullinstructions}{\examfullinstructionsquiz}%
+		\fi
+	\fi
 	\ifexam@takehome
 	\setexamfullinstructions{%
 		\begin{enumerate}[label=\roman*., leftmargin=*, itemsep=2pt, topsep=2pt]

@@ -5,8 +5,16 @@
 			"path": "../../../../../SoftwareRepositories/MATH565Fall2026"
 		},
 		{
+			"name": "MATH 565 Fall 2026",
+			"path": "../../../../../Library/CloudStorage/OneDrive-IllinoisInstituteofTechnology/Class Work/MATH 565 MC Methods Finance/MATH 565 Fall 2026"
+		},
+		{
 			"name": "MATH332Fall2026",
 			"path": "../../../../../SoftwareRepositories/MATH332Fall2026"
+		},
+		{
+			"name": "MATH332_Fall2026",
+			"path": "../../../../../Library/CloudStorage/OneDrive-IllinoisInstituteofTechnology/Class Work/MATH 332 Linear Algebra/MATH332_Fall2026"
 		},
 		{
 			"name": "MATH563Spring2026",
@@ -17,23 +25,16 @@
 			"path": "../../../../../SoftwareRepositories/MATH565Fall2025"
 		},
 		{
+			"name": "GitTracked",
 			"path": "../../../../../Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault/GitTracked"
 		},
 		{
+			"name": "HickernellAcademicLib",
 			"path": "../../../../../SoftwareRepositories/HickernellAcademicLib"
 		},
 		{
+			"name": "QMCSoftware",
 			"path": "../../../../../SoftwareRepositories/QMCSoftware"
-		},
-		{
-			"path": "../../../../../Library/CloudStorage/OneDrive-IllinoisInstituteofTechnology/Class Work/MATH 332 Linear Algebra/MATH332_Fall2026"
-		},
-		{
-			"path": "../../../../../Library/CloudStorage/OneDrive-IllinoisInstituteofTechnology/Class Work/MATH 565 MC Methods Finance/MATH 565 Fall 2026"
-		},
-		{
-			"name": "MCQMC26",
-			"path": "../../../../../SoftwareRepositories/MCQMC26"
 		}
 	]
 }

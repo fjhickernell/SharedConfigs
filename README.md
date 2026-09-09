@@ -6,6 +6,7 @@ scripts shared through Git across my Macs.
 ## Contents
 - `Brewfile`: Homebrew package list for system parity
 - `texmf/`: Local LaTeX styles and macros
+  (see the [fh-exam guide](texmf/tex/FredTexDefinitions/fh-exam.md) for paper quizzes and exams)
 - `BibDesk/`: retained BibDesk templates and support-file archive; the live
   Application Support directory remains machine-local
 - `bin/`: Utility scripts (e.g., `sync-brew.sh`)
