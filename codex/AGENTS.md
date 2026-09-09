@@ -324,7 +324,14 @@ The message must begin with the exact words `Express Checkpoint`.
 - Do not ask again for permission to commit or push after receiving
   `Checkpoint` or `Express Checkpoint`.
 - Do not interpret casual uses of the word “checkpoint” inside a longer sentence as authorization. The command must begin the user's message.
-- Never include unrelated pre-existing changes without clearly identifying them and obtaining direction.
+- Include the user's own edits, including pre-existing changes, when committing
+  and pushing repositories within the authorized Checkpoint or save scope.
+  Treat those edits as intentional; preserve and review them alongside agent
+  changes. Do not ask for confirmation merely because the user made them
+  directly or they predate the current session. Ask only when a concrete
+  conflict, uncertain authorship, secret, generated artifact, or other material
+  risk requires direction. This does not expand the repository scope or
+  override the normal temporary/generated/secret-file exclusions.
 - Never use `git push --force` or `git push --force-with-lease` unless the user explicitly requests it.
 - Never bypass failing validation with `--no-verify` unless the user explicitly requests it.
 - Use fast-forward-safe Git operations and preserve existing history.
