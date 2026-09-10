@@ -46,6 +46,15 @@ passkey flow.
 
 ## Illinois Tech calendar routing
 
+For any request to check, search, schedule, or edit the user's calendar,
+default to the Illinois Tech calendar described below unless the user
+specifies otherwise. Use the `fjhickernell@gmail.com` calendar as the secondary
+place to look for events and availability. Check both when finding an open
+time slot. Create new events on Illinois Tech by default; when editing an
+existing event found on the secondary calendar, edit it there unless the user
+asks to move it. Identify calendars by account rather than assuming that a
+similarly named Google calendar is the requested secondary calendar.
+
 The user's primary calendar for nearly all events is the Apple Calendar
 calendar named `Calendar` under the `hickernell@illinoistech.edu` account,
 shown in Apple Calendar as `Illinois Tech Fred`. Prefer this calendar for new
