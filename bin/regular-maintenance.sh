@@ -9,6 +9,10 @@ log() {
   echo "[$ts] $message"
 }
 
+banner() {
+  printf '\033[1;32m%s\033[0m\n' "$(log "$1")"
+}
+
 run_step() {
   local name="$1"
   shift
@@ -78,7 +82,7 @@ report_dirty_class_repos() {
 
 BASE="$HOME/Documents/SharedConfigs/bin"
 
-log "===== Regular maintenance run started. ====="
+banner "===== Regular maintenance run started. ====="
 
 sudo -v
 
@@ -120,4 +124,4 @@ else
   log "npm not found on PATH; skipping npm globals."
 fi
 
-log "===== Regular maintenance run finished. ====="
+banner "===== Regular maintenance run finished. ====="
