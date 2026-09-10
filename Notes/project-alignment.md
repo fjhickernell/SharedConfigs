@@ -33,8 +33,8 @@ outside home require an explicit mapping. The current reader uses
 iCloud transports these files between all four Macs, including contributions
 made offline; wait for it to finish before expecting another Mac's changes.
 Unique filenames prevent independent captures from overwriting one another.
-The external inbox prevents `depart` from dirtying GitTracked and blocking the
-next `arrive`; GitTracked still provides checkpoint history after `infra save`
+The external inbox keeps departure captures outside GitTracked's working tree;
+GitTracked still provides checkpoint history after `infra save`
 imports and publishes pending observations. The check cannot prove that iCloud
 has delivered every remote observation.
 
@@ -84,14 +84,25 @@ separately before expecting `arrive` to clone them; OneDrive handles its own
 folders. `infra save` first runs
 `python3 ~/Documents/SharedConfigs/bin/project-sync-check.py --import-observations`
 to move pending observations into GitTracked, then publishes both
-infrastructure repositories. Update SharedConfigs on the next Mac afterward.
-`arrive` pulls both infrastructure repositories first via
-`git-repo-sync.sh --pull-only`, then continues to the other scripts and
-registry without restarting. Changes to `arrive` itself take effect on the
-next invocation. Local changes or unpublished/divergent history stop
-arrival without staging, committing, stashing, rebasing, or pushing. Install
-this version once on Macs still running the old wrapper by fast-forwarding
-SharedConfigs manually. `depart` does not publish infrastructure changes.
+infrastructure repositories. The normal daily morning Dashboard refresh
+usually suffices for the infrastructure Git snapshot; `infra save` is optional
+for deliberate publication of significant changes, not required merely for a
+same-day machine switch. Wait for iCloud delivery on the next Mac.
+
+`arrive` fetches both infrastructure repositories first via
+`git-repo-sync.sh --pull-only`, then continues to the other scripts and registry
+without restarting. If HEAD matches upstream, staged, unstaged, and untracked
+edits are preserved. If upstream is ahead, a clean tree is fast-forwarded; with
+local edits, the pull is explicitly deferred and the index, files, and HEAD are
+left unchanged while arrival continues using the current files. Deferred remote
+updates remain uninstalled until later reconciliation or the normal morning
+snapshot. Wrong branch, origin, or upstream, unfinished or unmerged operations,
+fetch failures, and unpublished/divergent history still stop arrival. Arrival
+never stages, commits, stashes, rebases, or pushes. Changes to `arrive` itself
+take effect on the next invocation. On Macs still running the old wrapper,
+wait for iCloud to deliver this version or manually fast-forward a clean
+SharedConfigs checkout from published history. `depart` does not publish
+infrastructure changes.
 
 Validate with `python3 tests/test-project-sync-check.py` and
 `zsh -n bin/arrive.sh bin/depart.sh`. Fixtures exercise all four contributing

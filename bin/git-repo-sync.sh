@@ -87,8 +87,10 @@ sync_repo() {
   local lock_dir="${TMPDIR:-/tmp}/git-repo-sync-${name}.lock"
   local current_branch actual_origin upstream
 
-  echo
-  log "Starting: $name"
+  if [[ "$pull_only" != true ]]; then
+    echo
+    log "Starting: $name"
+  fi
 
   if [[ ! -d "$repo" ]]; then
     log "FAILED: folder not found: $repo"
@@ -132,22 +134,42 @@ sync_repo() {
 
     if [[ "$pull_only" == true ]]; then
       # Never let user Git configuration introduce autostashing or recursion.
-      if [[ -n "$(git status --porcelain)" ]]; then
-        log "FAILED: $name has local changes; publish or resolve them before arrival."
-        exit 1
-      fi
-      for operation in MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD rebase-merge rebase-apply; do
+      for operation in MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD rebase-merge rebase-apply sequencer; do
         if [[ -e "$(git rev-parse --git-path "$operation")" ]]; then
           log "FAILED: $name has an unfinished Git operation."
           exit 1
         fi
       done
-      git -c fetch.recurseSubmodules=false fetch origin || exit 1
+      local unmerged_entries working_tree_status local_tip upstream_tip
+      unmerged_entries=$(git ls-files --unmerged) || exit 1
+      if [[ -n "$unmerged_entries" ]]; then
+        log "FAILED: $name has unresolved index conflicts."
+        exit 1
+      fi
+      git -c fetch.recurseSubmodules=false fetch --quiet origin || exit 1
       if ! git merge-base --is-ancestor HEAD '@{u}'; then
         log "FAILED: $name has unpublished or divergent commits; resolve before arrival."
         exit 1
       fi
-      git -c merge.autostash=false -c submodule.recurse=false merge --ff-only '@{u}' || exit 1
+      local_tip=$(git rev-parse HEAD) || exit 1
+      upstream_tip=$(git rev-parse '@{u}') || exit 1
+      # iCloud may deliver edits while fetching, so inspect the tree afterward.
+      working_tree_status=$(git status --porcelain --untracked-files=normal --ignore-submodules=none) || exit 1
+      if [[ "$local_tip" == "$upstream_tip" ]]; then
+        if [[ -n "$working_tree_status" ]]; then
+          printf 'OK     %s: published history current; local edits preserved\n' "$name"
+        else
+          printf 'OK     %s: published history current\n' "$name"
+        fi
+        exit 0
+      fi
+      if [[ -n "$working_tree_status" ]]; then
+        log "DEFERRED: $name has remote updates and local edits; leaving files and commits unchanged."
+        log "Arrival can continue using current files; reconcile the remote updates at the next daily snapshot or an intentional infra save."
+        exit 3
+      fi
+      git -c merge.autostash=false -c submodule.recurse=false merge --quiet --ff-only '@{u}' || exit 1
+      printf 'OK     %s: fast-forwarded to %s\n' "$name" "${upstream_tip[1,12]}"
       exit 0
     fi
 
@@ -174,8 +196,13 @@ sync_repo() {
     fi
   ) || exit_code=$?
 
-  if [[ $exit_code -eq 0 ]]; then
-    log "Finished: $name (ok)"
+  if [[ "$pull_only" == true && $exit_code -eq 3 ]]; then
+    (( deferred_repo_count += 1 ))
+    return 0
+  elif [[ $exit_code -eq 0 ]]; then
+    if [[ "$pull_only" != true ]]; then
+      log "Finished: $name (ok)"
+    fi
   else
     log "FAILED: $name (exit $exit_code)"
   fi
@@ -183,12 +210,12 @@ sync_repo() {
   return $exit_code
 }
 
-if [[ "$pull_only" == true ]]; then
-  log "Pull-only infrastructure refresh: no staging, commits, rebases, or pushes."
+if [[ "$pull_only" != true ]]; then
+  log "===== Git repository synchronization started. ====="
 fi
-log "===== Git repository synchronization started. ====="
 
 overall_exit_code=0
+deferred_repo_count=0
 
 for entry in "${REPOS[@]}"; do
   if ! sync_repo "$entry"; then
@@ -197,11 +224,17 @@ for entry in "${REPOS[@]}"; do
 done
 
 if [[ $overall_exit_code -eq 0 ]]; then
-  print -P "%B%F{green}All configured Git repositories synchronized.%f%b"
+  if [[ "$pull_only" == true && $deferred_repo_count -gt 0 ]]; then
+    print -P "%B%F{yellow}Infrastructure refresh completed; $deferred_repo_count pull(s) deferred to preserve local edits. Arrival can continue.%f%b"
+  elif [[ "$pull_only" != true ]]; then
+    print -P "%B%F{green}All configured Git repositories synchronized.%f%b"
+  fi
 else
   print -P "%B%F{red}One or more Git repositories failed to synchronize.%f%b"
 fi
 
-log "===== Git repository synchronization finished. ====="
+if [[ "$pull_only" != true ]]; then
+  log "===== Git repository synchronization finished. ====="
+fi
 
 exit $overall_exit_code

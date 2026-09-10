@@ -20,15 +20,21 @@ scripts shared through Git across my Macs.
   workflow. `arrive` first runs `git-repo-sync.sh --pull-only` for both
   infrastructure repositories, then continues without restarting. Changes to
   `arrive` itself take effect on the next invocation.
-  This fast-forward-only step never stages, commits, rebases, stashes, or pushes.
-  Dirty trees, unpublished/divergent commits, and refresh failures stop arrival
-  before development or active synchronization. Publish intended local work
-  with `infra save` before retrying. `depart` does not publish infrastructure;
+  This step fetches remote history but never stages, commits, rebases, stashes,
+  or pushes. If HEAD matches upstream, local edits are preserved and arrival
+  continues. If upstream is ahead, a clean tree is fast-forwarded; a dirty tree
+  keeps its index, files, and HEAD unchanged and reports a deferred pull while
+  arrival continues. Those remote updates remain uninstalled until later
+  reconciliation or the normal morning Git snapshot. Wrong branch, origin, or
+  upstream, unfinished or unmerged operations, unpublished/divergent commits,
+  and fetch failures still stop arrival before development or active
+  synchronization. `depart` does not publish infrastructure;
   its project capture writes to an external iCloud inbox so it does not dirty
   GitTracked. The existing full `git-repo-sync.sh` workflow remains available
   separately.
-- On a Mac with the old `arrive`, first update its clean SharedConfigs checkout
-  with `git -C ~/Documents/SharedConfigs pull --ff-only` to install this behavior.
+- On a Mac with the old `arrive`, wait for iCloud to deliver the updated script,
+  or update a clean SharedConfigs checkout from published history with
+  `git -C ~/Documents/SharedConfigs pull --ff-only` to install this behavior.
 - Home-directory configuration paths point into this checkout through the
   links declared in `settings/managed-links.conf`.
 - GitHub provides published history and remote reconciliation. Documents is
@@ -51,9 +57,12 @@ machine identity, essential commands, Obsidian vault wiring, and locally
 cached repository state. `machine-audit --full` additionally queries live
 remote tips and checks the Brewfile without updating local refs.
 
-When infrastructure changes are ready to publish, send the exact command
-`infra save`. It is the short alias for the full Infrastructure Checkpoint
-across SharedConfigs and GitTracked.
+The normal daily morning Dashboard refresh usually supplies the infrastructure
+Git snapshot. A same-day machine switch does not require `infra save` merely
+because infrastructure files have changed; allow iCloud to finish delivering
+the files. For a deliberate publication of significant changes, send the exact
+command `infra save`. It is the short alias for the full Infrastructure
+Checkpoint across SharedConfigs and GitTracked.
 
 ## Managed Repository Check
 
