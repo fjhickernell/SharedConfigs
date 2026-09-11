@@ -256,11 +256,36 @@ perform the following workflow:
    deferred work, or technical knowledge. Complete these updates before final
    validation and diff review, and include them in the same Checkpoint commit
    when they belong to that repository.
-4. Run the relevant validation, tests, builds, linting, or syntax checks appropriate to each repository. If validation fails, diagnose and fix problems when reasonably possible. Do not commit known broken work merely because `Checkpoint` was requested.
+4. Before the new push, check the previous GitHub Actions runs for every
+   repository being checkpointed that uses GitHub Actions. This applies to
+   all courses, talks, papers, development libraries, websites, infrastructure,
+   and other repositories, for both normal and Express Checkpoints. Include
+   each applicable workflow, such as tests, linting, builds, rendering, and
+   deployment, rather than only website publishing. Limit the check to the
+   current Checkpoint's repositories and relevant branch; do not sweep
+   unrelated projects. For each applicable workflow, inspect its latest
+   completed run if a newer run is still pending, and do not wait for pending
+   runs. If a previous run failed, inspect the failed step/logs and address
+   applicable problems within the authorized work before publishing; report
+   unresolved failures with a workflow link. A superseded failure is not a
+   current failure when a later equivalent run succeeded. If status cannot be
+   retrieved, report that limitation without treating it as a build failure.
+   Do not create recurring monitors or scheduled follow-ups for this check
+   unless the user explicitly requests them separately.
+   Run the relevant validation, tests, builds, linting, or syntax checks appropriate to each repository. If validation fails, diagnose and fix problems when reasonably possible. Do not commit known broken work merely because `Checkpoint` was requested.
 5. Review the final diff and confirm which changes belong in each repository, including newly created source, documentation, configuration, test, and asset files. Exclude only files that are clearly temporary, generated, ignored, secret, or unrelated to the repository work.
 6. For repositories containing changed writable submodules, validate, commit, and push the submodule changes first where required, then update the parent repository's pinned submodule commit. Follow repository-specific publication and synchronization instructions.
 7. Stage all tracked changes and all new files that belong in each parent or standalone repository. Do not omit relevant files simply because they were not explicitly mentioned in the prompt. Create a concise, meaningful commit message and commit the changes.
-8. Push all intended commits to their configured upstreams.
+8. Push all intended commits to their configured upstreams. After required
+   local validation and a successful push, do not wait for GitHub Actions
+   tests, linting, rendering, builds, or deployment before reporting the
+   Checkpoint complete.
+   This is the default for both normal and Express Checkpoints. Report remote
+   CI/deployment as pending or not checked unless its outcome is already known;
+   do not claim that local success proves remote success. Wait only when the
+   user explicitly requests it or the next authorized action requires verified
+   live output, such as publishing an announcement with newly deployed links.
+   Report any known remote failure rather than treating it as successful.
 9. Report:
    - validation performed,
    - commit messages and abbreviated commit hashes,
