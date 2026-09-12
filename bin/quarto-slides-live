@@ -60,9 +60,10 @@ while [ $# -gt 0 ]; do
       ;;
     -h|--help)
       section "Usage"
-      echo "Usage: quarto-slides-live [--fast] [-p PORT|--port PORT] <deck>"
+      echo "Usage: quarto-slides-live [--fast] [-p PORT|--port PORT] <deck|all>"
       echo "  Examples:"
       echo "    quarto-slides-live 03-hypothesis"
+      echo "    quarto-slides-live all"
       echo "    quarto-slides-live -p 4322 01-introduction"
       echo "    quarto-slides-live --fast --port=4323 slides/05-selected-topics.qmd"
       exit 0
@@ -79,9 +80,10 @@ done
 
 if [ $# -ne 1 ]; then
   section "Usage"
-  echo "Usage: quarto-slides-live [--fast] [-p PORT|--port PORT] <deck>"
+  echo "Usage: quarto-slides-live [--fast] [-p PORT|--port PORT] <deck|all>"
   echo "  Examples:"
   echo "    quarto-slides-live 03-hypothesis"
+  echo "    quarto-slides-live all"
   echo "    quarto-slides-live -p 4322 01-introduction"
   echo "    quarto-slides-live --fast --port=4323 slides/05-selected-topics.qmd"
   exit 2
@@ -96,8 +98,12 @@ export QUARTO_PYTHON="${QUARTO_PYTHON:-$(conda run -n qmcpy python -c 'import sy
 export PATH="$(dirname "$QUARTO_PYTHON"):$PATH"
 
 arg="$1"
+all_mode=0
 
-if [[ "$arg" == */* ]]; then
+if [ "$arg" = "all" ] || [ "$arg" = "ALL" ]; then
+  all_mode=1
+  target="."
+elif [[ "$arg" == */* ]]; then
   target="$arg"
 elif [[ "$arg" == *.qmd ]]; then
   target="slides/$arg"
@@ -121,7 +127,18 @@ if [ ! -d "$repo_root/slides" ]; then
   exit 2
 fi
 
-target_base="$(basename "$target" .qmd)"
+if [ "$all_mode" -eq 1 ]; then
+  decks=(slides/*.qmd)
+  if [ ! -e "${decks[0]}" ]; then
+    error "No slide decks found in slides/."
+    exit 2
+  fi
+  target_base="all"
+  open_target_base="$(basename "${decks[0]}" .qmd)"
+else
+  target_base="$(basename "$target" .qmd)"
+  open_target_base="$target_base"
+fi
 
 logs_dir="$repo_root/.quarto-watch-logs"
 mkdir -p "$logs_dir"
@@ -252,6 +269,7 @@ export PATH="\$(dirname "\$QUARTO_PYTHON"):\$PATH"
 repo_root="$repo_root"
 target="$target"
 target_base="$target_base"
+all_mode="$all_mode"
 log="$log"
 FAST="$FAST"
 render_flags="$render_flags"
@@ -262,7 +280,7 @@ echo "QUARTO_PYTHON=\$QUARTO_PYTHON"
 echo "PATH=\$PATH"
 echo "PYTHONPATH=\$PYTHONPATH"
 
-if [ "\$FAST" -eq 0 ]; then
+if [ "\$FAST" -eq 0 ] || [ "\$all_mode" -eq 1 ]; then
   rm -rf "\$repo_root/slides/_freeze" >/dev/null 2>&1 || true
 else
   rm -rf "\$repo_root/slides/_freeze/\$target_base"* >/dev/null 2>&1 || true
@@ -300,7 +318,7 @@ bs_pid="$!"
 cleanup () { kill "$bs_pid" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
-url="http://localhost:${port}/${target_base}.html"
+url="http://localhost:${port}/${open_target_base}.html"
 banner "quarto-slides-live serving $url"
 
 for _ in $(seq 1 50); do

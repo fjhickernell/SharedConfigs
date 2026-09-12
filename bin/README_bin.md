@@ -46,7 +46,7 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `markedit-recover-sync` | Mac Setup | Repair only the managed MarkEdit links. |
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
 | `quarto-site-live` | Teaching | Live-render a Quarto website on an independent automatically assigned per-course port. |
-| `quarto-slides-live` | Teaching | Live-render one RevealJS deck on an automatically assigned per-course port. |
+| `quarto-slides-live` | Teaching | Live-render one RevealJS deck or all decks on an automatically assigned per-course port. |
 | `regular-maintenance.sh` | System Maintenance | Update Brew and TeX Live, then synchronize managed repositories and npm globals. |
 | `repo-sweep` | Git | Check all current managed repositories and print only those needing attention. |
 | `project-sync-check.py` | Projects | Check shared project assignments; `--capture` writes this Mac's additions to the external iCloud inbox, and `--import-observations` moves pending files into GitTracked during `infra save`. Called by `arrive` and `depart`; see `Notes/project-alignment.md`. |
@@ -350,13 +350,26 @@ appropriate, and `--no-open` to serve without opening a new browser tab.
 
 ### `quarto-slides-live`
 
-Live-renders one RevealJS deck and refreshes its browser tab whenever the
-course's slide or `classlib` sources change. Run it from the course repository
-root.
+Live-renders one RevealJS deck or the entire slides project and refreshes its
+browser tab whenever the course's slide or `classlib` sources change. Run it
+from the course repository root.
 
 ```bash
 quarto-slides-live 00-why-linear-algebra
 ```
+
+Pass `all` to render every deck initially and rebuild every deck after any
+slide or `classlib` source changes. The shared `_site` directory is served and
+the first deck opens, so links between decks use current local output:
+
+```bash
+quarto-slides-live all
+```
+
+Uppercase `ALL` is accepted as an equivalent spelling.
+
+This mode is slower than naming one deck because each change rebuilds the
+entire slides project.
 
 By default, the script assigns a stable port from the repository directory.
 For MATH course repositories it uses `4000 + course number`, so MATH 332 uses
