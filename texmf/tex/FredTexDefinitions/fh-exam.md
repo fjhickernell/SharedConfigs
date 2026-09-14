@@ -45,12 +45,26 @@ version numbers.
   \end{Answer}
 \end{problems}
 \end{document}
+
+% -----------------------------------------------------------------------------
+% Notes for author and agents (private; not student-facing)
+% -----------------------------------------------------------------------------
+% - Record question-level design decisions and point balance here.
+% - Record timing estimates, validation state, and remaining work here.
+% - Do not copy this private block into a public repository.
 ```
 
 Set the actual course policies and duration explicitly. Quiz mode does not
 change the existing defaults of 75 minutes and four note sheets. Course
 metadata, assessment dates, permitted materials, questions, and answers belong
 in the private assessment source or a private course setup file.
+
+Keep the labeled comment block after `\end{document}` in every new private
+assessment source. LaTeX ignores it, while authors and agents can use it for
+concise cross-session handoff: design decisions, point balance, timing,
+validation state, and remaining work. Read and update the block whenever
+resuming or materially revising the assessment. Do not duplicate worked
+answers there, and never copy it into a public course repository.
 
 Compile at least twice after changing questions or points. The `.fhxtot` and
 `.aux` files supply the question count, header total, and subproblem totals on
@@ -144,6 +158,10 @@ quizzes, tests, and examinations. Keep one authoritative source containing
 both questions and `Answer` environments, and select the exported form with
 the source's answer switch. The plain PDF may contain answers; use the explicit
 `_NO_Answers` file for students.
+
+The helper warns when the labeled private author-and-agent comment block is
+missing after `\end{document}`. The warning does not block existing assessments
+from building; add the block before their next substantive revision.
 
 Only the selected export is replaced, atomically, after a successful build.
 The other PDF remains from its last successful build. Rebuild both modes after

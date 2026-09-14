@@ -27,8 +27,10 @@ else:
 ARTIFACTS = Path(tempfile.mkdtemp(prefix="fh-exam build regression ")).resolve()
 
 
-def fixture(mode: str = "false", extra_preamble: str = "") -> str:
-    return r"""\documentclass{article}
+def fixture(
+    mode: str = "false", extra_preamble: str = "", *, author_notes: bool = True
+) -> str:
+    document = r"""\documentclass{article}
 \usepackage{fh-exam}
 \showanswers""" + mode + r"""
 % This commented alternative must not select answers: \showanswerstrue
@@ -45,6 +47,12 @@ Question count: \examnumproblemsref. Point count: \examtotalpointsref.
 \end{problems}
 \end{document}
 """
+    if author_notes:
+        document += r"""
+% Notes for author and agents (private; not student-facing)
+% - Generic regression fixture; no course assessment content.
+"""
+    return document
 
 
 def digest(path: Path) -> str:
@@ -173,6 +181,18 @@ class ExamBuildTests(unittest.TestCase):
         self.assert_document(self.student, answers=False)
         new_log = (self.directory / "Example Quiz.log").read_text()
         self.assertIn("FH-EXAM-BUILD-MODE:student", new_log)
+        self.assertEqual(self.source.read_text(), original)
+
+    def test_missing_author_notes_warns_without_blocking_build(self):
+        original = fixture(author_notes=False)
+        self.source.write_text(original)
+        result = self.build()
+        self.assertIn(
+            'missing trailing "Notes for author and agents '
+            '(private; not student-facing)" comment block',
+            result.stdout,
+        )
+        self.assert_document(self.student, answers=False)
         self.assertEqual(self.source.read_text(), original)
 
     def test_compile_failure_preserves_both_exports(self):

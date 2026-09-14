@@ -109,6 +109,44 @@ preview and may contain answers. Configure the private course assessment
 workspace's LaTeX Workshop recipe to use the shared helper; do not make it the
 global recipe for unrelated LaTeX projects.
 
+### Public-repository assessment confidentiality
+
+Treat every unreleased quiz, test, examination, answer key, and grading rubric
+as confidential, even when its source lives outside Git. In a public
+repository, never record unreleased question text, question types or structure,
+point allocations, problem data, solution methods or answers, answer-display
+state, or private assessment filenames and paths. This prohibition applies to
+handoff files, planning notes, status files, commit messages, pull requests,
+issues, workflow logs, and generated output as well as student-facing content.
+
+Public repositories may record only information already intended for students
+or nonsensitive operational status: the assessment date, publicly announced
+coverage, room, allowed materials, and a generic statement such as “the private
+draft is complete; final printing remains.” Keep all question-level progress
+and construction details in the private assessment workspace or the private
+conversation where the work is performed.
+
+For an `fh-exam` source in the private assessment workspace, preserve useful
+cross-session and cross-agent construction context in a clearly labeled block
+of LaTeX comment lines after `\end{document}`. Begin it with “Notes for author
+and agents (private; not student-facing).” It may record question-level design
+decisions, point balance, timing estimates, validation state, and remaining
+work. When resuming an assessment, read this trailing block before editing.
+Keep it concise, do not duplicate worked answers, and never copy that private
+block into a public repository handoff file.
+
+Before committing or pushing any public course repository, perform an explicit
+assessment-confidentiality audit of the complete staged diff, untracked files,
+and proposed commit message. If an unreleased assessment is in progress, also
+search the staged content for its private basename and for question-level terms
+that could reveal its structure. Remove every disclosure before committing. If
+assessment information has already been pushed, stop ordinary publication,
+alert the user, and obtain explicit authorization before any required history
+rewrite or force-push. Then sanitize reachable history, remove public references
+such as obsolete workflow runs, and arrange server-side cached-view removal
+when needed. Never assume that deleting a file in a later commit removes it
+from Git history.
+
 ## Check-In & Focus Dashboard routing
 
 The authoritative task dashboard is `GitTracked/Check-In-Dashboard.md` in the `ObsidianVault` workspace root.
@@ -258,7 +296,7 @@ Checkpoint
 
 perform the following workflow:
 
-1. Review the work completed during the session and the current state of every repository being checkpointed. Inspect the complete Git diff, including all tracked modifications, deletions, renames, and untracked files.
+1. Review the work completed during the session and the current state of every repository being checkpointed. Inspect the complete Git diff, including all tracked modifications, deletions, renames, and untracked files. For every public course repository, perform the public-repository assessment-confidentiality audit above before staging or committing, even when assessment files themselves are stored elsewhere.
 2. In each writable repository that contains `notes/NEXT.md`, read it and compare it with the completed work. If the immediate next task, current state, unresolved questions, constraints, or definition of done has materially changed, update `notes/NEXT.md` so another session or machine can resume accurately, and include that update in the same checkpoint commit. Keep it concise and operational; do not turn it into a session log or duplicate material belonging in `notes/TODO-LATER.md`, `notes/DECISIONS.md`, `notes/IDEAS.md`, `notes/TECHNICAL-NOTES.md`, `STATUS.md`, or similar planning and history files. If nothing relevant changed, leave it untouched. Do not modify it merely to change a timestamp or record that a checkpoint occurred. If the substantive next task is genuinely unclear, multiple plausible next tasks remain, or an update would require inferring the user's intent, ask before changing it. Do not ask merely because wording could be improved. When the current state is clear but one decision remains unresolved, record it under `Questions to resolve` rather than guessing. Perform this check independently in every writable repository being checkpointed that contains `notes/NEXT.md`.
 3. Inspect the project's other handoff files and reconcile them with the work
    being checkpointed. Update only files whose information materially changed;

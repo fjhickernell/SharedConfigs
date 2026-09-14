@@ -19,11 +19,30 @@ import tempfile
 
 
 MODE_PREFIX = "FH-EXAM-BUILD-MODE:"
+AUTHOR_NOTES_MARKER = "Notes for author and agents (private; not student-facing)"
 PRETEX = (
     r"\AddToHook{begindocument/end}{"
     r"\ifshowanswers\typeout{FH-EXAM-BUILD-MODE:answers}"
     r"\else\typeout{FH-EXAM-BUILD-MODE:student}\fi}"
 )
+
+
+def warn_if_author_notes_missing(source: Path) -> None:
+    """Warn when the private cross-session handoff block is absent."""
+    text = source.read_text(errors="replace")
+    document_end = text.rfind(r"\end{document}")
+    trailing_text = (
+        text[document_end + len(r"\end{document}"):]
+        if document_end >= 0
+        else ""
+    )
+    if AUTHOR_NOTES_MARKER not in trailing_text:
+        print(
+            "fh-exam-build: warning: missing trailing "
+            f'"{AUTHOR_NOTES_MARKER}" comment block after \\end{{document}}; '
+            "add it for private author and agent handoff.",
+            file=sys.stderr,
+        )
 
 
 def publish(pdf: Path, destination: Path) -> None:
@@ -45,6 +64,7 @@ def build(source: Path, outdir: Path) -> Path:
     outdir = outdir.expanduser().resolve()
     if not source.is_file() or source.suffix.lower() != ".tex":
         raise ValueError(f"Expected an existing .tex source: {source}")
+    warn_if_author_notes_missing(source)
 
     executable = shutil.which("latexmk")
     if executable is None:
