@@ -134,7 +134,8 @@ class ExamStyleTests(unittest.TestCase):
                 source = document(settings, body)
                 old = Render(f"legacy-{mode}-old", source, OLD_STYLE)
                 new = Render(f"legacy-{mode}-new", source, NEW_STYLE)
-                self.assertEqual(old.text, new.text, f"Legacy {mode} extracted text changed")
+                expected = old.text.replace("question(s)", "questions")
+                self.assertEqual(expected, new.text, f"Legacy {mode} extracted text changed")
                 self.assertEqual(old.totals, new.totals)
                 if RASTER_CHECK and shutil.which("pdftoppm"):
                     self.assertEqual(
@@ -159,6 +160,34 @@ class ExamStyleTests(unittest.TestCase):
         self.assertNotRegex(rendered.normalized, r"\bTotal\b")
         self.assertNotIn("ANSWER TOKEN", rendered.normalized)
         self.assert_counts(rendered, questions=1, points=20)
+
+    def test_regular_and_takehome_question_wording(self):
+        multiple = r"""
+\begin{problems}
+  \problem{12}{First example.}
+  \problem{8}{Second example.}
+\end{problems}
+"""
+        cases = (
+            ("regular-one", "", None, "one question"),
+            ("regular-multiple", "", multiple, "two questions"),
+            ("takehome-one", r"\examstyle{takehome}", None, "one question"),
+            ("takehome-multiple", r"\examstyle{takehome}", multiple, "two questions"),
+        )
+        for label, settings, body, expected in cases:
+            with self.subTest(label=label):
+                rendered = self.new(label, settings, body)
+                text = rendered.normalized.lower()
+                self.assertIn(expected, text)
+                self.assertNotIn("question(s)", text)
+
+    def test_construction_note_is_opt_in(self):
+        note = "GENERIC CONSTRUCTION DISCLOSURE"
+        rendered = self.new(
+            "construction-note",
+            rf"\setexamconstructionnote{{{note}}}",
+        )
+        self.assertIn(note, rendered.normalized)
 
     def test_quiz_multiple_questions_keeps_default_table(self):
         rendered = self.new("quiz-multiple", r"\examstyle{quiz}", r"""

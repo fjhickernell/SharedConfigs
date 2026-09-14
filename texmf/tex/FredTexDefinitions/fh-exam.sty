@@ -3,6 +3,12 @@
 %%
 %% Changelog
 %%
+%% v26.2 (2026/09/13)
+%%   • Used grammatically correct singular or plural question wording in
+%%     regular-exam and take-home instructions as well as quiz instructions.
+%%   • Added an opt-in construction disclosure below the instructions via
+%%     \setexamconstructionnote{...}.
+%%
 %% v26.1 (2026/09/09)
 %%   • Adopted YY.N version numbers: two-digit year and release number
 %%     within that year, starting at 1. This release was first labeled v3.23.
@@ -73,7 +79,7 @@
 %% ------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesExplPackage{fh-exam}{2026/09/09}{26.1}{Slim exam scaffolding}
+\ProvidesExplPackage{fh-exam}{2026/09/13}{26.2}{Slim exam scaffolding}
 
 \RequirePackage{xstring}
 \makeatletter
@@ -406,6 +412,12 @@
 
 % ---------- exam header ----------
 \newcommand{\SubjectCode}{}\newcommand{\SubjectTitle}{}\newcommand{\TestDate}{}\newcommand{\Instructor}{}\newcommand{\TestName}{Test}
+\newcommand{\examconstructionnote}{}
+\NewDocumentCommand{\setexamconstructionnote}{m}{%
+	\renewcommand{\examconstructionnote}{%
+		\par\smallskip\noindent{\small\emph{#1}}\par\medskip
+	}%
+}
 \newcommand{\makeexamheader}{%
 	\begin{center}
 		\textbf{\Large \SubjectCode\ \SubjectTitle}\\
@@ -421,6 +433,7 @@
 	\else
 		\printexaminstructions
 	\fi
+	\examconstructionnote
 	\examhonorstatement
 }
 
@@ -457,14 +470,18 @@
 	\forcespaces{You will be provided all of the critical values that you need.}
 }
 
+\newcommand{\examquestionword}{%
+	\ifnum\examnumproblemsref=1 question\else questions\fi
+}
+
 \newcommand{\examfirstinstructiondefault}{%
 	\ifexam@quiz
-		This quiz has \textbf{\examnumproblemsword\space
-		\ifnum\examnumproblemsref=1 question\else questions\fi}, worth
+		This quiz has \textbf{\examnumproblemsword\space\examquestionword}, worth
 		\textbf{\examtotalpointsref\space
 		\ifnum\examtotalpointsref=1 point\else points\fi}.%
 	\else
-	\forcespaces{This test has \textbf{\examnumproblemsWORD} question(s).%
+	\forcespaces{This test has \textbf{\examnumproblemsWORD\space
+		\examquestionword}.%
 		\space Attempt all.%
 		\space The maximum number of points is \textbf{\examtotalpointsref}.}%
 	\fi
@@ -546,7 +563,7 @@
 	\setexamfullinstructions{%
 		\begin{enumerate}[label=\roman*., leftmargin=*, itemsep=2pt, topsep=2pt]
 			\item \forcespaces{This is a \textbf{take-home} exam with
-				\textbf{\examnumproblemsWORD} question(s). Attempt all.
+				\textbf{\examnumproblemsWORD\space\examquestionword}. Attempt all.
 				The maximum number of points is \textbf{\examtotalpointsref}.}
 			\item \forcespaces{This take-home exam is due at the time listed above.
 				There is no time limit other than the due date.}

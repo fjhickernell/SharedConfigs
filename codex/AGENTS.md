@@ -96,6 +96,19 @@ meaningful distinction or the intended term cannot be determined reliably,
 ask for clarification before making a consequential change. Do not silently
 propagate terminology that would make the project less coherent.
 
+## LaTeX assessment answer-version workflow
+
+For private course quizzes, tests, and examinations that use `fh-exam`, keep
+the questions and worked answers in one authoritative LaTeX source, with
+solutions in `Answer` environments. Use the shared
+`~/Documents/SharedConfigs/bin/fh-exam-build.py` workflow so
+`\showanswersfalse` exports `BASENAME_NO_Answers.pdf` and
+`\showanswerstrue` exports `BASENAME_Answers.pdf`. Treat those explicit
+suffixes as authoritative: the plain `BASENAME.pdf` is only the current editor
+preview and may contain answers. Configure the private course assessment
+workspace's LaTeX Workshop recipe to use the shared helper; do not make it the
+global recipe for unrelated LaTeX projects.
+
 ## Check-In & Focus Dashboard routing
 
 The authoritative task dashboard is `GitTracked/Check-In-Dashboard.md` in the `ObsidianVault` workspace root.

@@ -2,8 +2,10 @@
 
 `fh-exam.sty` provides headers, instructions, scoring boxes, problems and
 subproblems, point totals, and switchable answers for paper assessments.
-Version **26.1 (2026/09/09)** adds optional quiz instructions and a single
-score box. The package's version history is at the top of `fh-exam.sty`.
+Version **26.2 (2026/09/13)** uses grammatically correct singular or plural
+question wording in every assessment mode and adds an opt-in construction
+disclosure. Version 26.1 added optional quiz instructions and a single score
+box. The package's version history is at the top of `fh-exam.sty`.
 
 Versions use **YY.N**: the two-digit year followed by the release number
 within that year, starting at 1. Thus 26.1 is followed by 26.2, and the first
@@ -55,6 +57,10 @@ Compile at least twice after changing questions or points. The `.fhxtot` and
 the next pass. For a problem whose points come from its subparts, use
 `\problem{0}{...}` followed by `\subproblem{points}{...}` entries; do not also
 assign those points to the parent problem.
+
+Use `\setexamconstructionnote{...}` in the preamble to add an attribution or
+construction disclosure between the instructions and the academic-integrity
+statement. It is empty by default, so existing assessments remain unchanged.
 
 ## Score display
 
@@ -132,9 +138,12 @@ The helper keeps `BASENAME.pdf` as the current render and editor preview, with
 auxiliary files beside the source. Set LaTeX Workshop's output directory to
 `%DIR%` and use the helper in the build recipe. The normal Build button then
 updates both the current PDF and the selected suffixed PDF, while **View
-LaTeX PDF file** continues to show the current render. The configured MATH 332
-private folder has this recipe installed. The plain PDF may contain answers;
-use the explicit `_NO_Answers` file for students.
+LaTeX PDF file** continues to show the current render. This is the standard
+workflow for private course assessment folders that use `fh-exam`, including
+quizzes, tests, and examinations. Keep one authoritative source containing
+both questions and `Answer` environments, and select the exported form with
+the source's answer switch. The plain PDF may contain answers; use the explicit
+`_NO_Answers` file for students.
 
 Only the selected export is replaced, atomically, after a successful build.
 The other PDF remains from its last successful build. Rebuild both modes after
