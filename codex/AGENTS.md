@@ -109,6 +109,25 @@ preview and may contain answers. Configure the private course assessment
 workspace's LaTeX Workshop recipe to use the shared helper; do not make it the
 global recipe for unrelated LaTeX projects.
 
+### Assessment publication timing
+
+Apply this rule to every course quiz, test, and final examination. Until the
+instructor has finished grading the assessment, do not add any assessment PDF
+to a public repository, commit it to public Git history, deploy it to a public
+site, or place it in the public test archive. Never publish the student or
+`_NO_Answers.pdf` copy. After grading is complete, publish only the
+`_Answers.pdf` copy, including an anonymous score distribution with the
+released answers; keep student names and other identifying information out of
+the distribution. Put that same released PDF in the course's current-assessment
+directory and, when the course uses `HickernellTestArchive`, in its matching
+course folder. Publish the archive commit before advancing a course repository's
+pinned archive pointer. This timing rule applies even when the assessment has
+already been administered: completion of grading is the release boundary. The
+only exception is a take-home component of a final examination: its student or
+`_NO_Answers.pdf` copy may be placed in the public course repository when the
+instructor intentionally releases that take-home component to students. Its
+answer key and score distribution remain private until grading is complete.
+
 ### Public-repository assessment confidentiality
 
 Treat every unreleased quiz, test, examination, answer key, and grading rubric
@@ -213,8 +232,11 @@ unpublished branch history.
 When `repo-sweep` reports an ahead, diverged, or local-only dormant branch, run
 `branch-audit --repo PATH` before recommending a change. The audit is read-only:
 use its cached ahead/behind counts, patch-equivalence result, and pull-request
-status to distinguish superseded work from genuinely unpublished commits. Do
-not pull dormant branches merely for hygiene. Delete a local branch only with
+status to distinguish superseded work from genuinely unpublished commits.
+When it reports `REMOTE-UNCERTAIN`, first run the full-head fetch command that
+`repo-sweep` prints, then run the printed branch audit; the repository's normal
+synchronization refspec may fetch only its primary branch. Do not pull dormant
+branches merely for hygiene. Delete a local branch only with
 the user's authorization after verifying that its work is retained remotely or
 superseded; preserve and deliberately reconcile any apparently unique commits.
 Routine `arrive` and `depart` may fetch or prune remote-tracking references but

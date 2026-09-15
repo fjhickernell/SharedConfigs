@@ -150,10 +150,13 @@ synchronization scripts label unchanged repositories as `already current` and
 report the number of commits added by a fast-forward as `+N`.
 
 When the sweep reports an ahead, diverged, or local-only dormant branch, it
-prints a `branch-audit` command for the affected repository. The audit uses
-cached remote-tracking refs, counts patch-equivalent and apparently unique
-local commits, and looks up a same-named GitHub pull request when available.
-It recommends preservation, deliberate reconciliation, or deletion after
+prints a `branch-audit` command for the affected repository. When live remote
+history is not available locally, `REMOTE-UNCERTAIN` first prints a full-head
+fetch command and then the audit command; this is necessary when the normal
+synchronization refspec fetches only the primary branch. The audit uses cached
+remote-tracking refs, counts patch-equivalent and apparently unique local
+commits, and looks up a same-named GitHub pull request when available. It
+recommends preservation, deliberate reconciliation, or deletion after
 verification, but never changes repository state:
 
 ```sh
@@ -162,9 +165,11 @@ branch-audit --repo ~/SoftwareRepositories/QMCSoftware --all
 ```
 
 Dormant branches that are merely behind do not need to be pulled. Routine
-`arrive`/`depart` fetching keeps remote-tracking information current; update a
-local branch only when resuming its work. Delete obsolete local review branches
-after their pull-request work ends, with an explicit human decision.
+`arrive`/`depart` fetching keeps the configured primary remote-tracking branch
+current; follow a `REMOTE-UNCERTAIN` fetch instruction when comparison requires
+other live branch histories. Update a local branch only when resuming its work.
+Delete obsolete local review branches after their pull-request work ends, with
+an explicit human decision.
 
 ### `machine-audit`
 

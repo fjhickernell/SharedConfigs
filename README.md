@@ -81,4 +81,5 @@ scope in `settings/repositories.conf` when asked to add or archive a repository.
 For a flagged dormant branch, run `branch-audit --repo PATH`; it reports cached
 ahead/behind state, patch equivalence, related GitHub pull requests, and a safe
 recommended action without modifying the branch. Do not pull dormant branches
-merely to keep them current.
+merely to keep them current. If the sweep reports `REMOTE-UNCERTAIN`, run its
+printed full-history fetch first and then the printed branch audit.

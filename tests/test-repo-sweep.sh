@@ -212,6 +212,25 @@ git -C "$repo" commit -q -m "Local-only dormant branch"
 git -C "$repo" switch -q main
 expect_status 1 "LOCAL-ONLY dormant branch local-only" --local
 
+# When a live remote tip is not present locally, the sweep cannot prove that a
+# local branch is unpublished. Print the full-history refresh and the audit as
+# an ordered next step rather than relying on the primary-branch sync refspec.
+git -C "$writer" switch -q -c unseen-remote main
+printf 'unseen remote\n' > "${writer}/unseen-remote.txt"
+git -C "$writer" add unseen-remote.txt
+git -C "$writer" commit -q -m "Unfetched remote branch"
+git -C "$writer" push -q -u origin unseen-remote
+git -C "$writer" switch -q main
+expect_status 1 "REMOTE-UNCERTAIN dormant branch local-only"
+grep -Fq "fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'" "$output" ||
+  fail "remote-uncertain finding omitted the full-history fetch command"
+grep -Fq "Then: branch-audit --repo" "$output" ||
+  fail "remote-uncertain finding omitted the ordered branch-audit command"
+git -C "$repo" fetch -q --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+expect_status 1 "LOCAL-ONLY dormant branch local-only"
+grep -Fq "Run: branch-audit --repo" "$output" ||
+  fail "verified local-only finding omitted the branch-audit command"
+
 git -C "$repo" branch remote-contained main
 expect_status 1 "LOCAL-ONLY dormant branch local-only" --local
 if grep -Fq "remote-contained" "$output"; then
@@ -219,7 +238,7 @@ if grep -Fq "remote-contained" "$output"; then
 fi
 
 git -C "$repo" branch -D dormant-ahead local-only remote-contained >/dev/null
-git -C "$repo" push -q origin --delete dormant-ahead
+git -C "$repo" push -q origin --delete dormant-ahead unseen-remote
 
 # Git permits a pipe in a branch name, so branch parsing must use a delimiter
 # that cannot occur in a ref name.

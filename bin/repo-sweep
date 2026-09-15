@@ -88,6 +88,7 @@ resolve_git_common_dir() {
 
 issues=""
 branch_audit_needed=0
+remote_history_refresh_needed=0
 tracking_state_prefix=""
 remote_cache_names=()
 remote_cache_outputs=()
@@ -418,6 +419,8 @@ check_dormant_branches() {
         add_issue "REMOTE-CHECK dormant branch ${local_branch} could not verify origin"
         continue
       elif [[ "$live_branch_uncertain" -eq 1 ]]; then
+        branch_audit_needed=1
+        remote_history_refresh_needed=1
         add_issue "REMOTE-UNCERTAIN dormant branch ${local_branch} (fetch needed to verify live remote history)"
         continue
       fi
@@ -445,6 +448,7 @@ check_repository() {
 
   issues=""
   branch_audit_needed=0
+  remote_history_refresh_needed=0
   remote_cache_names=()
   remote_cache_outputs=()
   remote_cache_statuses=()
@@ -498,8 +502,15 @@ check_repository() {
     printf 'ATTENTION  %s [%s]\n' "$name" "$workflow"
     printf '           %s\n' "$issues"
     printf '           %s\n' "$repo"
+    if [[ "$remote_history_refresh_needed" -eq 1 ]]; then
+      printf "           Run: git -C %q fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'\n" "$repo"
+    fi
     if [[ "$branch_audit_needed" -eq 1 ]]; then
-      printf '           Run: branch-audit --repo %q\n' "$repo"
+      if [[ "$remote_history_refresh_needed" -eq 1 ]]; then
+        printf '           Then: branch-audit --repo %q\n' "$repo"
+      else
+        printf '           Run: branch-audit --repo %q\n' "$repo"
+      fi
     fi
   elif [[ "$show_all" -eq 1 ]]; then
     printf 'OK         %s [%s]\n' "$name" "$workflow"
