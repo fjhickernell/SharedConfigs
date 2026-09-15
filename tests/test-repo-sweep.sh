@@ -189,6 +189,8 @@ git -C "$repo" add dormant-ahead.txt
 git -C "$repo" commit -q -m "Unpushed dormant branch commit"
 git -C "$repo" switch -q main
 expect_status 1 "CACHED-AHEAD dormant branch dormant-ahead" --local
+grep -Fq "Run: branch-audit --repo" "$output" ||
+  fail "dormant-branch finding omitted the branch-audit hint"
 expect_status 1 "AHEAD dormant branch dormant-ahead"
 
 # A live remote deletion must not be hidden by the stale remote-tracking ref in

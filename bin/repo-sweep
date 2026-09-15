@@ -87,6 +87,7 @@ resolve_git_common_dir() {
 }
 
 issues=""
+branch_audit_needed=0
 tracking_state_prefix=""
 remote_cache_names=()
 remote_cache_outputs=()
@@ -308,6 +309,8 @@ report_cached_dormant_state() {
   local upstream="$3"
   local counts ahead behind
 
+  branch_audit_needed=1
+
   if [[ -n "$upstream" ]] &&
      git -C "$repo" rev-parse --verify --quiet "${upstream}^{commit}" >/dev/null 2>&1; then
     if ! counts="$(git -C "$repo" rev-list --left-right --count \
@@ -335,6 +338,8 @@ report_live_dormant_state() {
   local local_branch="$2"
   local upstream="$3"
   local remote_name merge_ref counts ahead behind
+
+  branch_audit_needed=1
 
   remote_name="$(git -C "$repo" config --get "branch.${local_branch}.remote" 2>/dev/null || true)"
   merge_ref="$(git -C "$repo" config --get "branch.${local_branch}.merge" 2>/dev/null || true)"
@@ -439,6 +444,7 @@ check_repository() {
   local canonical_common_dir
 
   issues=""
+  branch_audit_needed=0
   remote_cache_names=()
   remote_cache_outputs=()
   remote_cache_statuses=()
@@ -492,6 +498,9 @@ check_repository() {
     printf 'ATTENTION  %s [%s]\n' "$name" "$workflow"
     printf '           %s\n' "$issues"
     printf '           %s\n' "$repo"
+    if [[ "$branch_audit_needed" -eq 1 ]]; then
+      printf '           Run: branch-audit --repo %q\n' "$repo"
+    fi
   elif [[ "$show_all" -eq 1 ]]; then
     printf 'OK         %s [%s]\n' "$name" "$workflow"
   fi

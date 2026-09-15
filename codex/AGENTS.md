@@ -210,6 +210,16 @@ commands unless the user asks. Distinguish structural findings that routine
 synchronization will not fix, such as a wrong origin, a detached worktree, or
 unpublished branch history.
 
+When `repo-sweep` reports an ahead, diverged, or local-only dormant branch, run
+`branch-audit --repo PATH` before recommending a change. The audit is read-only:
+use its cached ahead/behind counts, patch-equivalence result, and pull-request
+status to distinguish superseded work from genuinely unpublished commits. Do
+not pull dormant branches merely for hygiene. Delete a local branch only with
+the user's authorization after verifying that its work is retained remotely or
+superseded; preserve and deliberately reconcile any apparently unique commits.
+Routine `arrive` and `depart` may fetch or prune remote-tracking references but
+must not update, reset, or delete dormant local branches automatically.
+
 When the user asks to add a repository to the sweep or archive one, Codex—not
 the user—updates the shared registry. Add a `current` row with the appropriate
 workflow, canonical home-relative path, expected branch when fixed, and origin.

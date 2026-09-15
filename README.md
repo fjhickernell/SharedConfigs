@@ -78,3 +78,7 @@ Run `repo-sweep` to check the current `dev`, `active`, and `infrastructure`
 repositories and print only those needing attention, including unpublished
 work on linked worktrees or dormant local branches. Codex maintains the shared
 scope in `settings/repositories.conf` when asked to add or archive a repository.
+For a flagged dormant branch, run `branch-audit --repo PATH`; it reports cached
+ahead/behind state, patch equivalence, related GitHub pull requests, and a safe
+recommended action without modifying the branch. Do not pull dormant branches
+merely to keep them current.

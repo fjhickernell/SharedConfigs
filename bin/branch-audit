@@ -1,0 +1,258 @@
+#!/usr/bin/env bash
+set -u
+set -o pipefail
+
+# A read-only audit of local branches that are not checked out in any worktree.
+# Remote-tracking refs are deliberately not refreshed here; run arrive first
+# when current remote state matters.
+export GIT_OPTIONAL_LOCKS=0
+
+usage() {
+  cat <<'EOF'
+Usage: branch-audit [--repo PATH] [--all] [--no-pr] [BRANCH ...]
+
+Inspect dormant local branches without changing refs, the index, or files.
+By default, report only branches with cached unpublished or divergent history.
+Named branches are always reported, and --all includes aligned and behind-only
+dormant branches.
+
+Options:
+  --repo PATH  Repository to inspect (default: current directory)
+  --all        Report every dormant local branch
+  --no-pr      Skip GitHub pull-request lookup
+  -h, --help   Show this help
+
+The audit uses cached remote-tracking refs. It never fetches, pulls, rebases,
+resets, checks out, deletes, or pushes a branch.
+EOF
+}
+
+repo="."
+show_all=0
+check_pr=1
+requested_branches=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --repo)
+      shift
+      if [[ $# -eq 0 ]]; then
+        echo "ERROR: --repo requires a path." >&2
+        exit 2
+      fi
+      repo="$1"
+      ;;
+    --all) show_all=1 ;;
+    --no-pr) check_pr=0 ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; requested_branches+=("$@"); break ;;
+    -*) echo "ERROR: unknown option: $1" >&2; usage >&2; exit 2 ;;
+    *) requested_branches+=("$1") ;;
+  esac
+  shift
+done
+
+if ! repo="$(CDPATH= cd -- "$repo" 2>/dev/null && pwd -P)" ||
+   ! git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "ERROR: not a readable Git repository: $repo" >&2
+  exit 2
+fi
+
+github_repo=""
+origin_url="$(git -C "$repo" remote get-url origin 2>/dev/null || true)"
+case "$origin_url" in
+  git@github.com:*) github_repo="${origin_url#git@github.com:}" ;;
+  ssh://git@github.com/*) github_repo="${origin_url#ssh://git@github.com/}" ;;
+  https://github.com/*) github_repo="${origin_url#https://github.com/}" ;;
+  http://github.com/*) github_repo="${origin_url#http://github.com/}" ;;
+esac
+github_repo="${github_repo%.git}"
+
+checked_out=$'\n'
+while IFS= read -r ref; do
+  [[ -n "$ref" ]] && checked_out="${checked_out}${ref#refs/heads/}"$'\n'
+done < <(git -C "$repo" worktree list --porcelain 2>/dev/null | sed -n 's/^branch //p')
+
+is_requested() {
+  local wanted="$1"
+  local item
+  [[ "${#requested_branches[@]}" -eq 0 ]] && return 1
+  for item in "${requested_branches[@]}"; do
+    [[ "$item" == "$wanted" ]] && return 0
+  done
+  return 1
+}
+
+print_pr_status() {
+  local branch="$1"
+  local pr_output
+
+  if [[ "$check_pr" -ne 1 ]]; then
+    printf '  PR: not checked (--no-pr)\n'
+  elif [[ -z "$github_repo" ]]; then
+    printf '  PR: unavailable (origin is not GitHub)\n'
+  elif ! command -v gh >/dev/null 2>&1; then
+    printf '  PR: unavailable (gh is not installed)\n'
+  elif pr_output="$(GIT_TERMINAL_PROMPT=0 gh pr list \
+      --repo "$github_repo" --head "$branch" --state all --limit 3 \
+      --json number,state,isDraft,reviewDecision,updatedAt,url \
+      --template '{{range .}}#{{.number}} {{.state}}{{if .isDraft}} DRAFT{{end}}{{if .reviewDecision}} {{.reviewDecision}}{{end}} updated {{.updatedAt}} {{.url}}{{"\n"}}{{end}}' \
+      2>/dev/null)"; then
+    if [[ -n "$pr_output" ]]; then
+      while IFS= read -r pr_line; do
+        printf '  PR: %s\n' "$pr_line"
+      done <<< "$pr_output"
+    else
+      printf '  PR: none found for this branch name\n'
+    fi
+  else
+    printf '  PR: lookup failed\n'
+  fi
+}
+
+audit_branch() {
+  local branch="$1"
+  local upstream counts ahead behind state location
+  local containing_remote cherry_output cherry_line equivalent unique
+  local report_branch risk recommendation
+
+  if ! git -C "$repo" show-ref --verify --quiet "refs/heads/${branch}"; then
+    printf 'ERROR: local branch not found: %s\n' "$branch" >&2
+    return 2
+  fi
+
+  location="dormant"
+  case "$checked_out" in
+    *$'\n'"$branch"$'\n'*) location="checked out in a worktree" ;;
+  esac
+
+  upstream="$(git -C "$repo" for-each-ref \
+    --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null)"
+  ahead=0
+  behind=0
+  risk=0
+  state=""
+  equivalent=0
+  unique=0
+  recommendation=""
+
+  if [[ -n "$upstream" ]] &&
+     git -C "$repo" rev-parse --verify --quiet "${upstream}^{commit}" >/dev/null 2>&1; then
+    counts="$(git -C "$repo" rev-list --left-right --count \
+      "${branch}...${upstream}" 2>/dev/null || true)"
+    if [[ -z "$counts" ]]; then
+      state="comparison failed"
+      risk=1
+      recommendation="preserve the branch and investigate the comparison failure"
+    else
+      read -r ahead behind <<< "$counts"
+      if [[ "$ahead" -gt 0 && "$behind" -gt 0 ]]; then
+        state="diverged (${ahead} ahead, ${behind} behind)"
+        risk=1
+      elif [[ "$ahead" -gt 0 ]]; then
+        state="ahead ${ahead}"
+        risk=1
+      elif [[ "$behind" -gt 0 ]]; then
+        state="behind ${behind}"
+      else
+        state="aligned"
+      fi
+
+      if [[ "$ahead" -gt 0 ]]; then
+        if cherry_output="$(git -C "$repo" cherry "$upstream" "$branch" 2>/dev/null)"; then
+          while IFS= read -r cherry_line; do
+            case "$cherry_line" in
+              '+ '*) unique=$((unique + 1)) ;;
+              '- '*) equivalent=$((equivalent + 1)) ;;
+            esac
+          done <<< "$cherry_output"
+        else
+          unique="$ahead"
+        fi
+      fi
+    fi
+  else
+    containing_remote="$(git -C "$repo" for-each-ref \
+      --format='%(refname:short)' --contains="$branch" refs/remotes 2>/dev/null || true)"
+    if [[ -n "$containing_remote" ]]; then
+      state="no usable upstream; commit is retained by a cached remote-tracking branch"
+    else
+      state="local-only; no cached remote-tracking branch contains its tip"
+      risk=1
+    fi
+  fi
+
+  report_branch=0
+  [[ "$show_all" -eq 1 || "$risk" -eq 1 ]] && report_branch=1
+  is_requested "$branch" && report_branch=1
+  [[ "$report_branch" -eq 1 ]] || return 0
+
+  printf 'BRANCH  %s\n' "$branch"
+  printf '  location: %s\n' "$location"
+  printf '  upstream: %s\n' "${upstream:-none}"
+  printf '  cached state: %s\n' "$state"
+  if [[ "$ahead" -gt 0 ]]; then
+    printf '  patch comparison: %d equivalent, %d apparently unique local commit(s)\n' \
+      "$equivalent" "$unique"
+  fi
+  print_pr_status "$branch"
+
+  if [[ "$location" != "dormant" ]]; then
+    recommendation="leave it to the active worktree workflow"
+  elif [[ "$risk" -eq 0 ]]; then
+    recommendation="do not pull for hygiene; leave it alone or delete the local branch if the work is finished"
+  elif [[ "$ahead" -gt 0 && "$unique" -eq 0 ]]; then
+    recommendation="the cached upstream contains equivalent patches; verify PR state, then delete the obsolete local branch"
+  elif [[ "$ahead" -gt 0 ]]; then
+    recommendation="preserve and inspect the apparently unique commits; reconcile deliberately before deleting"
+  elif [[ -z "$recommendation" ]]; then
+    recommendation="preserve and investigate before deleting"
+  fi
+  printf '  recommendation: %s\n' "$recommendation"
+  printf '\n'
+
+  [[ "$risk" -eq 1 ]] && return 1
+  return 0
+}
+
+branches=()
+if [[ "${#requested_branches[@]}" -gt 0 ]]; then
+  branches=("${requested_branches[@]}")
+else
+  while IFS= read -r branch; do
+    [[ -n "$branch" ]] && branches+=("$branch")
+  done < <(git -C "$repo" for-each-ref --format='%(refname:short)' refs/heads)
+fi
+
+reported_before=0
+attention=0
+errors=0
+for branch in "${branches[@]}"; do
+  if [[ "${#requested_branches[@]}" -eq 0 ]]; then
+    case "$checked_out" in
+      *$'\n'"$branch"$'\n'*) continue ;;
+    esac
+  fi
+  output="$(audit_branch "$branch")"
+  audit_status=$?
+  if [[ -n "$output" ]]; then
+    printf '%s\n' "$output"
+    reported_before=1
+  fi
+  case "$audit_status" in
+    0) ;;
+    1) attention=$((attention + 1)) ;;
+    *) errors=$((errors + 1)) ;;
+  esac
+done
+
+if [[ "$errors" -gt 0 ]]; then
+  exit 2
+elif [[ "$attention" -gt 0 ]]; then
+  printf 'ATTENTION: %d branch(es) require inspection; no state was changed.\n' "$attention"
+  exit 1
+elif [[ "$reported_before" -eq 0 ]]; then
+  printf 'OK: no dormant local branches have cached unpublished or divergent history.\n'
+else
+  printf 'OK: reported branches require no preservation action.\n'
+fi
