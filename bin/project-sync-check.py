@@ -127,8 +127,12 @@ def load_local(state, home):
     order = state.get('project-order')
     if not isinstance(projects, dict) or not isinstance(order, list):
         raise ValueError('Codex saved-project schema unavailable; no snapshot written')
+    if any(not isinstance(key, str) for key in order):
+        raise ValueError('Invalid project-order entry')
     result = []
-    for key in order:
+    # Sidebar order omits pinned projects. Read every saved project, retaining
+    # the ordinary sidebar order first for stable observations.
+    for key in dict.fromkeys(order + list(projects)):
         if not isinstance(key, str):
             raise ValueError('Invalid project-order entry')
         if key.startswith('g-p-'):

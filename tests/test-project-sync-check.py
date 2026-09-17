@@ -50,6 +50,26 @@ class ProjectChecks(unittest.TestCase):
         messages, _ = mod.reconcile(self.manifest, [], self.home, False)
         self.assertTrue(messages[0].startswith('ADD PROJECT'))
 
+    def test_pinned_projects_missing_from_sidebar_order_are_present(self):
+        state = {'project-order': ['ordinary'], 'pinned-project-ids': ['pinned'],
+                 'local-projects': {
+                     'pinned': {'name': 'Project', 'rootPaths': [str(self.home / 'repo')]},
+                     'ordinary': {'name': 'Other', 'rootPaths': [str(self.home / 'other')]},
+                     'g-p-cloud': {'name': 'Cloud', 'rootPaths': ['/outside/home']}}}
+        local = mod.load_local(state, self.home)
+        self.assertEqual(local, [
+            {'name': 'Other', 'roots': ['~/other']},
+            {'name': 'Project', 'roots': ['~/repo']}])
+        messages, _ = mod.reconcile(self.manifest, local, self.home, False)
+        self.assertFalse(any(n.startswith('ADD PROJECT') for n in messages))
+        mod.validate_manifest({'version': 1, 'projects': local}, self.home)
+
+    def test_all_projects_can_be_pinned(self):
+        state = {'project-order': [], 'local-projects': {
+            'pinned': {'name': 'Project', 'rootPaths': [str(self.home / 'repo')]}}}
+        local = mod.load_local(state, self.home)
+        self.assertEqual(mod.reconcile(self.manifest, local, self.home, False), ([], False))
+
     def test_additional_folder_order_is_ignored(self):
         self.manifest['projects'][0]['roots'].extend(['~/second', '~/third'])
         for folder in ['second', 'third']:

@@ -29,6 +29,8 @@ credentials, or private course contents. Home paths become `~/` and paths
 outside home require an explicit mapping. The current reader uses
 `local-projects` and `project-order` from
 `~/.codex/.codex-global-state.json`; an unsupported schema fails visibly.
+All saved local projects are read; sidebar order determines ordering only,
+because pinned projects can be absent from `project-order`.
 
 iCloud transports these files between all four Macs, including contributions
 made offline; wait for it to finish before expecting another Mac's changes.
