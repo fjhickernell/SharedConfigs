@@ -47,7 +47,7 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
 | `quarto-site-live` | Teaching | Live-render a Quarto website on an independent automatically assigned per-course port. |
 | `quarto-slides-live` | Teaching | Live-render one RevealJS deck or all decks on an automatically assigned per-course port. |
-| `regular-maintenance.sh` | System Maintenance | Update Brew and TeX Live, then synchronize managed repositories and npm globals. |
+| `regular-maintenance.sh` | System Maintenance | Update TeXstudio, Brew, and TeX Live, then synchronize managed repositories and npm globals. |
 | `repo-sweep` | Git | Check all current managed repositories and print only those needing attention. |
 | `branch-audit` | Git | Classify dormant local branches and recommend safe cleanup without changing them. |
 | `project-sync-check.py` | Projects | Check shared project assignments; `--capture` writes this Mac's additions to the external iCloud inbox, and `--import-observations` moves pending files into GitTracked during `infra save`. Called by `arrive` and `depart`; see `Notes/project-alignment.md`. |
@@ -76,6 +76,7 @@ Your consolidated maintenance driver script.
 
 It currently runs:
 
+- `update-texstudio.sh` (migrates the disabled core cask to the upstream stable-release tap, then upgrades it)
 - `sync-brew.sh`
 - `update-texlive.sh`
 - `git-repo-sync.sh`
@@ -309,6 +310,15 @@ Notes:
 - Always prompts for the TeX Live password  
 - No safe way to suppress this  
 - Called automatically inside `regular-maintenance.sh`
+
+### `update-texstudio.sh`
+
+Uses the developers’ `texstudio-org/texstudio` stable-release tap on Apple
+Silicon and Intel. The first maintenance run migrates an existing core cask
+without deleting preferences; close TeXstudio before this migration. Downloads
+are checksum-verified before replacement. The upstream cask removes the app’s
+quarantine attribute because its macOS releases are unsigned. Failure stops
+maintenance before Brewfile processing. Later runs upgrade normally.
 
 ### `texstudio-fixed`
 A wrapper that:

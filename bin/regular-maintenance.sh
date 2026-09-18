@@ -86,6 +86,7 @@ banner "===== Regular maintenance run started. ====="
 
 sudo -v
 
+run_step_fatal "update-texstudio" "${BASE}/update-texstudio.sh"
 run_step "sync-brew"          "${BASE}/sync-brew.sh"
 run_step "update-texlive"     sudo "${BASE}/update-texlive.sh"
 run_step "git-repo-sync"      "${BASE}/git-repo-sync.sh"
