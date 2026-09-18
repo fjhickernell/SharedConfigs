@@ -32,6 +32,10 @@ scripts shared through Git across my Macs.
   its project capture writes to an external iCloud inbox so it does not dirty
   GitTracked. The existing full `git-repo-sync.sh` workflow remains available
   separately.
+- `sync-active.sh` uses Git from `PATH` and checks that it runs before
+  inspecting or changing repositories. This allows Homebrew Git to work when
+  Apple's Git launcher is blocked by an unaccepted Xcode license; that license
+  still needs acceptance to restore Apple's compiler and developer tools.
 - On a Mac with the old `arrive`, wait for iCloud to deliver the updated script,
   or update a clean SharedConfigs checkout from published history with
   `git -C ~/Documents/SharedConfigs pull --ff-only` to install this behavior.

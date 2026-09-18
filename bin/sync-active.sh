@@ -72,6 +72,19 @@ if (( do_push == 1 )); then
   do_promote=1
 fi
 
+# Use the same Git selected by the shell as the other synchronization scripts.
+# Apple's Git launcher can be blocked by an Xcode license after an upgrade.
+SYNC_ACTIVE_GIT="${commands[git]-}"
+if [[ -z "$SYNC_ACTIVE_GIT" ]]; then
+  failure "ERROR: git is not available on PATH"
+  exit 2
+fi
+if ! git_probe_output=$("$SYNC_ACTIVE_GIT" --version 2>&1); then
+  failure "ERROR: Git is unavailable: ${SYNC_ACTIVE_GIT}"
+  failure "$git_probe_output"
+  exit 2
+fi
+
 # Internal record format: name<TAB>local path<TAB>clone URL<TAB>optional branch.
 # Each entry is one record, so repository fields cannot become misaligned.
 # Leave branch empty to use the remote default on clone and the checked-out
@@ -172,7 +185,7 @@ ensure_repository_exists() {
   [[ -n "$REPO_BRANCH" ]] && clone_args+=(--branch "$REPO_BRANCH")
   clone_args+=("$REPO_URL" "$REPO_PATH")
   vinfo "CLONE  ${REPO_NAME}: ${REPO_URL}"
-  if ! /usr/bin/git "${clone_args[@]}" >/dev/null 2>&1; then
+  if ! "$SYNC_ACTIVE_GIT" "${clone_args[@]}" >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: clone failed from ${REPO_URL}"
     return 1
   fi
@@ -184,12 +197,12 @@ validate_repository_and_remote() {
     failure "ERROR  ${REPO_NAME}: path exists but is not a directory"
     return 1
   fi
-  if ! /usr/bin/git -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: path exists but is not a Git repository"
     return 1
   fi
   local actual_top resolved_repo resolved_top actual_url
-  actual_top=$(/usr/bin/git -C "$REPO_PATH" rev-parse --show-toplevel 2>/dev/null)
+  actual_top=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse --show-toplevel 2>/dev/null)
   resolved_repo="${REPO_PATH:A}"
   resolved_top="${actual_top:A}"
   if [[ "$resolved_repo" != "$resolved_top" ]]; then
@@ -198,7 +211,7 @@ validate_repository_and_remote() {
     vinfo "       actual root: ${actual_top}"
     return 1
   fi
-  if ! actual_url=$(/usr/bin/git -C "$REPO_PATH" remote get-url origin 2>/dev/null); then
+  if ! actual_url=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" remote get-url origin 2>/dev/null); then
     failure "ERROR  ${REPO_NAME}: origin remote is missing"
     return 1
   fi
@@ -213,14 +226,14 @@ typeset -a SUBMODULE_PATHS=()
 typeset -a MANAGED_PATHS=()
 has_gitlink() {
   local repo="$1" path="$2" entry
-  entry=$(/usr/bin/git -C "$repo" ls-files --stage -- "$path" 2>/dev/null || true)
+  entry=$("$SYNC_ACTIVE_GIT" -C "$repo" ls-files --stage -- "$path" 2>/dev/null || true)
   [[ "$entry" == 160000\ * ]]
 }
 
 inspect_submodule_metadata() {
   SUBMODULE_PATHS=()
   MANAGED_PATHS=()
-  if ! /usr/bin/git -C "$REPO_PATH" ls-files --error-unmatch -- .gitmodules >/dev/null 2>&1; then
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" ls-files --error-unmatch -- .gitmodules >/dev/null 2>&1; then
     return 0
   fi
   local record path
@@ -235,20 +248,20 @@ inspect_submodule_metadata() {
     else
       warn "${REPO_NAME}: .gitmodules path is not a committed gitlink: ${path}"
     fi
-  done < <(/usr/bin/git -C "$REPO_PATH" config -z -f .gitmodules \
+  done < <("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" config -z -f .gitmodules \
     --get-regexp '^submodule\..*\.path$' 2>/dev/null || true)
   return 0
 }
 
 status_is_clean() {
-  [[ -z "$(/usr/bin/git -C "$REPO_PATH" status --porcelain=v1 -z --untracked-files=normal)" ]]
+  [[ -z "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" status --porcelain=v1 -z --untracked-files=normal)" ]]
 }
 
 only_recognized_pointer_changes() {
   local record xy path renamed_path
   local status_file
   status_file=$(/usr/bin/mktemp)
-  /usr/bin/git -C "$REPO_PATH" status --porcelain=v1 -z \
+  "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" status --porcelain=v1 -z \
     --untracked-files=normal >| "$status_file"
   [[ ! -s "$status_file" ]] && { /bin/rm -f "$status_file"; return 0; }
 
@@ -276,7 +289,7 @@ only_recognized_pointer_changes() {
 
 prepare_branch() {
   local current
-  current=$(/usr/bin/git -C "$REPO_PATH" branch --show-current)
+  current=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" branch --show-current)
   if [[ -z "$current" ]]; then
     failure "ERROR  ${REPO_NAME}: detached HEAD; configure or check out a branch"
     return 1
@@ -285,7 +298,7 @@ prepare_branch() {
     failure "ERROR  ${REPO_NAME}: branch ${current} differs from configured ${REPO_BRANCH}"
     return 1
   fi
-  if ! /usr/bin/git -C "$REPO_PATH" rev-parse --verify '@{u}' >/dev/null 2>&1; then
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse --verify '@{u}' >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: branch ${current} has no upstream"
     return 1
   fi
@@ -297,28 +310,28 @@ fast_forward_sync() {
   SYNC_CHANGED=0
   SYNC_COMMIT_COUNT=0
   local old new
-  old=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)
-  if ! /usr/bin/git -C "$REPO_PATH" -c fetch.recurseSubmodules=no \
+  old=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" -c fetch.recurseSubmodules=no \
     fetch origin >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: fetch from origin failed"
     return 1
   fi
-  if ! /usr/bin/git -C "$REPO_PATH" merge --ff-only '@{u}' >/dev/null 2>&1; then
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" merge --ff-only '@{u}' >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: fast-forward-only update failed"
     return 1
   fi
-  new=$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)
+  new=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)
   if [[ "$old" != "$new" ]]; then
     SYNC_CHANGED=1
-    SYNC_COMMIT_COUNT=$(/usr/bin/git -C "$REPO_PATH" rev-list --count "${old}..${new}")
+    SYNC_COMMIT_COUNT=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-list --count "${old}..${new}")
   fi
   return 0
 }
 
 pinned_submodule_checkout() {
   (( ${#SUBMODULE_PATHS} == 0 )) && return 0
-  if ! /usr/bin/git -C "$REPO_PATH" submodule sync --recursive >/dev/null 2>&1 ||
-     ! /usr/bin/git -C "$REPO_PATH" submodule update --init --recursive \
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" submodule sync --recursive >/dev/null 2>&1 ||
+     ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" submodule update --init --recursive \
        --checkout >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: pinned submodule checkout failed"
     return 1
@@ -328,14 +341,14 @@ pinned_submodule_checkout() {
 ensure_qmcpy_fetch_policy() {
   local qmcpy_path="${REPO_PATH}/qmcpy"
   [[ -e "$qmcpy_path" ]] || return 0
-  /usr/bin/git -C "$qmcpy_path" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
-  /usr/bin/git -C "$qmcpy_path" remote get-url origin >/dev/null 2>&1 || return 0
-  /usr/bin/git -C "$qmcpy_path" config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
-  /usr/bin/git -C "$qmcpy_path" config --add remote.origin.fetch \
+  "$SYNC_ACTIVE_GIT" -C "$qmcpy_path" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  "$SYNC_ACTIVE_GIT" -C "$qmcpy_path" remote get-url origin >/dev/null 2>&1 || return 0
+  "$SYNC_ACTIVE_GIT" -C "$qmcpy_path" config --unset-all remote.origin.fetch >/dev/null 2>&1 || true
+  "$SYNC_ACTIVE_GIT" -C "$qmcpy_path" config --add remote.origin.fetch \
     '+refs/heads/develop:refs/remotes/origin/develop'
-  /usr/bin/git -C "$qmcpy_path" config --add remote.origin.fetch \
+  "$SYNC_ACTIVE_GIT" -C "$qmcpy_path" config --add remote.origin.fetch \
     '+refs/tags/*:refs/tags/*'
-  /usr/bin/git -C "$qmcpy_path" fetch --prune origin >/dev/null 2>&1 || true
+  "$SYNC_ACTIVE_GIT" -C "$qmcpy_path" fetch --prune origin >/dev/null 2>&1 || true
 }
 
 promote_managed_submodules() {
@@ -375,13 +388,13 @@ commit_pointer_changes() {
   local -a changed_paths=()
   local path
   for path in "${SUBMODULE_PATHS[@]}"; do
-    if ! /usr/bin/git -C "$REPO_PATH" diff --quiet HEAD -- "$path"; then
+    if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" diff --quiet HEAD -- "$path"; then
       changed_paths+=("$path")
     fi
   done
   (( ${#changed_paths} > 0 )) || return 0
-  if ! /usr/bin/git -C "$REPO_PATH" add -- "${changed_paths[@]}" ||
-     ! /usr/bin/git -C "$REPO_PATH" commit -m \
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" add -- "${changed_paths[@]}" ||
+     ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" commit -m \
        'Update submodule pointers' >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: pointer commit failed"
     return 1
@@ -393,9 +406,9 @@ commit_pointer_changes() {
 push_if_requested() {
   (( do_push == 0 )) && return 0
   local ahead
-  ahead=$(/usr/bin/git -C "$REPO_PATH" rev-list --count '@{u}..HEAD')
+  ahead=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-list --count '@{u}..HEAD')
   (( ahead == 0 )) && return 0
-  if ! /usr/bin/git -C "$REPO_PATH" push >/dev/null 2>&1; then
+  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" push >/dev/null 2>&1; then
     failure "ERROR  ${REPO_NAME}: push failed"
     return 1
   fi
@@ -414,7 +427,7 @@ sync_repository() {
   if ! only_recognized_pointer_changes; then
     failure "SKIP   ${REPO_NAME}: dirty working tree"
     (( VERBOSE == 1 )) &&
-      /usr/bin/git -C "$REPO_PATH" status --short >&2 || true
+      "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" status --short >&2 || true
     return 20
   fi
   # Existing pointer changes may only proceed for an explicitly requested commit.
@@ -440,7 +453,7 @@ sync_repository() {
   push_if_requested || return 30
 
   (( VERBOSE == 1 && QUIET == 0 )) &&
-    /usr/bin/git -C "$REPO_PATH" status -sb || true
+    "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" status -sb || true
   (( REPO_WAS_CLONED == 1 )) && return 10
   (( SYNC_CHANGED == 1 )) && return 11
   return 0
@@ -456,11 +469,11 @@ check_submodule_pin_consistency() {
 
   for record in "${REPOSITORIES[@]}"; do
     parse_repository_record "$record" || continue
-    /usr/bin/git -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
+    "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
       continue
 
     if has_gitlink "$REPO_PATH" "$submodule_path"; then
-      pin=$(/usr/bin/git -C "$REPO_PATH" rev-parse "HEAD:${submodule_path}")
+      pin=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse "HEAD:${submodule_path}")
       repo_names+=("$REPO_NAME")
       pins+=("$pin")
     fi
@@ -509,7 +522,7 @@ health_summary() {
   local record line
   for record in "${REPOSITORIES[@]}"; do
     parse_repository_record "$record" || continue
-    /usr/bin/git -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
+    "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
       continue
     line=$(cd "$REPO_PATH" && repo-health --short 2>&1 || true)
     [[ -n "$line" ]] && plain_log "$line"
@@ -525,9 +538,9 @@ for local_record in "${REPOSITORIES[@]}"; do
   rc=0
   sync_repository "$local_record" || rc=$?
   case "$rc" in
-    0) info "OK     ${REPO_NAME}: already current @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
-    10) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "CLONED ${REPO_NAME}: ready @ $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
-    11) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "UPDATED ${REPO_NAME}: +${SYNC_COMMIT_COUNT} -> $(shortsha "$(/usr/bin/git -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    0) info "OK     ${REPO_NAME}: already current @ $(shortsha "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    10) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "CLONED ${REPO_NAME}: ready @ $(shortsha "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    11) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "UPDATED ${REPO_NAME}: +${SYNC_COMMIT_COUNT} -> $(shortsha "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)")" ;;
     20) SKIP_COUNT=$((SKIP_COUNT + 1)) ;;
     *) ERROR_COUNT=$((ERROR_COUNT + 1)) ;;
   esac
