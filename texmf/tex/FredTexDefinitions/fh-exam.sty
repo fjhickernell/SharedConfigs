@@ -3,6 +3,13 @@
 %%
 %% Changelog
 %%
+%% v26.3 (2026/09/21)
+%%   • Added \setexamgradesummarymode{max} for a compact Q / Max / Score
+%%     table with per-problem maxima and a Tot / total-points row.
+%%   • Added automatic point references for direct-point problems so the new
+%%     Max column works with both parent-level and subproblem-derived totals.
+%%   • Kept the existing table and single modes visually unchanged.
+%%
 %% v26.2 (2026/09/13)
 %%   • Used grammatically correct singular or plural question wording in
 %%     regular-exam and take-home instructions as well as quiz instructions.
@@ -79,7 +86,7 @@
 %% ------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesExplPackage{fh-exam}{2026/09/13}{26.2}{Slim exam scaffolding}
+\ProvidesExplPackage{fh-exam}{2026/09/21}{26.3}{Slim exam scaffolding}
 
 \RequirePackage{xstring}
 \makeatletter
@@ -189,22 +196,32 @@
 %   \examgradesummary[8]        % manually prints an 8-question box
 %   \setexamgradesummarymode{single} % one Score box, using the score width
 %   \setexamgradesummarymode{table}  % restore the default Q / Score / Total table
+%   \setexamgradesummarymode{max}    % compact Q / Max / Score / Tot table
 \newif\ifshowexamgradesummary
 \showexamgradesummarytrue
 \newif\iffhx@singlescore
 \fhx@singlescorefalse
+\newif\iffhx@maxscore
+\fhx@maxscorefalse
 \NewDocumentCommand{\setexamgradesummarymode}{m}{%
 	\IfStrEqCase{#1}{%
-		{single}{\fhx@singlescoretrue}%
-		{table}{\fhx@singlescorefalse}%
+		{single}{\fhx@singlescoretrue\fhx@maxscorefalse}%
+		{table}{\fhx@singlescorefalse\fhx@maxscorefalse}%
+		{max}{\fhx@singlescorefalse\fhx@maxscoretrue}%
 	}[\PackageError{fh-exam}{Unknown grading summary mode `#1'}%
-		{Use single or table.}]%
+		{Use single, table, or max.}]%
 }
 
 \newlength{\examgradesummaryqwidth}
 \newlength{\examgradesummaryscorewidth}
+\newlength{\examgradesummarymaxqwidth}
+\newlength{\examgradesummarymaxwidth}
+\newlength{\examgradesummarymaxscorewidth}
 \setlength{\examgradesummaryqwidth}{3.2em}
 \setlength{\examgradesummaryscorewidth}{4.2em}
+\setlength{\examgradesummarymaxqwidth}{1.8em}
+\setlength{\examgradesummarymaxwidth}{2em}
+\setlength{\examgradesummarymaxscorewidth}{3.8em}
 \newlength{\examgradesummaryrowheight}
 \setlength{\examgradesummaryrowheight}{2.8em}
 \newcommand{\examgradesummarycell}[1]{%
@@ -218,6 +235,11 @@
 }
 \NewDocumentCommand{\setexamgradesummaryscorewidth}{m}{%
 	\setlength{\examgradesummaryscorewidth}{#1}%
+}
+\NewDocumentCommand{\setexamgradesummarymaxwidths}{m m m}{%
+	\setlength{\examgradesummarymaxqwidth}{#1}%
+	\setlength{\examgradesummarymaxwidth}{#2}%
+	\setlength{\examgradesummarymaxscorewidth}{#3}%
 }
 \NewDocumentCommand{\setexamgradesummaryrowheight}{m}{%
 	\setlength{\examgradesummaryrowheight}{#1}%
@@ -236,6 +258,16 @@
 	}
 }
 \cs_new_eq:NN \fhxgradesummaryrows \fhx_gradesummary_rows:n
+\cs_new_protected:Npn \fhx_gradesummary_max_rows:n #1
+{
+	\int_step_inline:nn { #1 }
+	{
+		\examgradesummarycell{##1}
+			& \examgradesummarycell{\ref{fhxP##1pts}}
+			& \examgradesummarycell{} \\ \hline
+	}
+}
+\cs_new_eq:NN \fhxgradesummarymaxrows \fhx_gradesummary_max_rows:n
 \ExplSyntaxOff
 
 \NewDocumentCommand{\examgradesummary}{O{\examnumproblemsref}}{%
@@ -250,12 +282,27 @@
 		\examgradesummarycell{} \\ \hline
 	\end{tabular}%
 	\else
+	\iffhx@maxscore
+	\setlength{\tabcolsep}{2pt}%
+	\begin{tabular}[t]{|
+		>{\centering\arraybackslash}m{\examgradesummarymaxqwidth}|
+		>{\centering\arraybackslash}m{\examgradesummarymaxwidth}|
+		>{\centering\arraybackslash}m{\examgradesummarymaxscorewidth}|}
+		\hline
+		\textbf{Q} & \footnotesize\textbf{Max} & \textbf{Score} \\ \hline
+		\fhxgradesummarymaxrows{#1}%
+		\examgradesummarycell{\textbf{Tot}}
+			& \examgradesummarycell{\textbf{\examtotalpointsref}}
+			& \examgradesummarycell{} \\ \hline
+	\end{tabular}%
+	\else
 	\begin{tabular}[t]{|>{\centering\arraybackslash}m{\examgradesummaryqwidth}|>{\centering\arraybackslash}m{\examgradesummaryscorewidth}|}
 		\hline
 		\textbf{Q} & \textbf{Score} \\ \hline
 		\fhxgradesummaryrows{#1}%
 		\examgradesummarycell{\textbf{Total}} & \examgradesummarycell{} \\ \hline
 	\end{tabular}%
+	\fi
 	\fi
 	\endgroup
 }
@@ -312,6 +359,9 @@
 	\item
 	\ifnum#1>0
 	\addtocounter{fhx@totalpoints}{#1}%
+	\protected@write\@auxout{}{
+		\string\newlabel{\fhxplabel}{{#1}{}}%
+	}%
 	\points{#1}\space #2%
 	\else
 	\begingroup

@@ -204,6 +204,27 @@ class ExamStyleTests(unittest.TestCase):
             self.assertRegex(rendered.normalized, r"\b" + heading + r"\b")
         self.assert_counts(rendered, questions=2, points=20)
 
+    def test_max_score_table_shows_direct_and_subproblem_points(self):
+        rendered = self.new("max-score-table", r"""
+\setexamgradesummarymode{max}
+\setexamgradesummarylayout{0.76\textwidth}{0.22\textwidth}
+""", r"""
+\begin{problems}
+  \problem{12}{A direct-point example.}
+  \problem{0}{An example totaled from subproblems.}
+  \begin{subproblems}
+    \subproblem{3}{First part.}
+    \subproblem{5}{Second part.}
+  \end{subproblems}
+\end{problems}
+""")
+        self.assertRegex(rendered.normalized, r"\bQ\s+Max\s+Score\b")
+        self.assertRegex(rendered.normalized, r"\b1\s+12\b")
+        self.assertRegex(rendered.normalized, r"\b2\s+8\b")
+        self.assertRegex(rendered.normalized, r"\bTot\s+20\b")
+        self.assertNotRegex(rendered.normalized, r"\bTotal\b")
+        self.assert_counts(rendered, questions=2, points=20)
+
     def test_answer_toggle(self):
         rendered = self.new("quiz-answers", r"\examstyle{quiz}\showanswerstrue")
         self.assertIn("ANSWER TOKEN", rendered.normalized)

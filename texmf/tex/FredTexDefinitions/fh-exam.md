@@ -2,10 +2,11 @@
 
 `fh-exam.sty` provides headers, instructions, scoring boxes, problems and
 subproblems, point totals, and switchable answers for paper assessments.
-Version **26.2 (2026/09/13)** uses grammatically correct singular or plural
-question wording in every assessment mode and adds an opt-in construction
-disclosure. Version 26.1 added optional quiz instructions and a single score
-box. The package's version history is at the top of `fh-exam.sty`.
+Version **26.3 (2026/09/21)** adds a compact grading table that shows each
+problem's maximum points beside the recorded score. Version 26.2 added
+grammatically correct question wording and an opt-in construction disclosure;
+version 26.1 added optional quiz instructions and a single score box. The
+package's complete release history is at the top of `fh-exam.sty`.
 
 Versions use **YY.N**: the two-digit year followed by the release number
 within that year, starting at 1. Thus 26.1 is followed by 26.2, and the first
@@ -82,19 +83,31 @@ statement. It is empty by default, so existing assessments remain unchanged.
   box. It has no question-number column or separate Total row.
 - `\setexamgradesummarymode{table}` restores the default **Q / Score** table
   with one row per problem and a Total row.
+- `\setexamgradesummarymode{max}` prints the compact **Q / Max / Score** table
+  with each problem's maximum points and a **Tot** row showing the assessment
+  total. Its default widths are 1.8 em, 2 em, and 3.8 em, respectively.
 - `\showexamgradesummaryfalse` hides the score display.
 
 Mode selection is explicit, independent of the question count and quiz mode.
 Existing documents continue to use the table, including one-question exams.
-The optional count in `\examgradesummary[8]` controls rows in table mode and is
-ignored in single mode.
+The optional count in `\examgradesummary[8]` controls rows in table and max
+modes and is ignored in single mode. Compile at least twice after changing
+questions or points so every Max entry is current. Both direct-point problems
+and totals derived from subproblems are supported.
 
-Both modes use the existing `\setexamgradesummaryscorewidth{...}`,
-`\setexamgradesummaryrowheight{...}`, and
-`\setexamgradesummarylayout{instruction width}{box width}` controls. The
-question-column width applies only to the table. Width and height setters
+Table and single modes use the existing
+`\setexamgradesummaryscorewidth{...}` control. All three modes use
+`\setexamgradesummaryrowheight{...}` and
+`\setexamgradesummarylayout{instruction width}{box width}`. The original
+question-column width applies only to table mode. Width and height setters
 evaluate dimensions where they are called; an absolute width such as `60pt`
 is useful when preserving an existing layout.
+
+Max mode has independent compact widths so existing table and single layouts
+do not change. Override all three with
+`\setexamgradesummarymaxwidths{Q width}{Max width}{Score width}`. To retain the
+score box's right edge while reducing the gutter after the instructions, use,
+for example, `\setexamgradesummarylayout{0.76\textwidth}{0.22\textwidth}`.
 
 ## Quiz instructions
 
