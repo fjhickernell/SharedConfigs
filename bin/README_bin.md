@@ -103,7 +103,12 @@ health check is appropriate.
 ## Homebrew
 
 ### `sync-brew.sh`
-Synchronizes all Homebrew formulae and casks using your canonical Brewfile.
+Synchronizes Homebrew using the canonical Brewfile. On Apple Silicon, the
+regular run upgrades formulae and casks. On Intel, the regular run upgrades
+casks and reconciles the non-formula Brewfile entries, including Mac App Store
+apps, while deferring formula upgrades and installs. It still runs the
+separate `mas upgrade` step. Run `sync-brew.sh --full` during an attended Intel
+maintenance window to upgrade formulae and reconcile every Brewfile entry.
 
 Shows `Using …` versus `Installing …` for clarity.
 

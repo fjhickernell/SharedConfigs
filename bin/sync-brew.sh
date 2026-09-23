@@ -27,6 +27,18 @@ error() {
   printf "${RED_BOLD}Error:${NC} %s\n" "$1" >&2
 }
 
+if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--full" ) ]]; then
+  printf 'Usage: %s [--full]\n' "$0" >&2
+  exit 2
+fi
+
+# Intel Homebrew no longer receives bottles for many formulae. Keep routine
+# maintenance short; run --full during an attended formula-maintenance window.
+intel_routine=0
+if [[ "$(uname -m)" == "x86_64" && $# -eq 0 ]]; then
+  intel_routine=1
+fi
+
 cd "$HOME/Documents/SharedConfigs"
 
 banner "sync-brew started"
@@ -44,8 +56,13 @@ fi
 section "Updating Homebrew"
 brew update
 
-section "Upgrading installed formulae and casks"
-brew upgrade
+if (( intel_routine )); then
+  section "Upgrading installed casks (Intel routine; formulae deferred)"
+  brew upgrade --cask
+else
+  section "Upgrading installed formulae and casks"
+  brew upgrade
+fi
 
 section "Ensuring Brewfile state via brew bundle"
 bundle_failed=0
@@ -53,7 +70,15 @@ bundle_log="$(mktemp)"
 trap 'rm -f "$bundle_log"' EXIT
 
 if [[ -f Brewfile ]]; then
-  brew bundle --file="$HOME/Documents/SharedConfigs/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
+  if (( intel_routine )); then
+    # Keep casks, Mac App Store apps, extensions, and npm entries in sync while
+    # skipping formula entries that could trigger lengthy source builds.
+    formula_skip="$(sed -nE 's/^brew "([^"]+)".*/\1/p' Brewfile | paste -sd ' ' -)"
+    HOMEBREW_BUNDLE_BREW_SKIP="${HOMEBREW_BUNDLE_BREW_SKIP:+$HOMEBREW_BUNDLE_BREW_SKIP }${formula_skip}" \
+      brew bundle --no-upgrade --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
+  else
+    brew bundle --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
+  fi
 else
   brew bundle 2>&1 | tee "$bundle_log" || bundle_failed=1
 fi
@@ -72,6 +97,9 @@ printf "${GREEN_BOLD}(Mostly) OK:${NC} %s Brewfile items were already installed 
 " "$bundle_ok_count"
 printf "${YELLOW_BOLD}Needs attention:${NC} %s issue(s) reported.
 " "$bundle_fail_count"
+if (( intel_routine )); then
+  warn "Intel formula upgrades and Brewfile formula installs were deferred; run sync-brew.sh --full in an attended window."
+fi
 
 if [[ "$bundle_failed" -eq 1 ]]; then
   grep -E "has failed|failed to install|depends on hardware architecture" "$bundle_log" || true
