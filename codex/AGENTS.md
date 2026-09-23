@@ -62,7 +62,10 @@ events unless the user specifies another calendar, because events placed there
 block the user's availability in Microsoft Bookings. Fantastical is the user's
 preferred calendar app, while Apple Calendar provides the working local
 automation path; events added through Apple Calendar synchronize into
-Fantastical. Do not confuse the target with the read-only `IIT Applied
+Fantastical. Treat Fantastical as the more authoritative view of the user's
+actual schedule: if an event appears in Apple Calendar but is absent from
+Fantastical, do not treat it as the user's commitment without confirmation.
+Do not confuse the target with the read-only `IIT Applied
 Mathematics` calendar. When local automation cannot disambiguate calendars with
 the same name by account, confirm the target or use a writable calendar only
 with the user's approval to move the event manually. When a source schedule
