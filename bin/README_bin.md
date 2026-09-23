@@ -84,6 +84,9 @@ It currently runs:
 - `sync-active.sh` without `--push`, when available
 - `npm-globals-sync.sh`, when npm and the script are available
 
+The final log line reports total elapsed wall time, including time spent
+waiting for password prompts. It also appears if a fatal step exits early.
+
 Workflow:
 
 1. **Run manually** (no LaunchAgent):

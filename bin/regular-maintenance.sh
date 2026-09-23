@@ -13,6 +13,19 @@ banner() {
   printf '\033[1;32m%s\033[0m\n' "$(log "$1")"
 }
 
+report_elapsed() {
+  local exit_code="$1"
+  local elapsed=$(( $(/bin/date +%s) - maintenance_started_at ))
+  local duration
+  duration="$(printf '%02d:%02d:%02d' $(( elapsed / 3600 )) $(( (elapsed % 3600) / 60 )) $(( elapsed % 60 )))"
+
+  if (( exit_code == 0 )); then
+    log "Total elapsed wall time: ${duration}."
+  else
+    log "Total elapsed wall time: ${duration} (exit ${exit_code})."
+  fi
+}
+
 run_step() {
   local name="$1"
   shift
@@ -47,7 +60,7 @@ run_step_fatal() {
     return 0
   else
     log "FAILED: ${name} (exit ${exit_code})"
-    return ${exit_code}
+    exit ${exit_code}
   fi
 }
 
@@ -81,6 +94,8 @@ report_dirty_class_repos() {
 }
 
 BASE="$HOME/Documents/SharedConfigs/bin"
+maintenance_started_at=$(/bin/date +%s)
+trap 'report_elapsed $?' EXIT
 
 banner "===== Regular maintenance run started. ====="
 
