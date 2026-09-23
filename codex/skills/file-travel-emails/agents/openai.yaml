@@ -1,0 +1,4 @@
+interface:
+  display_name: "File Travel Emails"
+  short_description: "File trip confirmations into the right mailbox"
+  default_prompt: "Use $file-travel-emails to file the confirmation emails for my trip."
