@@ -183,6 +183,18 @@ Before responding to or acting on such a request:
 
 The user does not need to explicitly say `Dashboard` or provide the file path for this routing rule to apply.
 
+## Infrastructure and Codex project alignment
+
+Whenever a request checks, reviews, or updates general infrastructure or a
+P29 infrastructure item, include the current Mac's saved Codex projects in the
+review. Inspect the app-visible project list when available and run
+`python3 ~/Documents/SharedConfigs/bin/project-sync-check.py` against the
+canonical project manifest. Reconcile the readable project inventory and its
+per-machine status with verified findings, and report any project name,
+primary-folder, or folder-membership change that still must be made in the
+Codex app. Do this even when the infrastructure item that prompted the review
+is otherwise unrelated to Codex.
+
 ## Pull request review
 
 When creating or substantially updating a GitHub pull request, request a GitHub Copilot code review by default when it is available, unless the user or repository guidance explicitly opts out. Treat Copilot review only as a supplement: it never replaces required human reviewers, human approval, CI, testing, or repository-specific review safeguards. Address applicable automated feedback before requesting or re-requesting human review so that human reviewers evaluate the intended final revision.
