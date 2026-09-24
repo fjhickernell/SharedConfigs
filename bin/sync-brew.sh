@@ -105,6 +105,11 @@ if [[ "$bundle_failed" -eq 1 ]]; then
   grep -E "has failed|failed to install|depends on hardware architecture" "$bundle_log" || true
   echo
 
+  if grep -Eq '^(Installing|Upgrading) .* has failed!$' "$bundle_log"; then
+    error "Homebrew Bundle failed to install or upgrade Brewfile items; stopping sync-brew."
+    exit 1
+  fi
+
   unrecognized_errors="$(grep '^Error:' "$bundle_log" | grep -Ev 'depends on hardware architecture|dependency graph sorting failed|circular dependency' || true)"
 
   if [[ -n "$unrecognized_errors" ]]; then
