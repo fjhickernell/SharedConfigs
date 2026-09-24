@@ -68,10 +68,10 @@ report_repo_if_dirty() {
   local repo="$1"
   [[ -d "$repo/.git" ]] || return 0
 
-  local status
-  status="$(cd "$repo" && git status --porcelain 2>/dev/null || true)"
+  local repo_status
+  repo_status="$(cd "$repo" && git status --porcelain 2>/dev/null || true)"
 
-  if [[ -n "$status" ]]; then
+  if [[ -n "$repo_status" ]]; then
     log "Dirty repo: $repo"
     log "git status --short:"
     (cd "$repo" && git status --short) | while IFS= read -r line; do log "  $line"; done
@@ -123,7 +123,7 @@ if command -v sync-active.sh >/dev/null 2>&1; then
     log "Finished: sync-active (no-push) (ok)"
   else
     log "FAILED: sync-active (no-push) (exit ${exit_code})"
-    log "sync-active likely detected pointer changes; run sync-active.sh --push when ready."
+    log "Review the sync-active output before retrying; a dirty working tree can cause a skip without changing any pointers."
     report_dirty_class_repos
   fi
 else
