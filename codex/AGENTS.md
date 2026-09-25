@@ -88,6 +88,23 @@ plain JavaScript assignment. After creation or modification, verify the
 visible account, date, start time, end time, and time zone in Apple Calendar;
 do not rely solely on the scripting API's UTC serialization.
 
+### Timed reminders in Fantastical
+
+When the user asks to put tasks on the calendar as reminders, inspect the
+relevant days in Fantastical first and leave enough room for existing events
+and reminders. On a Mac, use EventKit's reminders API for precise creation or
+edits: choose the intended reminder list, set `dueDateComponents` with the
+local date, time, and named time zone, and add an alarm at that time when an
+alert is wanted. Search for an existing matching reminder before creating a
+new one. Include an estimated duration in the title when useful, but remember
+that a timed reminder has no duration and does not block availability. Use a
+calendar event instead when the user wants reserved time.
+
+Do not rely on Fantastical's `x-fantastical://parse` URL parameters to set a
+reminder's due time: a prior attempt placed a reminder on the wrong day.
+After saving through EventKit, check each reminder's visible date and time in
+Fantastical. Correct discrepancies before reporting success.
+
 ## Terminology precision and coherence
 
 Prefer precise, consistent terminology across the user's requests, project
