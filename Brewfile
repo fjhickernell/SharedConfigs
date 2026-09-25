@@ -57,7 +57,7 @@ brew "watchexec"
 brew "weasyprint"
 brew "xz"
 brew "zlib"
-cask "bartender"
+cask "bartender", greedy: true
 cask "bbedit"
 cask "betterdisplay"
 cask "bibdesk"
