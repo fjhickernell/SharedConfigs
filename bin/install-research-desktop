@@ -9,4 +9,4 @@ rm -rf "$dst"
 osacompile -o "$dst" "$src"
 
 echo "Installed: $dst"
-echo "On first launch, macOS may ask for Accessibility/Automation permissions."
+echo "On first launch, macOS may ask for Device Control and Data Access/Automation permissions."

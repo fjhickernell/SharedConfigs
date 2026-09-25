@@ -6,7 +6,7 @@ on run
 	on error errorText number errorNumber
 		my writeStatus("ERROR " & errorNumber & ": " & errorText)
 		if errorNumber is -1743 or errorNumber is -1719 or errorNumber is -25211 then
-			display dialog "Research Desktop needs permission to arrange ChatGPT. In System Settings → Privacy & Security, allow Research Desktop under Accessibility and allow it to control System Events under Automation. Then open Research Desktop again." buttons {"OK"} default button "OK" with title "Research Desktop"
+			display dialog "Research Desktop needs permission to arrange ChatGPT. In System Settings → Privacy & Security, allow Research Desktop under Device Control and Data Access and allow it to control System Events under Automation. Then open Research Desktop again." buttons {"OK"} default button "OK" with title "Research Desktop"
 		else
 			display dialog errorText buttons {"OK"} default button "OK" with title "Research Desktop"
 		end if
