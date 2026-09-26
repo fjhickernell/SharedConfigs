@@ -44,6 +44,38 @@ authentication succeeds, navigate to the requested resource in the same
 browser session. Prefer this route over starting with a direct Microsoft
 passkey flow.
 
+## Semesterly early intervention feedback setup
+
+At least once each semester for each class, the instructor uses the Illinois
+Tech EAB early intervention (early warning) student feedback form alongside
+that class's Canvas Gradebook. When asked to prepare this work:
+
+1. Search the `Illinois Tech Fred` email account for the current semester's
+   `[Ext]Early Warning System - Illinois Tech EAB` message from
+   `Early Intervention User`. Prefer the newest valid feedback request, check
+   its stated expiration date, and follow its current link. Do not reuse a
+   prior semester's link or store a time-limited link as a standing URL.
+2. In Safari, begin at `https://portal.iit.edu` for Illinois Tech
+   authentication, then open the email's link in the same browser session.
+   Verify that the form lists the intended course and section. The same form
+   may list all courses; keep it open and switch the Canvas Gradebook as needed.
+3. From the portal, open Canvas for the correct course and semester and show
+   its instructor Gradebook. Verify the course title before using grades.
+4. Put the Gradebook in its own Safari window using the gradebook tab's
+   **Move Tab to New Window** command. Place the Gradebook window on the
+   other display using Safari's **Window > Move to [display]** command, and
+   leave the EAB form visible on the first display. Verify that both windows
+   are visible on different displays. If only one display is available,
+   arrange the two windows side by side.
+5. Leave feedback choices and submission to the instructor unless the
+   instructor separately asks for help with them. Do not infer at-risk status
+   from a grade alone, and do not put student data in a course repository.
+
+This is a reusable setup procedure for every course and semester; discover
+the live email, form, and Canvas course afresh each time. The semesterly
+cadence does not authorize completing or submitting feedback without the
+instructor's request.
+
 ## Illinois Tech calendar routing
 
 For any request to check, search, schedule, or edit the user's calendar,
