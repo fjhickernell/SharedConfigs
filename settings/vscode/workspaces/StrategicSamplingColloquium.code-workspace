@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../../../../../SoftwareRepositories/NSF-CDSE-2026-Submission"
+		},
+		{
+			"path": "../../../../../SoftwareRepositories/SURE-2025-periodic-kernel-discrepancy-for-lattices"
 		}
 	]
 }
