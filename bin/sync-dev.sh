@@ -66,6 +66,12 @@ shortsha() {
   echo "${s:0:12}"
 }
 
+head_summary() {
+  local repo="$1"
+  printf '%s — %s' "$(shortsha "$(git -C "$repo" rev-parse HEAD)")" \
+    "$(git -C "$repo" log -1 --format=%s)"
+}
+
 is_clean_repo() {
   local repo="$1"
   [[ -z "$(git -C "$repo" status --porcelain)" ]]
@@ -101,10 +107,8 @@ sync_repo() {
       err "ERROR  ${name}: clone failed from ${clone_origin}"
       return 0
     fi
-    local cloned_head
-    cloned_head="$(git -C "$repo" rev-parse HEAD)"
     UPDATE_COUNT=$((UPDATE_COUNT + 1))
-    ok "CLONED  ${name} (${branch}) @ $(shortsha "$cloned_head")"
+    ok "CLONED  ${name} (${branch}) @ $(head_summary "$repo")"
     verbose_status "$repo"
     return 0
   fi
@@ -162,12 +166,12 @@ sync_repo() {
   if [[ "$old" != "$new" ]]; then
     count="$(git -C "$repo" rev-list --count "${old}..${new}" 2>/dev/null || echo "?")"
     UPDATE_COUNT=$((UPDATE_COUNT + 1))
-    ok "UPDATED ${name} (${branch}) +${count} -> $(shortsha "$new")"
+    ok "UPDATED ${name} (${branch}) +${count} -> $(head_summary "$repo")"
   elif [[ "$origin_changed" -eq 1 ]]; then
     UPDATE_COUNT=$((UPDATE_COUNT + 1))
-    ok "UPDATED ${name} (${branch}) origin -> ${sync_origin}"
+    ok "UPDATED ${name} (${branch}) origin -> ${sync_origin} @ $(head_summary "$repo")"
   else
-    info "OK     ${name} (${branch}): already current @ $(shortsha "$new")"
+    info "OK     ${name} (${branch}): already current @ $(head_summary "$repo")"
   fi
 
   verbose_status "$repo"

@@ -54,6 +54,9 @@ err_banner() {
   printf "\n${RED_BOLD}===== [%s] %s =====${NC}\n" "$(timestamp)" "$1" >&2
 }
 shortsha() { print -r -- "${1[1,12]}"; }
+head_summary() {
+  print -r -- "$(shortsha "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)") — $("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" log -1 --format=%s)"
+}
 
 for arg in "$@"; do
   case "${arg}" in
@@ -538,9 +541,9 @@ for local_record in "${REPOSITORIES[@]}"; do
   rc=0
   sync_repository "$local_record" || rc=$?
   case "$rc" in
-    0) info "OK     ${REPO_NAME}: already current @ $(shortsha "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)")" ;;
-    10) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "CLONED ${REPO_NAME}: ready @ $(shortsha "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)")" ;;
-    11) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "UPDATED ${REPO_NAME}: +${SYNC_COMMIT_COUNT} -> $(shortsha "$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)")" ;;
+    0) info "OK     ${REPO_NAME}: already current @ $(head_summary)" ;;
+    10) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "CLONED ${REPO_NAME}: ready @ $(head_summary)" ;;
+    11) UPDATE_COUNT=$((UPDATE_COUNT + 1)); ok "UPDATED ${REPO_NAME}: +${SYNC_COMMIT_COUNT} -> $(head_summary)" ;;
     20) SKIP_COUNT=$((SKIP_COUNT + 1)) ;;
     *) ERROR_COUNT=$((ERROR_COUNT + 1)) ;;
   esac

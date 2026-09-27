@@ -74,6 +74,8 @@ REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-dev.sh" \
   > "$output" 2>&1 || fail "sync-dev current-state output failed"
 grep -Fq "OK     Fixture (main): already current @" "$output" ||
   fail "sync-dev did not report an already-current repository clearly"
+grep -Fq " — Initial commit" "$output" ||
+  fail "sync-dev did not show the current commit subject"
 
 # Updated active repositories report the number of commits fast-forwarded.
 sync_writer="${test_root}/sync-writer"
@@ -89,6 +91,27 @@ REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-active.sh" \
   > "$output" 2>&1 || fail "sync-active update-count output failed"
 grep -Fq "UPDATED Fixture: +1 ->" "$output" ||
   fail "sync-active did not report the fast-forward commit count"
+grep -Fq " — Sync update" "$output" ||
+  fail "sync-active did not show the updated commit subject"
+
+REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-active.sh" \
+  > "$output" 2>&1 || fail "sync-active current-state output failed"
+grep -Fq "OK     Fixture: already current @" "$output" ||
+  fail "sync-active did not report an already-current repository clearly"
+grep -Fq " — Sync update" "$output" ||
+  fail "sync-active did not show the current commit subject"
+
+printf 'dev update\n' > "${sync_writer}/dev-update.txt"
+git -C "$sync_writer" add dev-update.txt
+git -C "$sync_writer" commit -q -m "Dev update"
+git -C "$sync_writer" push -q
+printf '%s\n' "current|dev|Fixture|${repo}|main|${origin}" > "$registry"
+REPOSITORY_REGISTRY_FILE="$registry" "${shared_root}/bin/sync-dev.sh" \
+  > "$output" 2>&1 || fail "sync-dev update summary failed"
+grep -Fq "UPDATED Fixture (main) +1 ->" "$output" ||
+  fail "sync-dev did not report the fast-forward commit count"
+grep -Fq " — Dev update" "$output" ||
+  fail "sync-dev did not show the updated commit subject"
 
 # A current dev row is sufficient to bootstrap an absent canonical checkout.
 dev_clone="${test_root}/dev-clone"
