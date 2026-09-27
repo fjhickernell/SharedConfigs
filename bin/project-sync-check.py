@@ -38,6 +38,15 @@ def local_path(value, home):
     return home / value[2:]
 
 
+def same_local_folder(first, second, home):
+    if first == second:
+        return True
+    try:
+        return local_path(first, home).samefile(local_path(second, home))
+    except OSError:
+        return False
+
+
 def validate_manifest(data, home):
     if data.get('version') != 1 or not isinstance(data.get('projects'), list):
         raise ValueError('Unsupported project manifest schema')
@@ -154,7 +163,9 @@ def reconcile(manifest, local, home, capture):
     for actual in local:
         matches = [p for p in manifest['projects'] if actual['name'] in [p['name']] + p.get('aliases', [])]
         if not matches:
-            related = [p for p in manifest['projects'] if set(actual['roots']) & set(p['roots'])]
+            related = [p for p in manifest['projects'] if any(
+                same_local_folder(root, expected, home)
+                for root in actual['roots'] for expected in p['roots'])]
             if related:
                 messages.append('REVIEW NAME/GROUPING: ' + actual['name'] + ' shares folders with ' + ', '.join(p['name'] for p in related) + '; update shared manifest explicitly for a rename or separate project')
                 continue
@@ -174,9 +185,9 @@ def reconcile(manifest, local, home, capture):
             messages.append('RENAME: ' + actual['name'] + ' -> ' + name)
         retired = desired.get('retiredRoots', [])
         for root in actual['roots']:
-            if root in retired:
+            if any(same_local_folder(root, old, home) for old in retired):
                 messages.append('LEGACY ROOT: ' + name + ': ' + root + ' — inspect before removing')
-            elif root not in desired['roots']:
+            elif not any(same_local_folder(root, expected, home) for expected in desired['roots']):
                 messages.append('NEW FOLDER: ' + name + ': ' + root)
                 if capture and not desired.get('fixedRoots', False):
                     desired['roots'].append(root)
@@ -184,13 +195,13 @@ def reconcile(manifest, local, home, capture):
                 elif desired.get('fixedRoots', False):
                     messages.append('REVIEW: explicit fixed-folder policy; addition not propagated')
         for root in desired['roots']:
-            if root not in actual['roots']:
+            if not any(same_local_folder(root, saved, home) for saved in actual['roots']):
                 messages.append('ADD FOLDER: ' + name + ': ' + root)
             if not local_path(root, home).is_dir():
                 messages.append('MISSING DIRECTORY: ' + name + ': ' + root)
         # Codex exposes a primary folder; additional folder order is immaterial.
         primary = desired['roots'][0]
-        if primary in actual['roots'] and actual['roots'][0] != primary:
+        if any(same_local_folder(primary, saved, home) for saved in actual['roots']) and not same_local_folder(actual['roots'][0], primary, home):
             messages.append('PRIMARY FOLDER: ' + name + ': make ' + primary + ' primary')
     for desired in manifest['projects']:
         if desired['name'] not in seen:

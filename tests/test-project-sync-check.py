@@ -90,6 +90,19 @@ class ProjectChecks(unittest.TestCase):
         messages, _ = mod.reconcile(self.manifest, [{'name': 'Project', 'roots': ['~/second', '~/repo']}], self.home, False)
         self.assertEqual(messages, ['PRIMARY FOLDER: Project: make ~/repo primary'])
 
+    def test_symlinked_mirror_is_same_saved_folder(self):
+        mirror = self.home / 'CloudStorage/My Drive'
+        mirror.parent.mkdir()
+        mirror.symlink_to(self.home)
+        self.manifest['projects'][0]['roots'] = ['~/CloudStorage/My Drive/repo']
+        for capture in [False, True]:
+            with self.subTest(capture=capture):
+                messages, changed = mod.reconcile(self.manifest, [
+                    {'name': 'Project', 'roots': ['~/repo']}
+                ], self.home, capture)
+                self.assertEqual(messages, [])
+                self.assertFalse(changed)
+
     def test_primary_mismatch_with_missing_and_extra_folders(self):
         self.manifest['projects'][0]['roots'].extend(['~/second', '~/missing'])
         for folder in ['second', 'extra']:
