@@ -30,6 +30,10 @@ any incomplete machine-specific subtask under Green **P29. Computer
 Infrastructure**, alert the user before beginning ordinary nonurgent work and
 name every matching subtask.
 
+In the preflight message, briefly remind the user of the available commands
+`urgent sync` and `tomorrow's urgents`. Mentioning them does not run either
+command or change the read-only nature of the preflight.
+
 Do not run Git synchronization, perform Dashboard rollover, audit recurring
 sources, or edit the Dashboard solely because of this startup preflight. Use
 the full Dashboard workflow when the user's request concerns the Dashboard or
@@ -234,6 +238,47 @@ Before responding to or acting on such a request:
 3. Resolve task abbreviations and task status from the dashboard itself rather than from conversation memory.
 
 The user does not need to explicitly say `Dashboard` or provide the file path for this routing rule to apply.
+
+### Urgent task commands
+
+Follow `GitTracked/Workflows/Urgent Sync.md` in the ObsidianVault workspace
+for the shared cross-machine procedure.
+
+When the user says `urgent sync`, run the Dashboard workflow and reconcile its
+Urgent section with the user's iCloud Reminders and current email and calendar
+evidence. Scan today through the next seven local calendar days. Check the
+user's own available mail accounts for actionable pickup notices, deadlines,
+meeting plans, and changes; distinguish transactional messages from promotions
+and from mail addressed only to someone else. Check upcoming commitments in
+Fantastical, using the Illinois Tech calendar and the
+`fjhickernell@gmail.com` calendar as the relevant accounts. Ask when an
+important meeting, ownership, or date remains ambiguous.
+
+For actionable teaching and research tasks, use the iCloud `Academic` reminder
+list; for church work, `WCAC`; for personal errands and pickups, `Personal`.
+Inspect existing reminders, including recently completed matches, before
+creating one. A completed pickup reminder for the same order or prescription
+must keep an older email notice from recreating the task. Use timed reminders
+visible in Fantastical, applying the timed-reminder rules above; do not create
+calendar events for tasks unless the user asks to reserve time. Avoid a task
+reminder that merely duplicates a meeting already on the calendar. Put
+necessary preparation for a next-day meeting in Urgent, attached to that
+meeting as a separate checkbox subbullet when practical. Match the reminder
+to the preparation checkbox, not to completion of the meeting itself.
+
+During either command, treat completion in either the Dashboard or its matching
+reminder as completion in both places. Follow the Dashboard Completion Policy
+for checked Urgent entries and source tasks; do not infer that a meeting
+occurred merely because preparation was completed or its date passed. Match
+by project ID, specific action, and event or order date, rather than project ID alone; ask
+before propagating an uncertain match. Preserve existing reminder times when
+reasonable and avoid duplicate tasks across repeated runs.
+
+When the user says `tomorrow's urgents`, run the full Dashboard workflow to
+refresh only the next-day Urgent entries required by its rules, then reconcile
+their actionable preparation reminders with the same iCloud lists. Consult
+Fantastical for timing and existing matches. This command does not perform the
+broader email and seven-day scan of `urgent sync`.
 
 ## Infrastructure and Codex project alignment
 

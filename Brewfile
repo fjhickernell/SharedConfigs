@@ -5,6 +5,7 @@
 #   - Xcode (Apple-managed)
 #   - wolfram-engine (huge; install manually only on Macs where needed)
 #   - matlab
+#   - TextSniper (keep each Mac's licensed version; sync-brew pins installed casks)
 
 brew "automake"
 brew "bat"
@@ -76,7 +77,7 @@ cask "gitkraken"
 cask "google-chrome"
 cask "google-drive"
 cask "graphicconverter"
-cask "istat-menus"
+cask "istat-menus", greedy: true
 cask "iterm2"
 cask "jupyterlab-app"
 cask "keycastr"
@@ -93,7 +94,6 @@ cask "spotify"
 cask "texshop"
 tap "texstudio-org/texstudio"
 cask "texstudio-org/texstudio/texstudio"
-cask "textsniper"
 cask "unclutter"
 cask "visual-studio-code"
 cask "vlc"

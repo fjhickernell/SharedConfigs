@@ -56,6 +56,15 @@ fi
 section "Updating Homebrew"
 brew update
 
+# TextSniper upgrades can invalidate older licenses. Preserve each Mac's
+# installed version until the user explicitly chooses to upgrade it.
+if brew list --cask --versions textsniper >/dev/null 2>&1; then
+  if ! brew list --pinned | grep -Fxq textsniper; then
+    section "Pinning the installed TextSniper version"
+    brew pin --cask textsniper
+  fi
+fi
+
 if (( intel_routine )); then
   section "Upgrading installed casks (Intel routine; formulae deferred)"
   brew upgrade --cask
@@ -137,8 +146,19 @@ section "Cleaning up old versions"
 brew cleanup
 
 if command -v mas >/dev/null 2>&1; then
-  section "Running mas upgrade in manual interactive mode"
-  mas upgrade
+  section "Upgrading Mac App Store apps except TextSniper"
+  mas_outdated="$(mas outdated)"
+  typeset -a mas_ids=()
+  while read -r app_id rest; do
+    [[ "$app_id" == <-> ]] || continue
+    [[ "$app_id" == 1528890965 ]] && continue
+    mas_ids+=("$app_id")
+  done <<<"$mas_outdated"
+  if (( ${#mas_ids} )); then
+    mas upgrade "${mas_ids[@]}"
+  else
+    printf '%s\n' "No other Mac App Store updates available."
+  fi
 else
   warn "mas not found; skipping Mac App Store upgrades."
 fi

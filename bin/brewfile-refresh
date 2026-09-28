@@ -47,6 +47,7 @@ blocked = (
     'cask "macdown"',
     'cask "mactex"',
     'cask "miniconda"',
+    'cask "textsniper"',
     'cask "webex"',
     'mas "Xcode"',
     'vscode "cssho.vscode-svgviewer"',
@@ -57,6 +58,7 @@ blocked = (
     'mas "LastPass for Safari", id: 6504626762',
     'mas "Mailbutler Installer", id: 1313355438',
     'mas "WhatsApp", id: 310633997',
+    'mas "TextSniper", id: 1528890965',
 )
 
 header = [
@@ -67,6 +69,7 @@ header = [
     "#   - Xcode (Apple-managed)",
     "#   - wolfram-engine (huge; install manually only on Macs where needed)",
     "#   - matlab",
+    "#   - TextSniper (keep each Mac's licensed version; sync-brew pins installed casks)",
     "",
 ]
 

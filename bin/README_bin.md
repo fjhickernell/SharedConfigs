@@ -119,6 +119,13 @@ It lives in `~/Documents/SharedConfigs/bin`. Any future LaunchAgent must invoke
 that absolute path rather than relying on shell startup or a separate script
 mirror.
 
+Before upgrading, it pins an installed Homebrew TextSniper cask on each Mac.
+TextSniper is excluded from the canonical Brewfile and `brewfile-refresh`, so
+routine maintenance does not install or upgrade it. Keep each Mac's working
+licensed version until the user decides an upgrade is needed. Homebrew pinning
+does not prevent TextSniper's own updater from changing the app. The Mac App
+Store update step also skips TextSniper (App Store ID `1528890965`).
+
 ### `brewfile-refresh`
 Refreshes the canonical Brewfile from the current Mac, removes deliberately
 excluded entries, and normalizes its ordering.
