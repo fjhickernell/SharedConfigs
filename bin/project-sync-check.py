@@ -49,14 +49,20 @@ def same_local_folder(first, second, home):
 
 def normalize_observed_root(root, project, manifest):
     """Match a Google Drive mirror spelling to its portable manifest root."""
-    match = re.fullmatch(r'~/My Drive \(([^/]+)\)/(.+)', root)
+    match = re.fullmatch(r'~/My Drive(?: \(([^/]+)\))?/(.+)', root)
     if not match:
         return root
-    canonical = ('~/Library/CloudStorage/GoogleDrive-' + match.group(1)
-                 + '/My Drive/' + match.group(2))
     for desired in manifest['projects']:
-        if project in [desired['name']] + desired.get('aliases', []) and canonical in desired['roots']:
-            return canonical
+        if project not in [desired['name']] + desired.get('aliases', []):
+            continue
+        candidates = []
+        for expected in desired['roots']:
+            canonical = re.fullmatch(r'~/Library/CloudStorage/GoogleDrive-([^/]+)/My Drive/(.+)', expected)
+            if (canonical and canonical.group(2) == match.group(2)
+                    and (match.group(1) is None or canonical.group(1) == match.group(1))):
+                candidates.append(expected)
+        if len(candidates) == 1:
+            return candidates[0]
     return root
 
 

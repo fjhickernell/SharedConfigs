@@ -110,6 +110,16 @@ class ProjectChecks(unittest.TestCase):
         self.assertEqual(mod.normalize_observed_root(mirror, 'Project', self.manifest), canonical)
         self.assertEqual(mod.normalize_observed_root(mirror, 'Other', self.manifest), mirror)
 
+    def test_foreign_bare_google_drive_shortcut_uses_unique_manifest_root(self):
+        canonical = '~/Library/CloudStorage/GoogleDrive-person@example.com/My Drive/WCAC-Google'
+        mirror = '~/My Drive/WCAC-Google'
+        self.manifest['projects'][0]['roots'] = [canonical]
+        self.assertEqual(mod.normalize_observed_root(mirror, 'Project', self.manifest), canonical)
+        self.assertEqual(mod.normalize_observed_root(mirror, 'Other', self.manifest), mirror)
+        self.manifest['projects'][0]['roots'].append(
+            '~/Library/CloudStorage/GoogleDrive-other@example.com/My Drive/WCAC-Google')
+        self.assertEqual(mod.normalize_observed_root(mirror, 'Project', self.manifest), mirror)
+
     def test_primary_mismatch_with_missing_and_extra_folders(self):
         self.manifest['projects'][0]['roots'].extend(['~/second', '~/missing'])
         for folder in ['second', 'extra']:
