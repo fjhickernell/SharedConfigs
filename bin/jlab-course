@@ -2,21 +2,24 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: jlab-course MATH332Fall2026|MATH565Fall2026" >&2
+  echo "Usage: jlab-course MATH332Fall2026|MATH565Fall2026|QMCSoftware" >&2
   exit 2
 fi
 
-course_repo=$1
-case "$course_repo" in
-  MATH332Fall2026|MATH565Fall2026) ;;
+project_repo=$1
+case "$project_repo" in
+  MATH332Fall2026|MATH565Fall2026|QMCSoftware) ;;
   *)
-    echo "Unsupported course repository: $course_repo" >&2
+    echo "Unsupported project repository: $project_repo" >&2
     exit 2
     ;;
 esac
 
 jlab_launcher=${JLAB_DESKTOP_LAUNCHER:-/Applications/JupyterLab.app/Contents/Resources/app/jlab}
-notebook_dir="$HOME/SoftwareRepositories/$course_repo/notebooks"
+case "$project_repo" in
+  QMCSoftware) notebook_dir="$HOME/SoftwareRepositories/QMCSoftware/demos" ;;
+  *) notebook_dir="$HOME/SoftwareRepositories/$project_repo/notebooks" ;;
+esac
 
 if [[ ! -f "$jlab_launcher" || ! -r "$jlab_launcher" ]]; then
   echo "JupyterLab Desktop launcher missing or unreadable: $jlab_launcher" >&2
@@ -24,7 +27,7 @@ if [[ ! -f "$jlab_launcher" || ! -r "$jlab_launcher" ]]; then
 fi
 
 if [[ ! -d "$notebook_dir" ]]; then
-  echo "Course notebook directory not found: $notebook_dir" >&2
+  echo "Notebook directory not found: $notebook_dir" >&2
   exit 1
 fi
 
