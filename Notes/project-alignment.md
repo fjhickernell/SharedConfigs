@@ -52,6 +52,10 @@ has delivered every remote observation.
   are available. It does not write an observation.
 - All observed additions form a deterministic union over the canonical
   manifest. A stale machine cannot remove another machine's additions.
+- An observation using Google Drive's `~/My Drive (account)/...` mirror path
+  maps to the corresponding canonical `~/Library/CloudStorage/GoogleDrive-account/My Drive/...`
+  root when that exact root is already in the project's manifest. This keeps
+  another Mac's mirror spelling from appearing as a new local folder.
 - Names known as aliases map to the same project. Unknown names that share
   existing roots require review, avoiding accidental duplicate projects.
 - Missing projects, roots, directories, a different primary folder, and legacy

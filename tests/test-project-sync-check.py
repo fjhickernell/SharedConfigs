@@ -103,6 +103,13 @@ class ProjectChecks(unittest.TestCase):
                 self.assertEqual(messages, [])
                 self.assertFalse(changed)
 
+    def test_foreign_google_drive_mirror_path_uses_manifest_spelling(self):
+        canonical = '~/Library/CloudStorage/GoogleDrive-person@example.com/My Drive/WCAC-Google'
+        mirror = '~/My Drive (person@example.com)/WCAC-Google'
+        self.manifest['projects'][0]['roots'] = [canonical]
+        self.assertEqual(mod.normalize_observed_root(mirror, 'Project', self.manifest), canonical)
+        self.assertEqual(mod.normalize_observed_root(mirror, 'Other', self.manifest), mirror)
+
     def test_primary_mismatch_with_missing_and_extra_folders(self):
         self.manifest['projects'][0]['roots'].extend(['~/second', '~/missing'])
         for folder in ['second', 'extra']:

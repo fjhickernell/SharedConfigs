@@ -47,6 +47,19 @@ def same_local_folder(first, second, home):
         return False
 
 
+def normalize_observed_root(root, project, manifest):
+    """Match a Google Drive mirror spelling to its portable manifest root."""
+    match = re.fullmatch(r'~/My Drive \(([^/]+)\)/(.+)', root)
+    if not match:
+        return root
+    canonical = ('~/Library/CloudStorage/GoogleDrive-' + match.group(1)
+                 + '/My Drive/' + match.group(2))
+    for desired in manifest['projects']:
+        if project in [desired['name']] + desired.get('aliases', []) and canonical in desired['roots']:
+            return canonical
+    return root
+
+
 def validate_manifest(data, home):
     if data.get('version') != 1 or not isinstance(data.get('projects'), list):
         raise ValueError('Unsupported project manifest schema')
@@ -283,7 +296,10 @@ def main():
         # contribution; retiredRoots and aliases encode deliberate decisions.
         latest = {}
         for snapshot in sorted(snapshots, key=lambda s: (s.get('recordedAt', ''), s['machine'])):
-            notices, _ = reconcile(manifest, snapshot['projects'], home, True)
+            projects = [dict(project, roots=[
+                normalize_observed_root(root, project['name'], manifest)
+                for root in project['roots']]) for project in snapshot['projects']]
+            notices, _ = reconcile(manifest, projects, home, True)
             messages.extend(snapshot['machine'] + ': ' + n for n in notices
                             if n.startswith(('REVIEW', 'DUPLICATE')))
             latest[snapshot['machine']] = snapshot
