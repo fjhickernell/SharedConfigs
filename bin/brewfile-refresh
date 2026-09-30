@@ -47,7 +47,6 @@ blocked = (
     'cask "macdown"',
     'cask "mactex"',
     'cask "miniconda"',
-    'cask "textsniper"',
     'cask "webex"',
     'mas "Xcode"',
     'vscode "cssho.vscode-svgviewer"',
@@ -69,7 +68,6 @@ header = [
     "#   - Xcode (Apple-managed)",
     "#   - wolfram-engine (huge; install manually only on Macs where needed)",
     "#   - matlab",
-    "#   - TextSniper (keep each Mac's licensed version; sync-brew pins installed casks)",
     "",
 ]
 
@@ -78,6 +76,8 @@ out = []
 for line in lines:
     if line.strip().startswith(blocked):
         continue
+    if line.strip().startswith('cask "textsniper"'):
+        line = 'cask "textsniper", greedy: true'
     out.append(line)
 
 if out and out[0].startswith("# Do not manage these via Homebrew:"):

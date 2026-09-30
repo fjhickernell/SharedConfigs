@@ -120,12 +120,14 @@ It lives in `~/Documents/SharedConfigs/bin`. Any future LaunchAgent must invoke
 that absolute path rather than relying on shell startup or a separate script
 mirror.
 
-Before upgrading, it pins an installed Homebrew TextSniper cask on each Mac.
-TextSniper is excluded from the canonical Brewfile and `brewfile-refresh`, so
-routine maintenance does not install or upgrade it. Keep each Mac's working
-licensed version until the user decides an upgrade is needed. Homebrew pinning
-does not prevent TextSniper's own updater from changing the app. The Mac App
-Store update step also skips TextSniper (App Store ID `1528890965`).
+TextSniper is managed through the canonical Brewfile, with greedy checks for
+its self-updating cask. M5's Homebrew 1.13.0 trial passed on September 30, 2026.
+Before each remaining Mac's first update, back up its working app, remove its
+existing pin, and verify licensing, capture, and shortcuts afterward. Restore
+the backup and pin if verification fails; retain backups until all Macs pass.
+Older Paddle licenses may not work with the Homebrew version. The Mac App
+Store update step still skips TextSniper (App Store ID `1528890965`) so the
+Homebrew app remains the intended installation channel.
 
 ### `brewfile-refresh`
 Refreshes the canonical Brewfile from the current Mac, removes deliberately
