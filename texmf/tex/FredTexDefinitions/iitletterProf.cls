@@ -140,6 +140,12 @@ url=false
 % Load base class AFTER options handled
 \LoadClass{letter}
 
+% Unnumbered run-in headings within a letter, followed by a period and space.
+\newcommand{\section}[1]{%
+\par\medskip
+\noindent\textbf{#1.}\nobreak\hspace{0.5em}\ignorespaces
+}
+
 % Remove forced page break at end of letter
 \makeatletter
 \patchcmd{\endletter}%
@@ -152,6 +158,8 @@ url=false
 \setlength{\textwidth}{170mm}
 \setlength{\oddsidemargin}{0mm}
 \setlength{\topmargin}{-15mm}
+% Give letters more vertical room; the footer moves with the text area.
+\addtolength{\textheight}{0.4in}
 
 % Fixed fonts carried over
 \DeclareFixedFont{\xsf}{OT1}{cmss}{m}{n}{10}
@@ -300,6 +308,21 @@ has served on the editorial boards of the \emph{Journal of Complexity},
 \emph{Mathematics of Computation}, and the \emph{SIAM Journal on Numerical
 	Analysis}. He has over 130 refereed publications and has supervised 14 PhDs.%
 }
+
+
+
+\newcommand{\iitBioChristian}{%
+Fred J.\ Hickernell has served most of his career at Hong Kong Baptist
+University (1985--2005) and Illinois Institute of Technology
+(2005--present). His administrative responsibilities include twenty-five years as department head/chair and six years as vice provost for research.
+Prof.\ Hickernell’s research straddles computational mathematics and
+statistics. He is a Fellow of the Institute of Mathematical Statistics and the Society for Industrial and Applied Mathematics. Prof.\ Hickernell
+has served on the editorial boards of several academic journals, has over 130 refereed publications and has supervised 14 PhDs.
+
+Fred is married to Elaine, and they are blessed with a son, a daughter, a daughter-in-law, and a son-in-law.  Fred and Elaine have served in Chinese churches since 1981, and Fred currently serves as an elder at Wheaton Chinese Alliance Church.
+}
+
+
 \newcommand{\iitBioContent}{\iitBioDefault}
 \newcommand{\bio}[1]{\renewcommand{\iitBioContent}{#1}}
 \newcommand{\setbiodefault}[1]{\renewcommand{\iitBioDefault}{#1}}

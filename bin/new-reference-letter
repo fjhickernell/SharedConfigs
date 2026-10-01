@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""Start a LaTeX reference letter using the shared professor letter template."""
+
+import argparse
+from datetime import date
+from pathlib import Path
+import sys
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "directory", type=Path,
+        help="subdirectory under Recommend Letters, or an absolute directory (created if needed)",
+    )
+    parser.add_argument(
+        "filename", nargs="?", default=f"ReferenceLetter-{date.today().isoformat()}.tex",
+        help="letter filename, with optional .tex suffix (default: ReferenceLetter-YYYY-MM-DD.tex)",
+    )
+    templates = parser.add_mutually_exclusive_group()
+    templates.add_argument(
+        "--bibliography", action="store_true",
+        help="use the bibliography and author bio template",
+    )
+    templates.add_argument("--template", type=Path, help="use a different .tex template")
+    args = parser.parse_args()
+
+    filename = args.filename
+    if filename in ("", ".", "..") or Path(filename).name != filename:
+        parser.error("filename must be a filename, without directories")
+    if not filename.endswith(".tex"):
+        filename += ".tex"
+
+    shared_root = Path(__file__).resolve().parent.parent
+    template_name = (
+        "IITProfLetterBibliographyTemplate.tex" if args.bibliography
+        else "IITProfLetterTemplate.tex"
+    )
+    template = (
+        args.template.expanduser() if args.template
+        else shared_root / "texmf" / "tex" / "FredTexDefinitions" / template_name
+    )
+    letters_root = (
+        Path.home() / "Library" / "CloudStorage"
+        / "OneDrive-IllinoisInstituteofTechnology" / "Recommend Letters"
+    )
+    directory = args.directory.expanduser()
+    if not directory.is_absolute():
+        directory = letters_root / directory
+        if not directory.resolve().is_relative_to(letters_root.resolve()):
+            parser.error("relative directory must stay within Recommend Letters")
+    destination = directory.resolve() / filename
+    try:
+        content = template.read_bytes()
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        # Exclusive creation also protects existing files and symlinks.
+        with destination.open("xb") as output:
+            output.write(content)
+    except FileExistsError:
+        print(f"error: refusing to overwrite {destination}", file=sys.stderr)
+        return 1
+    except OSError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+
+    print(f"Created {destination}")
+    print("Edit the recipient, salutation, and letter text in the new file.")
+    print("The shared TeX tree supplies iitletterProf, the logo, and your signature.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

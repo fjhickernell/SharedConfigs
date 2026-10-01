@@ -45,6 +45,7 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 | `link_sharedconfigs_minimal.sh` | Mac Setup | Bring a new Mac online with baseline links. |
 | `machine-audit` | Mac Setup | Run the broad read-only machine configuration and repository audit. |
 | `markedit-recover-sync` | Mac Setup | Repair only the managed MarkEdit links. |
+| `new-reference-letter` | TeX | Create a reference letter in a chosen directory from the professor letter template. |
 | `prep_description_summary.sh` | Teaching | Build templates for project descriptions/summary. |
 | `quarto-site-live` | Teaching | Live-render a Quarto website on an independent automatically assigned per-course port. |
 | `quarto-slides-live` | Teaching | Live-render one RevealJS deck or all decks on an automatically assigned per-course port. |
@@ -67,6 +68,33 @@ export PATH="$HOME/Documents/SharedConfigs/bin:$PATH"
 ---
 
 # Detailed Script Descriptions
+
+---
+
+## LaTeX Letters
+
+### `new-reference-letter`
+
+Relative directories are subdirectories of
+`~/Library/CloudStorage/OneDrive-IllinoisInstituteofTechnology/Recommend Letters`,
+regardless of the shell's current directory. Absolute directories also work.
+Creates the destination directory if needed and copies the current shared
+`IITProfLetterTemplate.tex` into it. Existing files are never overwritten.
+
+```sh
+new-reference-letter "N-S/Candidate/2026" "ReferenceForCandidate"
+```
+
+The filename may include `.tex`; without a filename, the default is
+`ReferenceLetter-YYYY-MM-DD.tex`. Use `--bibliography` for
+`IITProfLetterBibliographyTemplate.tex`, which includes bibliography and author
+bio support, or `--template "/path/to/template.tex"` for another template.
+The template is copied without changing its content. Edit the recipient,
+salutation, and letter text in the resulting source.
+
+The shared TeX tree must be available to the LaTeX editor/build tool to resolve
+`iitletterProf`, the Illinois Tech logo, signature, and (when applicable)
+bibliography resources. This command creates the source; it does not compile it.
 
 ---
 
