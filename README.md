@@ -82,6 +82,9 @@ open items remain visible on repeated arrivals. Archived rows and non-GitHub
 origins are excluded. API failures and incomplete searches produce a warning,
 while checks continue for the remaining repositories. Run `github-attention`
 directly for this read-only check without repository synchronization.
+The check still runs after a development or active synchronization failure;
+`arrive` then exits with the synchronization error. An infrastructure preflight
+failure still stops arrival before the other checks.
 The separate `pr-status` command retains its account-wide PR view.
 
 `arrive` checks Codex projects against the shared project manifest after

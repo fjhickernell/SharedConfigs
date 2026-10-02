@@ -313,6 +313,30 @@ every handoff file. At a Checkpoint, retain the special treatment of
 `notes/NEXT.md`: inspect it independently in every writable repository and
 update it only when the operational handoff has materially changed.
 
+### GitHub issues and immediate next work
+
+For course, talk, website, slide, and notebook projects across semesters, use
+GitHub issues for durable bugs, improvements, decisions, and action items;
+use `notes/NEXT.md` for the immediate next work and the context needed to
+resume it. Follow the shared
+`GitTracked/Workflows/Class & Talk Workflow.md` section "Track action items
+with issues and NEXT.md" for the detailed procedure.
+
+When the user asks to record a project action item, create it in the repository
+that owns the work after checking for a matching issue. Use a clear title,
+enough context to act, and a concrete completion condition. Course-specific
+work belongs in that semester's course repository; reusable library work
+belongs in HickernellAcademicLib. Link selected issues from `notes/NEXT.md`
+instead of copying their backlog or discussion there. Preserve substantive
+local planning notes; do not bulk-migrate them unless requested.
+
+Use the Dashboard for personal prioritization, deadlines, and reminders;
+link to a repository issue when relevant. A course or talk repository action
+item is project work under this rule, rather than an ambiguous Dashboard
+request. Do not mark work complete merely because an issue exists or a date
+has passed. Keep unreleased assessment details and student information out of
+public issues, applying the assessment-confidentiality rules above.
+
 ## Managed repository sweep
 
 The shared managed-repository registry is

@@ -156,6 +156,33 @@ print(json.dumps(result))
         self.assertIn('GitHub issue and PR check was incomplete', result.stdout)
         self.assertNotIn('arrive completed successfully', result.stdout)
 
+    def test_arrive_shows_attention_after_sync_failure_but_keeps_failed_status(self):
+        import shutil
+        shutil.copyfile(ROOT / 'bin/arrive.sh', self.root / 'arrive.sh')
+        for name in ['git-repo-sync.sh', 'sync-dev.sh', 'sync-active.sh']:
+            stub = self.root / name
+            stub.write_text('#!/bin/sh\nexit 0\n')
+            stub.chmod(0o755)
+        (self.root / 'project-sync-check.py').write_text('print("PROJECT CHECK")\n')
+        (self.root / 'github-attention').write_text('print("STUDENT ISSUE REMINDER")\n')
+        for failing in ['sync-dev.sh', 'sync-active.sh']:
+            with self.subTest(failing=failing):
+                (self.root / failing).write_text('#!/bin/sh\nexit 1\n')
+                result = subprocess.run(['zsh', '-f', str(self.root / 'arrive.sh')],
+                                        env=self.env, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn('PROJECT CHECK', result.stdout)
+                self.assertIn('STUDENT ISSUE REMINDER', result.stdout)
+                self.assertIn('arrive failed', result.stderr)
+                self.assertNotIn('arrive completed successfully', result.stdout)
+                (self.root / failing).write_text('#!/bin/sh\nexit 0\n')
+
+        (self.root / 'git-repo-sync.sh').write_text('#!/bin/sh\nexit 1\n')
+        result = subprocess.run(['zsh', '-f', str(self.root / 'arrive.sh')],
+                                env=self.env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn('STUDENT ISSUE REMINDER', result.stdout)
+
 
 if __name__ == '__main__':
     unittest.main()

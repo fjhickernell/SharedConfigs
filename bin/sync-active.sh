@@ -312,11 +312,12 @@ SYNC_COMMIT_COUNT=0
 fast_forward_sync() {
   SYNC_CHANGED=0
   SYNC_COMMIT_COUNT=0
-  local old new
+  local old new fetch_output
   old=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" rev-parse HEAD)
-  if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" -c fetch.recurseSubmodules=no \
-    fetch origin >/dev/null 2>&1; then
+  if ! fetch_output=$("$SYNC_ACTIVE_GIT" -C "$REPO_PATH" -c fetch.recurseSubmodules=no \
+    fetch origin 2>&1); then
     failure "ERROR  ${REPO_NAME}: fetch from origin failed"
+    [[ -z "$fetch_output" ]] || print -r -- "$fetch_output" >&2
     return 1
   fi
   if ! "$SYNC_ACTIVE_GIT" -C "$REPO_PATH" merge --ff-only '@{u}' >/dev/null 2>&1; then

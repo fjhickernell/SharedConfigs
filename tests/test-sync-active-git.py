@@ -30,6 +30,11 @@ class GitSelectionTests(unittest.TestCase):
             calls = root / 'calls'
             wrapper = wrapper_dir / 'git'
             wrapper.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$TEST_GIT_CALLS"\n'
+                               'if [ "${TEST_FETCH_FAILURE:-}" = 1 ]; then\n'
+                               '  case " $* " in *" fetch origin "*)\n'
+                               '    echo "remote: no healthy upstream" >&2\n'
+                               '    echo "fatal: The requested URL returned error: 503" >&2\n'
+                               '    exit 128 ;; esac\nfi\n'
                                'exec "$TEST_REAL_GIT" "$@"\n')
             wrapper.chmod(0o755)
             env = dict(os.environ, PATH=f'{wrapper_dir}:{os.environ["PATH"]}',
@@ -42,6 +47,14 @@ class GitSelectionTests(unittest.TestCase):
             self.assertIn('--version', invoked)
             self.assertIn('rev-parse --is-inside-work-tree', invoked)
             self.assertIn('fetch', invoked)
+            calls.write_text('')
+            result = subprocess.run(['zsh', str(SCRIPT)], env=dict(env, TEST_FETCH_FAILURE='1'),
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn('fetch from origin failed', result.stderr)
+            self.assertIn('no healthy upstream', result.stderr)
+            self.assertIn('returned error: 503', result.stderr)
+            self.assertNotIn('merge --ff-only', calls.read_text())
 
     def test_unusable_git_reports_cause_before_repository_work(self):
         with tempfile.TemporaryDirectory() as directory:

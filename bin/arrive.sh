@@ -51,11 +51,6 @@ section "Checking Codex projects against shared inventory"
 python3 "${0:A:h}/project-sync-check.py"
 rc_projects=$?
 
-if [[ $rc_dev -ne 0 || $rc_active -ne 0 ]]; then
-  error "arrive failed (sync-dev=$rc_dev, sync-active=$rc_active)"
-  exit 1
-fi
-
 github_check_failed=false
 if [[ -f "${0:A:h}/github-attention" ]]; then
   section "Checking GitHub issues and PRs"
@@ -66,6 +61,14 @@ if [[ -f "${0:A:h}/github-attention" ]]; then
 else
   github_check_failed=true
   warn "github-attention is unavailable; GitHub issues and PRs were not checked."
+fi
+
+# This read-only reminder check remains useful when a development or active
+# repository failed to synchronize. Preserve the synchronization failure after
+# showing reminders; the infrastructure preflight remains a hard stop above.
+if [[ $rc_dev -ne 0 || $rc_active -ne 0 ]]; then
+  error "arrive failed (sync-dev=$rc_dev, sync-active=$rc_active)"
+  exit 1
 fi
 
 if [[ $rc_projects -eq 1 ]]; then
