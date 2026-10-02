@@ -358,10 +358,11 @@ class ProjectChecks(unittest.TestCase):
             shutil.copyfile(SCRIPT.parent / name, fixture_bin / name)
         (fixture_bin / 'project-sync-check.py').write_text(
             'import os, sys\nprint("PROJECT CHECK", sys.argv[1:])\nsys.exit(int(os.environ.get("CHECK_RC", "0")))\n')
-        for name in ['git-repo-sync.sh', 'sync-dev.sh', 'sync-active.sh', 'pr-status']:
+        for name in ['git-repo-sync.sh', 'sync-dev.sh', 'sync-active.sh']:
             stub = fixture_bin / name
             stub.write_text('#!/bin/sh\necho "STUB ' + name + ' $*"\nexit 0\n')
             stub.chmod(0o755)
+        (fixture_bin / 'github-attention').write_text('print("STUB github-attention")\n')
         env = dict(os.environ, PATH=str(fixture_bin) + os.pathsep + os.environ['PATH'], ZDOTDIR=str(self.home))
         for name in ['arrive.sh', 'depart.sh']:
             for code in [0, 1, 2]:
@@ -376,6 +377,7 @@ class ProjectChecks(unittest.TestCase):
                 elif code == 2:
                     self.assertIn('Codex project check failed', result.stderr)
                 if name == 'arrive.sh':
+                    self.assertIn('STUB github-attention', result.stdout)
                     self.assertLess(result.stdout.index('STUB sync-active.sh'), result.stdout.index('PROJECT CHECK'))
                     self.assertEqual(result.stdout.count('STUB git-repo-sync.sh --pull-only'), 1)
                     self.assertLess(result.stdout.index('STUB git-repo-sync.sh'), result.stdout.index('STUB sync-dev.sh'))

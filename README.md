@@ -70,6 +70,20 @@ Checkpoint across SharedConfigs and GitTracked.
 
 ## Managed Repository Check
 
+`arrive` runs `github-attention` after synchronization. It shows every open
+issue and pull request (including drafts) in each current GitHub repository
+under `fjhickernell` from `settings/repositories.conf`. Student reports
+need no assignment, mention, or bug label to appear. For repositories under
+another owner or organization, it shows only open issues and PRs mentioning
+the authenticated GitHub user. Assignment or a review request alone does not
+match that filter.
+Results are grouped by repository with titles, authors, assignees, and links;
+open items remain visible on repeated arrivals. Archived rows and non-GitHub
+origins are excluded. API failures and incomplete searches produce a warning,
+while checks continue for the remaining repositories. Run `github-attention`
+directly for this read-only check without repository synchronization.
+The separate `pr-status` command retains its account-wide PR view.
+
 `arrive` checks Codex projects against the shared project manifest after
 repository synchronization. `depart` records portable project/folder and
 repository-registry observations for the other Macs. Findings produce a

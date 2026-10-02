@@ -56,16 +56,16 @@ if [[ $rc_dev -ne 0 || $rc_active -ne 0 ]]; then
   exit 1
 fi
 
-pr_check_failed=false
-if command -v pr-status >/dev/null 2>&1; then
-  section "Checking PRs that need attention"
-  if ! pr-status; then
-    pr_check_failed=true
-    warn "PR attention check failed; its results are incomplete."
+github_check_failed=false
+if [[ -f "${0:A:h}/github-attention" ]]; then
+  section "Checking GitHub issues and PRs"
+  if ! python3 "${0:A:h}/github-attention"; then
+    github_check_failed=true
+    warn "GitHub issue and PR check failed; its results are incomplete."
   fi
 else
-  pr_check_failed=true
-  warn "pr-status is unavailable; PR attention was not checked."
+  github_check_failed=true
+  warn "github-attention is unavailable; GitHub issues and PRs were not checked."
 fi
 
 if [[ $rc_projects -eq 1 ]]; then
@@ -73,8 +73,8 @@ if [[ $rc_projects -eq 1 ]]; then
 elif [[ $rc_projects -ne 0 ]]; then
   error "arrive failed: Codex project check failed (exit $rc_projects)"
   exit "$rc_projects"
-elif [[ "$pr_check_failed" == true ]]; then
-  warn_banner "arrive sync completed, but the PR attention check was incomplete"
+elif [[ "$github_check_failed" == true ]]; then
+  warn_banner "arrive sync completed, but the GitHub issue and PR check was incomplete"
 else
   banner "arrive completed successfully"
 fi

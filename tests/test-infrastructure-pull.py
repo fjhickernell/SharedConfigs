@@ -180,16 +180,17 @@ class PullTests(unittest.TestCase):
         fixture_bin.mkdir()
         for name in ['arrive.sh', 'git-repo-sync.sh', 'repo-sweep']:
             shutil.copy2(SCRIPT.parent / name, fixture_bin / name)
-        for name in ['sync-dev.sh', 'sync-active.sh', 'pr-status']:
+        for name in ['sync-dev.sh', 'sync-active.sh']:
             stub = fixture_bin / name
             stub.write_text(f'#!/bin/sh\necho "RAN {name}"\n')
             stub.chmod(0o755)
         (fixture_bin / 'project-sync-check.py').write_text('print("RAN project check")\n')
+        (fixture_bin / 'github-attention').write_text('print("RAN github-attention")\n')
         env = dict(self.env, PATH=str(fixture_bin) + os.pathsep + os.environ['PATH'])
         result = subprocess.run(['zsh', '-f', str(fixture_bin / 'arrive.sh')], env=env, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('1 pull(s) deferred', result.stdout)
-        for name in ['sync-dev.sh', 'sync-active.sh', 'project check', 'pr-status']:
+        for name in ['sync-dev.sh', 'sync-active.sh', 'project check', 'github-attention']:
             self.assertIn(f'RAN {name}', result.stdout)
         self.assertEqual(self.local_state(), before)
 

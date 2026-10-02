@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+"""Read open GitHub issues and PRs for current managed repositories."""
+import argparse
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+from urllib.parse import urlparse
+
+
+LEAD_OWNER = "fjhickernell"
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class CheckError(Exception):
+    pass
+
+
+def github_repo(origin):
+    """Use canonical registry origins, including HTTPS and SSH spellings."""
+    if origin.startswith("git@github.com:"):
+        path = origin.split(":", 1)[1]
+    else:
+        parsed = urlparse(origin)
+        if parsed.hostname != "github.com":
+            return None
+        path = parsed.path.lstrip("/")
+    path = path.rstrip("/")
+    if path.endswith(".git"):
+        path = path[:-4]
+    if not re.fullmatch(r"[\w.-]+/[\w.-]+", path):
+        raise CheckError(f"Invalid GitHub origin: {origin}")
+    return path
+
+
+def repositories(registry):
+    found = {}
+    skipped = 0
+    for line_no, line in enumerate(registry.read_text().splitlines(), 1):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        fields = [part.strip() for part in line.split("|")]
+        if (len(fields) != 6 or fields[0] not in {"current", "archived"}
+                or fields[1] not in {"active", "dev", "infrastructure"}
+                or not fields[2] or not fields[3] or not fields[5]):
+            raise CheckError(f"Invalid repository registry row {line_no}")
+        if fields[0] == "archived":
+            continue
+        repo = github_repo(fields[5])
+        if repo is None:
+            skipped += 1
+        else:
+            found.setdefault(repo.lower(), repo)
+    return list(found.values()), skipped
+
+
+def api(endpoint, *args):
+    try:
+        result = subprocess.run(
+            ["gh", "api", "--hostname", "github.com", "--method", "GET",
+             endpoint, *args], capture_output=True, text=True, timeout=60)
+    except subprocess.TimeoutExpired as exc:
+        raise CheckError("GitHub request timed out") from exc
+    if result.returncode:
+        raise CheckError(result.stderr.strip() or "GitHub request failed")
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise CheckError("GitHub returned invalid JSON") from exc
+
+
+def all_open(repo):
+    # Repository issues include PRs. Pagination avoids a silent list limit,
+    # and this direct endpoint catches new student reports before search indexes.
+    pages = api(f"repos/{repo}/issues?state=open&sort=updated&direction=desc&per_page=100",
+                "--paginate", "--slurp")
+    return [item for page in pages for item in page]
+
+
+def personal_open(repo, login):
+    found = {}
+    problems = []
+    for qualifier in (f"mentions:{login}",):
+        try:
+            pages = api("search/issues", "-f", f"q=repo:{repo} is:open {qualifier}",
+                        "-f", "per_page=100", "-f", "sort=updated",
+                        "--paginate", "--slurp")
+            if any(page.get("incomplete_results") or page["total_count"] > 1000
+                   for page in pages):
+                problems.append(f"{qualifier}: GitHub search results are incomplete")
+            for page in pages:
+                for item in page["items"]:
+                    found[item["number"]] = item
+        except CheckError as exc:
+            problems.append(f"{qualifier}: {exc}")
+    return sorted(found.values(), key=lambda item: item.get("updated_at", ""),
+                  reverse=True), problems
+
+
+def plain(value):
+    return re.sub(r"[\x00-\x1f\x7f-\x9f]", " ", str(value))
+
+
+def display(repo, items, personal):
+    if not items:
+        return
+    scope = "mentioning me" if personal else "all open"
+    print(f"\n{repo} ({scope})")
+    for title, is_pr in (("Issues", False), ("Pull requests", True)):
+        matches = [item for item in items if ("pull_request" in item) == is_pr]
+        if not matches:
+            continue
+        print(f"  {title} ({len(matches)}):")
+        for item in matches:
+            draft = " [draft]" if item.get("draft") else ""
+            author = (item.get("user") or {}).get("login", "unknown")
+            assigned = ", ".join(user["login"] for user in item.get("assignees", []))
+            print(f"    #{item['number']} — {plain(item['title'])}{draft}")
+            print(f"      Author: {plain(author)}; assigned: {plain(assigned) or 'unassigned'}")
+            print(f"      {plain(item['html_url'])}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--registry", type=Path,
+                        default=Path(os.environ.get("REPOSITORY_REGISTRY_FILE",
+                                                    ROOT / "settings/repositories.conf")))
+    args = parser.parse_args()
+    try:
+        repos, skipped = repositories(args.registry)
+        if not shutil.which("gh"):
+            raise CheckError("GitHub CLI (gh) is unavailable")
+        login = api("user")["login"]
+    except (CheckError, OSError, KeyError) as exc:
+        print(f"ERROR: {plain(exc)}", file=sys.stderr)
+        return 2
+    print(f"GitHub attention check — {len(repos)} current repositories")
+    print(f"All open issues and PRs owned by {LEAD_OWNER}; other owners: mentions of {login}.",
+          flush=True)
+    total = 0
+    failed = False
+    for repo in repos:
+        personal = repo.split("/", 1)[0].lower() != LEAD_OWNER
+        try:
+            items, problems = personal_open(repo, login) if personal else (all_open(repo), [])
+            display(repo, items, personal)
+            total += len(items)
+            for problem in problems:
+                print(f"WARNING: {repo}: {plain(problem)}", file=sys.stderr)
+            failed = failed or bool(problems)
+        except (CheckError, KeyError, TypeError) as exc:
+            failed = True
+            print(f"WARNING: {repo}: {plain(exc)}", file=sys.stderr)
+        sys.stdout.flush()
+    if skipped:
+        print(f"\nSkipped {skipped} current non-GitHub repositories.")
+    if failed:
+        print(f"\nGitHub attention check INCOMPLETE; {total} open items shown.")
+        return 1
+    print(f"\n{total} open items shown." if total else "\nNo open issues or PRs match this scope.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
