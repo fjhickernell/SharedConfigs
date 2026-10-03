@@ -30,9 +30,17 @@ any incomplete machine-specific subtask under Green **P29. Computer
 Infrastructure**, alert the user before beginning ordinary nonurgent work and
 name every matching subtask.
 
+During this read-only preflight, also read `GitTracked/Workflows/Daily Scan.md`.
+Briefly report whether today's Dashboard rollover and daily scan have already
+been done, using the Dashboard date and shared per-source scan record. Keep
+these statuses separate: a current Dashboard timestamp does not prove a scan
+was completed. State partial coverage, an interrupted latest attempt, or
+unavailable evidence explicitly; do not label an attempt as a completed scan.
+Reporting status does not run either workflow.
+
 In the preflight message, briefly remind the user of the available commands
-`urgent sync` and `tomorrow's urgents`. Mentioning them does not run either
-command or change the read-only nature of the preflight.
+`daily scan`, `urgent sync`, and `tomorrow's urgents`. Mentioning them does not
+run any command or change the read-only nature of the preflight.
 
 Do not run Git synchronization, perform Dashboard rollover, audit recurring
 sources, or edit the Dashboard solely because of this startup preflight. Use
@@ -128,6 +136,11 @@ visible account, date, start time, end time, and time zone in Apple Calendar;
 do not rely solely on the scripting API's UTC serialization.
 
 ### Timed reminders in Fantastical
+
+Fred explicitly authorized full EventKit Reminders access on October 2, 2026.
+This is standing authorization for the access needed by the Dashboard reminder
+workflows; use the intended lists and task scope. Do not request the same broad
+Reminders permission again merely because macOS does not offer list-level access.
 
 When the user asks to put tasks on the calendar as reminders, inspect the
 relevant days in Fantastical first and leave enough room for existing events
@@ -239,7 +252,36 @@ Before responding to or acting on such a request:
 
 The user does not need to explicitly say `Dashboard` or provide the file path for this routing rule to apply.
 
-### Urgent task commands
+### Dashboard scan and urgent task commands
+
+When the user says `daily scan`, follow
+`GitTracked/Workflows/Daily Scan.md`: normally once per local day, review new
+email and open/recently completed iCloud reminders for broader Dashboard work.
+Use its shared per-source coverage record across Macs, avoid duplicate scans
+and tasks, capture later deadlines and selected Blue opportunities, and ask
+when uncertain. Also run this workflow on the first ordinary Dashboard
+check-in each local day, after required daily Git synchronization succeeds
+and the Dashboard is re-read and rolled forward. Track scan attempts separately
+from the Dashboard timestamp; reuse same-day coverage across Macs. The read-only
+startup preflight and workflow-configuration requests do not trigger a scan.
+The manual command can review new mail or retry missing sources later that day.
+This is a Dashboard-triggered workflow, not a scheduled background job.
+
+During `daily scan` and `urgent sync`, normally review the past seven days
+of read and unread mail, including Inbox and relevant filed messages; reuse
+coverage and triage headers before opening actionable candidates. Revisit
+tracked unresolved threads even when older or filed. Extend discovery only
+to cover a missed-scan gap or when the user requests a broader review. Ignore pull-request and other Git/GitHub emails (including issues, reviews,
+and CI notifications); Fred already checks these through his Git workflow.
+Personal correspondence
+means mail directed to the user that warrants a response, including mail in
+the work account. If unanswered after the end of the next business day after
+receipt, put the response task in Urgent and its source task in Green. Check
+Sent mail and the specific thread, or the user's explicit confirmation,
+before treating it as answered; filing or reading alone is insufficient.
+Follow `GitTracked/Workflows/Daily Scan.md` for business-day calculation,
+seven-day coverage, unresolved response tracking, and uncertainty handling.
+Recheck already tracked response deadlines on every Dashboard interaction.
 
 Follow `GitTracked/Workflows/Urgent Sync.md` in the ObsidianVault workspace
 for the shared cross-machine procedure.
@@ -253,6 +295,14 @@ and from mail addressed only to someone else. Check upcoming commitments in
 Fantastical, using the Illinois Tech calendar and the
 `fjhickernell@gmail.com` calendar as the relevant accounts. Ask when an
 important meeting, ownership, or date remains ambiguous.
+
+During email scans, capture actionable requests for reference letters, reviews,
+decisions, and other deliverables even when a discovered submission deadline
+is beyond the seven-day calendar window. Check existing Dashboard tasks and
+prior scan records before adding a duplicate. Distinguish the official deadline,
+the user's personal completion deadline, and the start date; ask when ownership,
+dates, or preparation timing are uncertain. Follow the detailed lead-time
+procedure in `GitTracked/Workflows/Urgent Sync.md`.
 
 For actionable teaching and research tasks, use the iCloud `Academic` reminder
 list; for church work, `WCAC`; for personal errands and pickups, `Personal`.
@@ -326,7 +376,10 @@ When the user asks to record a project action item, create it in the repository
 that owns the work after checking for a matching issue. Use a clear title,
 enough context to act, and a concrete completion condition. Course-specific
 work belongs in that semester's course repository; reusable library work
-belongs in HickernellAcademicLib. Link selected issues from `notes/NEXT.md`
+belongs in HickernellAcademicLib. Assign every issue created from a conversation
+with the user to `fjhickernell` unless the user specifies otherwise. If the
+repository does not permit that assignment, report it rather than silently
+choosing someone else. Link selected issues from `notes/NEXT.md`
 instead of copying their backlog or discussion there. Preserve substantive
 local planning notes; do not bulk-migrate them unless requested.
 
