@@ -254,81 +254,39 @@ The user does not need to explicitly say `Dashboard` or provide the file path fo
 
 ### Dashboard scan and urgent task commands
 
-When the user says `daily scan`, follow
-`GitTracked/Workflows/Daily Scan.md`: normally once per local day, review new
-email and open/recently completed iCloud reminders for broader Dashboard work.
-Use its shared per-source coverage record across Macs, avoid duplicate scans
-and tasks, capture later deadlines and selected Blue opportunities, and ask
-when uncertain. Also run this workflow on the first ordinary Dashboard
-check-in each local day, after required daily Git synchronization succeeds
-and the Dashboard is re-read and rolled forward. Track scan attempts separately
-from the Dashboard timestamp; reuse same-day coverage across Macs. The read-only
-startup preflight and workflow-configuration requests do not trigger a scan.
-The manual command can review new mail or retry missing sources later that day.
-This is a Dashboard-triggered workflow, not a scheduled background job.
+Follow the **Shared task model: Dashboard, Reminders, and Mail** and
+**Guidance ownership** sections of `GitTracked/Workflows/Daily Scan.md`.
+The Dashboard holds personal priorities and project context, iCloud Reminders
+surfaces selected actions, and Mail supplies requests and evidence. Reconcile
+matching actions during the workflows below; not every item needs all three
+representations.
 
-During `daily scan` and `urgent sync`, normally review the past seven days
-of read and unread mail, including Inbox and relevant filed messages; reuse
-coverage and triage headers before opening actionable candidates. Revisit
-tracked unresolved threads even when older or filed. Extend discovery only
-to cover a missed-scan gap or when the user requests a broader review. Ignore pull-request and other Git/GitHub emails (including issues, reviews,
-and CI notifications); Fred already checks these through his Git workflow.
-Personal correspondence
-means mail directed to the user that warrants a response, including mail in
-the work account. If unanswered after the end of the next business day after
-receipt, put the response task in Urgent and its source task in Green. Check
-Sent mail and the specific thread, or the user's explicit confirmation,
-before treating it as answered; filing or reading alone is insufficient.
-Follow `GitTracked/Workflows/Daily Scan.md` for business-day calculation,
-seven-day coverage, unresolved response tracking, and uncertainty handling.
-Recheck already tracked response deadlines on every Dashboard interaction.
+- `daily scan`: follow `GitTracked/Workflows/Daily Scan.md` for broader email
+  and open/recently completed reminder discovery, later deadlines, selected
+  Blue opportunities, response verification, and shared per-source coverage.
+  Also run it on the first ordinary Dashboard check-in each local day after
+  required Git synchronization and Dashboard rollover. Startup preflight and
+  workflow-configuration requests do not trigger it. Manual repeats review new
+  material and retry missing sources using saved coverage.
+- `urgent sync`: follow `GitTracked/Workflows/Urgent Sync.md` together with
+  the Dashboard rules to reconcile immediate priorities, discover work from
+  mail, and check calendar evidence today through the next seven local days.
+- `tomorrow's urgents`: follow the same Urgent Sync workflow and Dashboard
+  rules for next-day Urgent entries and actionable preparation reminders;
+  this does not perform broader mail and seven-day discovery.
 
-Follow `GitTracked/Workflows/Urgent Sync.md` in the ObsidianVault workspace
-for the shared cross-machine procedure.
+Recheck tracked response deadlines on every Dashboard interaction using the
+Daily Scan unresolved response register. Apply its personal-email response
+rule and Sent/thread verification; reading or filing mail is not completion.
+Use Urgent Sync's lead-time, reminder-list, duplicate prevention, and matching
+rules, and the Dashboard Completion Policy for completion in both directions.
+Follow the calendar routing and **Timed reminders in Fantastical** sections
+above for account selection, EventKit writes, and visible verification.
 
-When the user says `urgent sync`, run the Dashboard workflow and reconcile its
-Urgent section with the user's iCloud Reminders and current email and calendar
-evidence. Scan today through the next seven local calendar days. Check the
-user's own available mail accounts for actionable pickup notices, deadlines,
-meeting plans, and changes; distinguish transactional messages from promotions
-and from mail addressed only to someone else. Check upcoming commitments in
-Fantastical, using the Illinois Tech calendar and the
-`fjhickernell@gmail.com` calendar as the relevant accounts. Ask when an
-important meeting, ownership, or date remains ambiguous.
-
-During email scans, capture actionable requests for reference letters, reviews,
-decisions, and other deliverables even when a discovered submission deadline
-is beyond the seven-day calendar window. Check existing Dashboard tasks and
-prior scan records before adding a duplicate. Distinguish the official deadline,
-the user's personal completion deadline, and the start date; ask when ownership,
-dates, or preparation timing are uncertain. Follow the detailed lead-time
-procedure in `GitTracked/Workflows/Urgent Sync.md`.
-
-For actionable teaching and research tasks, use the iCloud `Academic` reminder
-list; for church work, `WCAC`; for personal errands and pickups, `Personal`.
-Inspect existing reminders, including recently completed matches, before
-creating one. A completed pickup reminder for the same order or prescription
-must keep an older email notice from recreating the task. Use timed reminders
-visible in Fantastical, applying the timed-reminder rules above; do not create
-calendar events for tasks unless the user asks to reserve time. Avoid a task
-reminder that merely duplicates a meeting already on the calendar. Put
-necessary preparation for a next-day meeting in Urgent, attached to that
-meeting as a separate checkbox subbullet when practical. Match the reminder
-to the preparation checkbox, not to completion of the meeting itself.
-
-During either command, treat completion in either the Dashboard or its matching
-reminder as completion in both places. Follow the Dashboard Completion Policy
-for checked Urgent entries and source tasks; do not infer that a meeting
-occurred merely because preparation was completed or its date passed. Match
-by project ID, specific action, and event or order date, rather than project ID alone; ask
-before propagating an uncertain match. Preserve existing reminder times when
-reasonable and avoid duplicate tasks across repeated runs.
-
-When the user says `tomorrow's urgents`, run the full Dashboard workflow to
-refresh only the next-day Urgent entries required by its rules, then reconcile
-their actionable preparation reminders with the same iCloud lists. Consult
-Fantastical for timing and existing matches. This command does not perform the
-broader email and seven-day scan of `urgent sync`.
+These are Dashboard-triggered workflows, not scheduled background jobs.
+Mentioning a command does not run it or authorize a Checkpoint or `infra save`.
+When changing policy, edit its owning workflow and keep this section as routing
+and a short summary rather than copying the procedure here.
 
 ## Infrastructure and Codex project alignment
 
