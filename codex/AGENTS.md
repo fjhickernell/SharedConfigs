@@ -39,8 +39,9 @@ unavailable evidence explicitly; do not label an attempt as a completed scan.
 Reporting status does not run either workflow.
 
 In the preflight message, briefly remind the user of the available commands
-`daily scan`, `urgent sync`, and `tomorrow's urgents`. Mentioning them does not
-run any command or change the read-only nature of the preflight.
+`daily scan`, `urgent sync`, `tomorrow's urgents`, and
+`clear completed urgents`. Mentioning them does not run any command or change
+the read-only nature of the preflight.
 
 Do not run Git synchronization, perform Dashboard rollover, audit recurring
 sources, or edit the Dashboard solely because of this startup preflight. Use
@@ -274,6 +275,9 @@ representations.
 - `tomorrow's urgents`: follow the same Urgent Sync workflow and Dashboard
   rules for next-day Urgent entries and actionable preparation reminders;
   this does not perform broader mail and seven-day discovery.
+- `clear completed urgents`: follow the Dashboard Completion Policy to remove
+  checked Urgent entries before the next daily rollover. This is a focused
+  cleanup command; preserve unfinished work and Daily and Weekly Rhythms.
 
 Recheck tracked response deadlines on every Dashboard interaction using the
 Daily Scan unresolved response register. Apply its personal-email response
