@@ -1,6 +1,10 @@
 #!/bin/zsh
 set -euo pipefail
 
+# Proceed with the requested sync without Homebrew's upgrade confirmation.
+# Export also covers install/upgrade commands invoked by brew bundle.
+export HOMEBREW_NO_ASK=1
+
 GREEN_BOLD=$'\033[1;32m'
 MAGENTA_BOLD=$'\033[1;35m'
 YELLOW_BOLD=$'\033[1;33m'

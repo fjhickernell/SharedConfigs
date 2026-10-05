@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+# Starting this maintenance workflow authorizes its Homebrew installations
+# and upgrades, including the separate TeXstudio step.
+export HOMEBREW_NO_ASK=1
+
 log() {
   local message="$1"
   local ts

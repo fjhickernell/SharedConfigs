@@ -116,6 +116,10 @@ It currently runs:
 The final log line reports total elapsed wall time, including time spent
 waiting for password prompts. It also appears if a fatal step exits early.
 
+Homebrew installations and upgrades proceed without a yes/no confirmation:
+the driver exports `HOMEBREW_NO_ASK=1` for its maintenance steps. Privileged
+operations can still require a password.
+
 Workflow:
 
 1. **Run manually** (no LaunchAgent):
@@ -143,6 +147,9 @@ separate `mas upgrade` step. Run `sync-brew.sh --full` during an attended Intel
 maintenance window to upgrade formulae and reconcile every Brewfile entry.
 
 Shows `Using …` versus `Installing …` for clarity.
+
+Exports `HOMEBREW_NO_ASK=1` so upgrades and Brewfile installations proceed
+without a yes/no confirmation, including when this script is run directly.
 
 It lives in `~/Documents/SharedConfigs/bin`. Any future LaunchAgent must invoke
 that absolute path rather than relying on shell startup or a separate script
