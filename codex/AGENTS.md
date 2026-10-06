@@ -169,6 +169,22 @@ meaningful distinction or the intended term cannot be determined reliably,
 ask for clarification before making a consequential change. Do not silently
 propagate terminology that would make the project less coherent.
 
+## Grading deadlines for all courses
+
+For every course, set the grading-completion deadline to **six calendar days**
+after a quiz or test is administered, or after an assignment's student
+submission deadline. Count weekends and holidays; use the assessment date plus
+six days. Update the grading deadline when the administration or submission
+date changes.
+
+When planning, administering, publishing, or reviewing course assessments,
+record the grading task and its calculated deadline under the course's
+Check-In & Focus Dashboard project. Keep the deadline date-only unless Fred
+specifies a time. Confirm grading completion before removing the task. If the
+calculated deadline has already passed, retain it and record any instructor-set
+catch-up target separately, applying the Dashboard's status and completion
+rules. Continue grade-entry and release work under the existing course workflows.
+
 ## LaTeX assessment answer-version workflow
 
 For private course quizzes, tests, and examinations that use `fh-exam`, keep
