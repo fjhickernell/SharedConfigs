@@ -143,7 +143,14 @@ This is standing authorization for the access needed by the Dashboard reminder
 workflows; use the intended lists and task scope. Do not request the same broad
 Reminders permission again merely because macOS does not offer list-level access.
 
-When the user asks to put tasks on the calendar as reminders, inspect the
+When scheduling time for Fred to work on Dashboard tasks, use timed iCloud
+reminders by default so unfinished actions remain visible and can be moved to
+the next day's plan. Follow the carryover procedure in
+`GitTracked/Workflows/Urgent Sync.md` during Dashboard reminder reconciliation
+and day planning. Create a calendar event for task work only when Fred
+explicitly requests an event to reserve availability.
+
+When scheduling these reminders, inspect the
 relevant days in Fantastical first and leave enough room for existing events
 and reminders. On a Mac, use EventKit's reminders API for precise creation or
 edits: choose the intended reminder list, set `dueDateComponents` with the
