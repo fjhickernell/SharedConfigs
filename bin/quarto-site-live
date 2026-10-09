@@ -355,7 +355,7 @@ fi
 
 cd "$repo_root" || exit 2
 
-watch_args=(-W "$repo_root")
+watch_args=(-w "$repo_root")
 
 for watch_dir in \
   "$repo_root/pages" \
@@ -374,12 +374,18 @@ done
 
 # Polling reports saved-file changes through metadata events on macOS.
 # Keep those events enabled so ordinary saves trigger a render.
+# Ignore directory-only events: Quarto's temporary files change the project
+# folder timestamp during every render and would otherwise cause a loop.
+# Quarto also stages HTML next to its QMD source before moving it to _site.
+# Keep standalone HTML resources watched, but skip those temporary siblings.
 watchexec --postpone --on-busy-update=queue --debounce 500ms --poll 1s \
   "${watch_args[@]}" \
+  --filter-prog 'any(.tags[] | select(.kind == "path"); .filetype != "dir" and (if (.absolute | test("\\.html?$")) then ((.absolute | sub("\\.html?$"; ".qmd") | file_meta) == null) else true end))' \
   --ignore '**/.git/**' \
   --ignore '**/.quarto/**' \
   --ignore '**/_freeze/**' \
   --ignore '**/_site/**' \
+  --ignore '**/site_libs/**' \
   --ignore '**/*_files/**' \
   --ignore '**/__pycache__/**' \
   --ignore '/*.html' \

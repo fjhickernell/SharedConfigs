@@ -13,6 +13,19 @@ scripts shared through Git across my Macs.
 - `settings/managed-links.conf`: Canonical inventory of home-directory links
 - `settings/vault-links.conf`: Canonical inventory of deliberate Obsidian-vault links
 
+## Quarto Live Preview
+
+Run `quarto-site-live` from a Quarto website's root directory for automatic
+rendering and browser refresh. It prints and remembers a local port for the
+project. Use `--no-open` to keep browser opening manual, or `--port PORT` to
+choose a port. Stop the session with Ctrl+C before starting another for that site.
+
+The helper watches nested page folders and shared classlib assets. Generated
+output and directory-only timestamp changes are ignored, preventing renders
+from triggering another render. Verify watcher behavior with
+`python3 tests/test-quarto-site-live.py`; the test uses an isolated temporary
+site and requires the installed live-preview dependencies.
+
 ## Sync Strategy
 
 - Each Mac has a Git checkout at `~/Documents/SharedConfigs`.
