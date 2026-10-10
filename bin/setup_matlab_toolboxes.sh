@@ -4,14 +4,14 @@
 
 set -eu
 
-# Where to put the toolboxes (change if you like)
-TOOLBOX_DIR="${HOME}/MATLAB/toolboxes"
+# Use the canonical standalone repository location.
+TOOLBOX_DIR="${HOME}/SoftwareRepositories"
 mkdir -p "$TOOLBOX_DIR"
 
 # List of "name|url[@branch]" entries (branch optional)
 REPOS="
-chebfun|https://github.com/chebfun/chebfun.git
-GAIL|https://github.com/GailGithub/GAIL_Dev.git@develop
+chebfun|https://github.com/chebfun/chebfun.git@master
+GAIL_Dev|https://github.com/GailGithub/GAIL_Dev.git@develop
 "
 
 echo "Using toolbox directory: $TOOLBOX_DIR"
@@ -79,8 +79,11 @@ done
 cat <<'EOF'
 
 Done.
-• Toolboxes installed/updated under ~/MATLAB/toolboxes.
-• Launch MATLAB; your startup.m (if installed) will auto-add them to the path.
+• Toolboxes installed/updated under ~/SoftwareRepositories/chebfun and GAIL_Dev.
+• Install the shared MATLAB startup link once on each Mac:
+  ~/Documents/SharedConfigs/bin/sharedconfigs-audit --repair --group matlab --links-only
+  This preserves the existing startup file in a timestamped backup.
+• Later SharedConfigs updates automatically update the linked startup file.
 
 Tip: re-run this script any time after upgrading MATLAB.
 EOF

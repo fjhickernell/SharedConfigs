@@ -203,6 +203,28 @@ existing non-Git path is reported as an error and is never overwritten. Both
 synchronization scripts label unchanged repositories as `already current` and
 report the number of commits added by a fast-forward as `+N`.
 
+At Fred's request, `sync-active.sh` also manages the MATLAB toolboxes
+`~/SoftwareRepositories/chebfun` on `master` and
+`~/SoftwareRepositories/GAIL_Dev` on `develop` on every Mac. Existing checkouts
+must be clean and on the configured branch; the script reports a mismatch
+rather than switching branches or discarding work. MATLAB's shared startup
+is `matlab/startup.m`. The managed-link manifest connects
+`~/Documents/MATLAB/startup.m` to that file. After publishing the SharedConfigs
+changes with `infra save`, run `arrive` on each other Mac, then install the
+link once:
+
+```sh
+~/Documents/SharedConfigs/bin/sharedconfigs-audit --repair --group matlab --links-only
+```
+
+The repair preserves any existing startup file in a timestamped backup.
+Future SharedConfigs updates reach the linked startup automatically; restart
+MATLAB to load them. Check the backup for any machine-specific startup lines
+that should be retained.
+Run `~/Documents/SharedConfigs/matlab/check_toolboxes.m` in MATLAB for quick
+Chebfun and GAIL numerical checks; `help GAIL` and `help integral_g` show the
+installed documentation and examples.
+
 When the sweep reports an ahead, diverged, or local-only dormant branch, it
 prints a `branch-audit` command for the affected repository. When live remote
 history is not available locally, `REMOTE-UNCERTAIN` first prints a full-head

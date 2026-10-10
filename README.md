@@ -10,6 +10,7 @@ scripts shared through Git across my Macs.
 - `BibDesk/`: retained BibDesk templates and support-file archive; the live
   Application Support directory remains machine-local
 - `bin/`: Utility scripts (e.g., `sync-brew.sh`)
+- `matlab/`: Shared startup file and Chebfun/GAIL numerical checks
 - `settings/managed-links.conf`: Canonical inventory of home-directory links
 - `settings/vault-links.conf`: Canonical inventory of deliberate Obsidian-vault links
 

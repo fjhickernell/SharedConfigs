@@ -135,6 +135,7 @@ When repairing or linking a new application:
 
 * Codex global instructions (`~/.codex/AGENTS.md` → `codex/AGENTS.md`)
 * MarkEdit's portable script, style, and settings files
+* MATLAB startup (`~/Documents/MATLAB/startup.m` → `matlab/startup.m`)
 * Starship
 * texmf
 * Warp
@@ -147,6 +148,12 @@ directory stays local; `BibDesk/` in this repository is retained as an archive,
 not as a live link target.
 
 Additional applications should be added conservatively.
+
+Install the MATLAB link once per Mac with
+`sharedconfigs-audit --repair --group matlab --links-only` after retrieving
+the shared source. This preserves any prior startup file as a timestamped
+backup. Subsequent SharedConfigs synchronization updates the startup used by
+the next MATLAB launch without copying it again.
 
 The objective is reliability rather than maximizing the number of shared settings.
 
