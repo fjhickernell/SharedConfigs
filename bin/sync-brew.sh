@@ -101,11 +101,28 @@ done
 # Bundle installs missing Store apps; the final mas step owns all Store updates.
 # Skip installed IDs so Bundle does not repeat its global outdated check.
 # Always exclude the Store edition of TextSniper, including when absent.
+typeset -a expected_store_skips=()
 if command -v mas >/dev/null 2>&1; then
   installed_mas_apps="$(mas list)"
   installed_mas_ids="$(awk '$1 ~ /^[0-9]+$/ { print $1 }' <<<"$installed_mas_apps" | paste -sd ' ' -)"
   export HOMEBREW_BUNDLE_MAS_SKIP="${HOMEBREW_BUNDLE_MAS_SKIP:+$HOMEBREW_BUNDLE_MAS_SKIP }${installed_mas_ids} 1528890965"
+  while IFS= read -r app_name; do
+    [[ -z "$app_name" ]] || expected_store_skips+=("Warning: Skipping ${app_name}")
+  done <<<"$(sed -nE 's/^[[:space:]]*[0-9]+[[:space:]]+(.*)[[:space:]]+\([0-9.]+\)[[:space:]]*$/\1/p' <<<"$installed_mas_apps")"
+  expected_store_skips+=("Warning: Skipping TextSniper")
+  printf '%s\n' "Installed Store apps are updated in the final mas step; TextSniper uses Homebrew."
 fi
+
+display_bundle_output() {
+  local line
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    # Hide only exact, expected Store skip notices. Keep all other output,
+    # including skips with reasons, dependency warnings, and install errors.
+    (( ${expected_store_skips[(Ie)$line]} > 0 )) && continue
+    print -r -- "$line"
+  done
+  return 0
+}
 
 section "Ensuring Brewfile state via brew bundle"
 bundle_failed=0
@@ -118,12 +135,12 @@ if [[ -f Brewfile ]]; then
     # skipping formula entries that could trigger lengthy source builds.
     formula_skip="$(brew bundle list --formula --file="$PWD/Brewfile" | paste -sd ' ' -)"
     HOMEBREW_BUNDLE_BREW_SKIP="${HOMEBREW_BUNDLE_BREW_SKIP:+$HOMEBREW_BUNDLE_BREW_SKIP }${formula_skip}" \
-      brew bundle --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
+      brew bundle --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" | display_bundle_output || bundle_failed=1
   else
-    brew bundle --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
+    brew bundle --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" | display_bundle_output || bundle_failed=1
   fi
 else
-  brew bundle 2>&1 | tee "$bundle_log" || bundle_failed=1
+  brew bundle 2>&1 | tee "$bundle_log" | display_bundle_output || bundle_failed=1
 fi
 
 bundle_ok_count="$(awk '/^(Using|Installing) / && $0 !~ / has failed!/ { n++ } END { print n+0 }' "$bundle_log")"

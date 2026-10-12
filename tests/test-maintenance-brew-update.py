@@ -51,6 +51,9 @@ elif [ "$1" = bundle ]; then
   printf 'bundle-formula-skip %s|1\n' "${HOMEBREW_BUNDLE_BREW_SKIP:-}" >> "$CALL_LOG"
   if [ "$TEST_MAS" = 1 ]; then
     printf 'bundle-mas-skip %s|1\n' "$HOMEBREW_BUNDLE_MAS_SKIP" >> "$CALL_LOG"
+    printf '%s\n' 'Warning: Skipping Listed app' 'Warning: Skipping TextSniper' \
+      'Warning: Skipping Unknown app' 'Warning: Skipping mas Missing app (unsupported)' \
+      'Warning: Formulae dependency graph sorting found a circular dependency:'
   fi
   if [ "$BUNDLE_CYCLE" = 1 ]; then
     echo 'Error: dependency graph sorting failed: circular dependency'
@@ -193,6 +196,12 @@ esac''')
                 result, calls = self.run_workflow(
                     'sync-brew.sh', architecture=architecture, with_mas=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn('Warning: Skipping Listed app', result.stdout)
+                self.assertNotIn('Warning: Skipping TextSniper', result.stdout)
+                self.assertIn('TextSniper uses Homebrew.', result.stdout)
+                self.assertIn('Warning: Skipping Unknown app', result.stdout)
+                self.assertIn('Warning: Skipping mas Missing app (unsupported)', result.stdout)
+                self.assertIn('Warning: Formulae dependency graph sorting', result.stdout)
                 skip = next(row for row in calls if row.startswith('bundle-mas-skip '))
                 skipped_ids = skip.split('|')[0].split()[1:]
                 self.assertIn('111', skipped_ids)
