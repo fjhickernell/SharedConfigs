@@ -1,6 +1,17 @@
 #!/bin/zsh
 set -euo pipefail
 
+prepare_only=0
+case "${1:-}" in
+  --prepare) prepare_only=1 ;;
+  '') ;;
+  *) echo "Usage: update-texstudio.sh [--prepare]" >&2; exit 2 ;;
+esac
+if (( $# > 1 )); then
+  echo "Usage: update-texstudio.sh [--prepare]" >&2
+  exit 2
+fi
+
 # The upstream tap replaces the disabled Homebrew/cask version.
 # Its cask downloads official releases, checks SHA-256, and removes the
 # app's quarantine attribute because upstream does not sign its macOS builds.
@@ -22,9 +33,9 @@ if [[ -f "$receipt" ]]; then
     # Download and verify before replacing the installed application.
     brew fetch --cask "$CASK"
     brew reinstall --cask --no-ask "$CASK"
-  else
+  elif (( prepare_only == 0 )); then
     brew upgrade --cask "$CASK"
   fi
-else
+elif (( prepare_only == 0 )); then
   brew install --cask "$CASK"
 fi

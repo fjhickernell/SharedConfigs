@@ -1,3 +1,6 @@
+# Hide repeated Homebrew environment-setting tips in shells and their scripts.
+export HOMEBREW_NO_ENV_HINTS=1
+
 # Homebrew Ruby is the unpinned default in every shell mode. chruby may replace
 # it later only when a project supplies a local .ruby-version.
 if [ -d /opt/homebrew/opt/ruby/bin ]; then

@@ -105,20 +105,36 @@ Your consolidated maintenance driver script.
 
 It currently runs:
 
-- `update-texstudio.sh` (migrates the disabled core cask to the upstream stable-release tap, then upgrades it)
+- `brew update` once (failure stops maintenance)
+- `update-texstudio.sh --prepare` (prepares the upstream tap and migrates an older cask)
 - `sync-brew.sh`
 - `update-texlive.sh`
 - `git-repo-sync.sh`
 - `sync-dev.sh` in pull-only mode, when available
 - `sync-active.sh` without `--push`, when available
-- `npm-globals-sync.sh`, when npm and the script are available
+
+Development sync fetches each registered branch once, then merges its fetched
+remote-tracking tip with `--ff-only`; it does not perform a second fetch.
+
+Global npm packages, including `browser-sync`, are reconciled through the
+Brewfile by `sync-brew.sh`. There is no separate npm installation step.
 
 The final log line reports total elapsed wall time, including time spent
 waiting for password prompts. It also appears if a fatal step exits early.
+Failures in later steps are collected while remaining steps continue. The final
+summary names each failed step and returns a nonzero exit status. The initial
+Homebrew update and TeXstudio preparation still stop the run immediately on failure.
 
 Homebrew installations and upgrades proceed without a yes/no confirmation:
 the driver exports `HOMEBREW_NO_ASK=1` for its maintenance steps. Privileged
 operations can still require a password.
+
+After the initial update succeeds, the driver disables automatic Homebrew
+updates for its child processes and tells `sync-brew.sh` to reuse that metadata.
+TeXstudio stays before Brewfile processing so older cask installations can be
+migrated first. Running `sync-brew.sh` directly still performs its own update.
+TeXstudio installation and upgrades are left to `sync-brew.sh` after preparation;
+running `update-texstudio.sh` directly still installs or upgrades it.
 
 Workflow:
 
@@ -141,10 +157,18 @@ health check is appropriate.
 ### `sync-brew.sh`
 Synchronizes Homebrew using the canonical Brewfile. On Apple Silicon, the
 regular run upgrades formulae and casks. On Intel, the regular run upgrades
-casks and reconciles the non-formula Brewfile entries, including Mac App Store
-apps, while deferring formula upgrades and installs. It still runs the
+casks and reconciles the non-formula Brewfile entries, including npm packages
+and editor extensions, while deferring formula upgrades and installs. It still runs the
 separate `mas upgrade` step. Run `sync-brew.sh --full` during an attended Intel
 maintenance window to upgrade formulae and reconcile every Brewfile entry.
+
+Bundle installs missing Mac App Store apps and skips installed Store apps.
+One final `mas` step updates installed Store apps, including those outside the
+Brewfile, while excluding TextSniper. This applies to routine and full runs.
+
+Bundle installs and upgrades listed packages; a separate upgrade step handles
+only outdated formulae and casks outside the Brewfile. Intel routine runs skip
+formulae in both steps. Bundle retains the Brewfile's per-cask greedy checks.
 
 Shows `Using …` versus `Installing …` for clarity.
 

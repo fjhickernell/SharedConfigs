@@ -141,7 +141,9 @@ sync_repo() {
   local old new count
   old="$(git -C "$repo" rev-parse HEAD)"
 
-  if ! git -C "$repo" fetch --prune origin >/dev/null 2>&1; then
+  # Fetch the registry branch explicitly, even when origin has a narrow refspec.
+  if ! git -C "$repo" fetch --prune origin \
+    "+refs/heads/${branch}:refs/remotes/origin/${branch}" >/dev/null 2>&1; then
     ERROR_COUNT=$((ERROR_COUNT + 1))
     err "ERROR  ${name}: fetch failed"
     return 0
@@ -155,9 +157,10 @@ sync_repo() {
     fi
   fi
 
-  if ! git -C "$repo" pull --ff-only origin "$branch" >/dev/null 2>&1; then
+  if ! git -C "$repo" -c merge.autostash=false merge --ff-only \
+    "refs/remotes/origin/${branch}" >/dev/null 2>&1; then
     ERROR_COUNT=$((ERROR_COUNT + 1))
-    err "ERROR  ${name}: pull --ff-only failed"
+    err "ERROR  ${name}: fast-forward update failed"
     return 0
   fi
 

@@ -57,15 +57,54 @@ if command -v mas >/dev/null 2>&1 && grep -q '^mas ' Brewfile; then
   fi
 fi
 
-section "Updating Homebrew"
-brew update
+if [[ "${SYNC_BREW_SKIP_UPDATE:-0}" == "1" ]]; then
+  section "Using Homebrew metadata updated by regular maintenance"
+else
+  section "Updating Homebrew"
+  brew update
+fi
+# The explicit update above (or the caller's successful update) covers this run.
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 if (( intel_routine )); then
-  section "Upgrading installed casks (Intel routine; formulae deferred)"
-  brew upgrade --cask
+  section "Upgrading outdated casks outside the Brewfile (Intel; formulae deferred)"
 else
-  section "Upgrading installed formulae and casks"
-  brew upgrade
+  section "Upgrading outdated packages outside the Brewfile"
+fi
+# Bundle owns listed packages, including its per-cask greedy policy.
+# Retain coverage for other installed packages without upgrading listed
+# packages once here and checking them again during Bundle processing.
+for package_type in formula cask; do
+  if (( intel_routine )) && [[ "$package_type" == formula ]]; then
+    continue
+  fi
+  typeset -a listed_packages=() extra_packages=()
+  if [[ -f Brewfile ]]; then
+    listed_output="$(brew bundle list --"$package_type" --file="$PWD/Brewfile")"
+    while IFS= read -r package; do
+      [[ -z "$package" ]] || listed_packages+=("${package##*/}")
+    done <<<"$listed_output"
+  fi
+  outdated_output="$(brew outdated --quiet --"$package_type")"
+  while IFS= read -r package; do
+    [[ -n "$package" ]] || continue
+    package_name="${package##*/}"
+    if (( ${listed_packages[(Ie)$package_name]} == 0 )); then
+      extra_packages+=("$package")
+    fi
+  done <<<"$outdated_output"
+  if (( ${#extra_packages} )); then
+    brew upgrade --"$package_type" "${extra_packages[@]}"
+  fi
+done
+
+# Bundle installs missing Store apps; the final mas step owns all Store updates.
+# Skip installed IDs so Bundle does not repeat its global outdated check.
+# Always exclude the Store edition of TextSniper, including when absent.
+if command -v mas >/dev/null 2>&1; then
+  installed_mas_apps="$(mas list)"
+  installed_mas_ids="$(awk '$1 ~ /^[0-9]+$/ { print $1 }' <<<"$installed_mas_apps" | paste -sd ' ' -)"
+  export HOMEBREW_BUNDLE_MAS_SKIP="${HOMEBREW_BUNDLE_MAS_SKIP:+$HOMEBREW_BUNDLE_MAS_SKIP }${installed_mas_ids} 1528890965"
 fi
 
 section "Ensuring Brewfile state via brew bundle"
@@ -77,9 +116,9 @@ if [[ -f Brewfile ]]; then
   if (( intel_routine )); then
     # Keep casks, Mac App Store apps, extensions, and npm entries in sync while
     # skipping formula entries that could trigger lengthy source builds.
-    formula_skip="$(sed -nE 's/^brew "([^"]+)".*/\1/p' Brewfile | paste -sd ' ' -)"
+    formula_skip="$(brew bundle list --formula --file="$PWD/Brewfile" | paste -sd ' ' -)"
     HOMEBREW_BUNDLE_BREW_SKIP="${HOMEBREW_BUNDLE_BREW_SKIP:+$HOMEBREW_BUNDLE_BREW_SKIP }${formula_skip}" \
-      brew bundle --no-upgrade --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
+      brew bundle --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
   else
     brew bundle --file="$PWD/Brewfile" 2>&1 | tee "$bundle_log" || bundle_failed=1
   fi
@@ -121,7 +160,8 @@ if [[ "$bundle_failed" -eq 1 ]]; then
     printf '%s\n' "$unrecognized_errors" >&2
     exit 1
   elif grep -Eq "dependency graph sorting failed|circular dependency" "$bundle_log"; then
-    printf "${YELLOW_BOLD}Continuing because Homebrew Bundle encountered a formula dependency-cycle sorting error. brew upgrade and brew doctor otherwise completed normally.${NC}\n"
+    error "Homebrew Bundle could not sort its dependencies; listed package upgrades are not confirmed."
+    exit 1
   elif grep -Eq "depends on hardware architecture" "$bundle_log"; then
     printf "${YELLOW_BOLD}Continuing because some Brewfile items may be unavailable or architecture-specific on this Mac.${NC}\n"
   else
