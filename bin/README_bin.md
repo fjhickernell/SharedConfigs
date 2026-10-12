@@ -488,6 +488,8 @@ The site port is remembered in the repository's ignored
 refuses to replace an existing listener on an explicitly selected port, so do
 not choose a slide session's port. Use `--fast` when cached rendering is
 appropriate, and `--no-open` to serve without opening a new browser tab.
+Press Ctrl+C once to stop the watcher and its BrowserSync server. The watch
+filter passes signal events through while excluding generated-file events.
 
 ### `quarto-slides-live`
 

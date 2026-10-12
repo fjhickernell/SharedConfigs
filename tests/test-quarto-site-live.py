@@ -102,6 +102,15 @@ shutil.rmtree(libraries)
                     wait_for(lambda: render_count() == 3)
                     time.sleep(3)
                     self.assertEqual(render_count(), 3, 'Standalone HTML resources must stay watched')
+                    os.killpg(process.pid, signal.SIGINT)
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        self.fail('One Ctrl+C must stop live preview')
+                    listener = subprocess.run(
+                        ['lsof', '-tiTCP:' + str(port), '-sTCP:LISTEN'],
+                        text=True, capture_output=True)
+                    self.assertFalse(listener.stdout.strip(), 'Preview listener must stop too')
                 finally:
                     if process.poll() is None:
                         os.killpg(process.pid, signal.SIGINT)

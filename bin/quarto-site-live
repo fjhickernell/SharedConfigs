@@ -316,13 +316,32 @@ cd "$repo_root/_site" || exit 2
 browser-sync start --server --files "**/*" --port "$port" --listen localhost \
   --no-ui --no-online --no-open --no-notify >"$browser_log" 2>&1 &
 bs_pid="$!"
+watch_pid=""
 
 cleanup() {
-  kill "$bs_pid" >/dev/null 2>&1 || true
-  wait "$bs_pid" >/dev/null 2>&1 || true
+  local pid attempt
+  for pid in "$watch_pid" "$bs_pid"; do
+    [ -n "$pid" ] && kill -TERM "$pid" >/dev/null 2>&1 || true
+  done
+  # A child that ignores termination must not keep the terminal occupied.
+  for attempt in $(seq 1 20); do
+    if ! kill -0 "$bs_pid" >/dev/null 2>&1 &&
+       { [ -z "$watch_pid" ] || ! kill -0 "$watch_pid" >/dev/null 2>&1; }; then
+      break
+    fi
+    sleep 0.1
+  done
+  for pid in "$watch_pid" "$bs_pid"; do
+    if [ -n "$pid" ]; then
+      kill -KILL "$pid" >/dev/null 2>&1 || true
+      wait "$pid" >/dev/null 2>&1 || true
+    fi
+  done
 }
 
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 url="http://localhost:${port}/"
 
@@ -378,9 +397,10 @@ done
 # folder timestamp during every render and would otherwise cause a loop.
 # Quarto also stages HTML next to its QMD source before moving it to _site.
 # Keep standalone HTML resources watched, but skip those temporary siblings.
+# Pass non-file events through so Ctrl+C and termination reach Watchexec.
 watchexec --postpone --on-busy-update=queue --debounce 500ms --poll 1s \
   "${watch_args[@]}" \
-  --filter-prog 'any(.tags[] | select(.kind == "path"); .filetype != "dir" and (if (.absolute | test("\\.html?$")) then ((.absolute | sub("\\.html?$"; ".qmd") | file_meta) == null) else true end))' \
+  --filter-prog 'if any(.tags[]; .kind == "path") then any(.tags[] | select(.kind == "path"); .filetype != "dir" and (if (.absolute | test("\\.html?$")) then ((.absolute | sub("\\.html?$"; ".qmd") | file_meta) == null) else true end)) else true end' \
   --ignore '**/.git/**' \
   --ignore '**/.quarto/**' \
   --ignore '**/_freeze/**' \
@@ -399,4 +419,6 @@ watchexec --postpone --on-busy-update=queue --debounce 500ms --poll 1s \
   --ignore 'qmcpy/**' \
   --ignore '**/slides/**' \
   -e qmd,md,yml,yaml,html,htm,scss,sass,css,js,mjs,json,xml,txt,tex,lua,py,bib,csl,ipynb,png,jpg,jpeg,gif,svg,webp,ico,pdf,csv,tsv \
-  -- "$runner"
+  -- "$runner" &
+watch_pid="$!"
+wait "$watch_pid"
