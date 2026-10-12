@@ -142,10 +142,9 @@ Workflow:
    ```
    regular-maintenance.sh
    ```
-2. It does `sudo -v` and keeps sudo warm.  
-3. You will still be prompted by:
-   - `tlmgr` (always requires separate authentication)
-   - Homebrew (for privileged installs)
+2. It validates sudo credentials with `sudo -v` before starting.
+3. Privileged installs and TeX Live updates may require a password if cached
+   sudo credentials have expired.
 
 This is a mutating maintenance workflow. Use `machine-audit` when a read-only
 health check is appropriate.
@@ -158,8 +157,8 @@ health check is appropriate.
 Synchronizes Homebrew using the canonical Brewfile. On Apple Silicon, the
 regular run upgrades formulae and casks. On Intel, the regular run upgrades
 casks and reconciles the non-formula Brewfile entries, including npm packages
-and editor extensions, while deferring formula upgrades and installs. It still runs the
-separate `mas upgrade` step. Run `sync-brew.sh --full` during an attended Intel
+and editor extensions, while deferring formula upgrades and installs. It still
+runs the separate `mas upgrade` step. Run `sync-brew.sh --full` during an attended Intel
 maintenance window to upgrade formulae and reconcile every Brewfile entry.
 
 Bundle installs missing Mac App Store apps and skips installed Store apps.
@@ -406,9 +405,8 @@ update-texlive.sh
 
 Notes:
 
-- Always prompts for the TeX Live password  
-- No safe way to suppress this  
-- Called automatically inside `regular-maintenance.sh`
+- Requires administrator privileges; maintenance invokes it through `sudo`.
+- Called automatically inside `regular-maintenance.sh`.
 
 ### `update-texstudio.sh`
 
@@ -417,7 +415,9 @@ Silicon and Intel. The first maintenance run migrates an existing core cask
 without deleting preferences; close TeXstudio before this migration. Downloads
 are checksum-verified before replacement. The upstream cask removes the app’s
 quarantine attribute because its macOS releases are unsigned. Failure stops
-maintenance before Brewfile processing. Later runs upgrade normally.
+maintenance before Brewfile processing. Maintenance uses `--prepare` for tap
+setup and migration, leaving ordinary installs and upgrades to Bundle. Running
+the helper directly without that flag still installs or upgrades TeXstudio.
 
 ### `texstudio-fixed`
 A wrapper that:
