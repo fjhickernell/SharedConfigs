@@ -108,9 +108,10 @@ calendar named `Calendar` under the `hickernell@illinoistech.edu` account,
 shown in Apple Calendar as `Illinois Tech Fred`. Prefer this calendar for new
 events unless the user specifies another calendar, because events placed there
 block the user's availability in Microsoft Bookings. Fantastical is the user's
-preferred calendar app, while Apple Calendar provides the working local
-automation path; events added through Apple Calendar synchronize into
-Fantastical. Treat Fantastical as the more authoritative view of the user's
+preferred calendar app. Use Fantastical for routine visible calendar edits;
+use Apple Calendar as a fallback when a reliable edit is unavailable. Apple
+Calendar provides the working local automation path; events added through
+Apple Calendar synchronize into Fantastical. Treat Fantastical as the more authoritative view of the user's
 actual schedule: if an event appears in Apple Calendar but is absent from
 Fantastical, do not treat it as the user's commitment without confirmation.
 Do not confuse the target with the read-only `IIT Applied
