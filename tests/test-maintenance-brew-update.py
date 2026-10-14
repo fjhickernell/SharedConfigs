@@ -51,8 +51,9 @@ elif [ "$1" = bundle ]; then
   printf 'bundle-formula-skip %s|1\n' "${HOMEBREW_BUNDLE_BREW_SKIP:-}" >> "$CALL_LOG"
   if [ "$TEST_MAS" = 1 ]; then
     printf 'bundle-mas-skip %s|1\n' "$HOMEBREW_BUNDLE_MAS_SKIP" >> "$CALL_LOG"
-    printf '%s\n' 'Warning: Skipping Listed app' 'Warning: Skipping TextSniper' \
-      'Warning: Skipping Unknown app' 'Warning: Skipping mas Missing app (unsupported)' \
+    printf '%s\n' 'Warning: Skipping Listed app' 'Warning: Skipping Unlisted app' 'Warning: Skipping TextSniper' \
+      'Warning: Skipping Unknown app' 'Warning: Skipping Missing app' \
+      'Warning: Skipping mas Missing app (unsupported)' \
       'Warning: Formulae dependency graph sorting found a circular dependency:'
   fi
   if [ "$BUNDLE_CYCLE" = 1 ]; then
@@ -73,7 +74,7 @@ fi''')
                 command('mdutil', 'echo "Indexing enabled."')
                 command('mas', '''printf 'mas %s|1\n' "$*" >> "$CALL_LOG"
 case "$1" in
-  list) printf '%s\n' '111 Listed app (1.0)' '222 Unlisted app (1.0)' '1528890965 TextSniper (1.0)' ;;
+  list) printf '%s\n' '111 Listed app: Full Store Title     (1.0)' '222 Unlisted app     (1.0)' '1528890965 TextSniper     (1.0)' ;;
   outdated) printf '%s\n' '111 Listed app (1.0 -> 2.0)' '222 Unlisted app (1.0 -> 2.0)' '1528890965 TextSniper (1.0 -> 2.0)' ;;
   upgrade) [ "$FAIL_MAS_UPGRADE" != 1 ] ;;
 esac''')
@@ -197,9 +198,11 @@ esac''')
                     'sync-brew.sh', architecture=architecture, with_mas=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertNotIn('Warning: Skipping Listed app', result.stdout)
+                self.assertNotIn('Warning: Skipping Unlisted app', result.stdout)
                 self.assertNotIn('Warning: Skipping TextSniper', result.stdout)
                 self.assertIn('TextSniper uses Homebrew.', result.stdout)
                 self.assertIn('Warning: Skipping Unknown app', result.stdout)
+                self.assertIn('Warning: Skipping Missing app', result.stdout)
                 self.assertIn('Warning: Skipping mas Missing app (unsupported)', result.stdout)
                 self.assertIn('Warning: Formulae dependency graph sorting', result.stdout)
                 skip = next(row for row in calls if row.startswith('bundle-mas-skip '))

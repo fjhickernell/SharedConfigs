@@ -167,6 +167,8 @@ Brewfile, while excluding TextSniper. This applies to routine and full runs.
 Expected skip notices for installed Store apps and the Store edition of
 TextSniper are replaced with one status line. Other warnings remain visible;
 the complete Bundle output is retained for error handling during the run.
+Skip matching trims Store-list padding and checks Brewfile display names
+against the skipped app IDs, since Store titles can differ from those names.
 
 Bundle installs and upgrades listed packages; a separate upgrade step handles
 only outdated formulae and casks outside the Brewfile. Intel routine runs skip

@@ -108,7 +108,17 @@ if command -v mas >/dev/null 2>&1; then
   export HOMEBREW_BUNDLE_MAS_SKIP="${HOMEBREW_BUNDLE_MAS_SKIP:+$HOMEBREW_BUNDLE_MAS_SKIP }${installed_mas_ids} 1528890965"
   while IFS= read -r app_name; do
     [[ -z "$app_name" ]] || expected_store_skips+=("Warning: Skipping ${app_name}")
-  done <<<"$(sed -nE 's/^[[:space:]]*[0-9]+[[:space:]]+(.*)[[:space:]]+\([0-9.]+\)[[:space:]]*$/\1/p' <<<"$installed_mas_apps")"
+  done <<<"$(sed -nE 's/^[[:space:]]*[0-9]+[[:space:]]+(.*)[[:space:]]+\([0-9.]+\)[[:space:]]*$/\1/p' <<<"$installed_mas_apps" | sed -E 's/[[:space:]]+$//')"
+  # Bundle prints the Brewfile name, which can differ from the Store title.
+  # Suppress that name only when its ID is deliberately skipped this run.
+  typeset -a skipped_mas_ids=(${=HOMEBREW_BUNDLE_MAS_SKIP})
+  if [[ -f Brewfile ]]; then
+    while IFS='|' read -r app_id app_name; do
+      if (( ${skipped_mas_ids[(Ie)$app_id]} > 0 )); then
+        expected_store_skips+=("Warning: Skipping ${app_name}")
+      fi
+    done <<<"$(sed -nE 's/^[[:space:]]*mas "([^"]+)",[[:space:]]*id:[[:space:]]*([0-9]+).*$/\2|\1/p' Brewfile)"
+  fi
   expected_store_skips+=("Warning: Skipping TextSniper")
   printf '%s\n' "Installed Store apps are updated in the final mas step; TextSniper uses Homebrew."
 fi
