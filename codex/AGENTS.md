@@ -48,6 +48,19 @@ sources, or edit the Dashboard solely because of this startup preflight. Use
 the full Dashboard workflow when the user's request concerns the Dashboard or
 when the user chooses to address a preflight alert.
 
+## App handoff after task work
+
+Before handing an app back to Fred, leave it in its usual view or restore the
+view it had before the task. Clear searches and temporary filters introduced
+by the task, leave temporary search/results or archive views, and close task
+editors, popovers, and dialogs after saving and verifying authorized changes.
+Preserve Fred’s pre-existing drafts, unsaved work, searches, filters, and other
+intentional app state; do not discard or overwrite them to tidy the app.
+Follow a workflow’s specific handoff view when one is defined, such as Mail’s
+Inbox completion signal after a Daily Scan. Verify the restored view when
+possible and report any restoration barrier. Fred requested this on
+October 16, 2026.
+
 ## Illinois Tech authentication
 
 When access to the user's Illinois Tech account or a protected Illinois Tech
@@ -103,11 +116,15 @@ it there unless the user asks to move it. Identify calendars by account rather
 than assuming that a similarly named Google calendar is the requested
 secondary calendar.
 
-The user's primary calendar for nearly all events is the Apple Calendar
-calendar named `Calendar` under the `hickernell@illinoistech.edu` account,
-shown in Apple Calendar as `Illinois Tech Fred`. Prefer this calendar for new
-events unless the user specifies another calendar, because events placed there
-block the user's availability in Microsoft Bookings. Fantastical is the user's
+All events Fred sets up belong on the Apple Calendar calendar named
+`Calendar` under the `hickernell@illinoistech.edu` account, shown in Apple
+Calendar as `Illinois Tech Fred`, unless he explicitly directs otherwise.
+Events created by others may appear on `fjhickernell@gmail.com`; continue to
+check that secondary account. Fred does not use iCloud calendars for calendar
+events; he uses iCloud for Tasks/Reminders. A personal Dashboard category does
+not change an event's calendar destination. Fred clarified this routing on
+October 16, 2026. Events on Illinois Tech also block his availability in
+Microsoft Bookings. Fantastical is the user's
 preferred calendar app. Use Fantastical for routine visible calendar edits;
 use Apple Calendar as a fallback when a reliable edit is unavailable. Apple
 Calendar provides the working local automation path; events added through
@@ -136,6 +153,15 @@ event through JXA, use the scripting property's `set(...)` method rather than
 plain JavaScript assignment. After creation or modification, verify the
 visible account, date, start time, end time, and time zone in Apple Calendar;
 do not rely solely on the scripting API's UTC serialization.
+
+### Prayer with Warren Wong
+
+Prayer with Warren Wong is a personal activity, not an Elders or church task.
+Normally reserve two hours for their prayer time unless Fred supplies a different
+duration for a particular occurrence. This preference applies specifically to
+prayer with Warren, not to other prayer meetings. Fred clarified this on
+October 16, 2026. Keep the event on Illinois Tech Fred → Calendar under the
+calendar-routing rule above; “personal” is its Dashboard classification.
 
 ### Timed reminders in Fantastical
 
